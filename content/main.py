@@ -1,9 +1,10 @@
-import gem
 import code
 import readline
 import signal
 import sys
 import argparse
+
+import gem
 
 parser = argparse.ArgumentParser(description='Gem')
 parser.add_argument('--console', action='store_true', help='launch the interactive console')
@@ -22,8 +23,6 @@ def cleanup():
 
     if args.console:
         console.resetbuffer()
-
-    sys.exit(0)
 
 def signal_handler(signal, frame):
     if args.console:
