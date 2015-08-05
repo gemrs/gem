@@ -13,8 +13,8 @@ var events = []Event{
 
 type dispatchTestCase struct {
 	register []Event
-	raise []Event
-	listen []Event
+	raise    []Event
+	listen   []Event
 }
 
 var dispatchTestCases = []dispatchTestCase{
@@ -55,7 +55,7 @@ func TestDispatch(t *testing.T) {
 		t.Logf("Launching test case %v", tc_id)
 		events := make(chan Event, 10)
 
-		callback := func (event Event) {
+		callback := func(event Event) {
 			events <- event
 		}
 
