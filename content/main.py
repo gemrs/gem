@@ -3,19 +3,32 @@ import code
 import readline
 import signal
 import sys
+import argparse
+
+parser = argparse.ArgumentParser(description='Gem')
+parser.add_argument('--console', action='store_true', help='launch the interactive console')
+
+args = parser.parse_args()
 
 console = code.InteractiveConsole(locals=globals())
 logger = gem.syslog.Module("pymain")
 
 def cleanup():
     # Clean up from interact() gracefully..
-    console.write("\n")
+    if args.console:
+        console.write("\n")
+
     logger.Notice("Cleaning up for exit...")
-    console.resetbuffer()
+
+    if args.console:
+        console.resetbuffer()
+
     sys.exit(0)
 
 def signal_handler(signal, frame):
-    console.write("\n")
+    if args.console:
+        console.write("\n")
+
     cleanup()
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -24,7 +37,9 @@ engine = gem.Engine()
 engine.Start()
 
 logger.Info("Finished engine initialization")
-logger.Notice("Transferring control to interactive console")
 
-console.interact("")
+if args.console:
+    logger.Notice("Transferring control to interactive console")
+    console.interact("")
+
 cleanup()
