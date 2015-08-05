@@ -6,9 +6,9 @@ install: generate get fmt
 generate: gopygen
 	go generate ./...
 
-test: generate
+test: install
 	go test ./...
-	py.test -v content/
+	gem `which py.test` -s -v content/
 
 get:
 	go get
