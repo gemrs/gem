@@ -8,6 +8,7 @@ var Dispatcher = _Dispatcher{
 	listeners: make(map[Event]Listeners),
 }
 
+// Register a listener on an event
 func (d *_Dispatcher) Register(event Event, listener Listener) {
 	if _, ok := d.listeners[event]; !ok {
 		d.listeners[event] = make(Listeners, 0)
@@ -16,10 +17,17 @@ func (d *_Dispatcher) Register(event Event, listener Listener) {
 	d.listeners[event] = append(d.listeners[event], listener)
 }
 
+// Raise an event, and trigger all listeners of that event
 func (d *_Dispatcher) Raise(event Event) {
 	if _, ok := d.listeners[event]; !ok {
 		d.listeners[event] = make(Listeners, 0)
 	}
 
 	d.listeners[event].Dispatch(event)
+}
+
+// Clears the event:listener map
+// Mainly for testing
+func (d *_Dispatcher) Clear() {
+	d.listeners = make(map[Event]Listeners)
 }

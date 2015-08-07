@@ -55,6 +55,8 @@ func TestDispatch(t *testing.T) {
 		t.Logf("Launching test case %v", tc_id)
 		events := make(chan Event, 10)
 
+		Dispatcher.Clear()
+
 		callback := func(event Event) {
 			events <- event
 		}

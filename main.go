@@ -17,14 +17,6 @@ func main() {
 	py.Main(os.Args)
 }
 
-type registerFunc func(*py.Module) error
-
-var moduleRegisterFuncs = []registerFunc{
-	gem.RegisterSysLog,
-	gem.RegisterEngine,
-	gem.RegisterLogModule,
-}
-
 func pythonInit() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -35,17 +27,8 @@ func pythonInit() {
 
 	py.Initialize()
 
-	var err error
-	var module *py.Module
-	if module, err = py.InitModule("gem", []py.Method{}); err != nil {
+	if err := gem.InitPyModule(); err != nil {
 		panic(err)
-	}
-
-	/* Register modules */
-	for _, registerFunc := range moduleRegisterFuncs {
-		if err = registerFunc(module); err != nil {
-			panic(err)
-		}
 	}
 
 	/* Create our globals */
@@ -54,13 +37,6 @@ func pythonInit() {
 	} else if builtins, err := py.GetBuiltins(); err != nil {
 		panic(err)
 	} else if err = globals.SetItemString("__builtins__", builtins); err != nil {
-		panic(err)
-	}
-
-	/* Create our logger object */
-	if syslog, err := gem.InitSysLog(); err != nil {
-		panic(err)
-	} else if err = module.AddObject("syslog", syslog); err != nil {
 		panic(err)
 	}
 

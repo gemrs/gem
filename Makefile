@@ -1,14 +1,10 @@
 all: install
 
-install: generate get fmt
-	go install
+fmt:
+	go fmt ./...
 
 generate: gopygen
 	go generate ./...
-
-test: install
-	go test ./...
-	gem `which py.test` -s -v content/
 
 get:
 	go get
@@ -16,7 +12,11 @@ get:
 gopygen:
 	go get github.com/tgascoigne/gopygen
 
-fmt:
-	go fmt ./...
+install: generate get fmt
+	go install
+
+test: install
+	go test -v ./...
+	gem `which py.test` -s -v content/
 
 .PHONY: install generate test get gopygen format
