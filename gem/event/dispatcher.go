@@ -18,12 +18,12 @@ func (d *_Dispatcher) Register(event Event, listener Listener) {
 }
 
 // Raise an event, and trigger all listeners of that event
-func (d *_Dispatcher) Raise(event Event) {
+func (d *_Dispatcher) Raise(event Event, args ...interface{}) {
 	if _, ok := d.listeners[event]; !ok {
 		d.listeners[event] = make(Listeners, 0)
 	}
 
-	d.listeners[event].Dispatch(event)
+	d.listeners[event].Dispatch(event, args...)
 }
 
 // Clears the event:listener map

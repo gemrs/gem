@@ -2,6 +2,7 @@ package event
 
 import (
 	"github.com/qur/gopy/lib"
+	"github.com/tgascoigne/gopygen/gopygen"
 )
 
 func Py_RegisterListener(args *py.Tuple) (py.Object, error) {
@@ -16,16 +17,32 @@ func Py_RegisterListener(args *py.Tuple) (py.Object, error) {
 	Dispatcher.Register(Event(event), listener)
 	py.None.Incref()
 	return py.None, nil
+
 }
 
-func Py_RaiseEvent(args *py.Tuple) (py.Object, error) {
-	var event_ string
-	err := py.ParseTuple(args, "s", &event_)
+func Py_RaiseEvent(argsTuple *py.Tuple) (py.Object, error) {
+	temp, err := argsTuple.GetItem(0)
 	if err != nil {
-		return nil, err
+		py.None.Incref()
+		return py.None, nil
+	}
+	event := Event(temp.(*py.String).String())
+
+	args := []interface{}{}
+
+	if argsTuple.Size() > 1 {
+		for _, a := range argsTuple.Slice()[1:] {
+			argIn, err := gopygen.TypeConvIn(a, "")
+			if err != nil {
+				py.None.Incref()
+				return py.None, nil
+			}
+
+			args = append(args, argIn)
+		}
 	}
 
-	Dispatcher.Raise(Event(event_))
+	Dispatcher.Raise(event, args...)
 	py.None.Incref()
 	return py.None, nil
 }

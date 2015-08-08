@@ -10,15 +10,10 @@ func init() {
 	gopygen.TypeConvOut = TypeConvOut
 }
 
-func TypeConvIn(typ string, value py.Object) (interface{}, error) {
-	switch typ {
-	case "py.Object":
-		return value, nil
-	}
-
-	return gopygen.BaseTypeConvIn(typ, value)
+func TypeConvIn(value py.Object, typ string) (interface{}, error) {
+	return gopygen.BaseTypeConvIn(value, typ)
 }
 
-func TypeConvOut(typ string, value interface{}) (py.Object, error) {
-	return gopygen.BaseTypeConvOut(typ, value)
+func TypeConvOut(value interface{}, typ string) (py.Object, error) {
+	return gopygen.BaseTypeConvOut(value, typ)
 }
