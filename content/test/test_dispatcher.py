@@ -4,10 +4,10 @@ import Queue
 import gem.event
 
 events = [
-    "TEST_EVENT_0",
-    "TEST_EVENT_1",
-    "TEST_EVENT_2",
-    "TEST_EVENT_3",
+    gem.event.TestEvent1,
+    gem.event.TestEvent2,
+    gem.event.TestEvent3,
+    gem.event.TestEvent4,
 ]
 
 def new_dispatch_test_case(register_events, raise_events, listen_events):

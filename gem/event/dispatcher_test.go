@@ -5,10 +5,10 @@ import (
 )
 
 var events = []Event{
-	"TEST_EVENT_0",
-	"TEST_EVENT_1",
-	"TEST_EVENT_2",
-	"TEST_EVENT_3",
+	TestEvent1,
+	TestEvent2,
+	TestEvent3,
+	TestEvent4,
 }
 
 type dispatchTestCase struct {

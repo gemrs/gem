@@ -31,3 +31,11 @@ func (d *_Dispatcher) Raise(event Event, args ...interface{}) {
 func (d *_Dispatcher) Clear() {
 	d.listeners = make(map[Event]Listeners)
 }
+
+func Register(event Event, listener Listener) {
+	Dispatcher.Register(event, listener)
+}
+
+func Raise(event Event, args ...interface{}) {
+	Dispatcher.Raise(event, args...)
+}

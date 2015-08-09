@@ -17,6 +17,8 @@ func InitPyModule(parent *py.Module) error {
 		return err
 	}
 
+	createEventConstants(module)
+
 	if err = parent.AddObject("event", module); err != nil {
 		return err
 	}
