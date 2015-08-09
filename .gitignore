@@ -1,4 +1,5 @@
 
 __pycache__
 .vagrant/
+*.pyc
 *_gopy.go

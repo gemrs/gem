@@ -46,7 +46,9 @@ func pythonInit() {
 	signal.Notify(c, syscall.SIGTERM)
 	go func() {
 		<-c
+		fmt.Printf("caught int")
 		py.SetInterrupt()
 		os.Exit(1)
 	}()
+
 }
