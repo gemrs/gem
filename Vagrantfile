@@ -15,7 +15,10 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell", inline: <<-SHELL
-    sudo yum -y install git gdb golang python-devel pytest libffi-devel
+    sudo yum -y install epel-release
+    sudo yum -y install git gdb golang python-devel pytest python-pip libffi-devel
+    sudo pip install yapsy
+
     mkdir -p /home/vagrant/go/src/github.com/sinusoids
     chown -R vagrant:vagrant /home/vagrant/go/
     ln -s /vagrant /home/vagrant/go/src/github.com/sinusoids/gem

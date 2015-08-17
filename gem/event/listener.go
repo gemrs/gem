@@ -16,6 +16,7 @@ func (l Listeners) Dispatch(event Event, args ...interface{}) {
 }
 
 func PythonListener(callback py.Object) Listener {
+	callback.Incref()
 	return func(ev Event, args ...interface{}) {
 		argsIn := []interface{}{string(ev)}
 		argsIn = append(argsIn, args...)
@@ -26,15 +27,11 @@ func PythonListener(callback py.Object) Listener {
 			if err != nil {
 				panic(err)
 			}
+			converted.Incref()
 			argsOut = append(argsOut, converted)
 		}
 
-		argTuple, err := py.PackTuple(argsOut...)
-		if err != nil {
-			panic(err)
-		}
-
-		_, err = callback.Base().CallObject(argTuple)
+		_, err := callback.Base().CallFunctionObjArgs(argsOut...)
 		if err != nil {
 			panic(err)
 		}

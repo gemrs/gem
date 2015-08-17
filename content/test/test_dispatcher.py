@@ -129,3 +129,30 @@ def test_event_dispatch():
             assert event == ev
             assert q.get() == tc['arg1']
             assert q.get() == tc['arg2']
+
+def test_event_dispatch_object():
+    q = Queue.Queue()
+
+    class CBClass(object):
+        def callback(self, event, arg1, arg2):
+            q.put(event)
+            q.put(arg1)
+            q.put(arg2)
+
+    obj = CBClass()
+
+    for tc_id, tc in enumerate(args_test_cases):
+        print "Launching test case {0}".format(tc_id)
+        gem.event.clear()
+
+        for ev in tc['register_events']:
+            gem.event.register_listener(ev, obj.callback)
+
+        for ev in tc['raise_events']:
+            gem.event.raise_event(ev, tc['arg1'], tc['arg2'])
+
+        for ev in tc['listen_events']:
+            event = q.get()
+            assert event == ev
+            assert q.get() == tc['arg1']
+            assert q.get() == tc['arg2']
