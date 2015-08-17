@@ -7,7 +7,16 @@ logger = gem.syslog.Module(__name__)
 
 class GemLogHandler(logging.Handler):
     def emit(self, record):
-        logger.Info(record.getMessage())
+        if record.levelno == logging.CRITICAL:
+            logger.Critical(record.getMessage())
+        elif record.levelno == logging.ERROR:
+            logger.Error(record.getMessage())
+        elif record.levelno == logging.WARNING:
+            logger.Warning(record.getMessage())
+        elif record.levelno == logging.INFO:
+            logger.Info(record.getMessage())
+        elif record.levelno == logging.DEBUG:
+            logger.Debug(record.getMessage())
 
 logging.getLogger("yapsy").addHandler(GemLogHandler())
 
