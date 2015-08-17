@@ -6,3 +6,6 @@ class SamplePlugin(plugins.GemPlugin):
 
     def shutdown(self, event):
         self.logger.Info("Shutdown hook")
+
+    def tick(self, event):
+        self.logger.Info("Tick")

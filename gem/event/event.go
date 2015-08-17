@@ -15,6 +15,9 @@ const (
 	TestEvent4 Event = "TestEvent4"
 	Startup    Event = "Startup"
 	Shutdown   Event = "Shutdown"
+	PreTick    Event = "PreTick"
+	Tick       Event = "Tick"
+	PostTick   Event = "PostTick"
 )
 
 var pyEventConstants = []Event{
@@ -24,6 +27,9 @@ var pyEventConstants = []Event{
 	TestEvent4,
 	Startup,
 	Shutdown,
+	PreTick,
+	Tick,
+	PostTick,
 }
 
 func createEventConstants(module *py.Module) {
