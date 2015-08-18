@@ -1,42 +1,47 @@
 package task
 
 import (
-	"time"
-
 	"github.com/qur/gopy/lib"
 )
 
-type TaskCallback func(Task) bool
+type TaskCallback func(*Task) bool
+
+type Cycles int
 
 type Task struct {
 	Callback TaskCallback
 	When     TaskHook
-	Interval time.Duration
+	Interval Cycles
 	User     interface{}
+	counter  Cycles
 }
 
-func NewTask(callback TaskCallback, when TaskHook, interval time.Duration, user interface{}) Task {
-	return Task{
+func NewTask(callback TaskCallback, when TaskHook, interval Cycles, user interface{}) *Task {
+	return &Task{
 		Callback: callback,
 		When:     when,
 		Interval: interval,
 		User:     user,
+		counter:  interval,
 	}
 }
 
-func (task Task) Future(scheduler *_Scheduler) {
-	go func() {
-		select {
-		case <-time.After(task.Interval):
-			scheduler.taskQueues[task.When] <- task
+func (task *Task) Tick() bool {
+	task.counter = task.counter - 1
+	if task.counter == 0 {
+		reschedule := task.Callback(task)
+		if reschedule {
+			task.counter = task.Interval
 		}
-	}()
+	}
+
+	return task.counter == 0
 }
 
-func PythonTask(callback py.Object, when TaskHook, interval time.Duration, user py.Object) Task {
+func PythonTask(callback py.Object, when TaskHook, interval Cycles, user py.Object) *Task {
 	callback.Incref()
 	user.Incref()
-	cbFunc := func(task Task) bool {
+	cbFunc := func(task *Task) bool {
 		argsTuple, err := py.BuildValue("sO", string(when), user)
 		if err != nil {
 			panic(err)

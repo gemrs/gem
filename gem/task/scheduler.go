@@ -1,35 +1,39 @@
 package task
 
+import (
+	"container/list"
+)
+
 type _Scheduler struct {
-	taskQueues map[TaskHook]chan Task
+	tasks map[TaskHook]*list.List
 }
 
 var Scheduler _Scheduler
 
 func init() {
-	queues := make(map[TaskHook]chan Task)
-	for _, hook := range taskHookConstants {
-		queues[hook] = make(chan Task, 32)
-	}
-	Scheduler = _Scheduler{taskQueues: queues}
+	Scheduler = NewScheduler()
 }
 
-func (scheduler *_Scheduler) Submit(task Task) {
-	task.Future(scheduler)
+func NewScheduler() _Scheduler {
+	var s _Scheduler
+	s.tasks = make(map[TaskHook]*list.List)
+	for _, hook := range taskHookConstants {
+		s.tasks[hook] = list.New()
+	}
+	return s
+}
+
+func (scheduler *_Scheduler) Submit(task *Task) {
+	scheduler.tasks[task.When].PushBack(task)
 }
 
 func (scheduler *_Scheduler) Tick(hook TaskHook) {
-	if queue, ok := scheduler.taskQueues[hook]; ok {
-		empty := false
-		for !empty {
-			select {
-			case task := <-queue:
-				reschedule := task.Callback(task)
-				if reschedule {
-					task.Future(scheduler)
-				}
-			default:
-				empty = true
+	if queue, ok := scheduler.tasks[hook]; ok {
+		for e := queue.Front(); e != nil; e = e.Next() {
+			task := e.Value.(*Task)
+			expire := task.Tick()
+			if expire {
+				queue.Remove(e)
 			}
 		}
 	}

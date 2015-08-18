@@ -32,20 +32,20 @@ func (e *Engine) Stop() {
 }
 
 func (e *Engine) run() {
-	preTask := task.NewTask(func(task.Task) bool {
+	preTask := task.NewTask(func(*task.Task) bool {
 		event.Raise(event.PreTick)
 		return true
-	}, task.PreTick, EngineTick, nil)
+	}, task.PreTick, 1, nil)
 
-	duringTask := task.NewTask(func(task.Task) bool {
+	duringTask := task.NewTask(func(*task.Task) bool {
 		event.Raise(event.Tick)
 		return true
-	}, task.Tick, EngineTick, nil)
+	}, task.Tick, 1, nil)
 
-	postTask := task.NewTask(func(task.Task) bool {
+	postTask := task.NewTask(func(*task.Task) bool {
 		event.Raise(event.PostTick)
 		return true
-	}, task.PostTick, EngineTick, nil)
+	}, task.PostTick, 1, nil)
 
 	task.Scheduler.Submit(preTask)
 	task.Scheduler.Submit(duringTask)

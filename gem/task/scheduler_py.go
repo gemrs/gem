@@ -1,8 +1,6 @@
 package task
 
 import (
-	"time"
-
 	"github.com/qur/gopy/lib"
 	_ "github.com/tgascoigne/gopygen/gopygen"
 )
@@ -17,7 +15,7 @@ func Py_Submit(args *py.Tuple) (py.Object, error) {
 		return nil, err
 	}
 
-	task := PythonTask(callback, TaskHook(taskHook), time.Duration(interval)*time.Millisecond, userdata)
+	task := PythonTask(callback, TaskHook(taskHook), Cycles(interval), userdata)
 	Scheduler.Submit(task)
 	py.None.Incref()
 	return py.None, nil
