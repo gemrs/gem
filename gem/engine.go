@@ -14,7 +14,6 @@ var logger *LogModule
 //go:generate gopygen $GOFILE Engine
 type Engine struct {
 	py.BaseObject
-	scheduler task.Scheduler
 }
 
 var EngineTick = 600 * time.Millisecond
@@ -33,8 +32,6 @@ func (e *Engine) Stop() {
 }
 
 func (e *Engine) run() {
-	e.scheduler = task.NewScheduler()
-
 	preTask := task.NewTask(func(task.Task) bool {
 		event.Raise(event.PreTick)
 		return true
@@ -50,14 +47,14 @@ func (e *Engine) run() {
 		return true
 	}, task.PostTick, EngineTick, nil)
 
-	preTask.Future(e.scheduler)
-	duringTask.Future(e.scheduler)
-	postTask.Future(e.scheduler)
+	task.Scheduler.Submit(preTask)
+	task.Scheduler.Submit(duringTask)
+	task.Scheduler.Submit(postTask)
 
 	c := time.Tick(EngineTick)
 	for _ = range c {
-		e.scheduler.Tick(task.PreTick)
-		e.scheduler.Tick(task.Tick)
-		e.scheduler.Tick(task.PostTick)
+		task.Scheduler.Tick(task.PreTick)
+		task.Scheduler.Tick(task.Tick)
+		task.Scheduler.Tick(task.PostTick)
 	}
 }

@@ -2,6 +2,7 @@ package gem
 
 import (
 	"github.com/sinusoids/gem/gem/event"
+	"github.com/sinusoids/gem/gem/task"
 
 	"github.com/qur/gopy/lib"
 )
@@ -14,6 +15,7 @@ var moduleRegisterFuncs = []registerFunc{
 	RegisterLogModule,
 
 	event.InitPyModule,
+	task.InitPyModule,
 }
 
 func InitPyModule() error {

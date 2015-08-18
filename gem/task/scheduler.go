@@ -1,18 +1,24 @@
 package task
 
-type Scheduler struct {
+type _Scheduler struct {
 	taskQueues map[TaskHook]chan Task
 }
 
-func NewScheduler() Scheduler {
+var Scheduler _Scheduler
+
+func init() {
 	queues := make(map[TaskHook]chan Task)
 	for _, hook := range taskHookConstants {
 		queues[hook] = make(chan Task, 32)
 	}
-	return Scheduler{taskQueues: queues}
+	Scheduler = _Scheduler{taskQueues: queues}
 }
 
-func (scheduler Scheduler) Tick(hook TaskHook) {
+func (scheduler *_Scheduler) Submit(task Task) {
+	task.Future(scheduler)
+}
+
+func (scheduler *_Scheduler) Tick(hook TaskHook) {
 	if queue, ok := scheduler.taskQueues[hook]; ok {
 		empty := false
 		for !empty {

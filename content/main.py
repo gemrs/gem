@@ -5,6 +5,8 @@ import signal_handler
 import console
 import plugins
 
+import plugins.sample_plugin.sample
+
 # Create argparser
 parser = argparse.ArgumentParser(description='Gem')
 parser.add_argument('--console', action='store_true', help='launch the interactive console')
