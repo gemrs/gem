@@ -7,6 +7,7 @@ import (
 )
 
 var currentFile *ast.File
+var structStack []*ast.Struct
 
 func toIfaceSlice(v interface{}) []interface{} {
 	if v == nil {
@@ -15,18 +16,26 @@ func toIfaceSlice(v interface{}) []interface{} {
 	return v.([]interface{})
 }
 
-func parseFrameDefinition(inputFile string) (*ast.File, error) {
-	file, err := os.Open(os.Args[1])
-	if err != nil {
-		log.Fatal(err)
+func lookupLocalField(name string) *ast.Field {
+	currentStruct := structStack[len(structStack)-1]
+
+	for _, f := range currentStruct.Fields {
+		if f.Name == name {
+			return f
+		}
 	}
 
+	return nil
+}
+
+func parseFrameDefinition(inputFile string) (*ast.File, error) {
 	currentFile = &ast.File{
 		Types: make(map[string]ast.Type),
 		Frames: make(map[string]*ast.Frame),
 	}
+	structStack = make([]*ast.Struct, 0)
 
-	_, err = ParseReader("", file)
+	_, err := ParseFile(os.Args[1])
     if err != nil {
         return nil, err
     }
@@ -61,11 +70,17 @@ Frame <- "frame" __ identifier:Ident '(' number:Number framesz:(',' _ FrameSize)
 	return decl, nil
 }
 
-Struct <- "struct" __ identifier:Ident _ fields:StructBlock _ {
-	decl := &ast.Struct{
-		Name: identifier.(string),
-		Fields: fields.([]*ast.Field),
-	}
+StructStart <- "struct" {
+	decl := &ast.Struct{}
+	structStack = append(structStack, decl)
+	return decl, nil
+}
+
+Struct <- StructStart __ identifier:Ident _ StructBlock _ {
+	decl := structStack[len(structStack)-1]
+	decl.Name = identifier.(string)
+
+	structStack = structStack[:len(structStack)-1]
 
 	currentFile.Types[decl.Name] = decl
 	return decl, nil
@@ -82,10 +97,15 @@ StructBlock <- '{' _ fields:Field+ _ '}' {
 }
 
 Field <- _ identifier:Ident __ typ:Type EOL {
-	return &ast.Field{
+	decl := structStack[len(structStack)-1]
+
+	field := &ast.Field{
 		Name: identifier.(string),
 		Type: typ.(ast.Type),
-	}, nil
+	}
+
+	decl.Fields = append(decl.Fields, field)
+	return field, nil
 }
 
 Type <- StringType / IntegerTypeNoFlags / IntegerTypeAndFlags / TypeRef
@@ -95,8 +115,19 @@ StringType <- "string" '[' size:Number ']' {
 		Length: size.(int),
 	}, nil
 } / "string" '[' fieldref:Ident ']' {
+	field := lookupLocalField(fieldref.(string))
+	if field == nil {
+		return nil, fmt.Errorf("%v: %v", ast.ErrNoSuchField, fieldref)
+	}
+
+	switch field.Type.(type) {
+	case *ast.IntegerType:
+	default:
+		return nil, fmt.Errorf("%v: %v", ast.ErrFieldNotInteger, fieldref)
+	}
+
 	return &ast.VariableStringType{
-		FieldRef: fieldref.(string),
+		Field: field,
 	}, nil
 }
 

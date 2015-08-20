@@ -7,6 +7,8 @@ import (
 
 var ErrVariableType = fmt.Errorf("Can't calculate length of a variable-length type")
 var ErrNoSuchType = fmt.Errorf("No such type")
+var ErrNoSuchField = fmt.Errorf("No such field")
+var ErrFieldNotInteger = fmt.Errorf("Field in array dimension expr not an integer")
 
 type Identifiable interface{
 	Identifier() string
@@ -36,7 +38,7 @@ func (s *StringType) ByteLength() (int, error) {
 
 // A variable length string (eg. string[LocalField])
 type VariableStringType struct {
-	FieldRef string
+	Field *Field
 }
 
 func (s *VariableStringType) Identifier() string {

@@ -8,7 +8,7 @@ frame ChatMessage1(100) ChatMessage1
 /* Variable length (8 bit encoded) frame */
 struct ChatMessage2 {
     Length  int16(endian(little), ofs128)
-    Message string[Length]
+    Message string[Lefngth]
 }
 
 frame ChatMessage2(101, var8) ChatMessage2
