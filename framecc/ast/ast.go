@@ -2,12 +2,12 @@ package ast
 
 type File struct {
 	Types map[string]Type
-	Frames map[string]Frame
+	Frames map[string]*Frame
 }
 
 type Struct struct {
 	Name string
-	Fields []Field
+	Fields []*Field
 }
 
 func (s Struct) Identifier() string {

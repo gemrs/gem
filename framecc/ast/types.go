@@ -25,11 +25,11 @@ type StringType struct {
 	Length int
 }
 
-func (s StringType) Identifier() string {
+func (s *StringType) Identifier() string {
 	return "string"
 }
 
-func (s StringType) ByteLength() (int, error) {
+func (s *StringType) ByteLength() (int, error) {
 	return s.Length, nil
 }
 
@@ -39,11 +39,11 @@ type VariableStringType struct {
 	FieldRef string
 }
 
-func (s VariableStringType) Identifier() string {
+func (s *VariableStringType) Identifier() string {
 	return "varstring"
 }
 
-func (s VariableStringType) ByteLength() (int, error) {
+func (s *VariableStringType) ByteLength() (int, error) {
 	return 0, ErrVariableType
 }
 
@@ -63,7 +63,7 @@ type IntegerType struct {
 	Modifiers IntegerFlag
 }
 
-func (s IntegerType) Identifier() string {
+func (s *IntegerType) Identifier() string {
 	var buf bytes.Buffer
 	if s.Signed {
 		buf.WriteString("u")
@@ -73,6 +73,6 @@ func (s IntegerType) Identifier() string {
 	return buf.String()
 }
 
-func (s IntegerType) ByteLength() (int, error) {
+func (s *IntegerType) ByteLength() (int, error) {
 	return 0, ErrVariableType
 }

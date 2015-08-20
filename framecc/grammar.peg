@@ -23,7 +23,7 @@ func parseFrameDefinition(inputFile string) (*ast.File, error) {
 
 	currentFile = &ast.File{
 		Types: make(map[string]ast.Type),
-		Frames: make(map[string]ast.Frame),
+		Frames: make(map[string]*ast.Frame),
 	}
 
 	_, err = ParseReader("", file)
@@ -43,10 +43,28 @@ Start <- _ decls:Decl+ _ EOF {
 Decl <- _ Frame _
      /  _ Struct _
 
-Struct <- "struct" __ identifier:Ident _ fields:StructBlock _ {
-	decl := ast.Struct{
+Frame <- "frame" __ identifier:Ident '(' number:Number framesz:(',' _ FrameSize)? ')' _ object:TypeRef {
+	if framesz == nil {
+		framesz = ast.SzFixed
+	} else {
+		framesz = framesz.([]interface{})[2]
+	}
+
+	decl := &ast.Frame{
 		Name: identifier.(string),
-		Fields: fields.([]ast.Field),
+		Number: number.(int),
+		Size: framesz.(ast.FrameSize),
+		Object: object.(ast.Type),
+	}
+
+	currentFile.Frames[decl.Name] = decl
+	return decl, nil
+}
+
+Struct <- "struct" __ identifier:Ident _ fields:StructBlock _ {
+	decl := &ast.Struct{
+		Name: identifier.(string),
+		Fields: fields.([]*ast.Field),
 	}
 
 	currentFile.Types[decl.Name] = decl
@@ -54,17 +72,17 @@ Struct <- "struct" __ identifier:Ident _ fields:StructBlock _ {
 }
 
 StructBlock <- '{' _ fields:Field+ _ '}' {
-	fieldsSl := make([]ast.Field, 0)
+	fieldsSl := make([]*ast.Field, 0)
 	fieldsIfSl := toIfaceSlice(fields)
 	for _, fieldIfSl := range fieldsIfSl {
-		fieldsSl = append(fieldsSl, fieldIfSl.(ast.Field))
+		fieldsSl = append(fieldsSl, fieldIfSl.(*ast.Field))
 	}
 
 	return fieldsSl, nil
 }
 
 Field <- _ identifier:Ident __ typ:Type EOL {
-	return ast.Field{
+	return &ast.Field{
 		Name: identifier.(string),
 		Type: typ.(ast.Type),
 	}, nil
@@ -73,11 +91,11 @@ Field <- _ identifier:Ident __ typ:Type EOL {
 Type <- StringType / IntegerTypeNoFlags / IntegerTypeAndFlags / TypeRef
 
 StringType <- "string" '[' size:Number ']' {
-	return ast.StringType{
+	return &ast.StringType{
 		Length: size.(int),
 	}, nil
 } / "string" '[' fieldref:Ident ']' {
-	return ast.VariableStringType{
+	return &ast.VariableStringType{
 		FieldRef: fieldref.(string),
 	}, nil
 }
@@ -87,7 +105,7 @@ IntegerTypeNoFlags <- baseType:IntegerType !(_ '(') {
 }
 
 IntegerTypeAndFlags <- baseType:IntegerType '(' flags:(IntegerFlag (',' _)?)+ ')' {
-	iType := baseType.(ast.IntegerType)
+	iType := baseType.(*ast.IntegerType)
 	hasFlag := func(flags interface{}, flag string) bool {
 		for _, f_ := range toIfaceSlice(flags) {
 			f := toIfaceSlice(f_)
@@ -121,7 +139,8 @@ IntegerType <- unsigned:'u'? "int" bitsize:Number {
 	if unsigned != nil {
 		signed = false
 	}
-    return ast.IntegerType{
+
+    return &ast.IntegerType{
 		Signed: signed,
 		Bitsize: bitsize.(int),
 	}, nil
@@ -137,24 +156,6 @@ TypeRef <- name:Ident {
 	} else {
 		return typ, nil
 	}
-}
-
-Frame <- "frame" __ identifier:Ident '(' number:Number framesz:(',' _ FrameSize)? ')' _ object:TypeRef {
-	if framesz == nil {
-		framesz = ast.SzFixed
-	} else {
-		framesz = framesz.([]interface{})[2]
-	}
-
-	decl := ast.Frame{
-		Name: identifier.(string),
-		Number: number.(int),
-		Size: framesz.(ast.FrameSize),
-		Object: object.(ast.Type),
-	}
-
-	currentFile.Frames[decl.Name] = decl
-	return decl, nil
 }
 
 Ident <- [a-zA-Z0-9_]+ {
@@ -186,49 +187,3 @@ __ <- ( Whitespace / EOL / Comment )+
 Whitespace <- [ \t\r]
 EOL <- '\n'
 EOF <- !.
-
-/*
-Frames <- _ frames:(Frame)+ EOF {
-    framesSl := make([]Frame, 0)
-    for _, f := range toIfaceSlice(frames) {
-        framesSl = append(framesSl, f.(Frame))
-    }
-    return framesSl, nil
-}
-
-Frame <- spec:FrameSpec _ content:Code _ {
-    return Frame{
-        FrameSpec: spec.(FrameSpec),
-        Content: content.(string),
-    }, nil
-}
-
-FrameSpec <- "frame" _ frameType:FrameType _ name:Ident {
-    return FrameSpec{
-        Name: name.(string),
-        FrameType: frameType.(FrameType),
-    }, nil
-}
-
-FrameType <- '[' _ id:FrameID _ ',' _ length:FrameLength _ ']' {
-    return FrameType{
-        Id: id.(int),
-        FrameLength: length.(FrameLength),
-    }, nil
-}
-
-FrameID <- "id" Whitespace val:Number {
-    return val, nil
-}
-
-FrameLength <- "length" Whitespace val:LengthValue {
-    return val, nil
-}
-
-Code <- '{' CodeBlock '}' {
-    return string(c.text), nil
-}
-
-CodeBlock <- ( ( ![{}] SourceChar )+ / '{' CodeBlock '}' )*
-
-*/
