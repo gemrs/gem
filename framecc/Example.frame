@@ -12,6 +12,7 @@ struct ChatMessage2 {
 }
 
 frame ChatMessage2(101, var8) ChatMessage2
+frame ChatMessage3(102, var16) ChatMessage2
 
 /* Embedding structures */
 struct AppearanceBlock {
@@ -26,10 +27,18 @@ struct PositionBlock {
     Z uint16
 }
 
-struct PlayerUpdate {
-    UpdateFlag uint8
+struct OtherPlayer {
+    Name       string[32]
     Appearance AppearanceBlock
     Position   PositionBlock
+}
+
+struct PlayerUpdate {
+    UpdateFlag  uint8
+    OthersCount uint8
+    Others      OtherPlayer // [OthersCount]
+    Appearance  AppearanceBlock
+    Position    PositionBlock
 }
 
 frame PlayerUpdate(200, var16) PlayerUpdate

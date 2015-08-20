@@ -96,7 +96,7 @@ StructBlock <- '{' _ fields:Field+ _ '}' {
 	return fieldsSl, nil
 }
 
-Field <- _ identifier:Ident __ typ:Type EOL {
+Field <- _ identifier:Ident __ typ:Type ( _ / EOL ) {
 	decl := structStack[len(structStack)-1]
 
 	field := &ast.Field{
