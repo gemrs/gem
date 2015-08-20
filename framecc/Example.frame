@@ -1,0 +1,35 @@
+/* Fixed length frame */
+struct ChatMessage1 {
+    Message string[256]
+}
+
+frame ChatMessage1(100) ChatMessage1
+
+/* Variable length (8 bit encoded) frame */
+struct ChatMessage2 {
+    Length  int16(endian(little), ofs128)
+    Message string[Length]
+}
+
+frame ChatMessage2(101, var8) ChatMessage2
+
+/* Embedding structures */
+struct AppearanceBlock {
+    Legs   uint8
+    Body   uint8
+    Helmet uint8
+}
+
+struct PositionBlock {
+    X uint16
+    Y uint16
+    Z uint16
+}
+
+struct PlayerUpdate {
+    UpdateFlag uint8
+    Appearance AppearanceBlock
+    Position   PositionBlock
+}
+
+frame PlayerUpdate(200, var16) PlayerUpdate
