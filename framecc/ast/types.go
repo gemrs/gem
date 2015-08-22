@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 )
 
 var ErrVariableType = fmt.Errorf("Can't calculate length of a variable-length type")
@@ -10,21 +10,54 @@ var ErrNoSuchType = fmt.Errorf("No such type")
 var ErrNoSuchField = fmt.Errorf("No such field")
 var ErrFieldNotInteger = fmt.Errorf("Field in array dimension expr not an integer")
 
-type Identifiable interface{
+type Identifiable interface {
 	Identifier() string
 }
 
-type Type interface{
-	// If the byte length is variable, error
+type Lengthable interface {
 	ByteLength() (int, error)
+}
+
+type Type interface {
+	// If the byte length is variable, error
+	Lengthable
 	Identifiable
 }
 
-/* Standard Primitives */
+/* Standard Types */
+type LengthSpec interface {
+	Lengthable
+	ConstantExpr() (bool, error)
+}
+
+type FixedLength struct {
+	Length int
+}
+
+func (f *FixedLength) ConstantExpr() (bool, error) {
+	return true, nil
+}
+
+func (f *FixedLength) ByteLength() (int, error) {
+	return f.Length, nil
+}
+
+/* A length spec which is determined at runtime by evaluating an integer field */
+type ReferenceLength struct {
+	Field *Field
+}
+
+func (r *ReferenceLength) ConstantExpr() (bool, error) {
+	return false, nil
+}
+
+func (r *ReferenceLength) ByteLength() (int, error) {
+	return 0, ErrVariableType
+}
 
 // A Fixed length string (eg. string[256])
 type StringType struct {
-	Length int
+	Length LengthSpec
 }
 
 func (s *StringType) Identifier() string {
@@ -32,24 +65,11 @@ func (s *StringType) Identifier() string {
 }
 
 func (s *StringType) ByteLength() (int, error) {
-	return s.Length, nil
-}
-
-
-// A variable length string (eg. string[LocalField])
-type VariableStringType struct {
-	Field *Field
-}
-
-func (s *VariableStringType) Identifier() string {
-	return "varstring"
-}
-
-func (s *VariableStringType) ByteLength() (int, error) {
-	return 0, ErrVariableType
+	return s.Length.ByteLength()
 }
 
 type IntegerFlag int
+
 const (
 	IntNegate IntegerFlag = (1 << iota)
 	IntInv128
@@ -60,8 +80,8 @@ const (
 )
 
 type IntegerType struct {
-	Signed bool
-	Bitsize int
+	Signed    bool
+	Bitsize   int
 	Modifiers IntegerFlag
 }
 
@@ -77,4 +97,26 @@ func (s *IntegerType) Identifier() string {
 
 func (s *IntegerType) ByteLength() (int, error) {
 	return 0, ErrVariableType
+}
+
+type ArrayType struct {
+	Object Type
+	Length LengthSpec
+}
+
+func (a *ArrayType) Identifier() string {
+	return "string"
+}
+
+func (a *ArrayType) ByteLength() (int, error) {
+	baseLength, err := a.Object.ByteLength()
+	if err != nil {
+		return 0, err
+	}
+	mulLength, err := a.Length.ByteLength()
+	if err != nil {
+		return 0, err
+	}
+
+	return baseLength * mulLength, nil
 }

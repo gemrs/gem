@@ -1,22 +1,9 @@
-all: install
+all: gem framecc
 
-fmt:
-	go fmt ./...
+framecc:
+	cd framecc && make
 
-generate: gopygen
-	go generate ./...
+gem: framecc
+	cd gem && make
 
-get:
-	go get
-
-gopygen:
-	go get github.com/tgascoigne/gopygen
-
-install: generate get fmt
-	go install
-
-test: install
-	go test -v ./...
-	gem `which py.test` -s -v content/
-
-.PHONY: install generate test get gopygen fmt
+.PHONY: gem framecc

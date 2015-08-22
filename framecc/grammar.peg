@@ -49,10 +49,10 @@ Start <- _ decls:Decl+ _ EOF {
 	return currentFile, nil
 }
 
-Decl <- _ Frame _
-     /  _ Struct _
+Decl <- Frame
+     /  Struct
 
-Frame <- "frame" __ identifier:Ident '(' number:Number framesz:(',' _ FrameSize)? ')' _ object:TypeRef {
+Frame <- _ "frame" __ identifier:Ident '(' number:Number framesz:(',' _ FrameSize)? ')' _ object:TypeRef _ {
 	if framesz == nil {
 		framesz = ast.SzFixed
 	} else {
@@ -76,7 +76,7 @@ StructStart <- "struct" {
 	return decl, nil
 }
 
-Struct <- StructStart __ identifier:Ident _ StructBlock _ {
+Struct <- _ StructStart __ identifier:Ident _ StructBlock _ {
 	decl := structStack[len(structStack)-1]
 	decl.Name = identifier.(string)
 
@@ -86,7 +86,7 @@ Struct <- StructStart __ identifier:Ident _ StructBlock _ {
 	return decl, nil
 }
 
-StructBlock <- '{' _ fields:Field+ _ '}' {
+StructBlock <- _ '{' _ fields:Field+ _ '}' _ {
 	fieldsSl := make([]*ast.Field, 0)
 	fieldsIfSl := toIfaceSlice(fields)
 	for _, fieldIfSl := range fieldsIfSl {
@@ -108,13 +108,19 @@ Field <- _ identifier:Ident __ typ:Type ( _ / EOL ) {
 	return field, nil
 }
 
-Type <- StringType / IntegerTypeNoFlags / IntegerTypeAndFlags / TypeRef
+Type <- StringType / IntegerTypeNoFlags / IntegerTypeAndFlags / ArrayType / TypeRef
 
-StringType <- "string" '[' size:Number ']' {
+StringType <- _ "string" _ '[' _ length:LengthSpec _ ']' _ {
 	return &ast.StringType{
+		Length: length.(ast.LengthSpec),
+	}, nil
+}
+
+LengthSpec <- size:Number {
+	return &ast.FixedLength{
 		Length: size.(int),
 	}, nil
-} / "string" '[' fieldref:Ident ']' {
+} / fieldref:Ident {
 	field := lookupLocalField(fieldref.(string))
 	if field == nil {
 		return nil, fmt.Errorf("%v: %v", ast.ErrNoSuchField, fieldref)
@@ -126,16 +132,16 @@ StringType <- "string" '[' size:Number ']' {
 		return nil, fmt.Errorf("%v: %v", ast.ErrFieldNotInteger, fieldref)
 	}
 
-	return &ast.VariableStringType{
+	return &ast.ReferenceLength{
 		Field: field,
 	}, nil
 }
 
-IntegerTypeNoFlags <- baseType:IntegerType !(_ '(') {
+IntegerTypeNoFlags <- _ baseType:IntegerType !(_ '(') {
 	return baseType, nil
 }
 
-IntegerTypeAndFlags <- baseType:IntegerType '(' flags:(IntegerFlag (',' _)?)+ ')' {
+IntegerTypeAndFlags <- _ baseType:IntegerType '(' _ flags:(IntegerFlag (',' _)?)+ _ ')' {
 	iType := baseType.(*ast.IntegerType)
 	hasFlag := func(flags interface{}, flag string) bool {
 		for _, f_ := range toIfaceSlice(flags) {
@@ -165,7 +171,7 @@ IntegerTypeAndFlags <- baseType:IntegerType '(' flags:(IntegerFlag (',' _)?)+ ')
     return iType, nil
 }
 
-IntegerType <- unsigned:'u'? "int" bitsize:Number {
+IntegerType <- _ unsigned:'u'? "int" bitsize:Number _ {
 	signed := true
 	if unsigned != nil {
 		signed = false
@@ -181,12 +187,25 @@ IntegerFlag <- "negate" / "inv128" / "ofs128" / "endian(little)" / "endian(pdp)"
     return string(c.text), nil
 }
 
-TypeRef <- name:Ident {
+ArrayType <- _ typ:TypeRef _ '[' _ length:LengthSpec _ ']' {
+	return &ast.ArrayType{
+		Object: typ.(ast.Type),
+		Length: length.(ast.LengthSpec),
+	}, nil
+}
+
+TypeRef <- _ name:Ident _ {
 	if typ, ok := currentFile.Types[name.(string)]; !ok {
 		return "", fmt.Errorf("%v: %v", ast.ErrNoSuchType, name.(string))
 	} else {
 		return typ, nil
 	}
+}
+
+FrameSize <- _ "var8" _ {
+    return ast.SzVar8, nil
+} / _ "var16" _ {
+    return ast.SzVar16, nil
 }
 
 Ident <- [a-zA-Z0-9_]+ {
@@ -200,12 +219,6 @@ Number <- [0-9]+ {
 Value <- [a-zA-Z0-9]+ {
     return string(c.text), nil
 } / Ident
-
-FrameSize <- "var8" {
-    return ast.SzVar8, nil
-} / "var16" {
-    return ast.SzVar16, nil
-}
 
 SourceChar <- .
 Comment <- MultiLineComment / SingleLineComment

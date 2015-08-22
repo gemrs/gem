@@ -1,12 +1,12 @@
 package ast
 
 type File struct {
-	Types map[string]Type
+	Types  map[string]Type
 	Frames map[string]*Frame
 }
 
 type Struct struct {
-	Name string
+	Name   string
 	Fields []*Field
 }
 
@@ -42,8 +42,8 @@ const (
 )
 
 type Frame struct {
-	Name string
+	Name   string
 	Number int
-	Size FrameSize
+	Size   FrameSize
 	Object Type
 }

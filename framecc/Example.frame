@@ -3,14 +3,13 @@ struct ChatMessage1 {
     Message string[256]
 }
 
-frame ChatMessage1(100) ChatMessage1
-
 /* Variable length (8 bit encoded) frame */
 struct ChatMessage2 {
     Length  int16(endian(little), ofs128)
     Message string[Length]
 }
 
+frame ChatMessage1(100) ChatMessage1
 frame ChatMessage2(101, var8) ChatMessage2
 frame ChatMessage3(102, var16) ChatMessage2
 
@@ -36,7 +35,7 @@ struct OtherPlayer {
 struct PlayerUpdate {
     UpdateFlag  uint8
     OthersCount uint8
-    Others      OtherPlayer // [OthersCount]
+    Others      OtherPlayer[OthersCount]
     Appearance  AppearanceBlock
     Position    PositionBlock
 }
