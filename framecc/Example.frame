@@ -1,43 +1,45 @@
 /* Fixed length frame */
-struct ChatMessage1 {
+ChatMessage frame<100, Fixed> struct {
     Message string[256]
 }
 
 /* Variable length (8 bit encoded) frame */
-struct ChatMessage2 {
-    Length  int16(endian(little), ofs128)
+VariableChatMessage struct {
+    Length  int16<LittleEndian, Offset128>
     Message string[Length]
 }
 
-frame ChatMessage1(100) ChatMessage1
-frame ChatMessage2(101, var8) ChatMessage2
-frame ChatMessage3(102, var16) ChatMessage2
+ChatMessage1 frame<101, Var8>  VariableChatMessage
+ChatMessage2 frame<102, Var16> VariableChatMessage
 
 /* Embedding structures */
-struct AppearanceBlock {
+AppearanceBlock struct {
     Legs   uint8
     Body   uint8
     Helmet uint8
 }
 
-struct PositionBlock {
+PositionBlock struct {
     X uint16
     Y uint16
     Z uint16
 }
 
-struct OtherPlayer {
+OtherPlayer struct {
     Name       string[32]
     Appearance AppearanceBlock
     Position   PositionBlock
 }
 
-struct PlayerUpdate {
+PlayerUpdate frame<200, Var16> struct {
+	Magic       uint8 // = 0x2
     UpdateFlag  uint8
     OthersCount uint8
     Others      OtherPlayer[OthersCount]
     Appearance  AppearanceBlock
     Position    PositionBlock
+    Skills      struct {
+        Overall int16
+        Skills  int8[20]
+    }
 }
-
-frame PlayerUpdate(200, var16) PlayerUpdate
