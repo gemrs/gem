@@ -3,7 +3,7 @@ all: install
 fmt:
 	go fmt ./...
 
-generate: get gopygen
+generate: gopygen
 	go generate ./...
 
 get:
