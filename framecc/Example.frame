@@ -1,6 +1,6 @@
 /* Fixed length frame */
 ChatMessage frame<100, Var8> struct {
-    Message string // reads until terminator
+    Message string
 }
 
 /* Variable length (8 bit encoded) frame */
@@ -14,15 +14,15 @@ ChatMessage2 frame<102, Var16> VariableChatMessage
 
 /* Embedding structures */
 AppearanceBlock struct {
-    Legs   uint8
-    Body   uint8
-    Helmet uint8
+    Legs   int8
+    Body   int8
+    Helmet int8
 }
 
 PositionBlock struct {
-    X uint16
-    Y uint16
-    Z uint16
+    X int16
+    Y int16
+    Z int16
 }
 
 OtherPlayer struct {
@@ -32,9 +32,9 @@ OtherPlayer struct {
 }
 
 PlayerUpdate frame<200, Var16> struct {
-	Magic       uint8 // = 0x2
-    UpdateFlag  uint8
-    OthersCount uint8
+	Magic       int8
+    UpdateFlag  int8
+    OthersCount int8
     Others      OtherPlayer[OthersCount]
     Appearance  AppearanceBlock
     Position    PositionBlock
