@@ -1,6 +1,6 @@
 /* Fixed length frame */
-ChatMessage frame<100, Fixed> struct {
-    Message string[256]
+ChatMessage frame<100, Var8> struct {
+    Message string // reads until terminator
 }
 
 /* Variable length (8 bit encoded) frame */
