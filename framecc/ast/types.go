@@ -18,7 +18,7 @@ type Lengthable interface {
 	ByteLength() (int, error)
 }
 
-type Type interface {
+type Node interface {
 	// If the byte length is variable, error
 	Lengthable
 	Identifiable
@@ -30,42 +30,61 @@ type LengthSpec interface {
 	ConstantExpr() (bool, error)
 }
 
-type FixedLength struct {
+type StaticLength struct {
 	Length int
 }
 
-func (f *FixedLength) ConstantExpr() (bool, error) {
+func (f *StaticLength) ConstantExpr() (bool, error) {
 	return true, nil
 }
 
-func (f *FixedLength) ByteLength() (int, error) {
+func (f *StaticLength) ByteLength() (int, error) {
 	return f.Length, nil
 }
 
-/* A length spec which is determined at runtime by evaluating an integer field */
-type ReferenceLength struct {
-	Field *Field
+/* A reference to a type declaration to be resolved post-parse */
+type DeclReference struct {
+	DeclName string
 }
 
-func (r *ReferenceLength) ConstantExpr() (bool, error) {
+func (r *DeclReference) Identifier() string {
+	return fmt.Sprintf("<unresolved reference %v>", r.DeclName)
+}
+
+func (r *DeclReference) ConstantExpr() (bool, error) {
 	return false, nil
 }
 
-func (r *ReferenceLength) ByteLength() (int, error) {
+func (r *DeclReference) ByteLength() (int, error) {
+	return 0, ErrVariableType
+}
+
+/* A length spec which is determined at runtime by evaluating an integer field */
+type DynamicLength struct {
+	Field Node
+}
+
+func (r *DynamicLength) Identifier() string {
+	return "dynamic length"
+}
+
+func (r *DynamicLength) ConstantExpr() (bool, error) {
+	return false, nil
+}
+
+func (r *DynamicLength) ByteLength() (int, error) {
 	return 0, ErrVariableType
 }
 
 // A Fixed length string (eg. string[256])
-type StringType struct {
-	Length LengthSpec
-}
+type StringBaseType struct {}
 
-func (s *StringType) Identifier() string {
+func (s *StringBaseType) Identifier() string {
 	return "string"
 }
 
-func (s *StringType) ByteLength() (int, error) {
-	return s.Length.ByteLength()
+func (s *StringBaseType) ByteLength() (int, error) {
+	return 1, nil
 }
 
 type IntegerFlag int
@@ -85,6 +104,10 @@ type IntegerType struct {
 	Modifiers IntegerFlag
 }
 
+func (i *IntegerType) Set(flag IntegerFlag) {
+	i.Modifiers = i.Modifiers | flag
+}
+
 func (s *IntegerType) Identifier() string {
 	var buf bytes.Buffer
 	if s.Signed {
@@ -96,11 +119,11 @@ func (s *IntegerType) Identifier() string {
 }
 
 func (s *IntegerType) ByteLength() (int, error) {
-	return 0, ErrVariableType
+	return (s.Bitsize / 8), ErrVariableType
 }
 
 type ArrayType struct {
-	Object Type
+	Object Node
 	Length LengthSpec
 }
 

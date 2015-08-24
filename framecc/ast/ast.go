@@ -1,8 +1,15 @@
 package ast
 
 type File struct {
-	Types  map[string]Type
-	Frames map[string]*Frame
+	Name string
+	Decls  map[string]Node
+}
+
+func NewFile(filename string) *File {
+	return &File{
+		Name: filename,
+		Decls: make(map[string]Node),
+	}
 }
 
 type Struct struct {
@@ -30,10 +37,18 @@ func (s Struct) ByteLength() (int, error) {
 
 type Field struct {
 	Name string
-	Type Type
+	Type Node
 }
 
 type FrameSize int
+
+func (f Field) Identifier() string {
+	return f.Name
+}
+
+func (f Field) ByteLength() (int, error) {
+	return f.Type.ByteLength()
+}
 
 const (
 	SzFixed FrameSize = iota
@@ -45,5 +60,13 @@ type Frame struct {
 	Name   string
 	Number int
 	Size   FrameSize
-	Object Type
+	Object Node
+}
+
+func (s Frame) Identifier() string {
+	return s.Name
+}
+
+func (s Frame) ByteLength() (int, error) {
+	return s.Object.ByteLength()
 }

@@ -7,12 +7,27 @@ import (
 	"unicode/utf8"
 )
 
+// line represents the bounds of a line within the input
+type line struct {
+	start Pos
+	end Pos
+}
+
 // Pos represents a byte position in the original input text from which
 // this frame was parsed.
 type Pos int
 
 func (p Pos) Position() Pos {
 	return p
+}
+
+func (p Pos) Line(ctx *parseContext) int {
+	for i, line := range ctx.lineMap {
+		if p > line.start && p < line.end {
+			return i+1
+		}
+	}
+	return -1
 }
 
 // item represents a token or text string returned from the scanner.
@@ -28,8 +43,8 @@ type itemType int
 //go:generate stringer -type=itemType
 
 const (
-	itemError itemType = iota
-	itemEOF
+	itemEOF itemType = iota
+	itemError
 	itemEOL
 	itemWhiteSpace
 	itemLeftBrack
