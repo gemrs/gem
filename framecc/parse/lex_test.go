@@ -11,6 +11,44 @@ type lexTestCase struct {
 
 var lexTestCases = []lexTestCase{
 	lexTestCase{
+		input: `ChatMessage frame<100, Var8> /% struct`,
+		items: []item{
+			item{itemIdentifier, "ChatMessage", 0},
+			item{itemWhiteSpace, " ", 0},
+			item{itemFrame, "frame", 0},
+			item{itemLeftAngleBrack, "<", 0},
+			item{itemNumber, "100", 0},
+			item{itemComma, ",", 0},
+			item{itemWhiteSpace, " ", 0},
+			item{itemLenSpec, "Var8", 0},
+			item{itemRightAngleBrack, ">", 0},
+			item{itemWhiteSpace, " ", 0},
+			item{itemError, "unexpected character in comment marker", 0},
+			item{itemEOF, "", 0},
+		},
+	},
+
+	lexTestCase{
+		input: `ChatMessage frame<100, Var8> // struct
+`,
+		items: []item{
+			item{itemIdentifier, "ChatMessage", 0},
+			item{itemWhiteSpace, " ", 0},
+			item{itemFrame, "frame", 0},
+			item{itemLeftAngleBrack, "<", 0},
+			item{itemNumber, "100", 0},
+			item{itemComma, ",", 0},
+			item{itemWhiteSpace, " ", 0},
+			item{itemLenSpec, "Var8", 0},
+			item{itemRightAngleBrack, ">", 0},
+			item{itemWhiteSpace, " ", 0},
+			item{itemComment, "// struct", 0},
+			item{itemEOL, "", 0},
+			item{itemEOF, "", 0},
+		},
+	},
+
+	lexTestCase{
 		input: `ChatMessage frame<100, Var8> struct`,
 		items: []item{
 			item{itemIdentifier, "ChatMessage", 0},
@@ -125,7 +163,7 @@ VariableChatMessage struct {
 }`,
 		items: []item{
 			item{itemComment, "/* Variable length (8 bit encoded) frame */", 0},
-			item{itemWhiteSpace, "", 0},
+			item{itemEOL, "", 0},
 			item{itemIdentifier, "VariableChatMessage", 0},
 			item{itemWhiteSpace, "", 0},
 			item{itemStruct, "struct", 0},

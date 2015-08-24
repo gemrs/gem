@@ -8,7 +8,7 @@ import (
 )
 
 // Pos represents a byte position in the original input text from which
-// this template was parsed.
+// this frame was parsed.
 type Pos int
 
 func (p Pos) Position() Pos {
@@ -47,7 +47,7 @@ const (
 	itemFrame
 	itemStruct
 	itemStringType
-	itemIntType
+	itemIntType // int{8,16,32,64}
 	itemLenSpec // Fixed, Var8, or Var16
 	itemFlag    // LittleEndian, PDPEndian, RPDPEndian, Negate, Offset128, Inverse128
 )
@@ -256,12 +256,30 @@ func lexWhiteSpace(l *lexer) stateFn {
 
 // lexComment scans a comment. The left comment marker is known to be present.
 func lexComment(l *lexer) stateFn {
-	l.pos += Pos(len(leftComment))
-	i := strings.Index(l.input[l.pos:], rightComment)
-	if i < 0 {
-		return l.errorf("unclosed comment")
+	if !l.accept("/") {
+		panic("never reached")
 	}
-	l.pos += Pos(i + len(rightComment))
+	if l.accept("*") {
+		// Multi-line comment
+		i := strings.Index(l.input[l.pos:], rightComment)
+		if i < 0 {
+			return l.errorf("unclosed comment")
+		}
+		l.pos += Pos(i + len(rightComment))
+	} else if l.accept("/") {
+		// Single-line comment
+	Loop:
+		for {
+			switch r := l.peek(); {
+			case isEndOfLine(r) || isEndOfFile(r):
+				break Loop
+			default:
+				l.next()
+			}
+		}
+	} else {
+		return l.errorf("unexpected character in comment marker")
+	}
 	l.emit(itemComment)
 	return l.popState()
 }
@@ -279,7 +297,7 @@ Loop:
 		default:
 			l.backup()
 			word := l.input[l.start:l.pos]
-			if !isWhiteSpace(r) && !isBracket(r) && !isComma(r) && r != eof {
+			if !isWhiteSpace(r) && !isBracket(r) && !isComma(r) && !isEndOfFile(r) && !isEndOfLine(r) {
 				return l.errorf("bad character %#U", r)
 			}
 			switch {
@@ -303,7 +321,7 @@ Loop:
 			// absorb
 		default:
 			l.backup()
-			if !isWhiteSpace(r) && !isBracket(r) && !isComma(r) && r != eof {
+			if !isWhiteSpace(r) && !isBracket(r) && !isComma(r) && !isEndOfFile(r) && !isEndOfLine(r) {
 				return l.errorf("bad character %#U", r)
 			}
 			l.emit(itemNumber)
@@ -394,20 +412,17 @@ func isBracket(r rune) bool {
 		r == rightBracket || r == rightAngleBracket || r == rightSquareBracket
 }
 
+// isDigit reports whether r is a digit.
 func isDigit(r rune) bool {
 	return unicode.IsDigit(r)
 }
 
-// isWhiteSpace reports whether r is a whitespace (ignored) character
+// isWhiteSpace reports whether r is a whitespace character.
 func isWhiteSpace(r rune) bool {
-	return isSpace(r) || isEndOfLine(r)
-}
-
-// isSpace reports whether r is a space character.
-func isSpace(r rune) bool {
 	return r == ' ' || r == '\t'
 }
 
+// isEndOfFile reports whether r is a comma.
 func isComma(r rune) bool {
 	return r == ','
 }
@@ -415,6 +430,11 @@ func isComma(r rune) bool {
 // isEndOfLine reports whether r is an end-of-line character.
 func isEndOfLine(r rune) bool {
 	return r == '\r' || r == '\n'
+}
+
+// isEndOfFile reports whether r is an end-of-file character.
+func isEndOfFile(r rune) bool {
+	return r == eof
 }
 
 // isAlphaNumeric reports whether r is an alphabetic, digit, or underscore.
