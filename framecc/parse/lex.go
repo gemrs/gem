@@ -10,7 +10,7 @@ import (
 // line represents the bounds of a line within the input
 type line struct {
 	start Pos
-	end Pos
+	end   Pos
 }
 
 // Pos represents a byte position in the original input text from which
@@ -24,7 +24,7 @@ func (p Pos) Position() Pos {
 func (p Pos) Line(ctx *parseContext) int {
 	for i, line := range ctx.lineMap {
 		if p > line.start && p < line.end {
-			return i+1
+			return i + 1
 		}
 	}
 	return -1
@@ -39,8 +39,6 @@ type item struct {
 
 // itemType is a lexed token
 type itemType int
-
-//go:generate stringer -type=itemType
 
 const (
 	itemEOF itemType = iota
@@ -66,6 +64,34 @@ const (
 	itemLenSpec // Fixed, Var8, or Var16
 	itemFlag    // LittleEndian, PDPEndian, RPDPEndian, Negate, Offset128, Inverse128
 )
+
+var humanItemTypes = map[itemType]string{
+	itemEOF:              "end of file",
+	itemError:            "lex error",
+	itemEOL:              "end of line",
+	itemWhiteSpace:       "whitespace",
+	itemLeftBrack:        "'('",
+	itemRightBrack:       "')'",
+	itemLeftSquareBrack:  "'['",
+	itemRightSquareBrack: "']'",
+	itemLeftAngleBrack:   "'<'",
+	itemRightAngleBrack:  "'>'",
+	itemComma:            "','",
+	itemIdentifier:       "identifier",
+	itemNumber:           "number",
+	itemComment:          "comment",
+	itemKeyword:          "keyword",
+	itemFrame:            "'frame'",
+	itemStruct:           "'struct'",
+	itemStringType:       "string type",
+	itemIntType:          "integer type",
+	itemLenSpec:          "length spec",
+	itemFlag:             "integer flag",
+}
+
+func (typ itemType) String() string {
+	return humanItemTypes[typ]
+}
 
 var keywords = map[string]itemType{
 	"frame":        itemFrame,
@@ -371,6 +397,8 @@ func lexTypeArgs(l *lexer) stateFn {
 // lexStruct scans the content of a struct declaration
 func lexStruct(l *lexer) stateFn {
 	switch r := l.next(); {
+	case isEndOfFile(r):
+		return l.errorf("unclosed scope")
 	case isEndOfLine(r):
 		l.emit(itemEOL)
 		return lexStruct

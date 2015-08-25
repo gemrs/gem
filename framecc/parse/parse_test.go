@@ -1,15 +1,15 @@
 package parse
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 
 	"github.com/sinusoids/gem/framecc/ast"
 )
 
 type parseTestCase struct {
 	input string
-	ast *ast.File
+	ast   *ast.File
 }
 
 var parseTestCases = []parseTestCase{

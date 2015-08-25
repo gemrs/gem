@@ -131,7 +131,10 @@ func (c *parseContext) doResolveDecls(n ast.Node) {
 	case *ast.StringBaseType:
 	case *ast.StaticLength:
 	default:
-		panic(fmt.Sprintf("couldn't do anything with %T\n", n))
+		if n != nil {
+			// nil can occur due to lex/parse errors.
+			panic(fmt.Sprintf("couldn't do anything with %T\n", n))
+		}
 	}
 }
 
@@ -201,7 +204,7 @@ func (c *parseContext) accept(typ itemType, ignoreSpace bool) (item, error) {
 		return c.next(), nil
 	}
 	item := c.peek()
-	return item, fmt.Errorf("expected %v, got '%v'", typ, item.val)
+	return item, fmt.Errorf("expected %v, found '%v'", typ, item.val)
 }
 
 func (c *parseContext) error(item item, err error) {
@@ -276,7 +279,7 @@ func (c *parseContext) parseDecl() ast.Node {
 		node = c.parseStructDecl(identifier)
 	default:
 		item := c.next()
-		c.errorf(item, "expected frame or struct, got '%v'", item.val)
+		c.errorf(item, "expected frame or struct, found '%v'", item.val)
 		return nil
 	}
 
@@ -331,7 +334,7 @@ func (c *parseContext) parseType() ast.Node {
 		}
 	default:
 		item := c.next()
-		c.errorf(item, "expected type, got '%v'", item.val)
+		c.errorf(item, "expected type, found '%v'", item.val)
 		return nil
 	}
 

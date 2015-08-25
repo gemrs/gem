@@ -49,8 +49,8 @@ func (f *StaticLength) ByteLength() (int, error) {
 /* A reference to a type declaration to be resolved post-parse */
 type DeclReference struct {
 	DeclName string
-	Object Node
-	Meta interface{}
+	Object   Node
+	Meta     interface{}
 }
 
 func (r *DeclReference) Identifier() string {
@@ -85,7 +85,7 @@ func (r *DynamicLength) ByteLength() (int, error) {
 }
 
 // A Fixed length string (eg. string[256])
-type StringBaseType struct {}
+type StringBaseType struct{}
 
 func (s *StringBaseType) Identifier() string {
 	return "string"
