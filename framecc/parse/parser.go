@@ -9,6 +9,12 @@ import (
 	"github.com/sinusoids/gem/framecc/ast"
 )
 
+var frameSizes = map[string]ast.FrameSize{
+	"Fixed": ast.SzFixed,
+	"Var8":  ast.SzVar8,
+	"Var16": ast.SzVar16,
+}
+
 var intSizes = map[string]int{
 	"int8":  8,
 	"int16": 16,
@@ -55,10 +61,28 @@ func Parse(filename string, input string) (*ast.File, errorList) {
 	return context.root, context.errors
 }
 
+// mapNewLines creates a mapping of byte indices to line numbers. used for error messages
+func mapNewLines(s string) []line {
+	linemap := make([]line, 0)
+	accum := 0
+	for {
+		index := strings.Index(s, "\n")
+		if index == -1 {
+			break
+		}
+		linemap = append(linemap, line{Pos(accum), Pos(accum + index)})
+		s = s[index+1:]
+		accum = accum + index
+	}
+	return linemap
+}
+
+// scopeDepth returns the depth of the current scope
 func (c *parseContext) scopeDepth() int {
 	return len(c.scopeStack)
 }
 
+// currentScope returns the scope we're currently parsing within
 func (c *parseContext) currentScope() *ast.Scope {
 	if c.scopeDepth() == 0 {
 		return nil
@@ -66,10 +90,12 @@ func (c *parseContext) currentScope() *ast.Scope {
 	return c.scopeStack[len(c.scopeStack)-1]
 }
 
+// pushScope enters a new scope by pushing to the scope stack
 func (c *parseContext) pushScope(s *ast.Scope) {
 	c.scopeStack = append(c.scopeStack, s)
 }
 
+// popScope returns from a scope by popping from the scope stack
 func (c *parseContext) popScope() *ast.Scope {
 	scope := c.currentScope()
 	if scope != nil {
@@ -101,6 +127,7 @@ func (c *parseContext) resolveDecl(name string) ast.Node {
 	return node
 }
 
+// doResolveDecls walks the Ast, attempting to resolve any unresolved type references
 func (c *parseContext) doResolveDecls(n ast.Node) {
 	switch n := n.(type) {
 	case *ast.Scope:
@@ -138,21 +165,8 @@ func (c *parseContext) doResolveDecls(n ast.Node) {
 	}
 }
 
-func mapNewLines(s string) []line {
-	linemap := make([]line, 0)
-	accum := 0
-	for {
-		index := strings.Index(s, "\n")
-		if index == -1 {
-			break
-		}
-		linemap = append(linemap, line{Pos(accum), Pos(accum + index)})
-		s = s[index+1:]
-		accum = accum + index
-	}
-	return linemap
-}
-
+// peek returns the next item in the buffer without incrementing the position
+// peek will fill the buffer from the lex channel if we're out of items
 func (c *parseContext) peek() item {
 	for c.position >= len(c.itemBuffer) {
 		item := <-c.items
@@ -162,16 +176,20 @@ func (c *parseContext) peek() item {
 	return c.itemBuffer[c.position]
 }
 
+// next returns the next item from the buffer and increases the position
 func (c *parseContext) next() item {
 	item := c.peek()
 	c.position = c.position + 1
 	return item
 }
 
+// prev returns the last item we passed without modifying the position
 func (c *parseContext) prev() item {
 	return c.itemBuffer[c.position-1]
 }
 
+// has determines if the next token matches one of the given itemTypes
+// position is not modified
 func (c *parseContext) has(types ...itemType) bool {
 	item := c.peek()
 	for _, typ := range types {
@@ -195,6 +213,7 @@ func (c *parseContext) expect(typ itemType, ignoreSpace bool) bool {
 	return false
 }
 
+// accept returns the next token if it matches the given type, optionally consuming any preceding whitespace
 func (c *parseContext) accept(typ itemType, ignoreSpace bool) (item, error) {
 	if ignoreSpace {
 		c.consumeWhitespace()
@@ -207,6 +226,7 @@ func (c *parseContext) accept(typ itemType, ignoreSpace bool) (item, error) {
 	return item, fmt.Errorf("expected %v, found '%v'", typ, item.val)
 }
 
+// error generates a parse error at the given item
 func (c *parseContext) error(item item, err error) {
 	e := parseError{
 		item:  item,
@@ -215,6 +235,7 @@ func (c *parseContext) error(item item, err error) {
 	c.errors = append(c.errors, e)
 }
 
+// errorf formats and generates a parse error at the given item
 func (c *parseContext) errorf(item item, format string, args ...interface{}) {
 	c.error(item, fmt.Errorf(format, args...))
 }
@@ -239,6 +260,7 @@ Outer:
 	return found
 }
 
+// doParse is the main parsing routine
 func (c *parseContext) doParse() {
 	c.pushScope(c.root.Scope)
 	defer c.popScope()
@@ -412,12 +434,7 @@ func (c *parseContext) parseIntType() ast.Node {
 	return intType
 }
 
-var frameSizes = map[string]ast.FrameSize{
-	"Fixed": ast.SzFixed,
-	"Var8":  ast.SzVar8,
-	"Var16": ast.SzVar16,
-}
-
+// parseStructDecl parses a structure, assuming we're currently at the 'struct' item
 func (c *parseContext) parseStructDecl(identifier string) ast.Node {
 	if _, err := c.accept(itemStruct, true); err != nil {
 		panic("never reached")
@@ -449,7 +466,7 @@ func (c *parseContext) parseStructDecl(identifier string) ast.Node {
 	return structNode
 }
 
-// parseFrameDecl parses frame declarations
+// parseFrameDecl parses frame declarations, assuming we're currently at the 'frame' item
 func (c *parseContext) parseFrameDecl(identifier string) ast.Node {
 	if _, err := c.accept(itemFrame, true); err != nil {
 		panic("never reached")
@@ -495,6 +512,7 @@ func (c *parseContext) parseNumber(item item) int {
 	return value
 }
 
+// parseError ties an error message to a given item
 type parseError struct {
 	item  item
 	error error
