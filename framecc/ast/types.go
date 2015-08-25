@@ -26,12 +26,16 @@ type Node interface {
 
 /* Standard Types */
 type LengthSpec interface {
-	Lengthable
+	Node
 	ConstantExpr() (bool, error)
 }
 
 type StaticLength struct {
 	Length int
+}
+
+func (f *StaticLength) Identifier() string {
+	return "static length"
 }
 
 func (f *StaticLength) ConstantExpr() (bool, error) {
@@ -45,18 +49,22 @@ func (f *StaticLength) ByteLength() (int, error) {
 /* A reference to a type declaration to be resolved post-parse */
 type DeclReference struct {
 	DeclName string
+	Object Node
+	Meta interface{}
 }
 
 func (r *DeclReference) Identifier() string {
-	return fmt.Sprintf("<unresolved reference %v>", r.DeclName)
-}
-
-func (r *DeclReference) ConstantExpr() (bool, error) {
-	return false, nil
+	if r.Object == nil {
+		return fmt.Sprintf("<unresolved reference %v>", r.DeclName)
+	}
+	return r.Object.Identifier()
 }
 
 func (r *DeclReference) ByteLength() (int, error) {
-	return 0, ErrVariableType
+	if r.Object == nil {
+		return 0, ErrVariableType
+	}
+	return r.Object.ByteLength()
 }
 
 /* A length spec which is determined at runtime by evaluating an integer field */

@@ -22,17 +22,20 @@ VariableChatMessage struct {
 		ast: nil,
 	},
 	parseTestCase{
-		input: `PlayerUpdate frame<200, Var16> struct {
+		input: `
+PlayerUpdate frame<200, Var16> struct {
 	Magic       int8
     UpdateFlag  int8
     OthersCount int8
     Others      OtherPlayer[OthersCount]
-    Appearance  AppearanceBlock
-    Position    PositionBlock
     Skills      struct {
         Overall int16
         Skills  int8[20]
     }
+}
+
+OtherPlayer struct {
+	Name string[16]
 }`,
 		ast: nil,
 	},

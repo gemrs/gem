@@ -1,30 +1,37 @@
 package ast
 
 type File struct {
-	Name string
-	Decls  map[string]Node
+	Name  string
+	Scope *Scope
 }
 
 func NewFile(filename string) *File {
 	return &File{
-		Name: filename,
-		Decls: make(map[string]Node),
+		Name:  filename,
+		Scope: NewScope(),
 	}
 }
 
-type Struct struct {
-	Name   string
-	Fields []*Field
+type Scope struct {
+	S []Node
 }
 
-func (s Struct) Identifier() string {
-	return s.Name
+func NewScope() *Scope {
+	return &Scope{make([]Node, 0)}
 }
 
-func (s Struct) ByteLength() (int, error) {
+func (s *Scope) Add(decl Node) {
+	s.S = append(s.S, decl)
+}
+
+func (s *Scope) Identifier() string {
+	return "scope"
+}
+
+func (s *Scope) ByteLength() (int, error) {
 	accum := 0
-	for _, f := range s.Fields {
-		len, err := f.Type.ByteLength()
+	for _, f := range s.S {
+		len, err := f.ByteLength()
 		if err != nil {
 			return 0, err
 		}
@@ -33,6 +40,26 @@ func (s Struct) ByteLength() (int, error) {
 	}
 
 	return accum, nil
+}
+
+type Struct struct {
+	Name  string
+	Scope *Scope
+}
+
+func NewStruct(name string) *Struct {
+	return &Struct{
+		Name:  name,
+		Scope: NewScope(),
+	}
+}
+
+func (s Struct) Identifier() string {
+	return s.Name
+}
+
+func (s Struct) ByteLength() (int, error) {
+	return s.Scope.ByteLength()
 }
 
 type Field struct {

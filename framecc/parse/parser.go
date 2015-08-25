@@ -9,19 +9,20 @@ import (
 	"github.com/sinusoids/gem/framecc/ast"
 )
 
-type parseError struct {
-	item  item
-	error error
+var intSizes = map[string]int{
+	"int8":  8,
+	"int16": 16,
+	"int32": 32,
+	"int64": 64,
 }
 
-type errorList []parseError
-
-func (errors errorList) String() string {
-	var buf bytes.Buffer
-	for _, err := range errors {
-		buf.WriteString(fmt.Sprintf("%v\n", err.error))
-	}
-	return buf.String()
+var intFlags = map[string]ast.IntegerFlag{
+	"LittleEndian": ast.IntLittleEndian,
+	"PDPEndian":    ast.IntPDPEndian,
+	"RPDPEndian":   ast.IntRPDPEndian,
+	"Negate":       ast.IntNegate,
+	"Offset128":    ast.IntOfs128,
+	"Inverse128":   ast.IntInv128,
 }
 
 type parseContext struct {
@@ -31,6 +32,7 @@ type parseContext struct {
 	items      chan item
 	position   int
 	lineMap    []line
+	scopeStack []*ast.Scope
 }
 
 func Parse(filename string, input string) (*ast.File, errorList) {
@@ -41,11 +43,96 @@ func Parse(filename string, input string) (*ast.File, errorList) {
 		itemBuffer: make([]item, 0),
 		items:      lexer.items,
 		lineMap:    mapNewLines(input),
+		scopeStack: make([]*ast.Scope, 0),
 	}
 
 	context.doParse()
 
+	// recreate the stack incase the parse left us with open scopes..
+	context.scopeStack = make([]*ast.Scope, 0)
+	context.doResolveDecls(context.root.Scope)
+
 	return context.root, context.errors
+}
+
+func (c *parseContext) scopeDepth() int {
+	return len(c.scopeStack)
+}
+
+func (c *parseContext) currentScope() *ast.Scope {
+	if c.scopeDepth() == 0 {
+		return nil
+	}
+	return c.scopeStack[len(c.scopeStack)-1]
+}
+
+func (c *parseContext) pushScope(s *ast.Scope) {
+	c.scopeStack = append(c.scopeStack, s)
+}
+
+func (c *parseContext) popScope() *ast.Scope {
+	scope := c.currentScope()
+	if scope != nil {
+		c.scopeStack = c.scopeStack[:len(c.scopeStack)-1]
+	}
+	return scope
+}
+
+// resolveDecl resolves a name to a node in the enclosing scopes
+func (c *parseContext) resolveDecl(name string) ast.Node {
+	scope := c.popScope()
+	defer c.pushScope(scope)
+
+	var node ast.Node
+	if scope != nil {
+		for _, decl := range scope.S {
+			if decl.Identifier() == name {
+				node = decl
+				break
+			}
+		}
+		if node == nil {
+			// Not in this scope.. Go up
+			node = c.resolveDecl(name)
+		}
+	} else {
+		// We've recursed up to the top!
+	}
+	return node
+}
+
+func (c *parseContext) doResolveDecls(n ast.Node) {
+	switch n := n.(type) {
+	case *ast.Scope:
+		c.pushScope(n)
+		for _, decl := range n.S {
+			c.doResolveDecls(decl)
+		}
+		c.popScope()
+	case *ast.DeclReference:
+		name := n.DeclName
+		if node := c.resolveDecl(name); node != nil {
+			n.Object = node
+		} else {
+			c.errorf(n.Meta.(item), "unresolved reference to type '%v'", n.DeclName)
+		}
+	case *ast.Struct:
+		c.doResolveDecls(n.Scope)
+	case *ast.DynamicLength:
+		c.doResolveDecls(n.Field)
+	case *ast.ArrayType:
+		c.doResolveDecls(n.Object)
+		c.doResolveDecls(n.Length)
+	case *ast.Field:
+		c.doResolveDecls(n.Type)
+	case *ast.Frame:
+		c.doResolveDecls(n.Object)
+	case *ast.IntegerType:
+	case *ast.StringBaseType:
+	case *ast.StaticLength:
+	default:
+		panic(fmt.Sprintf("couldn't do anything with %T\n", n))
+	}
 }
 
 func mapNewLines(s string) []line {
@@ -95,7 +182,7 @@ func (c *parseContext) has(types ...itemType) bool {
 // expect consumes a token if it matches the given type. returns true if the token existed
 func (c *parseContext) expect(typ itemType, ignoreSpace bool) bool {
 	if ignoreSpace {
-		c.consumeWhitespace()
+		c.consumeWhitespace(typ)
 	}
 
 	if c.has(typ) {
@@ -117,10 +204,6 @@ func (c *parseContext) accept(typ itemType, ignoreSpace bool) (item, error) {
 	return item, fmt.Errorf("expected %v, got '%v'", typ, item.val)
 }
 
-func (c *parseContext) newDecl(decl ast.Node) {
-	c.root.Decls[decl.Identifier()] = decl
-}
-
 func (c *parseContext) error(item item, err error) {
 	e := parseError{
 		item:  item,
@@ -134,9 +217,19 @@ func (c *parseContext) errorf(item item, format string, args ...interface{}) {
 }
 
 // consumeWhitespace swallows consecutive whitespace. returns true if any whitespace was found
-func (c *parseContext) consumeWhitespace() bool {
+func (c *parseContext) consumeWhitespace(except ...itemType) bool {
 	found := false
-	for c.has(itemWhiteSpace, itemEOL, itemComment) {
+	ignore := []itemType{}
+Outer:
+	for _, typ := range []itemType{itemWhiteSpace, itemEOL, itemComment} {
+		for _, exc := range except {
+			if typ == exc {
+				continue Outer
+			}
+		}
+		ignore = append(ignore, typ)
+	}
+	for c.has(ignore...) {
 		c.next()
 		found = true
 	}
@@ -144,13 +237,16 @@ func (c *parseContext) consumeWhitespace() bool {
 }
 
 func (c *parseContext) doParse() {
+	c.pushScope(c.root.Scope)
+	defer c.popScope()
+
 	for !c.has(itemEOF) {
 		c.consumeWhitespace()
 		switch {
 		case c.has(itemIdentifier):
 			decl := c.parseDecl()
 			if decl != nil {
-				c.newDecl(decl)
+				c.currentScope().Add(decl)
 			}
 		default:
 			item := c.next()
@@ -181,6 +277,7 @@ func (c *parseContext) parseDecl() ast.Node {
 	default:
 		item := c.next()
 		c.errorf(item, "expected frame or struct, got '%v'", item.val)
+		return nil
 	}
 
 	// Declarations must be followed by EOL
@@ -227,7 +324,11 @@ func (c *parseContext) parseType() ast.Node {
 	case c.has(itemIntType):
 		typ = c.parseIntType()
 	case c.has(itemIdentifier):
-		typ = &ast.DeclReference{c.next().val}
+		item := c.next()
+		typ = &ast.DeclReference{
+			DeclName: item.val,
+			Meta:     item,
+		}
 	default:
 		item := c.next()
 		c.errorf(item, "expected type, got '%v'", item.val)
@@ -239,6 +340,7 @@ func (c *parseContext) parseType() ast.Node {
 	} else if requireArraySpec {
 		c.errorf(c.peek(), "expected array expression on type")
 	}
+
 	return typ
 }
 
@@ -257,7 +359,7 @@ func (c *parseContext) parseArrayType(base ast.Node) ast.Node {
 		array.Length = &ast.StaticLength{count}
 	case c.has(itemIdentifier):
 		item := c.next()
-		declRef := &ast.DeclReference{item.val}
+		declRef := &ast.DeclReference{DeclName: item.val, Meta: item}
 		array.Length = &ast.DynamicLength{declRef}
 	default:
 		c.errorf(c.next(), "unknown array size expression")
@@ -269,22 +371,6 @@ func (c *parseContext) parseArrayType(base ast.Node) ast.Node {
 	}
 
 	return array
-}
-
-var intSizes = map[string]int{
-	"int8":  8,
-	"int16": 16,
-	"int32": 32,
-	"int64": 64,
-}
-
-var intFlags = map[string]ast.IntegerFlag{
-	"LittleEndian": ast.IntLittleEndian,
-	"PDPEndian":    ast.IntPDPEndian,
-	"RPDPEndian":   ast.IntRPDPEndian,
-	"Negate":       ast.IntNegate,
-	"Offset128":    ast.IntOfs128,
-	"Inverse128":   ast.IntInv128,
 }
 
 // parseIntType parses int{8,16,32,64}<flags>
@@ -334,10 +420,9 @@ func (c *parseContext) parseStructDecl(identifier string) ast.Node {
 		panic("never reached")
 	}
 
-	structNode := &ast.Struct{
-		Name:   identifier,
-		Fields: make([]*ast.Field, 0),
-	}
+	structNode := ast.NewStruct(identifier)
+	c.pushScope(structNode.Scope)
+	defer c.popScope()
 
 	if item, err := c.accept(itemLeftBrack, true); err != nil {
 		c.errorf(item, "expected struct scope")
@@ -355,7 +440,7 @@ func (c *parseContext) parseStructDecl(identifier string) ast.Node {
 		}
 
 		field := c.parseField()
-		structNode.Fields = append(structNode.Fields, field.(*ast.Field))
+		c.currentScope().Add(field)
 	}
 
 	return structNode
@@ -405,4 +490,19 @@ func (c *parseContext) parseNumber(item item) int {
 		c.error(item, err)
 	}
 	return value
+}
+
+type parseError struct {
+	item  item
+	error error
+}
+
+type errorList []parseError
+
+func (errors errorList) String() string {
+	var buf bytes.Buffer
+	for _, err := range errors {
+		buf.WriteString(fmt.Sprintf("%v\n", err.error))
+	}
+	return buf.String()
 }
