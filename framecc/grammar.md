@@ -6,7 +6,7 @@ Type <- ArrayType / BaseType
 ArrayType <- BaseType '[' Expr ']'
 BaseType <- IntegerType / StringType / StructType / FrameType / Reference
 StructType <- 'struct' '{' Declaration+ '}'
-IntegerType <- 'u'? !_ 'int' !_ ('8' / '16' / '32' / '64') Flags?
+IntegerType <- !_ 'int' !_ ('8' / '16' / '32' / '64') Flags?
 FrameType <- 'frame' Flags Type
 StringType <- 'string' '[' Expr ']'
 Reference <- Identifier

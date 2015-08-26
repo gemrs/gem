@@ -12,6 +12,7 @@ type parseTestCase struct {
 	ast   *ast.File
 }
 
+//TODO: Proper test cases
 var parseTestCases = []parseTestCase{
 	parseTestCase{
 		input: `/* Variable length (8 bit encoded) frame */
