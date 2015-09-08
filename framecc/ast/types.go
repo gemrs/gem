@@ -3,6 +3,7 @@ package ast
 import (
 	"bytes"
 	"fmt"
+	"strings"
 )
 
 var ErrVariableType = fmt.Errorf("Can't calculate length of a variable-length type")
@@ -98,13 +99,47 @@ func (s *StringBaseType) ByteLength() (int, error) {
 type IntegerFlag int
 
 const (
-	IntNegate IntegerFlag = (1 << iota)
-	IntInv128
-	IntOfs128
+	IntNilFlag IntegerFlag = (1 << iota)
+	IntNegative
+	IntInverse128
+	IntOffset128
 	IntLittleEndian
 	IntPDPEndian
 	IntRPDPEndian
+	IntReverse
 )
+
+// String is used by the compiler to output human readable flags
+// should be done a lot cleanre
+func (f IntegerFlag) String() string {
+	parts := make([]string, 0)
+
+	if f&IntNegative != 0 {
+		parts = append(parts, "encode.IntNegative")
+	}
+
+	if f&IntInverse128 != 0 {
+		parts = append(parts, "encode.IntInverse128")
+	}
+
+	if f&IntOffset128 != 0 {
+		parts = append(parts, "encode.IntOffset128")
+	}
+
+	if f&IntLittleEndian != 0 {
+		parts = append(parts, "encode.IntLittleEndian")
+	}
+
+	if f&IntPDPEndian != 0 {
+		parts = append(parts, "encode.IntPDPEndian")
+	}
+
+	if f&IntRPDPEndian != 0 {
+		parts = append(parts, "encode.IntRPDPEndian")
+	}
+
+	return strings.Join(parts, " | ")
+}
 
 type IntegerType struct {
 	Signed    bool

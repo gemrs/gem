@@ -17,3 +17,5 @@ type Decoder interface {
 type Encoder interface {
 	Encode(buf *bytes.Buffer, flags_ interface{}) error
 }
+
+var NilFlags int = 0

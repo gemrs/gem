@@ -26,9 +26,9 @@ var intFlags = map[string]ast.IntegerFlag{
 	"LittleEndian": ast.IntLittleEndian,
 	"PDPEndian":    ast.IntPDPEndian,
 	"RPDPEndian":   ast.IntRPDPEndian,
-	"Negate":       ast.IntNegate,
-	"Offset128":    ast.IntOfs128,
-	"Inverse128":   ast.IntInv128,
+	"Negative":     ast.IntNegative,
+	"Offset128":    ast.IntOffset128,
+	"Inverse128":   ast.IntInverse128,
 }
 
 type parseContext struct {

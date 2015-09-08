@@ -1,23 +1,42 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+
+	"github.com/sinusoids/gem/framecc/compile"
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Print("Usage: framecc input.frame")
+	if len(os.Args) != 3 {
+		fmt.Print("Usage: framecc input.frame output.gen.go")
 		os.Exit(1)
 	}
 
-	file, err := parseFrameDefinition(os.Args[1])
-	if err != nil {
-		fmt.Printf("%v\n", err)
+	pkg := os.Getenv("GOPACKAGE")
+	if pkg == "" {
+		fmt.Printf("error: $GOPACKAGE unset")
 		os.Exit(1)
 	}
-	//	jsonStr, _ := json.Marshal(file)
-	jsonStr, _ := json.MarshalIndent(file, "", "  ")
-	fmt.Printf("%v", string(jsonStr))
+
+	input, err := ioutil.ReadFile(os.Args[1])
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		os.Exit(1)
+	}
+
+	output, err := compile.Compile(os.Args[1], pkg, string(input))
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		os.Exit(1)
+	}
+
+	err = ioutil.WriteFile(os.Args[2], []byte(output), 0644)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("framecc: wrote output: %v\n", os.Args[2])
 }

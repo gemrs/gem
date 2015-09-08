@@ -1,0 +1,13 @@
+/* Variable length (8 bit encoded) frame */
+VariableChatMessage struct {
+    Length  int16<LittleEndian, Offset128>
+    Message string[Length]
+}
+
+ChatMessage1 frame<101, Var8>  VariableChatMessage
+ChatMessage2 frame<102, Var16> VariableChatMessage
+
+/* Fixed length frame (anonymous structure) */
+ChatMessage3 frame<100, Var8> struct {
+    Message string[256]
+}
