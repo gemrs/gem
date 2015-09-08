@@ -11,7 +11,9 @@ const (
 // A string terminated by 0xA
 type JString string
 
-func (str *JString) Encode(buf *bytes.Buffer, flags_ interface{}) error {
+//TODO: need to pad up to length. Also, bounds check.
+
+func (str *JString) Encode(buf *bytes.Buffer, length interface{}) error {
 	data := []byte(*str)
 	data = append(data, stringDelim)
 
@@ -19,7 +21,7 @@ func (str *JString) Encode(buf *bytes.Buffer, flags_ interface{}) error {
 	return err
 }
 
-func (str *JString) Decode(buf *bytes.Buffer, flags_ interface{}) error {
+func (str *JString) Decode(buf *bytes.Buffer, length interface{}) error {
 	line, err := buf.ReadString(stringDelim)
 	*str = JString(line)
 	return err

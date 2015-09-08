@@ -1,3 +1,3 @@
 package protocol
 
-//go:generate framecc ChatMessage.frame chat_message.gen.go
+//go:generate framecc test_frame.frame test_frame.gen.go
