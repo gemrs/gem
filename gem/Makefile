@@ -13,7 +13,7 @@ gopygen:
 	go get github.com/tgascoigne/gopygen
 
 install: generate get fmt
-	go install
+	go install ./...
 
 test: install
 	go test -v ./...

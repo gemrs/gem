@@ -46,7 +46,7 @@ func hexToBuffer(buf string) *bytes.Buffer {
 
 	return bytes.NewBuffer(data)
 }
-l
+
 func TestRoundTrip(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte{})
 
