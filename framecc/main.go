@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/sinusoids/gem/framecc/compile"
+
+	"golang.org/x/tools/imports"
 )
 
 func main() {
@@ -27,6 +29,12 @@ func main() {
 	}
 
 	output, err := compile.Compile(os.Args[1], pkg, string(input))
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		os.Exit(1)
+	}
+
+	output, err = imports.Process(os.Args[1], output, nil)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)

@@ -3,7 +3,6 @@ package encoding
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"unsafe"
 )
 
@@ -11,7 +10,7 @@ type IntegerFlag int
 
 const (
 	IntNilFlag IntegerFlag = (1 << iota)
-	IntNegative
+	IntNegate
 	IntInverse128
 	IntOffset128
 	IntLittleEndian
@@ -40,7 +39,7 @@ func (f IntegerFlag) endian() binary.ByteOrder {
 
 func (f IntegerFlag) apply(value uint64) uint64 {
 	data := (*[8]byte)(unsafe.Pointer(&value))[:8]
-	if f&IntNegative != 0 {
+	if f&IntNegate != 0 {
 		data[0] = -data[0]
 	}
 	if f&IntInverse128 != 0 {

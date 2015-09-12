@@ -29,7 +29,17 @@ var typeDefTmpl = template.Must(template.New("typedef").Parse(`type {{.Name}} st
 {{.EncodeFuncs}}
 `))
 
-var frameDefTmpl = template.Must(template.New("framedef").Parse(`type {{.Identifier}} {{.Object.Identifier}}`))
+var frameDefTmpl = template.Must(template.New("framedef").Parse(`type {{.Identifier}} {{.Object.Identifier}}
+
+func (frm *{{.Identifier}}) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+struc := (*{{.Object.Identifier}})(frm)
+return struc.Encode(buf, flags)
+}
+
+func (frm *{{.Identifier}}) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+struc := (*{{.Object.Identifier}})(frm)
+return struc.Decode(buf, flags)
+}`))
 
 var fieldFuncTmpl = template.Must(template.New("fieldfunc").Parse(`err = struc.{{.Name}}.{{.Operation}}(buf, {{.Flags}})
 if err != nil {
@@ -47,28 +57,30 @@ var encodeFuncsTmpl = template.Must(template.New("encodefuncs").Parse(`func (str
 {{range .EncodeFields}}{{.}}
 
 {{end}}
+return
 }
 
 func (struc *{{.Type}}) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
 {{range .DecodeFields}}{{.}}
 
 {{end}}
+return
 }`))
 
 type context struct {
 	types map[string]string
 }
 
-func Compile(filename, pkg, input string) (string, error) {
+func Compile(filename, pkg, input string) ([]byte, error) {
 	ast, errors := parse.Parse(filename, input)
 	if len(errors) > 0 {
-		return "", fmt.Errorf("parse errors\n%v", errors)
+		return nil, fmt.Errorf("parse errors\n%v", errors)
 	}
 	ctx := &context{make(map[string]string)}
 
 	err := ctx.generateTypes(ast.Scope)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	types := make([]string, 0)
@@ -87,9 +99,9 @@ func Compile(filename, pkg, input string) (string, error) {
 	var buf bytes.Buffer
 	err = packageTmpl.Execute(&buf, tmplData)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return buf.String(), nil
+	return buf.Bytes(), nil
 }
 
 func (c *context) goType(typ ast.Node) string {

@@ -100,7 +100,7 @@ type IntegerFlag int
 
 const (
 	IntNilFlag IntegerFlag = (1 << iota)
-	IntNegative
+	IntNegate
 	IntInverse128
 	IntOffset128
 	IntLittleEndian
@@ -114,28 +114,32 @@ const (
 func (f IntegerFlag) String() string {
 	parts := make([]string, 0)
 
-	if f&IntNegative != 0 {
-		parts = append(parts, "encode.IntNegative")
+	if f&IntNegate != 0 {
+		parts = append(parts, "encoding.IntNegate")
 	}
 
 	if f&IntInverse128 != 0 {
-		parts = append(parts, "encode.IntInverse128")
+		parts = append(parts, "encoding.IntInverse128")
 	}
 
 	if f&IntOffset128 != 0 {
-		parts = append(parts, "encode.IntOffset128")
+		parts = append(parts, "encoding.IntOffset128")
 	}
 
 	if f&IntLittleEndian != 0 {
-		parts = append(parts, "encode.IntLittleEndian")
+		parts = append(parts, "encoding.IntLittleEndian")
 	}
 
 	if f&IntPDPEndian != 0 {
-		parts = append(parts, "encode.IntPDPEndian")
+		parts = append(parts, "encoding.IntPDPEndian")
 	}
 
 	if f&IntRPDPEndian != 0 {
-		parts = append(parts, "encode.IntRPDPEndian")
+		parts = append(parts, "encoding.IntRPDPEndian")
+	}
+
+	if len(parts) == 0 {
+		parts = append(parts, "0")
 	}
 
 	return strings.Join(parts, " | ")

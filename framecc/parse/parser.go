@@ -26,7 +26,7 @@ var intFlags = map[string]ast.IntegerFlag{
 	"LittleEndian": ast.IntLittleEndian,
 	"PDPEndian":    ast.IntPDPEndian,
 	"RPDPEndian":   ast.IntRPDPEndian,
-	"Negative":     ast.IntNegative,
+	"Negate":       ast.IntNegate,
 	"Offset128":    ast.IntOffset128,
 	"Inverse128":   ast.IntInverse128,
 }
