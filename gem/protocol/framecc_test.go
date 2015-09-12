@@ -34,8 +34,6 @@ var testFrame = TestFrame{
 	},
 }
 
-var testFrameHexDump = "7465737420737472696e670aeca89c0107d0753060ea0000e0ea0000ea200000d2040000a90900000d000000d7110000ae160000fb1a0000"
-
 func bufferToHex(buf *bytes.Buffer) string {
 	return hex.EncodeToString(buf.Bytes())
 }
@@ -48,34 +46,7 @@ func hexToBuffer(buf string) *bytes.Buffer {
 
 	return bytes.NewBuffer(data)
 }
-
-/*
-func TestEncode(t *testing.T) {
-	var buffer bytes.Buffer
-	if err := testFrame.Encode(&buffer, 0); err != nil {
-		t.Errorf("%v", err)
-	}
-
-	if bufferToHex(&buffer) != testFrameHexDump {
-		t.Errorf("Encoded data mismatch: %v", bufferToHex(&buffer))
-	}
-}
-
-
-func TestDecode(t *testing.T) {
-	buffer := hexToBuffer(testFrameHexDump)
-
-	var frame TestFrame
-	if err := frame.Decode(buffer, 0); err != nil {
-		t.Errorf("%v", err)
-	}
-
-	if fmt.Sprintf("%#V", frame) != fmt.Sprintf("%#V", testFrame) {
-		t.Errorf("Decoded data mismatch: %#V", frame)
-	}
-}
-*/
-
+l
 func TestRoundTrip(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte{})
 
