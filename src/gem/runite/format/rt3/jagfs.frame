@@ -1,0 +1,12 @@
+FSIndex struct {
+    Length     int24
+    StartBlock int24
+}
+
+FSBlock struct {
+	FileID       int16
+	FilePosition int16
+	NextBlock    int24
+	Partition    int8
+	Data         int8[512]
+}
