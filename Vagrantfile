@@ -19,11 +19,11 @@ Vagrant.configure(2) do |config|
     sudo yum -y install git gdb golang python-devel pytest python-pip libffi-devel
     sudo pip install yapsy
 
-    mkdir -p /home/vagrant/go/src/github.com/sinusoids
+    mkdir -p /home/vagrant/go/
     chown -R vagrant:vagrant /home/vagrant/go/
-    ln -s /vagrant /home/vagrant/go/src/github.com/sinusoids/gem
     echo 'export GOPATH=$HOME/go' >> /home/vagrant/.profile
     echo 'export PATH=$PATH:$GOPATH/bin' >> /home/vagrant/.profile
     echo 'source $HOME/.profile' >> /home/vagrant/.bashrc
+    su - vagrant -c 'go get github.com/constabulary/gb/...'
   SHELL
 end
