@@ -3,8 +3,8 @@ package gem
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/event"
-	"github.com/sinusoids/gem/gem/task"
+	"gem/event"
+	"gem/task"
 
 	"time"
 )

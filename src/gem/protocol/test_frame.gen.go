@@ -3,9 +3,20 @@ package protocol
 
 import (
 	"bytes"
-
-	"github.com/sinusoids/gem/gem/encoding"
+	"gem/encoding"
 )
+
+type TestFrame AnonStruct_49
+
+func (frm *TestFrame) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+	struc := (*AnonStruct_49)(frm)
+	return struc.Encode(buf, flags)
+}
+
+func (frm *TestFrame) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+	struc := (*AnonStruct_49)(frm)
+	return struc.Decode(buf, flags)
+}
 
 type EmbeddedStruct struct {
 	A encoding.Int32
@@ -127,16 +138,4 @@ func (struc *AnonStruct_49) Decode(buf *bytes.Buffer, flags interface{}) (err er
 	}
 
 	return
-}
-
-type TestFrame AnonStruct_49
-
-func (frm *TestFrame) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
-	struc := (*AnonStruct_49)(frm)
-	return struc.Encode(buf, flags)
-}
-
-func (frm *TestFrame) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
-	struc := (*AnonStruct_49)(frm)
-	return struc.Decode(buf, flags)
 }

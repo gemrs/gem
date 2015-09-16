@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sinusoids/gem/framecc/ast"
+	"framecc/ast"
 )
 
 var frameSizes = map[string]ast.FrameSize{

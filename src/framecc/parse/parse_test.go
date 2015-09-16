@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/sinusoids/gem/framecc/ast"
+	"framecc/ast"
 )
 
 type parseTestCase struct {

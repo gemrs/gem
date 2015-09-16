@@ -8,7 +8,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem"
+	"gem"
 )
 
 func main() {

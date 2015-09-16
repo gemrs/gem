@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/sinusoids/gem/framecc/compile"
+	"framecc/compile"
 
 	"golang.org/x/tools/imports"
 )

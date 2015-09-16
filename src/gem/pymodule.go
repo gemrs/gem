@@ -1,8 +1,8 @@
 package gem
 
 import (
-	"github.com/sinusoids/gem/gem/event"
-	"github.com/sinusoids/gem/gem/task"
+	"gem/event"
+	"gem/task"
 
 	"github.com/qur/gopy/lib"
 )

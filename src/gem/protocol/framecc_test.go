@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sinusoids/gem/gem/encoding"
+	"gem/encoding"
 )
 
 //go:generate framecc test_frame.frame test_frame.gen.go
