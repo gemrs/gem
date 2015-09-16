@@ -60,7 +60,7 @@ const (
 	itemFrame
 	itemStruct
 	itemStringType
-	itemIntType // int{8,16,32,64}
+	itemIntType // int{8,16,24,32,64}
 	itemLenSpec // Fixed, Var8, or Var16
 	itemFlag    // LittleEndian, PDPEndian, RPDPEndian, Negate, Offset128, Inverse128
 )
@@ -99,6 +99,7 @@ var keywords = map[string]itemType{
 	"string":       itemStringType,
 	"int8":         itemIntType,
 	"int16":        itemIntType,
+	"int24":        itemIntType,
 	"int32":        itemIntType,
 	"int64":        itemIntType,
 	"Fixed":        itemLenSpec,

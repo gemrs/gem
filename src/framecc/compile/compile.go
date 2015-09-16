@@ -57,14 +57,14 @@ var encodeFuncsTmpl = template.Must(template.New("encodefuncs").Parse(`func (str
 {{range .EncodeFields}}{{.}}
 
 {{end}}
-return
+return err
 }
 
 func (struc *{{.Type}}) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
 {{range .DecodeFields}}{{.}}
 
 {{end}}
-return
+return err
 }`))
 
 type context struct {

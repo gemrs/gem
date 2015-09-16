@@ -109,6 +109,34 @@ func (i *Int16) Decode(buf *bytes.Buffer, flags_ interface{}) error {
 func (i *Int16) Value() interface{} {
 	return *i
 }
+type Int24 uint32
+
+func (i *Int24) Encode(buf *bytes.Buffer, flags_ interface{}) error {
+	flags := flags_.(IntegerFlag)
+	value := flags.apply(uint64(*i))
+
+	data := []byte{byte(value >> 16), byte(value >> 8), byte(value)}
+	_, err := buf.Write(data)
+	return err
+}
+
+func (i *Int24) Decode(buf *bytes.Buffer, flags_ interface{}) error {
+	flags := flags_.(IntegerFlag)
+
+	data := make([]byte, 3)
+	_, err := buf.Read(data)
+	if err != nil {
+		return err
+	}
+
+	value64 := uint64(data[0] << 16) | uint64(data[1] << 8) | uint64(data[0])
+	*i = Int24(flags.reverse().apply(value64))
+	return nil
+}
+
+func (i *Int24) Value() interface{} {
+	return *i
+}
 
 type Int32 uint32
 

@@ -18,6 +18,7 @@ var frameSizes = map[string]ast.FrameSize{
 var intSizes = map[string]int{
 	"int8":  8,
 	"int16": 16,
+	"int24": 24,
 	"int32": 32,
 	"int64": 64,
 }
@@ -398,7 +399,7 @@ func (c *parseContext) parseArrayType(base ast.Node) ast.Node {
 	return array
 }
 
-// parseIntType parses int{8,16,32,64}<flags>
+// parseIntType parses int{8,16,24,32,64}<flags>
 func (c *parseContext) parseIntType() ast.Node {
 	if _, err := c.accept(itemIntType, true); err != nil {
 		panic("never reached")
