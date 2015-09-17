@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"regexp"
+	"strconv"
 )
 
 var ErrVariableType = fmt.Errorf("Can't calculate length of a variable-length type")
@@ -149,6 +151,24 @@ type IntegerType struct {
 	Signed    bool
 	Bitsize   int
 	Modifiers IntegerFlag
+}
+
+var integerRegexp = regexp.MustCompile("(u)?int(8|16|24|32|64)")
+func ParseIntegerType(typ string) (*IntegerType, error) {
+	if !integerRegexp.MatchString(typ) {
+		return nil, fmt.Errorf("unrecognized integer type: %v", typ)
+	}
+
+	groups := integerRegexp.FindAllStringSubmatch(typ, -1)
+	bitsize, err := strconv.Atoi(groups[0][2])
+	if err != nil {
+		return nil, err
+	}
+
+	return &IntegerType{
+		Signed: groups[0][0] == "u",
+		Bitsize: bitsize,
+	}, nil
 }
 
 func (i *IntegerType) Set(flag IntegerFlag) {
