@@ -1,5 +1,9 @@
 /[0-9]+/ {
-	lval.sval = yylex.Text()
+	var err error
+	lval.ival, err = strconv.Atoi(yylex.Text())
+	if err != nil {
+		yylex.Error(err.Error())
+	}
 	return tNumber
 }
 
@@ -8,7 +12,11 @@
 }
 
 /u?int(8|16|24|32|64)/ {
-	lval.sval = yylex.Text()
+	var err error
+	lval.n, err = ast.ParseIntegerType(yylex.Text())
+	if err != nil {
+		yylex.Error(err.Error())
+	}
 	return tIntegerType
 }
 
@@ -25,3 +33,9 @@
 /./               { println("Unrecognized character:", yylex.Text()) }
 //
 package parse
+
+import (
+	"strconv"
+
+	"framecc/ast"
+)

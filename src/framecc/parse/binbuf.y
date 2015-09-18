@@ -34,7 +34,7 @@ import (
 
 file
     : ws✳ decl_list ws✳
-      { yylex.(*lexer).file.Scope = $2.n.(*ast.Scope) }
+      { yylex.(*Lexer).parseResult.(*ast.File).Scope = $2.n.(*ast.Scope) }
     ;
 
 decl_list
@@ -84,13 +84,6 @@ field
 
 int_type
     : tIntegerType
-      {
-          var err error
-          $$.n, err = ast.ParseIntegerType($1.sval)
-          if err != nil {
-              yylex.Error(err.Error())
-          }
-      }
 //  | tIntegerType '<' int_modifiers '>'
     ;
 

@@ -52,7 +52,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line binbuf.y:114
+//line binbuf.y:107
 
 //line yacctab:1
 var yyExca = [...]int{
@@ -476,7 +476,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line binbuf.y:37
 		{
-			yylex.(*lexer).file.Scope = yyDollar[2].n.(*ast.Scope)
+			yylex.(*Lexer).parseResult.(*ast.File).Scope = yyDollar[2].n.(*ast.Scope)
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
@@ -531,16 +531,6 @@ yydefault:
 			yyVAL.n = &ast.Field{
 				Name: yyDollar[1].sval,
 				Type: yyDollar[2].n.(ast.Node),
-			}
-		}
-	case 10:
-		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:87
-		{
-			var err error
-			yyVAL.n, err = ast.ParseIntegerType(yyDollar[1].sval)
-			if err != nil {
-				yylex.Error(err.Error())
 			}
 		}
 	}
