@@ -2,6 +2,7 @@ package parse
 
 import (
 	"strconv"
+	"fmt"
 
 	"framecc/ast"
 )
@@ -486,8 +487,8 @@ func(r rune) int {
 },
 }, []int{  /* Start-of-input transitions */  -1, -1,}, []int{  /* End-of-input transitions */  -1, -1,},nil},
 
-// [a-zA-Z_]+[0-9a-zA-Z_]
-{[]bool{false, false, true, true}, []func(rune) int{  // Transitions
+// [a-zA-Z_]+([0-9a-zA-Z_]+)?
+{[]bool{false, true, true, true}, []func(rune) int{  // Transitions
 func(r rune) int {
 	switch(r) {
 		case 95: return 1
@@ -523,12 +524,12 @@ func(r rune) int {
 },
 func(r rune) int {
 	switch(r) {
-		case 95: return -1
+		case 95: return 3
 	}
 	switch {
-		case 48 <= r && r <= 57: return -1
-		case 65 <= r && r <= 90: return -1
-		case 97 <= r && r <= 122: return -1
+		case 48 <= r && r <= 57: return 3
+		case 65 <= r && r <= 90: return 3
+		case 97 <= r && r <= 122: return 3
 	}
 	return -1
 },
@@ -553,6 +554,96 @@ func(r rune) int {
 	return -1
 },
 }, []int{  /* Start-of-input transitions */  -1, -1,}, []int{  /* End-of-input transitions */  -1, -1,},nil},
+
+// \/\/[^\n]*
+{[]bool{false, false, true, true}, []func(rune) int{  // Transitions
+func(r rune) int {
+	switch(r) {
+		case 10: return -1
+		case 47: return 1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 10: return -1
+		case 47: return 2
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 10: return -1
+		case 47: return 3
+	}
+	return 3
+},
+func(r rune) int {
+	switch(r) {
+		case 10: return -1
+		case 47: return 3
+	}
+	return 3
+},
+}, []int{  /* Start-of-input transitions */  -1, -1, -1, -1,}, []int{  /* End-of-input transitions */  -1, -1, -1, -1,},nil},
+
+// \/\*[^(\*\/)]*\*\/
+{[]bool{false, false, false, false, false, true}, []func(rune) int{  // Transitions
+func(r rune) int {
+	switch(r) {
+		case 40: return -1
+		case 41: return -1
+		case 42: return -1
+		case 47: return 1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 40: return -1
+		case 41: return -1
+		case 42: return 2
+		case 47: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 40: return -1
+		case 41: return -1
+		case 42: return 3
+		case 47: return -1
+	}
+	return 4
+},
+func(r rune) int {
+	switch(r) {
+		case 40: return -1
+		case 41: return -1
+		case 42: return -1
+		case 47: return 5
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 40: return -1
+		case 41: return -1
+		case 42: return 3
+		case 47: return -1
+	}
+	return 4
+},
+func(r rune) int {
+	switch(r) {
+		case 40: return -1
+		case 41: return -1
+		case 42: return -1
+		case 47: return -1
+	}
+	return -1
+},
+}, []int{  /* Start-of-input transitions */  -1, -1, -1, -1, -1, -1,}, []int{  /* End-of-input transitions */  -1, -1, -1, -1, -1, -1,},nil},
 
 // .
 {[]bool{false, true}, []func(rune) int{  // Transitions
@@ -655,7 +746,11 @@ func (yylex *Lexer) Lex(lval *yySymType) int {
 		case 5:
 			{ /* eat up whitespace */ }
 		case 6:
-			{ println("Unrecognized character:", yylex.Text()) }
+			{ /* eat up one-line comments */ }
+		case 7:
+			{ /* eat up multi-line comments */ }
+		case 8:
+			{ yylex.Error(fmt.Sprintf("unrecognized character: %v", yylex.Text())) }
 		default:
 			 break OUTER0
 		}
