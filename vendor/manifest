@@ -2,6 +2,12 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/blynn/nex",
+			"repository": "https://github.com/blynn/nex",
+			"revision": "8d469a35c19839470855389ba915f72638703d39",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/op/go-logging",
 			"repository": "https://github.com/op/go-logging",
 			"revision": "e8d5414f0947014548c2334044a0fac13187dfee",
