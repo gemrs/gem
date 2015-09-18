@@ -20,6 +20,11 @@
 	return tIntegerType
 }
 
+/Int[a-zA-Z0-9]+/ {
+    lval.sval = yylex.Text()
+    return tIntegerFlag
+}
+
 /[{}\[\]<>,]/ {
 	return int(yylex.Text()[0])
 }

@@ -3,7 +3,6 @@ package ast
 import (
 	"bytes"
 	"fmt"
-	"strings"
 	"regexp"
 	"strconv"
 )
@@ -98,59 +97,10 @@ func (s *StringBaseType) ByteLength() (int, error) {
 	return 1, nil
 }
 
-type IntegerFlag int
-
-const (
-	IntNilFlag IntegerFlag = (1 << iota)
-	IntNegate
-	IntInverse128
-	IntOffset128
-	IntLittleEndian
-	IntPDPEndian
-	IntRPDPEndian
-	IntReverse
-)
-
-// String is used by the compiler to output human readable flags
-// should be done a lot cleanre
-func (f IntegerFlag) String() string {
-	parts := make([]string, 0)
-
-	if f&IntNegate != 0 {
-		parts = append(parts, "encoding.IntNegate")
-	}
-
-	if f&IntInverse128 != 0 {
-		parts = append(parts, "encoding.IntInverse128")
-	}
-
-	if f&IntOffset128 != 0 {
-		parts = append(parts, "encoding.IntOffset128")
-	}
-
-	if f&IntLittleEndian != 0 {
-		parts = append(parts, "encoding.IntLittleEndian")
-	}
-
-	if f&IntPDPEndian != 0 {
-		parts = append(parts, "encoding.IntPDPEndian")
-	}
-
-	if f&IntRPDPEndian != 0 {
-		parts = append(parts, "encoding.IntRPDPEndian")
-	}
-
-	if len(parts) == 0 {
-		parts = append(parts, "0")
-	}
-
-	return strings.Join(parts, " | ")
-}
-
 type IntegerType struct {
 	Signed    bool
 	Bitsize   int
-	Modifiers IntegerFlag
+	Modifiers []string
 }
 
 var integerRegexp = regexp.MustCompile("(u)?int(8|16|24|32|64)")
@@ -169,10 +119,6 @@ func ParseIntegerType(typ string) (*IntegerType, error) {
 		Signed: groups[0][1] != "u",
 		Bitsize: bitsize,
 	}, nil
-}
-
-func (i *IntegerType) Set(flag IntegerFlag) {
-	i.Modifiers = i.Modifiers | flag
 }
 
 func (s *IntegerType) Identifier() string {

@@ -36,7 +36,7 @@ var tests = []testCase{
 									Type: &ast.IntegerType{
 										Signed: true,
 										Bitsize: 8,
-										Modifiers: ast.IntegerFlag(0),
+										Modifiers: nil,
 									},
 								},
 								&ast.Field{
@@ -44,7 +44,7 @@ var tests = []testCase{
 									Type: &ast.IntegerType{
 										Signed: false,
 										Bitsize: 24,
-										Modifiers: ast.IntegerFlag(0),
+										Modifiers: nil,
 									},
 								},
 							},
@@ -82,7 +82,7 @@ var tests = []testCase{
 													Type: &ast.IntegerType{
 														Signed: true,
 														Bitsize: 8,
-														Modifiers: ast.IntegerFlag(0),
+														Modifiers: nil,
 													},
 												},
 												&ast.Field{
@@ -90,7 +90,7 @@ var tests = []testCase{
 													Type: &ast.IntegerType{
 														Signed: false,
 														Bitsize: 24,
-														Modifiers: ast.IntegerFlag(0),
+														Modifiers: nil,
 													},
 												},
 											},
@@ -127,7 +127,7 @@ AnotherStruct struct {
 									Type: &ast.IntegerType{
 										Signed: false,
 										Bitsize: 32,
-										Modifiers: ast.IntegerFlag(0),
+										Modifiers: nil,
 									},
 								},
 							},
@@ -142,7 +142,7 @@ AnotherStruct struct {
 									Type: &ast.IntegerType{
 										Signed: false,
 										Bitsize: 32,
-										Modifiers: ast.IntegerFlag(0),
+										Modifiers: nil,
 									},
 								},
 							},
@@ -153,7 +153,7 @@ AnotherStruct struct {
 		},
 	},
 
-		{
+	{
 		filename: "in_file",
 		source: `SomeStruct struct/**/{
 	SomeInt int8 /*
@@ -174,7 +174,7 @@ AnotherStruct struct {
 									Type: &ast.IntegerType{
 										Signed: true,
 										Bitsize: 8,
-										Modifiers: ast.IntegerFlag(0),
+										Modifiers: nil,
 									},
 								},
 								&ast.Field{
@@ -182,7 +182,7 @@ AnotherStruct struct {
 									Type: &ast.IntegerType{
 										Signed: false,
 										Bitsize: 24,
-										Modifiers: ast.IntegerFlag(0),
+										Modifiers: nil,
 									},
 								},
 							},
@@ -192,6 +192,86 @@ AnotherStruct struct {
 			},
 		},
 	},
+
+
+	{
+		filename: "in_file",
+		source: `SomeStruct struct {
+	SomeInt int8<IntLittleEndian, IntOffset128>
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Struct{
+						Name: "SomeStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "SomeInt",
+									Type: &ast.IntegerType{
+										Signed: true,
+										Bitsize: 8,
+										Modifiers: []string{"IntLittleEndian","IntOffset128"},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+
+	{
+		filename: "in_file",
+		source: `SomeStruct struct {
+	Field uint32
+}
+
+AnotherStruct struct {
+	Field SomeStruct
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Struct{
+						Name: "SomeStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "Field",
+									Type: &ast.IntegerType{
+										Signed: false,
+										Bitsize: 32,
+										Modifiers: nil,
+									},
+								},
+							},
+						},
+					},
+					&ast.Struct{
+						Name: "AnotherStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "Field",
+									Type: &ast.IntegerType{
+										Signed: false,
+										Bitsize: 32,
+										Modifiers: nil,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
 }
 
 func dump(file *ast.File) string {

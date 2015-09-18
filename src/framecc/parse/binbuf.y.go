@@ -10,11 +10,12 @@ import (
 
 //line binbuf.y:10
 type yySymType struct {
-	yys  int
-	nsl  []ast.Node
-	n    ast.Node
-	ival int
-	sval string
+	yys     int
+	nsl     []ast.Node
+	n       ast.Node
+	ival    int
+	sval    string
+	svalarr []string
 }
 
 const tWhitespace = 57346
@@ -52,7 +53,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line binbuf.y:107
+//line binbuf.y:128
 
 //line yacctab:1
 var yyExca = [...]int{
@@ -61,52 +62,58 @@ var yyExca = [...]int{
 	-2, 0,
 }
 
-const yyNprod = 18
+const yyNprod = 22
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 29
+const yyLast = 34
 
 var yyAct = [...]int{
 
-	2, 13, 14, 7, 27, 14, 22, 9, 19, 11,
-	5, 12, 16, 4, 5, 3, 25, 18, 20, 24,
-	8, 21, 23, 17, 26, 15, 10, 6, 1,
+	2, 13, 5, 7, 32, 11, 14, 9, 29, 19,
+	14, 12, 25, 5, 30, 31, 21, 18, 26, 3,
+	16, 4, 1, 24, 8, 27, 6, 28, 10, 15,
+	17, 20, 23, 22,
 }
 var yyPact = [...]int{
 
-	-1, -1000, -1, -1000, -1, -1000, -1, -1000, -1000, -3,
-	-1, -9, -1000, -1000, 8, -1000, -1, 3, -1000, -1000,
-	-6, -1, -12, -1000, -1000, -1000, -1000, -1000,
+	2, -1000, 2, -1000, 2, -1000, 2, -1000, -1000, -7,
+	2, -8, -1000, -1000, 16, -1000, 2, 4, -1000, -1000,
+	-1000, -4, -1000, -1000, -1000, 10, -9, 5, -1000, -1000,
+	-1000, -13, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 28, 0, 27, 26, 1, 25, 23, 21, 19,
-	16, 13, 15,
+	0, 33, 32, 31, 30, 29, 28, 1, 26, 25,
+	22, 0, 21, 19,
 }
 var yyR1 = [...]int{
 
-	0, 1, 3, 3, 4, 5, 6, 7, 7, 8,
-	10, 9, 9, 11, 12, 12, 2, 2,
+	0, 10, 8, 8, 6, 7, 5, 4, 4, 3,
+	2, 2, 9, 9, 9, 1, 1, 12, 13, 13,
+	11, 11,
 }
 var yyR2 = [...]int{
 
-	0, 3, 1, 4, 2, 2, 3, 1, 4, 2,
-	1, 1, 1, 1, 1, 2, 0, 1,
+	0, 3, 1, 4, 2, 2, 3, 1, 2, 2,
+	1, 4, 1, 1, 3, 1, 1, 1, 1, 2,
+	0, 1,
 }
 var yyChk = [...]int{
 
-	-1000, -1, -2, -12, -11, 11, -3, -2, -12, -2,
-	-4, 12, -2, -5, 14, -6, 4, -7, -2, 5,
-	-2, -8, 12, -2, -9, -10, -5, 16,
+	-1000, -10, -11, -13, -12, 11, -8, -11, -13, -11,
+	-6, 12, -11, -7, 14, -5, 4, -4, -11, 5,
+	-3, 12, -1, -2, -7, 16, 8, -9, -11, 17,
+	9, 10, 17,
 }
 var yyDef = [...]int{
 
-	16, -2, 16, 17, 14, 13, 16, 2, 15, 1,
-	16, 0, 3, 4, 0, 5, 16, 16, 7, 6,
-	0, 16, 0, 8, 9, 11, 12, 10,
+	20, -2, 20, 21, 18, 17, 20, 2, 19, 1,
+	20, 0, 3, 4, 0, 5, 20, 0, 7, 6,
+	8, 0, 9, 15, 16, 10, 20, 0, 12, 13,
+	11, 0, 14,
 }
 var yyTok1 = [...]int{
 
@@ -474,32 +481,32 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:37
+		//line binbuf.y:46
 		{
 			yylex.(*Lexer).Ast().Scope = yyDollar[2].n.(*ast.Scope)
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:41
+		//line binbuf.y:50
 		{
 			yyVAL.n = ast.NewScope()
 		}
 	case 3:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line binbuf.y:43
+		//line binbuf.y:52
 		{
 			yyDollar[1].n.(*ast.Scope).Add(yyDollar[3].n.(*ast.Struct))
 		}
 	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:48
+		//line binbuf.y:57
 		{
 			yyDollar[2].n.(*ast.Struct).Name = yyDollar[1].sval
-			yyVAL = yyDollar[2]
+			yyVAL.n = yyDollar[2].n
 		}
 	case 5:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:56
+		//line binbuf.y:65
 		{
 			yyVAL.n = &ast.Struct{
 				Name:  "AnonStruct_X",
@@ -508,30 +515,55 @@ yydefault:
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:66
+		//line binbuf.y:75
 		{
 			yyVAL.n = yyDollar[2].n
 		}
 	case 7:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:70
+		//line binbuf.y:79
 		{
 			yyVAL.n = ast.NewScope()
 		}
 	case 8:
-		yyDollar = yyS[yypt-4 : yypt+1]
-		//line binbuf.y:72
+		yyDollar = yyS[yypt-2 : yypt+1]
+		//line binbuf.y:81
 		{
-			yyDollar[1].n.(*ast.Scope).Add(yyDollar[3].n.(ast.Node))
+			yyDollar[1].n.(*ast.Scope).Add(yyDollar[2].n.(ast.Node))
 		}
 	case 9:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:77
+		//line binbuf.y:86
 		{
 			yyVAL.n = &ast.Field{
 				Name: yyDollar[1].sval,
 				Type: yyDollar[2].n.(ast.Node),
 			}
+		}
+	case 11:
+		yyDollar = yyS[yypt-4 : yypt+1]
+		//line binbuf.y:97
+		{
+			yyDollar[1].n.(*ast.IntegerType).Modifiers = yyDollar[3].svalarr
+			yyVAL.n = yyDollar[1].n
+		}
+	case 12:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line binbuf.y:104
+		{
+			yyVAL.svalarr = make([]string, 0)
+		}
+	case 13:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line binbuf.y:106
+		{
+			yyVAL.svalarr = append(yyVAL.svalarr, yyDollar[1].sval)
+		}
+	case 14:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line binbuf.y:108
+		{
+			yyVAL.svalarr = append(yyVAL.svalarr, yyDollar[3].sval)
 		}
 	}
 	goto yystack /* stack new state and value */
