@@ -1,0 +1,27 @@
+/[0-9]+/ {
+	lval.sval = yylex.Text()
+	return tNumber
+}
+
+/struct/ {
+	return tStruct
+}
+
+/u?int(8|16|24|32|64)/ {
+	lval.sval = yylex.Text()
+	return tIntegerType
+}
+
+/[{}\[\]<>,]/ {
+	return int(yylex.Text()[0])
+}
+
+/[a-zA-Z_]+[0-9a-zA-Z_]/ {
+	lval.sval = yylex.Text()
+	return tIdentifier
+}
+
+/[ \t\n]+/        { /* eat up whitespace */ }
+/./               { println("Unrecognized character:", yylex.Text()) }
+//
+package parse

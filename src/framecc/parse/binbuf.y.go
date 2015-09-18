@@ -476,7 +476,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line binbuf.y:37
 		{
-			yylex.(*dummyLexer).file.Scope = yyDollar[2].n.(*ast.Scope)
+			yylex.(*lexer).file.Scope = yyDollar[2].n.(*ast.Scope)
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]

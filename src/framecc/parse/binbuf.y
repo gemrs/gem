@@ -34,7 +34,7 @@ import (
 
 file
     : ws✳ decl_list ws✳
-      { yylex.(*dummyLexer).file.Scope = $2.n.(*ast.Scope) }
+      { yylex.(*lexer).file.Scope = $2.n.(*ast.Scope) }
     ;
 
 decl_list
