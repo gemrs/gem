@@ -166,7 +166,7 @@ func ParseIntegerType(typ string) (*IntegerType, error) {
 	}
 
 	return &IntegerType{
-		Signed: groups[0][0] == "u",
+		Signed: groups[0][1] != "u",
 		Bitsize: bitsize,
 	}, nil
 }
