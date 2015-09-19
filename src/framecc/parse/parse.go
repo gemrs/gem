@@ -48,14 +48,12 @@ func (l *Lexer) Error(e string) {
 }
 
 func (l *Lexer) resolveReferencesTo(name string, typ ast.Node, n ast.Node) {
-	fmt.Printf("resolving reference to %v for node %v\n", name, n)
 	switch n := n.(type) {
 	case *ast.Scope:
 		for _, decl := range n.S {
 			l.resolveReferencesTo(name, typ, decl)
 		}
 	case *ast.DeclReference:
-		fmt.Printf("found reference to %v on node %v\n", name, n)
 		if name == n.DeclName {
 			n.Object = typ
 		}

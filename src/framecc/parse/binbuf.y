@@ -8,11 +8,12 @@ import (
 %}
 
 %union {
-    nsl []ast.Node
-    n ast.Node
-    ival int
-    sval string
+    nsl     []ast.Node
+    n       ast.Node
+    ival    int
+    sval    string
     svalarr []string
+    length  ast.LengthSpec
 }
 
 %token '{' '}' '[' ']' '<' '>' ','
@@ -20,7 +21,7 @@ import (
 %token tWhitespace
 
 %token <sval> tIdentifier
-%token tNumber
+%token <ival> tNumber
 
 %token tStruct tType
 %token tStringType
@@ -29,6 +30,7 @@ import (
 
 %token tEOL
 
+%type <length> array_spec
 %type <n> type int_type
 %type <n> field
 %type <n> field_list
@@ -129,9 +131,22 @@ type
     : int_type
     | anon_struct
     | reference
+    | type array_spec
+      {
+          $$ = &ast.ArrayType{
+	          Object: $1,
+              Length: $2,
+          }
+      }
     ;
 
-
+array_spec
+	: '[' tNumber ']'
+      {
+          $$ = &ast.StaticLength{
+	          Length: $2,
+          }
+      }
 
 ws
 	: tWhitespace

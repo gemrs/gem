@@ -223,6 +223,40 @@ type AnotherStruct struct {
 		},
 	},
 
+	{
+		filename: "in_file",
+		source: `type SomeStruct struct {
+	SomeInt int8<IntLittleEndian, IntOffset128>[10]
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Struct{
+						Name: "SomeStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "SomeInt",
+									Type: &ast.ArrayType{
+										Object: &ast.IntegerType{
+											Signed: true,
+											Bitsize: 8,
+											Modifiers: []string{"IntLittleEndian","IntOffset128"},
+										},
+										Length: &ast.StaticLength{
+											Length: 10,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
 
 	{
 		filename: "in_file",
