@@ -7,14 +7,9 @@
 	return tNumber
 }
 
-
-/type/ {
-	return tType
-}
-
-/struct/ {
-	return tStruct
-}
+/type/   { return tType }
+/string/ { return tStringType }
+/struct/ { return tStruct }
 
 /u?int(8|16|24|32|64)/ {
 	var err error

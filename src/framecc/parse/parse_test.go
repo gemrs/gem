@@ -257,6 +257,35 @@ type AnotherStruct struct {
 		},
 	},
 
+	{
+		filename: "in_file",
+		source: `type SomeStruct struct {
+	SomeString string[256]
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Struct{
+						Name: "SomeStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "SomeString",
+									Type: &ast.ArrayType{
+										Object: &ast.StringBaseType{},
+										Length: &ast.StaticLength{
+											Length: 256,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 
 	{
 		filename: "in_file",

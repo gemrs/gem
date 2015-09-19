@@ -220,6 +220,87 @@ func(r rune) int {
 },
 }, []int{  /* Start-of-input transitions */  -1, -1, -1, -1, -1,}, []int{  /* End-of-input transitions */  -1, -1, -1, -1, -1,},nil},
 
+// string
+{[]bool{false, false, false, false, false, false, true}, []func(rune) int{  // Transitions
+func(r rune) int {
+	switch(r) {
+		case 103: return -1
+		case 105: return -1
+		case 110: return -1
+		case 114: return -1
+		case 115: return 1
+		case 116: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 103: return -1
+		case 105: return -1
+		case 110: return -1
+		case 114: return -1
+		case 115: return -1
+		case 116: return 2
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 103: return -1
+		case 105: return -1
+		case 110: return -1
+		case 114: return 3
+		case 115: return -1
+		case 116: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 103: return -1
+		case 105: return 4
+		case 110: return -1
+		case 114: return -1
+		case 115: return -1
+		case 116: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 103: return -1
+		case 105: return -1
+		case 110: return 5
+		case 114: return -1
+		case 115: return -1
+		case 116: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 103: return 6
+		case 105: return -1
+		case 110: return -1
+		case 114: return -1
+		case 115: return -1
+		case 116: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 103: return -1
+		case 105: return -1
+		case 110: return -1
+		case 114: return -1
+		case 115: return -1
+		case 116: return -1
+	}
+	return -1
+},
+}, []int{  /* Start-of-input transitions */  -1, -1, -1, -1, -1, -1, -1,}, []int{  /* End-of-input transitions */  -1, -1, -1, -1, -1, -1, -1,},nil},
+
 // struct
 {[]bool{false, false, false, false, false, false, true}, []func(rune) int{  // Transitions
 func(r rune) int {
@@ -295,7 +376,7 @@ func(r rune) int {
 }, []int{  /* Start-of-input transitions */  -1, -1, -1, -1, -1, -1, -1,}, []int{  /* End-of-input transitions */  -1, -1, -1, -1, -1, -1, -1,},nil},
 
 // u?int(8|16|24|32|64)
-{[]bool{false, false, false, false, false, false, false, true, false, false, true, true, true, true}, []func(rune) int{  // Transitions
+{[]bool{false, false, false, false, false, false, true, false, false, false, true, true, true, true}, []func(rune) int{  // Transitions
 func(r rune) int {
 	switch(r) {
 		case 49: return -1
@@ -304,25 +385,10 @@ func(r rune) int {
 		case 52: return -1
 		case 54: return -1
 		case 56: return -1
-		case 105: return 2
+		case 105: return 1
 		case 110: return -1
 		case 116: return -1
-		case 117: return 1
-	}
-	return -1
-},
-func(r rune) int {
-	switch(r) {
-		case 49: return -1
-		case 50: return -1
-		case 51: return -1
-		case 52: return -1
-		case 54: return -1
-		case 56: return -1
-		case 105: return 2
-		case 110: return -1
-		case 116: return -1
-		case 117: return -1
+		case 117: return 2
 	}
 	return -1
 },
@@ -349,6 +415,21 @@ func(r rune) int {
 		case 52: return -1
 		case 54: return -1
 		case 56: return -1
+		case 105: return 1
+		case 110: return -1
+		case 116: return -1
+		case 117: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 49: return -1
+		case 50: return -1
+		case 51: return -1
+		case 52: return -1
+		case 54: return -1
+		case 56: return -1
 		case 105: return -1
 		case 110: return -1
 		case 116: return 4
@@ -358,12 +439,12 @@ func(r rune) int {
 },
 func(r rune) int {
 	switch(r) {
-		case 49: return 8
-		case 50: return 6
+		case 49: return 7
+		case 50: return 9
 		case 51: return 5
 		case 52: return -1
-		case 54: return 9
-		case 56: return 7
+		case 54: return 8
+		case 56: return 6
 		case 105: return -1
 		case 110: return -1
 		case 116: return -1
@@ -391,21 +472,6 @@ func(r rune) int {
 		case 49: return -1
 		case 50: return -1
 		case 51: return -1
-		case 52: return 12
-		case 54: return -1
-		case 56: return -1
-		case 105: return -1
-		case 110: return -1
-		case 116: return -1
-		case 117: return -1
-	}
-	return -1
-},
-func(r rune) int {
-	switch(r) {
-		case 49: return -1
-		case 50: return -1
-		case 51: return -1
 		case 52: return -1
 		case 54: return -1
 		case 56: return -1
@@ -422,7 +488,22 @@ func(r rune) int {
 		case 50: return -1
 		case 51: return -1
 		case 52: return -1
-		case 54: return 11
+		case 54: return 12
+		case 56: return -1
+		case 105: return -1
+		case 110: return -1
+		case 116: return -1
+		case 117: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 49: return -1
+		case 50: return -1
+		case 51: return -1
+		case 52: return 11
+		case 54: return -1
 		case 56: return -1
 		case 105: return -1
 		case 110: return -1
@@ -840,14 +921,12 @@ func (yylex *Lexer) Lex(lval *yySymType) int {
 	return tNumber
 }
 		case 1:
-			{
-	return tType
-}
+			{ return tType }
 		case 2:
-			{
-	return tStruct
-}
+			{ return tStringType }
 		case 3:
+			{ return tStruct }
+		case 4:
 			{
 	var err error
 	lval.n, err = ast.ParseIntegerType(yylex.Text())
@@ -856,27 +935,27 @@ func (yylex *Lexer) Lex(lval *yySymType) int {
 	}
 	return tIntegerType
 }
-		case 4:
+		case 5:
 			{
     lval.sval = yylex.Text()
     return tIntegerFlag
 }
-		case 5:
+		case 6:
 			{
 	return int(yylex.Text()[0])
 }
-		case 6:
+		case 7:
 			{
 	lval.sval = yylex.Text()
 	return tIdentifier
 }
-		case 7:
-			{ /* eat up whitespace */ }
 		case 8:
-			{ /* eat up one-line comments */ }
+			{ /* eat up whitespace */ }
 		case 9:
-			{ /* eat up multi-line comments */ }
+			{ /* eat up one-line comments */ }
 		case 10:
+			{ /* eat up multi-line comments */ }
+		case 11:
 			{ yylex.Error(fmt.Sprintf("unrecognized character: %v", yylex.Text())) }
 		default:
 			 break OUTER0
