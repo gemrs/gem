@@ -7,6 +7,11 @@
 	return tNumber
 }
 
+
+/type/ {
+	return tType
+}
+
 /struct/ {
 	return tStruct
 }

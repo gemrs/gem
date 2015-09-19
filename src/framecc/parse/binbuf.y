@@ -22,7 +22,7 @@ import (
 %token <sval> tIdentifier
 %token tNumber
 
-%token tStruct
+%token tStruct tType
 %token tStringType
 %token <n> tIntegerType
 %token <sval> tIntegerFlag
@@ -33,7 +33,8 @@ import (
 %type <n> field
 %type <n> field_list
 %type <n> scope
-%type <n> struct anon_struct
+%type <n> reference
+%type <n> struct anon_struct decl
 %type <n> decl_list
 %type <svalarr> int_modifiers
 
@@ -48,9 +49,16 @@ file
 
 decl_list
     : ws✳ { $$ = ast.NewScope() }
-    | decl_list ws✳ struct ws✳
+    | decl_list ws✳ decl ws✳
       { $1.(*ast.Scope).Add($3.(*ast.Struct)) }
     ;
+
+decl
+	: tType struct
+      {
+          $$ = $2
+              yylex.(*Lexer).AddDecl($$)
+      }
 
 struct
 	: tIdentifier anon_struct
@@ -108,10 +116,22 @@ int_modifiers
       { $$ = append($$, $3) }
     ;
 
+reference
+	: tIdentifier
+      {
+	      $$ = &ast.DeclReference{
+			  DeclName: $1,
+	      }
+      }
+    ;
+
 type
     : int_type
     | anon_struct
+    | reference
     ;
+
+
 
 ws
 	: tWhitespace

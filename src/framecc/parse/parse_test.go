@@ -19,7 +19,7 @@ type testCase struct {
 var tests = []testCase{
 	{
 		filename: "in_file",
-		source: `SomeStruct struct {
+		source: `type SomeStruct struct {
 	SomeInt int8
 	AnotherInt uint24
 }`,
@@ -57,7 +57,7 @@ var tests = []testCase{
 
 	{
 		filename: "in_file",
-		source: `OuterStruct struct {
+		source: `type OuterStruct struct {
 	SomeStruct struct {
 		SomeInt int8
 		AnotherInt uint24
@@ -107,11 +107,11 @@ var tests = []testCase{
 
 	{
 		filename: "in_file",
-		source: `SomeStruct struct {
+		source: `type SomeStruct struct {
 	Field uint32
 }
 
-AnotherStruct struct {
+type AnotherStruct struct {
 	Field uint32
 }`,
 		expected: &ast.File{
@@ -155,7 +155,7 @@ AnotherStruct struct {
 
 	{
 		filename: "in_file",
-		source: `SomeStruct struct/**/{
+		source: `type SomeStruct struct/**/{
 	SomeInt int8 /*
   Multi-line comment
 */
@@ -196,7 +196,7 @@ AnotherStruct struct {
 
 	{
 		filename: "in_file",
-		source: `SomeStruct struct {
+		source: `type SomeStruct struct {
 	SomeInt int8<IntLittleEndian, IntOffset128>
 }`,
 		expected: &ast.File{
@@ -226,11 +226,11 @@ AnotherStruct struct {
 
 	{
 		filename: "in_file",
-		source: `SomeStruct struct {
+		source: `type SomeStruct struct {
 	Field uint32
 }
 
-AnotherStruct struct {
+type AnotherStruct struct {
 	Field SomeStruct
 }`,
 		expected: &ast.File{
@@ -258,10 +258,23 @@ AnotherStruct struct {
 							S: []ast.Node{
 								&ast.Field{
 									Name: "Field",
-									Type: &ast.IntegerType{
-										Signed: false,
-										Bitsize: 32,
-										Modifiers: nil,
+									Type: &ast.DeclReference{
+										DeclName: "SomeStruct",
+										Object: &ast.Struct{
+											Name: "SomeStruct",
+											Scope: &ast.Scope{
+												S: []ast.Node{
+													&ast.Field{
+														Name: "Field",
+														Type: &ast.IntegerType{
+															Signed: false,
+															Bitsize: 32,
+															Modifiers: nil,
+														},
+													},
+												},
+											},
+										},
 									},
 								},
 							},

@@ -171,6 +171,55 @@ func(r rune) int {
 },
 }, []int{  /* Start-of-input transitions */  -1, -1,}, []int{  /* End-of-input transitions */  -1, -1,},nil},
 
+// type
+{[]bool{false, false, false, false, true}, []func(rune) int{  // Transitions
+func(r rune) int {
+	switch(r) {
+		case 101: return -1
+		case 112: return -1
+		case 116: return 1
+		case 121: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 101: return -1
+		case 112: return -1
+		case 116: return -1
+		case 121: return 2
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 101: return -1
+		case 112: return 3
+		case 116: return -1
+		case 121: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 101: return 4
+		case 112: return -1
+		case 116: return -1
+		case 121: return -1
+	}
+	return -1
+},
+func(r rune) int {
+	switch(r) {
+		case 101: return -1
+		case 112: return -1
+		case 116: return -1
+		case 121: return -1
+	}
+	return -1
+},
+}, []int{  /* Start-of-input transitions */  -1, -1, -1, -1, -1,}, []int{  /* End-of-input transitions */  -1, -1, -1, -1, -1,},nil},
+
 // struct
 {[]bool{false, false, false, false, false, false, true}, []func(rune) int{  // Transitions
 func(r rune) int {
@@ -310,10 +359,10 @@ func(r rune) int {
 func(r rune) int {
 	switch(r) {
 		case 49: return 6
-		case 50: return 7
-		case 51: return 8
+		case 50: return 8
+		case 51: return 9
 		case 52: return -1
-		case 54: return 9
+		case 54: return 7
 		case 56: return 5
 		case 105: return -1
 		case 110: return -1
@@ -370,9 +419,9 @@ func(r rune) int {
 func(r rune) int {
 	switch(r) {
 		case 49: return -1
-		case 50: return 11
+		case 50: return -1
 		case 51: return -1
-		case 52: return -1
+		case 52: return 11
 		case 54: return -1
 		case 56: return -1
 		case 105: return -1
@@ -385,9 +434,9 @@ func(r rune) int {
 func(r rune) int {
 	switch(r) {
 		case 49: return -1
-		case 50: return -1
+		case 50: return 10
 		case 51: return -1
-		case 52: return 10
+		case 52: return -1
 		case 54: return -1
 		case 56: return -1
 		case 105: return -1
@@ -792,9 +841,13 @@ func (yylex *Lexer) Lex(lval *yySymType) int {
 }
 		case 1:
 			{
-	return tStruct
+	return tType
 }
 		case 2:
+			{
+	return tStruct
+}
+		case 3:
 			{
 	var err error
 	lval.n, err = ast.ParseIntegerType(yylex.Text())
@@ -803,27 +856,27 @@ func (yylex *Lexer) Lex(lval *yySymType) int {
 	}
 	return tIntegerType
 }
-		case 3:
+		case 4:
 			{
     lval.sval = yylex.Text()
     return tIntegerFlag
 }
-		case 4:
+		case 5:
 			{
 	return int(yylex.Text()[0])
 }
-		case 5:
+		case 6:
 			{
 	lval.sval = yylex.Text()
 	return tIdentifier
 }
-		case 6:
-			{ /* eat up whitespace */ }
 		case 7:
-			{ /* eat up one-line comments */ }
+			{ /* eat up whitespace */ }
 		case 8:
-			{ /* eat up multi-line comments */ }
+			{ /* eat up one-line comments */ }
 		case 9:
+			{ /* eat up multi-line comments */ }
+		case 10:
 			{ yylex.Error(fmt.Sprintf("unrecognized character: %v", yylex.Text())) }
 		default:
 			 break OUTER0
