@@ -5,14 +5,15 @@ import (
 	"io/ioutil"
 	"os"
 
-	"framecc/compile"
+	"bbc/compile"
 
 	"golang.org/x/tools/imports"
 )
 
 func main() {
 	if len(os.Args) != 3 {
-		fmt.Print("Usage: framecc input.frame output.gen.go")
+		fmt.Println("bbc: binary buffer compiler")
+		fmt.Println("Usage: bbc input.bb output.bb.go")
 		os.Exit(1)
 	}
 
@@ -45,5 +46,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("framecc: wrote output: %v\n", os.Args[2])
+	fmt.Printf("bbc: wrote output: %v\n", os.Args[2])
 }

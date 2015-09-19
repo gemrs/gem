@@ -9,7 +9,7 @@ import (
 	"gem/encoding"
 )
 
-//go:generate framecc test_frame.frame test_frame.gen.go
+//go:generate bbc test_frame.frame test_frame.gen.go
 
 var testFrame = TestFrame{
 	Message:  "test string",

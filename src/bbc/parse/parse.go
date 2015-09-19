@@ -5,7 +5,7 @@ import (
 	"strings"
 	"fmt"
 
-	"framecc/ast"
+	"bbc/ast"
 )
 
 //go:generate go tool yacc -o binbuf.y.go binbuf.y

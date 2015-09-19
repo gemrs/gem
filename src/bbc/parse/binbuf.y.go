@@ -5,7 +5,7 @@ import __yyfmt__ "fmt"
 
 //line binbuf.y:2
 import (
-	"framecc/ast"
+	"bbc/ast"
 )
 
 //line binbuf.y:10

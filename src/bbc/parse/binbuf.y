@@ -2,7 +2,7 @@
 package parse
 
 import (
-	"framecc/ast"
+	"bbc/ast"
 )
 
 %}
