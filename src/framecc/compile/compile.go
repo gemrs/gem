@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"text/template"
+	"strings"
 
 	"framecc/ast"
 	"framecc/parse"
@@ -332,7 +333,14 @@ func (c *context) generateEncodeFuncs(strct *ast.Struct) (string, error) {
 func (c *context) generateEncodeFlags(typ ast.Node) string {
 	switch typ := typ.(type) {
 	case *ast.IntegerType:
-		return fmt.Sprintf("encoding.IntegerFlag(%v)", typ.Modifiers)
+		modifiers := make([]string, 0)
+		for _, m := range typ.Modifiers {
+			modifiers = append(modifiers, fmt.Sprintf("encoding.%v", m))
+		}
+		if len(modifiers) == 0 {
+			modifiers = []string{"encoding.IntNilFlag"}
+		}
+		return fmt.Sprintf("encoding.IntegerFlag(%v)", strings.Join(modifiers, "|"))
 	case *ast.ArrayType:
 		// For strings, pass the expected length as a flag
 		switch typ.Object.(type) {

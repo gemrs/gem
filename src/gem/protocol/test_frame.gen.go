@@ -6,18 +6,6 @@ import (
 	"gem/encoding"
 )
 
-type TestFrame AnonStruct_49
-
-func (frm *TestFrame) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
-	struc := (*AnonStruct_49)(frm)
-	return struc.Encode(buf, flags)
-}
-
-func (frm *TestFrame) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
-	struc := (*AnonStruct_49)(frm)
-	return struc.Decode(buf, flags)
-}
-
 type EmbeddedStruct struct {
 	A encoding.Int32
 	B encoding.Int32
@@ -30,17 +18,17 @@ func (struc *EmbeddedStruct) Encode(buf *bytes.Buffer, flags interface{}) (err e
 		return err
 	}
 
-	err = struc.B.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntPDPEndian))
+	err = struc.B.Encode(buf, encoding.IntegerFlag(encoding.IntPDPEndian|encoding.IntOffset128))
 	if err != nil {
 		return err
 	}
 
-	err = struc.C.Encode(buf, encoding.IntegerFlag(encoding.IntInverse128|encoding.IntRPDPEndian))
+	err = struc.C.Encode(buf, encoding.IntegerFlag(encoding.IntRPDPEndian|encoding.IntInverse128))
 	if err != nil {
 		return err
 	}
 
-	return
+	return err
 }
 
 func (struc *EmbeddedStruct) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
@@ -49,20 +37,20 @@ func (struc *EmbeddedStruct) Decode(buf *bytes.Buffer, flags interface{}) (err e
 		return err
 	}
 
-	err = struc.B.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntPDPEndian))
+	err = struc.B.Decode(buf, encoding.IntegerFlag(encoding.IntPDPEndian|encoding.IntOffset128))
 	if err != nil {
 		return err
 	}
 
-	err = struc.C.Decode(buf, encoding.IntegerFlag(encoding.IntInverse128|encoding.IntRPDPEndian))
+	err = struc.C.Decode(buf, encoding.IntegerFlag(encoding.IntRPDPEndian|encoding.IntInverse128))
 	if err != nil {
 		return err
 	}
 
-	return
+	return err
 }
 
-type AnonStruct_49 struct {
+type TestFrame struct {
 	Message  encoding.JString
 	Values8  [4]encoding.Int8
 	Values16 [2]encoding.Int16
@@ -70,7 +58,7 @@ type AnonStruct_49 struct {
 	Struc2   [2]EmbeddedStruct
 }
 
-func (struc *AnonStruct_49) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *TestFrame) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
 	err = struc.Message.Encode(buf, 16)
 	if err != nil {
 		return err
@@ -84,7 +72,7 @@ func (struc *AnonStruct_49) Encode(buf *bytes.Buffer, flags interface{}) (err er
 	}
 
 	for i := 0; i < 2; i++ {
-		err = struc.Values16[i].Encode(buf, encoding.IntegerFlag(0))
+		err = struc.Values16[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
 			return err
 		}
@@ -102,10 +90,10 @@ func (struc *AnonStruct_49) Encode(buf *bytes.Buffer, flags interface{}) (err er
 		}
 	}
 
-	return
+	return err
 }
 
-func (struc *AnonStruct_49) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *TestFrame) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
 	err = struc.Message.Decode(buf, 16)
 	if err != nil {
 		return err
@@ -119,7 +107,7 @@ func (struc *AnonStruct_49) Decode(buf *bytes.Buffer, flags interface{}) (err er
 	}
 
 	for i := 0; i < 2; i++ {
-		err = struc.Values16[i].Decode(buf, encoding.IntegerFlag(0))
+		err = struc.Values16[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
 			return err
 		}
@@ -137,5 +125,5 @@ func (struc *AnonStruct_49) Decode(buf *bytes.Buffer, flags interface{}) (err er
 		}
 	}
 
-	return
+	return err
 }

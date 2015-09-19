@@ -1,9 +1,9 @@
-FSIndex struct {
+type FSIndex struct {
     Length     int24
     StartBlock int24
 }
 
-FSBlock struct {
+type FSBlock struct {
 	FileID       int16
 	FilePosition int16
 	NextBlock    int24

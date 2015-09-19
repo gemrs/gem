@@ -30,14 +30,13 @@ func main() {
 
 	output, err := compile.Compile(os.Args[1], pkg, string(input))
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		fmt.Printf("error during compilation: %v\n", err)
 		os.Exit(1)
 	}
 
 	output, err = imports.Process(os.Args[1], output, nil)
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		os.Exit(1)
+		panic(fmt.Sprintf("generated invalid go: %v", err))
 	}
 
 	err = ioutil.WriteFile(os.Args[2], []byte(output), 0644)

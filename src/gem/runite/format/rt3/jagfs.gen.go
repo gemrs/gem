@@ -12,31 +12,31 @@ type FSIndex struct {
 }
 
 func (struc *FSIndex) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
-	err = struc.Length.Encode(buf, encoding.IntegerFlag(0))
+	err = struc.Length.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.StartBlock.Encode(buf, encoding.IntegerFlag(0))
+	err = struc.StartBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	return
+	return err
 }
 
 func (struc *FSIndex) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
-	err = struc.Length.Decode(buf, encoding.IntegerFlag(0))
+	err = struc.Length.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.StartBlock.Decode(buf, encoding.IntegerFlag(0))
+	err = struc.StartBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	return
+	return err
 }
 
 type FSBlock struct {
@@ -48,63 +48,63 @@ type FSBlock struct {
 }
 
 func (struc *FSBlock) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
-	err = struc.FileID.Encode(buf, encoding.IntegerFlag(0))
+	err = struc.FileID.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.FilePosition.Encode(buf, encoding.IntegerFlag(0))
+	err = struc.FilePosition.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.NextBlock.Encode(buf, encoding.IntegerFlag(0))
+	err = struc.NextBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.Partition.Encode(buf, encoding.IntegerFlag(0))
+	err = struc.Partition.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
 	for i := 0; i < 512; i++ {
-		err = struc.Data[i].Encode(buf, encoding.IntegerFlag(0))
+		err = struc.Data[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
 			return err
 		}
 	}
 
-	return
+	return err
 }
 
 func (struc *FSBlock) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
-	err = struc.FileID.Decode(buf, encoding.IntegerFlag(0))
+	err = struc.FileID.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.FilePosition.Decode(buf, encoding.IntegerFlag(0))
+	err = struc.FilePosition.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.NextBlock.Decode(buf, encoding.IntegerFlag(0))
+	err = struc.NextBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.Partition.Decode(buf, encoding.IntegerFlag(0))
+	err = struc.Partition.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
 	for i := 0; i < 512; i++ {
-		err = struc.Data[i].Decode(buf, encoding.IntegerFlag(0))
+		err = struc.Data[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
 			return err
 		}
 	}
 
-	return
+	return err
 }

@@ -1,10 +1,10 @@
-EmbeddedStruct struct {
+type EmbeddedStruct struct {
     A int32<IntLittleEndian>
     B int32<IntPDPEndian, IntOffset128>
     C int32<IntRPDPEndian, IntInverse128>
 }
 
-TestFrame struct {
+type TestFrame struct {
     Message  string[16]
     Values8  int8<IntNegate>[4]
     Values16 int16[2]
