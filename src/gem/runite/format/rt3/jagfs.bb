@@ -8,5 +8,5 @@ type FSBlock struct {
 	FilePosition int16
 	NextBlock    int24
 	Partition    int8
-	Data         int8[512]
+	Data         byte[512]
 }
