@@ -290,6 +290,36 @@ type AnotherStruct struct {
 	{
 		filename: "in_file",
 		source: `type SomeStruct struct {
+	SomeBuffer byte[256]
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Struct{
+						Name: "SomeStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "SomeBuffer",
+									Type: &ast.ArrayType{
+										Object: &ast.ByteBaseType{},
+										Length: &ast.StaticLength{
+											Length: 256,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	{
+		filename: "in_file",
+		source: `type SomeStruct struct {
 	Field uint32
 }
 

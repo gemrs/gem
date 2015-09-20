@@ -70,6 +70,7 @@ func (l *Lexer) resolveReferencesTo(name string, typ ast.Node, n ast.Node) {
 		l.resolveReferencesTo(name, typ, n.Object)
 	case *ast.IntegerType:
 	case *ast.StringBaseType:
+	case *ast.ByteBaseType:
 	case *ast.StaticLength:
 	default:
 		if n != nil {

@@ -97,6 +97,17 @@ func (s *StringBaseType) ByteLength() (int, error) {
 	return 1, nil
 }
 
+// A Fixed length byte array (eg. byte[256])
+type ByteBaseType struct{}
+
+func (s *ByteBaseType) Identifier() string {
+	return "byte"
+}
+
+func (s *ByteBaseType) ByteLength() (int, error) {
+	return 1, nil
+}
+
 type IntegerType struct {
 	Signed    bool
 	Bitsize   int

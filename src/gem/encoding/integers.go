@@ -129,7 +129,7 @@ func (i *Int24) Decode(buf *bytes.Buffer, flags_ interface{}) error {
 		return err
 	}
 
-	value64 := uint64(data[0]) << 16 | uint64(data[1]) << 8 | uint64(data[0])
+	value64 := uint64(data[0]) << 16 | uint64(data[1]) << 8 | uint64(data[2])
 	*i = Int24(flags.reverse().apply(value64))
 	return nil
 }

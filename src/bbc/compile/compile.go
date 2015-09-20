@@ -112,6 +112,8 @@ func (c *context) goType(typ ast.Node) string {
 		switch typ := typ.Object.(type) {
 		case *ast.StringBaseType:
 			return "encoding.JString"
+		case *ast.ByteBaseType:
+			return "encoding.Bytes"
 		default:
 			baseType := c.goType(typ)
 			switch arrayLength := array.Length.(type) {
@@ -174,6 +176,7 @@ func (c *context) generateTypes(n ast.Node) error {
 		}
 	case *ast.IntegerType:
 	case *ast.StringBaseType:
+	case *ast.ByteBaseType:
 	case *ast.StaticLength:
 	default:
 		panic(fmt.Sprintf("couldn't do anything with %T\n", n))
@@ -263,9 +266,11 @@ func (c *context) generateFieldFunc(operation string, field *ast.Field) (string,
 outer:
 	switch typ := field.Type.(type) {
 	case *ast.ArrayType:
-		// Strings are a special case
+		// Strings and byte arrays are a special case
 		switch typ.Object.(type) {
 		case *ast.StringBaseType:
+			break outer
+		case *ast.ByteBaseType:
 			break outer
 		}
 
@@ -342,9 +347,11 @@ func (c *context) generateEncodeFlags(typ ast.Node) string {
 		}
 		return fmt.Sprintf("encoding.IntegerFlag(%v)", strings.Join(modifiers, "|"))
 	case *ast.ArrayType:
-		// For strings, pass the expected length as a flag
+		// For strings and byte arrays, pass the expected length as a flag
 		switch typ.Object.(type) {
 		case *ast.StringBaseType:
+			return c.generateArrayLength(typ.Length)
+		case *ast.ByteBaseType:
 			return c.generateArrayLength(typ.Length)
 		}
 

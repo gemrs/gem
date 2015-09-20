@@ -24,14 +24,14 @@ import (
 %token <ival> tNumber
 
 %token tStruct tType
-%token <n> tStringType
+%token <n> tStringType tByteType
 %token <n> tIntegerType
 %token <sval> tIntegerFlag
 
 %token tEOL
 
 %type <length> array_spec
-%type <n> type int_type string_type
+%type <n> type int_type string_type bytes_type
 %type <n> field
 %type <n> field_list
 %type <n> scope
@@ -130,6 +130,7 @@ reference
 type
     : int_type
     | string_type
+    | bytes_type
     | anon_struct
     | reference
     | type array_spec
@@ -140,6 +141,11 @@ type
           }
       }
     ;
+
+bytes_type
+	: tByteType
+      { $$ = &ast.ByteBaseType{} }
+	;
 
 string_type
 	: tStringType

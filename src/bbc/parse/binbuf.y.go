@@ -25,9 +25,10 @@ const tNumber = 57348
 const tStruct = 57349
 const tType = 57350
 const tStringType = 57351
-const tIntegerType = 57352
-const tIntegerFlag = 57353
-const tEOL = 57354
+const tByteType = 57352
+const tIntegerType = 57353
+const tIntegerFlag = 57354
+const tEOL = 57355
 
 var yyToknames = [...]string{
 	"$end",
@@ -46,6 +47,7 @@ var yyToknames = [...]string{
 	"tStruct",
 	"tType",
 	"tStringType",
+	"tByteType",
 	"tIntegerType",
 	"tIntegerFlag",
 	"tEOL",
@@ -56,7 +58,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line binbuf.y:169
+//line binbuf.y:175
 
 //line yacctab:1
 var yyExca = [...]int{
@@ -65,62 +67,64 @@ var yyExca = [...]int{
 	-2, 0,
 }
 
-const yyNprod = 29
+const yyNprod = 31
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 44
+const yyLast = 46
 
 var yyAct = [...]int{
 
-	2, 15, 42, 7, 31, 5, 16, 9, 30, 29,
-	11, 12, 38, 16, 35, 21, 14, 40, 41, 20,
-	5, 34, 23, 39, 33, 27, 3, 18, 4, 1,
-	36, 8, 6, 10, 13, 37, 28, 17, 19, 22,
-	26, 25, 24, 32,
+	2, 15, 44, 7, 33, 5, 16, 9, 31, 32,
+	30, 12, 11, 40, 16, 37, 21, 14, 5, 20,
+	41, 42, 43, 23, 36, 28, 35, 3, 18, 4,
+	1, 38, 8, 6, 10, 13, 29, 39, 17, 19,
+	22, 27, 26, 25, 24, 34,
 }
 var yyPact = [...]int{
 
-	9, -1000, 9, -1000, 9, -1000, 9, -1000, -1000, -5,
-	9, 4, -1000, -1000, -1, -1000, 23, -1000, 9, 10,
-	-1000, -1000, -1000, -8, 18, -1000, -1000, -1000, -1000, 13,
-	-1000, -1000, -1000, 1, -6, 16, 8, -1000, -1000, -1000,
-	-1000, -16, -1000,
+	7, -1000, 7, -1000, 7, -1000, 7, -1000, -1000, -3,
+	7, 5, -1000, -1000, 0, -1000, 24, -1000, 7, 11,
+	-1000, -1000, -1000, -8, 20, -1000, -1000, -1000, -1000, -1000,
+	16, -1000, -1000, -1000, -1000, 2, -6, 13, 12, -1000,
+	-1000, -1000, -1000, -17, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 43, 42, 41, 40, 39, 38, 37, 36, 34,
-	1, 33, 32, 30, 29, 0, 28, 26,
+	0, 45, 44, 43, 42, 41, 40, 39, 38, 36,
+	35, 1, 34, 33, 31, 30, 0, 29, 27,
 }
 var yyR1 = [...]int{
 
-	0, 14, 12, 12, 11, 9, 10, 7, 6, 6,
-	5, 3, 3, 13, 13, 13, 8, 2, 2, 2,
-	2, 2, 4, 1, 16, 17, 17, 15, 15,
+	0, 15, 13, 13, 12, 10, 11, 8, 7, 7,
+	6, 3, 3, 14, 14, 14, 9, 2, 2, 2,
+	2, 2, 2, 5, 4, 1, 17, 18, 18, 16,
+	16,
 }
 var yyR2 = [...]int{
 
 	0, 3, 1, 4, 2, 2, 2, 3, 1, 2,
 	2, 1, 4, 1, 1, 3, 1, 1, 1, 1,
-	1, 2, 1, 3, 1, 1, 2, 0, 1,
+	1, 1, 2, 1, 1, 3, 1, 1, 2, 0,
+	1,
 }
 var yyChk = [...]int{
 
-	-1000, -14, -15, -17, -16, 11, -12, -15, -17, -15,
-	-11, 15, -15, -9, 12, -10, 14, -7, 4, -6,
-	-15, 5, -5, 12, -2, -3, -4, -10, -8, 17,
-	16, 12, -1, 6, 8, 13, -13, -15, 18, 7,
-	9, 10, 18,
+	-1000, -15, -16, -18, -17, 11, -13, -16, -18, -16,
+	-12, 15, -16, -10, 12, -11, 14, -8, 4, -7,
+	-16, 5, -6, 12, -2, -3, -4, -5, -11, -9,
+	18, 16, 17, 12, -1, 6, 8, 13, -14, -16,
+	19, 7, 9, 10, 19,
 }
 var yyDef = [...]int{
 
-	27, -2, 27, 28, 25, 24, 27, 2, 26, 1,
-	27, 0, 3, 4, 0, 5, 0, 6, 27, 0,
-	8, 7, 9, 0, 10, 17, 18, 19, 20, 11,
-	22, 16, 21, 0, 27, 0, 0, 13, 14, 23,
-	12, 0, 15,
+	29, -2, 29, 30, 27, 26, 29, 2, 28, 1,
+	29, 0, 3, 4, 0, 5, 0, 6, 29, 0,
+	8, 7, 9, 0, 10, 17, 18, 19, 20, 21,
+	11, 24, 23, 16, 22, 0, 29, 0, 0, 13,
+	14, 25, 12, 0, 15,
 }
 var yyTok1 = [...]int{
 
@@ -141,7 +145,7 @@ var yyTok1 = [...]int{
 var yyTok2 = [...]int{
 
 	2, 3, 11, 12, 13, 14, 15, 16, 17, 18,
-	19,
+	19, 20,
 }
 var yyTok3 = [...]int{
 	0,
@@ -588,24 +592,30 @@ yydefault:
 				DeclName: yyDollar[1].sval,
 			}
 		}
-	case 21:
+	case 22:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:136
+		//line binbuf.y:137
 		{
 			yyVAL.n = &ast.ArrayType{
 				Object: yyDollar[1].n,
 				Length: yyDollar[2].length,
 			}
 		}
-	case 22:
+	case 23:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:146
+		//line binbuf.y:147
+		{
+			yyVAL.n = &ast.ByteBaseType{}
+		}
+	case 24:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line binbuf.y:152
 		{
 			yyVAL.n = &ast.StringBaseType{}
 		}
-	case 23:
+	case 25:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:151
+		//line binbuf.y:157
 		{
 			yyVAL.length = &ast.StaticLength{
 				Length: yyDollar[2].ival,

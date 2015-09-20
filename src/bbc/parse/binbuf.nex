@@ -9,6 +9,7 @@
 
 /type/   { return tType }
 /string/ { return tStringType }
+/byte/   { return tByteType }
 /struct/ { return tStruct }
 
 /u?int(8|16|24|32|64)/ {
