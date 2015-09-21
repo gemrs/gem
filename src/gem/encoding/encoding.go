@@ -1,6 +1,7 @@
 package encoding
 
 import (
+	"io"
 	"bytes"
 )
 
@@ -11,7 +12,7 @@ type Codable interface {
 }
 
 type Decoder interface {
-	Decode(buf *bytes.Buffer, flags_ interface{}) error
+	Decode(buf io.Reader, flags_ interface{}) error
 }
 
 type Encoder interface {

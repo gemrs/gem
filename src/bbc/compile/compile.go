@@ -37,7 +37,7 @@ struc := (*{{.Object.Identifier}})(frm)
 return struc.Encode(buf, flags)
 }
 
-func (frm *{{.Identifier}}) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (frm *{{.Identifier}}) Decode(buf io.Reader, flags interface{}) (err error) {
 struc := (*{{.Object.Identifier}})(frm)
 return struc.Decode(buf, flags)
 }`))
@@ -61,7 +61,7 @@ var encodeFuncsTmpl = template.Must(template.New("encodefuncs").Parse(`func (str
 return err
 }
 
-func (struc *{{.Type}}) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *{{.Type}}) Decode(buf io.Reader, flags interface{}) (err error) {
 {{range .DecodeFields}}{{.}}
 
 {{end}}

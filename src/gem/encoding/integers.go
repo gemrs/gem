@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"unsafe"
+	"io"
 )
 
 type IntegerFlag int
@@ -63,14 +64,15 @@ func (i *Int8) Encode(buf *bytes.Buffer, flags_ interface{}) error {
 	return buf.WriteByte(byte(value))
 }
 
-func (i *Int8) Decode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int8) Decode(buf io.Reader, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
-	value, err := buf.ReadByte()
+	b := make([]byte, 1)
+	_, err := buf.Read(b)
 	if err != nil {
 		return err
 	}
 
-	*i = Int8(flags.reverse().apply(uint64(value)))
+	*i = Int8(flags.reverse().apply(uint64(b[0])))
 	return nil
 }
 
@@ -91,7 +93,7 @@ func (i *Int16) Encode(buf *bytes.Buffer, flags_ interface{}) error {
 	return err
 }
 
-func (i *Int16) Decode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int16) Decode(buf io.Reader, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	endian := flags.endian()
 
@@ -120,7 +122,7 @@ func (i *Int24) Encode(buf *bytes.Buffer, flags_ interface{}) error {
 	return err
 }
 
-func (i *Int24) Decode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int24) Decode(buf io.Reader, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 
 	data := make([]byte, 3)
@@ -151,7 +153,7 @@ func (i *Int32) Encode(buf *bytes.Buffer, flags_ interface{}) error {
 	return err
 }
 
-func (i *Int32) Decode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int32) Decode(buf io.Reader, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	endian := flags.endian()
 
@@ -183,7 +185,7 @@ func (i *Int64) Encode(buf *bytes.Buffer, flags_ interface{}) error {
 	return err
 }
 
-func (i *Int64) Decode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int64) Decode(buf io.Reader, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	endian := flags.endian()
 

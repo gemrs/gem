@@ -2,6 +2,7 @@ package encoding
 
 import (
 	"bytes"
+	"io"
 )
 
 type Bytes []byte
@@ -20,7 +21,7 @@ func (i *Bytes) Encode(buf *bytes.Buffer, flags interface{}) error {
 	return err
 }
 
-func (i *Bytes) Decode(buf *bytes.Buffer, flags interface{}) error {
+func (i *Bytes) Decode(buf io.Reader, flags interface{}) error {
 	length := flags.(int)
 	*i = make(Bytes, length)
 	_, err := buf.Read((*i)[:length])
