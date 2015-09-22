@@ -39,6 +39,12 @@
 			"revision": "c262de870b618eed648983aa994b03bc04641c72",
 			"branch": "master",
 			"path": "/imports"
+		},
+		{
+			"importpath": "gopkg.in/tomb.v2",
+			"repository": "https://gopkg.in/tomb.v2",
+			"revision": "14b3d72120e8d10ea6e6b7f87f7175734b1faab8",
+			"branch": "master"
 		}
 	]
 }

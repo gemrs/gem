@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"runtime"
 
 	"github.com/qur/gopy/lib"
 
@@ -12,12 +13,14 @@ import (
 )
 
 func main() {
-	pythonInit()
+	lock := pythonInit()
+	defer lock.Unlock()
 
+	runtime.LockOSThread()
 	py.Main(os.Args)
 }
 
-func pythonInit() {
+func pythonInit() *py.Lock {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("initializing python: %s", r)
@@ -25,7 +28,7 @@ func pythonInit() {
 		}
 	}()
 
-	py.Initialize()
+	lock := py.InitAndLock()
 
 	if err := gem.InitPyModule(); err != nil {
 		panic(err)
@@ -46,9 +49,12 @@ func pythonInit() {
 	signal.Notify(c, syscall.SIGTERM)
 	go func() {
 		<-c
-		fmt.Printf("caught int")
-		py.SetInterrupt()
+		lock := py.NewLock()
+		py.Finalize()
+		lock.Unlock()
+
 		os.Exit(1)
 	}()
 
+	return lock
 }

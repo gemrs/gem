@@ -3,6 +3,7 @@ package gem
 import (
 	"gem/event"
 	"gem/task"
+	"gem/log"
 
 	"github.com/qur/gopy/lib"
 )
@@ -10,9 +11,9 @@ import (
 type registerFunc func(*py.Module) error
 
 var moduleRegisterFuncs = []registerFunc{
-	RegisterSysLog,
 	RegisterEngine,
-	RegisterLogModule,
+	log.RegisterSysLog,
+	log.RegisterModule,
 
 	event.InitPyModule,
 	task.InitPyModule,
@@ -34,9 +35,8 @@ func InitPyModule() error {
 	}
 
 	/* Create our logger object */
-	if syslog, err := InitSysLog(); err != nil {
-		return err
-	} else if err = module.AddObject("syslog", syslog); err != nil {
+	log.InitSysLog()
+	if err := module.AddObject("syslog", log.Sys); err != nil {
 		return err
 	}
 
