@@ -1,0 +1,9 @@
+[Core]
+Name = ArchiveServer
+Module = archive_server
+
+[Documentation]
+Author = sinusoids@gmx.com
+Version = 0.1
+Website = https://github.com/sinusoids/gem
+Description = Spawns an archive server

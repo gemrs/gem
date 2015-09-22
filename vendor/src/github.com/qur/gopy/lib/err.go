@@ -104,6 +104,10 @@ func exception() error {
 	return &Error{newObject(t), newObject(v), tb}
 }
 
+func Raise(err error) {
+	C.PyErr_SetString(C.PyExc_RuntimeError, C.CString(err.Error()))
+}
+
 func raise(err error) {
 	var val *C.PyObject
 	var exc = C.PyExc_Exception

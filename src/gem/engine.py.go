@@ -45,6 +45,8 @@ func (obj Engine) Alloc() (*Engine, error) {
 	alloc := alloc_.(*Engine)
 	// Copy fields
 
+	alloc.t = obj.t
+
 	return alloc, nil
 }
 
@@ -57,6 +59,21 @@ func (e *Engine) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	}
 
 	e.Start()
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (e *Engine) Py_Join(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Join: parameter length mismatch")
+	}
+
+	e.Join()
 
 	py.None.Incref()
 	return py.None, nil
@@ -86,9 +103,13 @@ func (e *Engine) Py_run(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 		return nil, fmt.Errorf("Py_run: parameter length mismatch")
 	}
 
-	e.run()
+	res0 := e.run()
 
-	py.None.Incref()
-	return py.None, nil
+	out_0, err := gopygen.TypeConvOut(res0, "error")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
 
 }

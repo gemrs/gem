@@ -7,55 +7,55 @@ import (
 
 	"gem/log"
 
+	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
 
 var logInit sync.Once
 var logger *log.Module
 
-type ArchiveServer struct {
+//go:generate gopygen -type Server -exclude "^[a-z].+" $GOFILE
+type Server struct {
+	py.BaseObject
+
 	laddr string
+	ln net.Listener
 
 	t tomb.Tomb
 }
 
-func NewServer(laddr string) *ArchiveServer{
+func (s *Server) Start(laddr string) error {
+	var err error
+	s.laddr = laddr
+
 	logInit.Do(func() {
 		logger = log.New("archive")
 	})
 
-	return &ArchiveServer{
-		laddr: laddr,
-	}
-}
-
-func (s *ArchiveServer) Start() error {
 	logger.Info("Starting archive server...")
+	s.ln, err = net.Listen("tcp", s.laddr)
+	if err != nil {
+		return fmt.Errorf("couldn't start archive server: %v", err)
+	}
+
 	s.t.Go(s.run)
 	return nil
 }
 
-func (s *ArchiveServer) Stop() error {
+func (s *Server) Stop() error {
 	logger.Info("Stopping archive server...")
 	s.t.Kill(nil)
 	return s.t.Wait()
 }
 
-func (s *ArchiveServer) run() error {
-	ln, err := net.Listen("tcp", s.laddr)
-	if err != nil {
-		err = fmt.Errorf("couldn't start archive server: %v", err)
-		logger.Critical(err.Error())
-		return err
-	}
-
+func (s *Server) run() error {
 	logger.Noticef("Started on %v", s.laddr)
 
 	// Accept in a seperate goroutine
 	accept := make(chan net.Conn, 16)
 	go func() {
 		for s.t.Alive() {
-			conn, err := ln.Accept()
+			conn, err := s.ln.Accept()
 			if err != nil {
 				if s.t.Alive() {
 					logger.Errorf("error accepting client: %v", err)
@@ -82,7 +82,7 @@ func (s *ArchiveServer) run() error {
 	}
 
 	// Stop accepting
-	ln.Close()
+	s.ln.Close()
 
 	// Wait for existing connections to close
 	wg.Wait()
@@ -91,7 +91,7 @@ func (s *ArchiveServer) run() error {
 	return nil
 }
 
-func (s *ArchiveServer) handle(conn net.Conn) {
+func (s *Server) handle(conn net.Conn) {
 
 	conn.Close()
 }

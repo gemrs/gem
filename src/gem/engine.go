@@ -6,7 +6,6 @@ import (
 	"gem/log"
 	"gem/event"
 	"gem/task"
-	"gem/service/archive"
 
 	tomb "gopkg.in/tomb.v2"
 	"github.com/qur/gopy/lib"
@@ -17,7 +16,6 @@ var logger *log.Module
 //go:generate gopygen -type Engine $GOFILE
 type Engine struct {
 	py.BaseObject
-	archive *archive.ArchiveServer
 
 	t tomb.Tomb
 }
@@ -32,6 +30,13 @@ func (e *Engine) Start() {
 	e.t.Go(e.run)
 }
 
+func (e *Engine) Join() {
+	lock := py.NewLock()
+	defer lock.Unlock()
+	lock.UnblockThreads()
+	e.t.Wait()
+}
+
 func (e *Engine) Stop() {
 	event.Raise(event.Shutdown)
 	e.t.Kill(nil)
@@ -39,13 +44,6 @@ func (e *Engine) Stop() {
 }
 
 func (e *Engine) run() error {
-	//TODO: move to a startup event (from python)
-	e.archive = archive.NewServer(":43595")
-	e.archive.Start()
-	event.Register(event.Shutdown, func(event.Event, ...interface{}) {
-		e.archive.Stop()
-	})
-
 	// Start the engine ticking...
 	preTask := task.NewTask(func(*task.Task) bool {
 		event.Raise(event.PreTick)

@@ -31,9 +31,11 @@ func PythonListener(callback py.Object) Listener {
 			argsOut = append(argsOut, converted)
 		}
 
+		lock := py.NewLock()
 		_, err := callback.Base().CallFunctionObjArgs(argsOut...)
 		if err != nil {
 			panic(err)
 		}
+		lock.Unlock()
 	}
 }

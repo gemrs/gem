@@ -15,5 +15,14 @@ func TypeConvIn(value py.Object, typ string) (interface{}, error) {
 }
 
 func TypeConvOut(value interface{}, typ string) (py.Object, error) {
+	if typ == "error" {
+		if value != nil {
+			err := value.(error)
+			py.Raise(err)
+			return nil, nil
+		} else {
+			return py.None, nil
+		}
+	}
 	return gopygen.BaseTypeConvOut(value, typ)
 }

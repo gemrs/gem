@@ -35,9 +35,8 @@ def main():
         logger.Notice("Transferring control to interactive console")
         console.interact()
 
-    # Hang
-    while True:
-        pass
+    # Wait for engine to exit
+    engine.Join()
 
 if __name__ == "__main__":
     main()

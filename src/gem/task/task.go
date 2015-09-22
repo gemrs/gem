@@ -47,10 +47,12 @@ func PythonTask(callback py.Object, when TaskHook, interval Cycles, user py.Obje
 			panic(err)
 		}
 
+		lock := py.NewLock()
 		reschedule, err := callback.Base().CallObject(argsTuple.(*py.Tuple))
 		if err != nil {
 			panic(err)
 		}
+		lock.Unlock()
 
 		return reschedule.(*py.Bool).Bool()
 	}
