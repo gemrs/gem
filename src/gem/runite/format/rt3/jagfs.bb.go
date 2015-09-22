@@ -4,6 +4,7 @@ package rt3
 import (
 	"bytes"
 	"gem/encoding"
+	"io"
 )
 
 type FSIndex struct {
@@ -25,7 +26,7 @@ func (struc *FSIndex) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
 	return err
 }
 
-func (struc *FSIndex) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *FSIndex) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.Length.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -76,7 +77,7 @@ func (struc *FSBlock) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
 	return err
 }
 
-func (struc *FSBlock) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *FSBlock) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.FileID.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err

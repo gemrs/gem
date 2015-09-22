@@ -4,6 +4,7 @@ package protocol
 import (
 	"bytes"
 	"gem/encoding"
+	"io"
 )
 
 type EmbeddedStruct struct {
@@ -31,7 +32,7 @@ func (struc *EmbeddedStruct) Encode(buf *bytes.Buffer, flags interface{}) (err e
 	return err
 }
 
-func (struc *EmbeddedStruct) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *EmbeddedStruct) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.A.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
 	if err != nil {
 		return err
@@ -93,7 +94,7 @@ func (struc *TestFrame) Encode(buf *bytes.Buffer, flags interface{}) (err error)
 	return err
 }
 
-func (struc *TestFrame) Decode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *TestFrame) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.Message.Decode(buf, 16)
 	if err != nil {
 		return err

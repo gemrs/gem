@@ -13,7 +13,7 @@ import (
 
 var logger *log.Module
 
-//go:generate gopygen -type Engine $GOFILE
+//go:generate gopygen -type Engine -exclude "^[a-z].+" $GOFILE
 type Engine struct {
 	py.BaseObject
 

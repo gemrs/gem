@@ -94,22 +94,3 @@ func (e *Engine) Py_Stop(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	return py.None, nil
 
 }
-
-func (e *Engine) Py_run(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 0 {
-		return nil, fmt.Errorf("Py_run: parameter length mismatch")
-	}
-
-	res0 := e.run()
-
-	out_0, err := gopygen.TypeConvOut(res0, "error")
-	if err != nil {
-		return nil, err
-	}
-
-	return out_0, nil
-
-}
