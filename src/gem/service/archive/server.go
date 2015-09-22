@@ -44,7 +44,9 @@ func (s *ArchiveServer) Stop() error {
 func (s *ArchiveServer) run() error {
 	ln, err := net.Listen("tcp", s.laddr)
 	if err != nil {
-		return fmt.Errorf("couldn't start archive server: %v", err)
+		err = fmt.Errorf("couldn't start archive server: %v", err)
+		logger.Critical(err.Error())
+		return err
 	}
 
 	logger.Noticef("Started on %v", s.laddr)
@@ -90,5 +92,6 @@ func (s *ArchiveServer) run() error {
 }
 
 func (s *ArchiveServer) handle(conn net.Conn) {
+
 	conn.Close()
 }
