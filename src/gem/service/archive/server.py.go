@@ -50,7 +50,7 @@ func (obj Server) Alloc() (*Server, error) {
 
 	alloc.ln = obj.ln
 
-	alloc.runite = obj.runite
+	alloc.archives = obj.archives
 
 	alloc.t = obj.t
 

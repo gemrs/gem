@@ -7,39 +7,6 @@ import (
 	"io"
 )
 
-type FSIndex struct {
-	Length     encoding.Int24
-	StartBlock encoding.Int24
-}
-
-func (struc *FSIndex) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
-	err = struc.Length.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.StartBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *FSIndex) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Length.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.StartBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
 type FSBlock struct {
 	FileID       encoding.Int16
 	FilePosition encoding.Int16
@@ -99,6 +66,76 @@ func (struc *FSBlock) Decode(buf io.Reader, flags interface{}) (err error) {
 	}
 
 	err = struc.Data.Decode(buf, 512)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type CRCFile struct {
+	Archives [9]encoding.Int32
+	Sum      encoding.Int32
+}
+
+func (struc *CRCFile) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+	for i := 0; i < 9; i++ {
+		err = struc.Archives[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.Sum.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *CRCFile) Decode(buf io.Reader, flags interface{}) (err error) {
+	for i := 0; i < 9; i++ {
+		err = struc.Archives[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.Sum.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type FSIndex struct {
+	Length     encoding.Int24
+	StartBlock encoding.Int24
+}
+
+func (struc *FSIndex) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+	err = struc.Length.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.StartBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *FSIndex) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Length.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.StartBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}

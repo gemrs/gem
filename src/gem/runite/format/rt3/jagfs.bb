@@ -10,3 +10,8 @@ type FSBlock struct {
 	Partition    int8
 	Data         byte[512]
 }
+
+type CRCFile struct {
+    Archives int32[9]
+    Sum int32
+}

@@ -1,28 +1,32 @@
 package archive
 
 import (
-	"sync"
 	"fmt"
 	"net"
+	"regexp"
+	"sync"
 
 	"gem/log"
 	"gem/runite"
+	"gem/runite/format/rt3"
 
+	"bufio"
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
 
 var logInit sync.Once
 var logger *log.Module
+var requestRegexp = regexp.MustCompile("JAGGRAB /([a-z]+)[0-9\\-]+")
 
 //go:generate gopygen -type Server -exclude "^[a-z].+" $GOFILE
 type Server struct {
 	py.BaseObject
 
 	laddr string
-	ln net.Listener
+	ln    net.Listener
 
-	runite *runite.Context
+	archives *rt3.ArchiveFS
 
 	t tomb.Tomb
 }
@@ -30,7 +34,11 @@ type Server struct {
 func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	var err error
 	s.laddr = laddr
-	s.runite = ctx
+	index, err := ctx.FS.Index(0)
+	if err != nil {
+		return err
+	}
+	s.archives = rt3.NewArchiveFS(index)
 
 	logInit.Do(func() {
 		logger = log.New("archive")
@@ -42,12 +50,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context) error {
 		return fmt.Errorf("couldn't start archive server: %v", err)
 	}
 
-	var index runite.JagFSIndex
-	index, err = s.runite.FS.Index(0)
-	if err != nil {
-		return err
-	}
-	logger.Infof("Found %v archives", index.FileCount())
+	logger.Infof("Found %v archives", s.archives.FileCount())
 
 	s.t.Go(s.run)
 	return nil
@@ -106,6 +109,42 @@ func (s *Server) run() error {
 }
 
 func (s *Server) handle(conn net.Conn) {
+	io := bufio.NewReadWriter(bufio.NewReader(conn), bufio.NewWriter(conn))
 
+Outer:
+	for {
+		var request string
+		var err error
+		if request, err = io.ReadString('\n'); err != nil {
+			break
+		}
+
+		matches := requestRegexp.FindStringSubmatch(request)
+		if matches == nil {
+			logger.Errorf("invalid request: %v", request)
+			break
+		}
+
+		if b, err := io.ReadByte(); err != nil || b != '\n' {
+			logger.Errorf("missing newline in request: %v", request)
+			break
+		}
+
+		archive, err := s.archives.ResolveArchive(matches[1])
+		if err != nil {
+			logger.Errorf("couldn't locate archive %v: %v", matches[1], err)
+			break
+		}
+
+		toWrite := len(archive)
+		for toWrite > 0 {
+			n, err := io.Write(archive[len(archive)-toWrite:])
+			if err != nil {
+				break Outer
+			}
+			toWrite -= n
+			io.Flush()
+		}
+	}
 	conn.Close()
 }
