@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
-	"go/format"
 	"go/parser"
 	"go/token"
 	"log"
+
+	"golang.org/x/tools/imports"
 )
 
-func Process(filename string, types []string) (string, error) {
+func Process(filename string, types []string, fn filterFunc) (string, error) {
 	// Create the AST
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
@@ -28,16 +29,16 @@ func Process(filename string, types []string) (string, error) {
 	// Begin our buffer and print the header
 	var filebuffer bytes.Buffer
 
-	file := NewFile(fset, types)
+	file := NewFile(fset, types, fn)
 	ast.Walk(file, f)
 	fmt.Fprintf(&filebuffer, "%s", file)
 
-	return doFormat(filebuffer.String()), nil
+	return doImports(filename, filebuffer.String()), nil
 }
 
-func doFormat(in string) string {
+func doImports(filename, in string) string {
 	// The callee doesn't recieve errors, because we want to write bad output for debugging
-	src, err := format.Source([]byte(in))
+	src, err := imports.Process(filename, []byte(in), nil)
 	if err != nil {
 		log.Printf("warning: internal error: invalid Go generated: %s", err)
 		log.Printf("warning: compile the package to analyze the error")

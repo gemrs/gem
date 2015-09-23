@@ -40,17 +40,21 @@ type FileData struct {
 	TypeDecls   []TypeDecl
 	FuncDecls   []FuncDecl
 	types       []string
+	filter filterFunc
 }
+
+type filterFunc func(string)bool
 
 type File struct {
 	*FileData
 	fileset *token.FileSet
 }
 
-func NewFile(fileset *token.FileSet, types []string) File {
+func NewFile(fileset *token.FileSet, types []string, fn filterFunc) File {
 	return File{
 		FileData: &FileData{
 			types: types,
+			filter: fn,
 		},
 		fileset: fileset,
 	}
@@ -65,9 +69,13 @@ func (f *FileData) FilteredType(typ string) bool {
 	return true
 }
 
-func (f *FileData) FilteredFuncName(fnc string) bool {
-	// Ignore Py* funcs
-	return strings.HasPrefix(fnc, "Py")
+func (f *FileData) FilteredFuncName(name string) bool {
+	if strings.HasPrefix(name, "Py") {
+		return true
+	}
+
+	include := f.filter(name)
+	return !include
 }
 
 func (f *FileData) FilteredTypeDecls() []TypeDecl {
