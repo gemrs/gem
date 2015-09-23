@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"gem/log"
+	"gem/runite"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
@@ -21,12 +22,15 @@ type Server struct {
 	laddr string
 	ln net.Listener
 
+	runite *runite.Context
+
 	t tomb.Tomb
 }
 
-func (s *Server) Start(laddr string) error {
+func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	var err error
 	s.laddr = laddr
+	s.runite = ctx
 
 	logInit.Do(func() {
 		logger = log.New("archive")
@@ -38,14 +42,24 @@ func (s *Server) Start(laddr string) error {
 		return fmt.Errorf("couldn't start archive server: %v", err)
 	}
 
+	var index runite.JagFSIndex
+	index, err = s.runite.FS.Index(0)
+	if err != nil {
+		return err
+	}
+	logger.Infof("Found %v archives", index.FileCount())
+
 	s.t.Go(s.run)
 	return nil
 }
 
 func (s *Server) Stop() error {
 	logger.Info("Stopping archive server...")
-	s.t.Kill(nil)
-	return s.t.Wait()
+	if s.t.Alive() {
+		s.t.Kill(nil)
+		return s.t.Wait()
+	}
+	return nil
 }
 
 func (s *Server) run() error {

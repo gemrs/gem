@@ -5,6 +5,7 @@ import (
 	"gem/task"
 	"gem/log"
 	"gem/service"
+	"gem/runite"
 
 	"github.com/qur/gopy/lib"
 )
@@ -19,6 +20,7 @@ var moduleRegisterFuncs = []registerFunc{
 	event.InitPyModule,
 	task.InitPyModule,
 	service.InitPyModule,
+	runite.InitPyModule,
 }
 
 func InitPyModule() error {

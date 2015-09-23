@@ -5,7 +5,22 @@ import (
 	"bytes"
 
 	"gem/runite/format/rt3"
+
+	"github.com/qur/gopy/lib"
 )
+
+//go:generate gopygen -type Context $GOFILE
+type Context struct {
+	py.BaseObject
+
+	FS *rt3.JagFS
+}
+
+func (r *Context) Unpack(dataFile string, indexFiles []string) error {
+	var err error
+	r.FS, err = UnpackJagFSFiles(dataFile, indexFiles)
+	return err
+}
 
 func UnpackJagFS(data *bytes.Buffer, indices []*bytes.Buffer) (*rt3.JagFS, error) {
 	return rt3.UnpackJagFS(data, indices)

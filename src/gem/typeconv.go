@@ -11,6 +11,19 @@ func init() {
 }
 
 func TypeConvIn(value py.Object, typ string) (interface{}, error) {
+	if typ == "[]string" {
+		if list, ok := value.(*py.List); ok {
+			output := make([]string, list.Size())
+			for i, obj := range list.Slice() {
+				str, err := TypeConvIn(obj, "string")
+				if err != nil {
+					return nil, err
+				}
+				output[i] = str.(string)
+			}
+			return output, nil
+		}
+	}
 	return gopygen.BaseTypeConvIn(value, typ)
 }
 

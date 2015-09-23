@@ -3,6 +3,7 @@ package archive
 
 import (
 	"fmt"
+	"gem/runite"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
@@ -49,6 +50,8 @@ func (obj Server) Alloc() (*Server, error) {
 
 	alloc.ln = obj.ln
 
+	alloc.runite = obj.runite
+
 	alloc.t = obj.t
 
 	return alloc, nil
@@ -58,7 +61,7 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 1 {
+	if len(args) != 2 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
 
@@ -67,7 +70,12 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 		return nil, err
 	}
 
-	res0 := s.Start(in_0.(string))
+	in_1, err := gopygen.TypeConvIn(args[1], "*runite.Context")
+	if err != nil {
+		return nil, err
+	}
+
+	res0 := s.Start(in_0.(string), in_1.(*runite.Context))
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

@@ -1,11 +1,11 @@
 import argparse
 
-import gem
 import signal_handler
 import console
 import plugins
 
-import plugins.sample_plugin.sample
+import gem
+import gem.runite as runite
 
 # Create argparser
 parser = argparse.ArgumentParser(description='Gem')
@@ -17,6 +17,8 @@ logger = gem.syslog.Module("pymain")
 def main():
     args = parser.parse_args()
 
+    logger.Notice("Starting Gem v0.9: Opal")
+
     plugin_path = ["content/plugins"]
     if args.plugin_path is not None:
         plugin_path += args.plugin_path
@@ -24,6 +26,12 @@ def main():
     plugin_manager = plugins.GemPluginManager(plugin_path)
     plugin_manager.collectPlugins()
     plugin_manager.activatePlugins()
+
+    try:
+        gem.runite = runite.Context()
+        gem.runite.Unpack("./data/main_file_cache.dat", ["./data/main_file_cache.idx{0}".format(i) for i in range(0, 5)])
+    except Exception as e:
+        logger.Fatal("Couldn't start unpack game data: {0}".format(e))
 
     engine = gem.Engine()
     engine.Start()
