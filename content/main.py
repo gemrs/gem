@@ -1,5 +1,6 @@
 import argparse
 
+import config
 import signal_handler
 import console
 import plugins
@@ -29,7 +30,7 @@ def main():
 
     try:
         gem.runite = runite.Context()
-        gem.runite.Unpack("./data/main_file_cache.dat", ["./data/main_file_cache.idx{0}".format(i) for i in range(0, 5)])
+        gem.runite.Unpack(config.game_data['data_file'], config.game_data['index_files'])
     except Exception as e:
         logger.Fatal("Couldn't start unpack game data: {0}".format(e))
 
