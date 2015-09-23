@@ -1,3 +1,4 @@
+import sys
 import argparse
 
 import config
@@ -14,12 +15,47 @@ parser.add_argument('--console', action='store_true', help='launch the interacti
 parser.add_argument('--plugin-path', action='append', help='append to the plugin search path')
 
 logger = gem.syslog.Module("pymain")
+args = parser.parse_args()
 
 def main():
-    args = parser.parse_args()
-
     logger.Notice("Starting Gem v0.9: Opal")
 
+    # init
+    plugin_init()
+    gem.runite = create_runite_context()
+
+    # start the engine
+    engine = gem.Engine()
+    engine.Start()
+    logger.Info("Finished engine initialization")
+    signal_handler.setup_exit_handler(engine.Stop)
+
+    # enter interactive console if --console flag is set
+    if args.console:
+        interactive_console()
+
+    logger.Notice("Press Control-D to toggle the interactive console")
+    while True:
+        line = sys.stdin.readline()
+        if not line: # readline will return "" on EOF
+            interactive_console()
+
+def create_runite_context():
+    try:
+        ctx = runite.Context()
+        ctx.Unpack(config.game_data['data_file'], config.game_data['index_files'])
+        return ctx
+    except Exception as e:
+        logger.Fatal("Couldn't start unpack game data: {0}".format(e))
+
+def interactive_console():
+    logger.Notice("Transferring control to interactive console")
+    gem.syslog.BeginRedirect()
+    console.interact()
+    gem.syslog.EndRedirect()
+    logger.Info("Exited interactive console")
+
+def plugin_init():
     plugin_path = ["content/plugins"]
     if args.plugin_path is not None:
         plugin_path += args.plugin_path
@@ -28,24 +64,6 @@ def main():
     plugin_manager.collectPlugins()
     plugin_manager.activatePlugins()
 
-    try:
-        gem.runite = runite.Context()
-        gem.runite.Unpack(config.game_data['data_file'], config.game_data['index_files'])
-    except Exception as e:
-        logger.Fatal("Couldn't start unpack game data: {0}".format(e))
-
-    engine = gem.Engine()
-    engine.Start()
-    logger.Info("Finished engine initialization")
-
-    signal_handler.setup_exit_handler(engine.Stop)
-
-    if args.console:
-        logger.Notice("Transferring control to interactive console")
-        console.interact()
-
-    # Wait for engine to exit
-    engine.Join()
 
 if __name__ == "__main__":
     main()

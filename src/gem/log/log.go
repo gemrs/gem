@@ -1,8 +1,10 @@
 package log
 
 import (
-	"os"
+	"bytes"
 	"fmt"
+	"io"
+	"os"
 
 	"github.com/op/go-logging"
 	"github.com/qur/gopy/lib"
@@ -14,6 +16,7 @@ var Sys *SysLog
 
 type SysLog struct {
 	py.BaseObject
+	redirectBuffer *bytes.Buffer
 }
 
 type Module struct {
@@ -28,12 +31,26 @@ func New(module string) *Module {
 }
 
 func InitSysLog() error {
-	b := logging.NewLogBackend(os.Stderr, "", 0)
-	f := logging.NewBackendFormatter(b, format)
-	logging.SetBackend(f)
 	var err error
+	SetBackend(os.Stdout)
 	Sys, err = SysLog{}.Alloc()
 	return err
+}
+
+func SetBackend(out io.Writer) {
+	b := logging.NewLogBackend(out, "", 0)
+	f := logging.NewBackendFormatter(b, format)
+	logging.SetBackend(f)
+}
+
+func (log *SysLog) BeginRedirect() {
+	log.redirectBuffer = bytes.NewBuffer([]byte{})
+	SetBackend(log.redirectBuffer)
+}
+
+func (log *SysLog) EndRedirect() {
+	SetBackend(os.Stdout)
+	_, _ = log.redirectBuffer.WriteTo(os.Stdout)
 }
 
 func (log *SysLog) Module(module string) *Module {

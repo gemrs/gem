@@ -3,12 +3,12 @@ package gem
 import (
 	"time"
 
-	"gem/log"
 	"gem/event"
+	"gem/log"
 	"gem/task"
 
-	tomb "gopkg.in/tomb.v2"
 	"github.com/qur/gopy/lib"
+	tomb "gopkg.in/tomb.v2"
 )
 
 var logger *log.Module
@@ -30,11 +30,12 @@ func (e *Engine) Start() {
 	e.t.Go(e.run)
 }
 
-func (e *Engine) Join() {
+func (e *Engine) Join() bool {
 	lock := py.NewLock()
 	defer lock.Unlock()
 	lock.UnblockThreads()
 	e.t.Wait()
+	return true
 }
 
 func (e *Engine) Stop() {

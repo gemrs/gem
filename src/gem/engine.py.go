@@ -73,10 +73,14 @@ func (e *Engine) Py_Join(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 		return nil, fmt.Errorf("Py_Join: parameter length mismatch")
 	}
 
-	e.Join()
+	res0 := e.Join()
 
-	py.None.Incref()
-	return py.None, nil
+	out_0, err := gopygen.TypeConvOut(res0, "bool")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
 
 }
 

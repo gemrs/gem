@@ -45,6 +45,8 @@ func (obj SysLog) Alloc() (*SysLog, error) {
 	alloc := alloc_.(*SysLog)
 	// Copy fields
 
+	alloc.redirectBuffer = obj.redirectBuffer
+
 	return alloc, nil
 }
 
@@ -83,6 +85,36 @@ func (obj Module) Alloc() (*Module, error) {
 	alloc.logger = obj.logger
 
 	return alloc, nil
+}
+
+func (log *SysLog) Py_BeginRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_BeginRedirect: parameter length mismatch")
+	}
+
+	log.BeginRedirect()
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (log *SysLog) Py_EndRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_EndRedirect: parameter length mismatch")
+	}
+
+	log.EndRedirect()
+
+	py.None.Incref()
+	return py.None, nil
+
 }
 
 func (log *SysLog) Py_Module(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
