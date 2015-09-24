@@ -9,8 +9,10 @@ import plugins
 import gem
 import gem.runite as runite
 
+version_string = "Gem v0.9: Opal"
+
 # Create argparser
-parser = argparse.ArgumentParser(description='Gem')
+parser = argparse.ArgumentParser(description=version_string)
 parser.add_argument('--console', action='store_true', help='launch the interactive console')
 parser.add_argument('--plugin-path', action='append', help='append to the plugin search path')
 
@@ -18,7 +20,7 @@ logger = gem.syslog.Module("pymain")
 args = parser.parse_args()
 
 def main():
-    logger.Notice("Starting Gem v0.9: Opal")
+    logger.Notice("Starting {0}".format(version_string))
 
     # init
     plugin_init()
