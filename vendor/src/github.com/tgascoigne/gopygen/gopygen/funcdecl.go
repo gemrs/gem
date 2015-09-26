@@ -11,6 +11,9 @@ import (
 const methodWrapperStr = `{{$recv := index .Recievers.Fields 0}}
 {{$num_results := len .Results.Fields}}
 func ({{$recv}}) Py_{{.Name}}(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()

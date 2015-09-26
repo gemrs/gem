@@ -20,6 +20,9 @@ const objectAllocFunctionStr = `
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
 func (obj {{.Ident}}) Alloc() (*{{.Ident}}, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	// Allocate
 	alloc_, err := {{.Ident}}Def.Alloc(0)
 	if err != nil {
