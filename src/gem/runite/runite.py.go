@@ -37,6 +37,9 @@ func RegisterContext(module *py.Module) error {
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
 func (obj Context) Alloc() (*Context, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	// Allocate
 	alloc_, err := ContextDef.Alloc(0)
 	if err != nil {
@@ -51,6 +54,9 @@ func (obj Context) Alloc() (*Context, error) {
 }
 
 func (r *Context) Py_Unpack(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()

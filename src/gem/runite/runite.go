@@ -1,8 +1,8 @@
 package runite
 
 import (
-	"io/ioutil"
 	"bytes"
+	"io/ioutil"
 
 	"gem/runite/format/rt3"
 

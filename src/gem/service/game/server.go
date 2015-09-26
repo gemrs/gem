@@ -1,23 +1,19 @@
-package archive
+package game
 
 import (
 	"fmt"
 	"net"
-	"regexp"
 	"sync"
 
 	"gem/log"
 	"gem/runite"
-	"gem/runite/format/rt3"
 
-	"bufio"
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
 
 var logInit sync.Once
 var logger *log.Module
-var requestRegexp = regexp.MustCompile("JAGGRAB /([a-z]+)[0-9\\-]+")
 
 //go:generate gopygen -type Server -exclude "^[a-z].+" $GOFILE
 type Server struct {
@@ -26,7 +22,7 @@ type Server struct {
 	laddr string
 	ln    net.Listener
 
-	archives *rt3.ArchiveFS
+	runite *runite.Context
 
 	t tomb.Tomb
 }
@@ -34,30 +30,24 @@ type Server struct {
 func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	var err error
 	s.laddr = laddr
-	index, err := ctx.FS.Index(0)
-	if err != nil {
-		return err
-	}
-	s.archives = rt3.NewArchiveFS(index)
+	s.runite = ctx
 
 	logInit.Do(func() {
-		logger = log.New("archive")
+		logger = log.New("game")
 	})
 
-	logger.Info("Starting archive server...")
+	logger.Info("Starting game server...")
 	s.ln, err = net.Listen("tcp", s.laddr)
 	if err != nil {
-		return fmt.Errorf("couldn't start archive server: %v", err)
+		return fmt.Errorf("couldn't start game server: %v", err)
 	}
-
-	logger.Infof("Found %v archives", s.archives.FileCount())
 
 	s.t.Go(s.run)
 	return nil
 }
 
 func (s *Server) Stop() error {
-	logger.Info("Stopping archive server...")
+	logger.Info("Stopping game server...")
 	if s.t.Alive() {
 		s.t.Kill(nil)
 		return s.t.Wait()
@@ -109,42 +99,6 @@ func (s *Server) run() error {
 }
 
 func (s *Server) handle(conn net.Conn) {
-	io := bufio.NewReadWriter(bufio.NewReader(conn), bufio.NewWriter(conn))
-
-Outer:
-	for {
-		var request string
-		var err error
-		if request, err = io.ReadString('\n'); err != nil {
-			break
-		}
-
-		matches := requestRegexp.FindStringSubmatch(request)
-		if matches == nil {
-			logger.Errorf("invalid request: %v", request)
-			break
-		}
-
-		if b, err := io.ReadByte(); err != nil || b != '\n' {
-			logger.Errorf("missing newline in request: %v", request)
-			break
-		}
-
-		archive, err := s.archives.ResolveArchive(matches[1])
-		if err != nil {
-			logger.Errorf("couldn't locate archive %v: %v", matches[1], err)
-			break
-		}
-
-		toWrite := len(archive)
-		for toWrite > 0 {
-			n, err := io.Write(archive[len(archive)-toWrite:])
-			if err != nil {
-				break Outer
-			}
-			toWrite -= n
-			io.Flush()
-		}
-	}
+	logger.Debugf("accepted connection from %v", conn)
 	conn.Close()
 }
