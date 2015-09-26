@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"runtime"
 
 	"github.com/qur/gopy/lib"
 
@@ -13,11 +12,9 @@ import (
 )
 
 func main() {
-	lock := pythonInit()
-	defer lock.Unlock()
-
-	runtime.LockOSThread()
+	_ = pythonInit()
 	py.Main(os.Args)
+	py.Finalize()
 }
 
 func pythonInit() *py.Lock {
@@ -49,11 +46,12 @@ func pythonInit() *py.Lock {
 	signal.Notify(c, syscall.SIGTERM)
 	go func() {
 		<-c
+
 		lock := py.NewLock()
 		py.Finalize()
 		lock.Unlock()
 
-		os.Exit(1)
+		os.Exit(0)
 	}()
 
 	return lock

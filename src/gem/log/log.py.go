@@ -37,6 +37,9 @@ func RegisterSysLog(module *py.Module) error {
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
 func (obj SysLog) Alloc() (*SysLog, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	// Allocate
 	alloc_, err := SysLogDef.Alloc(0)
 	if err != nil {
@@ -74,6 +77,9 @@ func RegisterModule(module *py.Module) error {
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
 func (obj Module) Alloc() (*Module, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	// Allocate
 	alloc_, err := ModuleDef.Alloc(0)
 	if err != nil {
@@ -88,6 +94,9 @@ func (obj Module) Alloc() (*Module, error) {
 }
 
 func (log *SysLog) Py_BeginRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -103,6 +112,9 @@ func (log *SysLog) Py_BeginRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 }
 
 func (log *SysLog) Py_EndRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -118,6 +130,9 @@ func (log *SysLog) Py_EndRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, er
 }
 
 func (log *SysLog) Py_Module(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -142,6 +157,9 @@ func (log *SysLog) Py_Module(_args *py.Tuple, kwds *py.Dict) (py.Object, error) 
 }
 
 func (log *Module) Py_Critical(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -162,6 +180,9 @@ func (log *Module) Py_Critical(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 }
 
 func (log *Module) Py_Debug(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -182,6 +203,9 @@ func (log *Module) Py_Debug(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 }
 
 func (log *Module) Py_Error(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -202,6 +226,9 @@ func (log *Module) Py_Error(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 }
 
 func (log *Module) Py_Fatal(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -222,6 +249,9 @@ func (log *Module) Py_Fatal(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 }
 
 func (log *Module) Py_Info(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -242,6 +272,9 @@ func (log *Module) Py_Info(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 }
 
 func (log *Module) Py_Notice(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -262,6 +295,9 @@ func (log *Module) Py_Notice(_args *py.Tuple, kwds *py.Dict) (py.Object, error) 
 }
 
 func (log *Module) Py_Warning(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()

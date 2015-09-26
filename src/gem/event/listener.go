@@ -16,10 +16,17 @@ func (l Listeners) Dispatch(event Event, args ...interface{}) {
 }
 
 func PythonListener(callback py.Object) Listener {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	callback.Incref()
+
 	return func(ev Event, args ...interface{}) {
 		argsIn := []interface{}{string(ev)}
 		argsIn = append(argsIn, args...)
+
+		lock := py.NewLock()
+		defer lock.Unlock()
 
 		argsOut := []py.Object{}
 		for _, a := range argsIn {
@@ -31,11 +38,9 @@ func PythonListener(callback py.Object) Listener {
 			argsOut = append(argsOut, converted)
 		}
 
-		lock := py.NewLock()
 		_, err := callback.Base().CallFunctionObjArgs(argsOut...)
 		if err != nil {
 			panic(err)
 		}
-		lock.Unlock()
 	}
 }

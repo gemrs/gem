@@ -39,20 +39,25 @@ func (task *Task) Tick() bool {
 }
 
 func PythonTask(callback py.Object, when TaskHook, interval Cycles, user py.Object) *Task {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	callback.Incref()
 	user.Incref()
+
 	cbFunc := func(task *Task) bool {
+		lock := py.NewLock()
+		defer lock.Unlock()
+
 		argsTuple, err := py.BuildValue("sO", string(when), user)
 		if err != nil {
 			panic(err)
 		}
 
-		lock := py.NewLock()
 		reschedule, err := callback.Base().CallObject(argsTuple.(*py.Tuple))
 		if err != nil {
 			panic(err)
 		}
-		lock.Unlock()
 
 		return reschedule.(*py.Bool).Bool()
 	}

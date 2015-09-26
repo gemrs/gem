@@ -6,6 +6,9 @@ import (
 )
 
 func Py_Submit(args *py.Tuple) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var taskHook string
 	var callback py.Object
 	var interval int

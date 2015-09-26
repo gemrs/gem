@@ -38,6 +38,9 @@ func RegisterServer(module *py.Module) error {
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
 func (obj Server) Alloc() (*Server, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	// Allocate
 	alloc_, err := ServerDef.Alloc(0)
 	if err != nil {
@@ -58,6 +61,9 @@ func (obj Server) Alloc() (*Server, error) {
 }
 
 func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()
@@ -87,6 +93,9 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 }
 
 func (s *Server) Py_Stop(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	var err error
 	_ = err
 	args := _args.Slice()

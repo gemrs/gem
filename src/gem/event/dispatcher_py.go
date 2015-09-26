@@ -21,6 +21,9 @@ func Py_RegisterListener(args *py.Tuple) (py.Object, error) {
 }
 
 func Py_RaiseEvent(argsTuple *py.Tuple) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	temp, err := argsTuple.GetItem(0)
 	if err != nil {
 		py.None.Incref()
@@ -48,6 +51,9 @@ func Py_RaiseEvent(argsTuple *py.Tuple) (py.Object, error) {
 }
 
 func Py_Clear(args *py.Tuple) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	Dispatcher.Clear()
 	py.None.Incref()
 	return py.None, nil

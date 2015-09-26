@@ -31,9 +31,6 @@ func (e *Engine) Start() {
 }
 
 func (e *Engine) Join() bool {
-	lock := py.NewLock()
-	defer lock.Unlock()
-	lock.UnblockThreads()
 	e.t.Wait()
 	return true
 }
