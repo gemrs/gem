@@ -1,7 +1,6 @@
 package encoding
 
 import (
-	"bytes"
 	"io"
 )
 
@@ -14,7 +13,7 @@ func min(a, b int) int {
 	return b
 }
 
-func (i *Bytes) Encode(buf *bytes.Buffer, flags interface{}) error {
+func (i *Bytes) Encode(buf io.Writer, flags interface{}) error {
 	length := flags.(int)
 	length = min(length, len(*i))
 	_, err := buf.Write((*i)[:length])

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"strconv"
-	"text/template"
 	"strings"
+	"text/template"
 
 	"bbc/ast"
 	"bbc/parse"
@@ -32,7 +32,7 @@ var typeDefTmpl = template.Must(template.New("typedef").Parse(`type {{.Name}} st
 
 var frameDefTmpl = template.Must(template.New("framedef").Parse(`type {{.Identifier}} {{.Object.Identifier}}
 
-func (frm *{{.Identifier}}) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (frm *{{.Identifier}}) Encode(buf io.Writer, flags interface{}) (err error) {
 struc := (*{{.Object.Identifier}})(frm)
 return struc.Encode(buf, flags)
 }

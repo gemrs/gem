@@ -2,7 +2,6 @@ package encoding
 
 import (
 	"io"
-	"bytes"
 )
 
 type Codable interface {
@@ -16,7 +15,7 @@ type Decoder interface {
 }
 
 type Encoder interface {
-	Encode(buf *bytes.Buffer, flags_ interface{}) error
+	Encode(buf io.Writer, flags_ interface{}) error
 }
 
 var NilFlags int = 0

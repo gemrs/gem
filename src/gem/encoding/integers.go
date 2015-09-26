@@ -1,10 +1,9 @@
 package encoding
 
 import (
-	"bytes"
 	"encoding/binary"
-	"unsafe"
 	"io"
+	"unsafe"
 )
 
 type IntegerFlag int
@@ -58,10 +57,11 @@ func (f IntegerFlag) apply(value uint64) uint64 {
 
 type Int8 uint8
 
-func (i *Int8) Encode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int8) Encode(buf io.Writer, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	value := flags.apply(uint64(*i))
-	return buf.WriteByte(byte(value))
+	_, err := buf.Write([]byte{byte(value)})
+	return err
 }
 
 func (i *Int8) Decode(buf io.Reader, flags_ interface{}) error {
@@ -82,7 +82,7 @@ func (i *Int8) Value() interface{} {
 
 type Int16 uint16
 
-func (i *Int16) Encode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int16) Encode(buf io.Writer, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	value := flags.apply(uint64(*i))
 	endian := flags.endian()
@@ -111,9 +111,10 @@ func (i *Int16) Decode(buf io.Reader, flags_ interface{}) error {
 func (i *Int16) Value() interface{} {
 	return *i
 }
+
 type Int24 uint32
 
-func (i *Int24) Encode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int24) Encode(buf io.Writer, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	value := flags.apply(uint64(*i))
 
@@ -131,7 +132,7 @@ func (i *Int24) Decode(buf io.Reader, flags_ interface{}) error {
 		return err
 	}
 
-	value64 := uint64(data[0]) << 16 | uint64(data[1]) << 8 | uint64(data[2])
+	value64 := uint64(data[0])<<16 | uint64(data[1])<<8 | uint64(data[2])
 	*i = Int24(flags.reverse().apply(value64))
 	return nil
 }
@@ -142,7 +143,7 @@ func (i *Int24) Value() interface{} {
 
 type Int32 uint32
 
-func (i *Int32) Encode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int32) Encode(buf io.Writer, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	value := flags.apply(uint64(*i))
 	endian := flags.endian()
@@ -174,7 +175,7 @@ func (i *Int32) Value() interface{} {
 
 type Int64 uint64
 
-func (i *Int64) Encode(buf *bytes.Buffer, flags_ interface{}) error {
+func (i *Int64) Encode(buf io.Writer, flags_ interface{}) error {
 	flags := flags_.(IntegerFlag)
 	value := flags.apply(uint64(*i))
 	endian := flags.endian()
