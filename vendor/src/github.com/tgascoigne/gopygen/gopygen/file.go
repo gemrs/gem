@@ -26,6 +26,7 @@ var _ = gopygen.Dummy
 {{range .FilteredTypeDecls}}{{.ClassDeclaration}}
 {{.RegisterFunction}}
 {{.AllocateFunction}}
+{{.AccessorFunctions}}
 {{end}}
 {{range .FilteredFuncDecls}}{{.Wrap}}
 {{end}}
@@ -40,10 +41,10 @@ type FileData struct {
 	TypeDecls   []TypeDecl
 	FuncDecls   []FuncDecl
 	types       []string
-	filter filterFunc
+	filter      filterFunc
 }
 
-type filterFunc func(string)bool
+type filterFunc func(string) bool
 
 type File struct {
 	*FileData
@@ -53,7 +54,7 @@ type File struct {
 func NewFile(fileset *token.FileSet, types []string, fn filterFunc) File {
 	return File{
 		FileData: &FileData{
-			types: types,
+			types:  types,
 			filter: fn,
 		},
 		fileset: fileset,

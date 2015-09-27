@@ -4,14 +4,14 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen $GOFILE GoObject
+//go:generate gopygen -type GoObject $GOFILE
 
 type GoObject struct {
 	py.BaseObject
-	X          int `Py:"X"`
-	Y          int `Py:"Y"`
+	X          int
+	Y          int
 	Z          int
-	unexported int `Py:"unexp"`
+	unexported int
 	Map        map[int]interface{}
 	Slice      []string
 }

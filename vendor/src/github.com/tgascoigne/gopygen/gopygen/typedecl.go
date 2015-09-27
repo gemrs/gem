@@ -56,9 +56,30 @@ func Register{{.Ident}}(module *py.Module) error {
 }
 `
 
+const accessorsStr = `
+{{$ident := .Ident}}
+{{range .Fields.Fields}}
+  {{if not .Anonymous}}
+func (obj *{{$ident}}) PyGet_{{.Name}}() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.{{.Name}}, "{{.Type}}")
+}
+
+func (obj *{{$ident}}) PySet_{{.Name}}(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "{{.Type}}")
+	if err != nil {
+		return err
+	}
+	obj.{{.Name}} = val.({{.Type}})
+	return nil
+}
+  {{end}}
+{{end}}
+`
+
 var classDefinitionTmpl = template.Must(template.New("class_definition").Parse(classDefinitionStr))
 var objectAllocFunctionTmpl = template.Must(template.New("object_alloc").Parse(objectAllocFunctionStr))
 var classRegisterTmpl = template.Must(template.New("class_register").Parse(classRegisterStr))
+var accessorsTmpl = template.Must(template.New("field_accessors").Parse(accessorsStr))
 
 type TypeDeclData struct {
 	Ident  Ident
@@ -88,6 +109,15 @@ func (d TypeDecl) Visit(n ast.Node) ast.Visitor {
 		return d.Fields
 	}
 	return d
+}
+
+func (d *TypeDeclData) AccessorFunctions() string {
+	var buffer bytes.Buffer
+	err := accessorsTmpl.Execute(&buffer, d)
+	if err != nil {
+		panic(err)
+	}
+	return buffer.String()
 }
 
 func (d *TypeDeclData) AllocateFunction() string {
