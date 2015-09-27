@@ -58,6 +58,8 @@ func (obj Server) Alloc() (*Server, error) {
 
 	alloc.update = obj.update
 
+	alloc.game = obj.game
+
 	alloc.runite = obj.runite
 
 	alloc.clients = obj.clients
@@ -105,6 +107,19 @@ func (obj *Server) PySet_update(arg py.Object) error {
 		return err
 	}
 	obj.update = val.(*updateService)
+	return nil
+}
+
+func (obj *Server) PyGet_game() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.game, "*gameService")
+}
+
+func (obj *Server) PySet_game(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "*gameService")
+	if err != nil {
+		return err
+	}
+	obj.game = val.(*gameService)
 	return nil
 }
 

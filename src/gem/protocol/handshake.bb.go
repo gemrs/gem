@@ -79,7 +79,7 @@ func (struc *UpdateHandshakeResponse) Decode(buf io.Reader, flags interface{}) (
 type GameHandshakeResponse struct {
 	ignored         [8]encoding.Int8
 	loginRequest    encoding.Int8
-	ServerISAACSeed encoding.Int64
+	ServerISAACSeed [2]encoding.Int32
 }
 
 func (struc *GameHandshakeResponse) Encode(buf io.Writer, flags interface{}) (err error) {
@@ -95,9 +95,11 @@ func (struc *GameHandshakeResponse) Encode(buf io.Writer, flags interface{}) (er
 		return err
 	}
 
-	err = struc.ServerISAACSeed.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
+	for i := 0; i < 2; i++ {
+		err = struc.ServerISAACSeed[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
 	}
 
 	return err
@@ -116,9 +118,11 @@ func (struc *GameHandshakeResponse) Decode(buf io.Reader, flags interface{}) (er
 		return err
 	}
 
-	err = struc.ServerISAACSeed.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
+	for i := 0; i < 2; i++ {
+		err = struc.ServerISAACSeed[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
 	}
 
 	return err

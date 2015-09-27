@@ -21,6 +21,7 @@ type Index int
 type context struct {
 	conn   *GameConnection
 	update *updateService
+	game   *gameService
 }
 
 //go:generate gopygen -type Server -exclude "^[a-z].+" $GOFILE
@@ -31,6 +32,7 @@ type Server struct {
 	ln    net.Listener
 
 	update    *updateService
+	game      *gameService
 	runite    *runite.Context
 	clients   map[Index]*GameConnection
 	nextIndex Index
@@ -45,6 +47,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	s.runite = ctx
 	s.clients = make(map[Index]*GameConnection)
 	s.update = newUpdateService(ctx)
+	s.game = newGameService(ctx)
 	go s.update.processQueue()
 
 	logInit.Do(func() {
@@ -138,6 +141,7 @@ func (s *Server) handle(netConn net.Conn) {
 	connCtx := &context{
 		conn:   conn,
 		update: s.update,
+		game:   s.game,
 	}
 
 	go conn.fillReadBuffer()

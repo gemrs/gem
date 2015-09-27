@@ -128,6 +128,8 @@ func (c *context) goType(typ ast.Node) string {
 		return fmt.Sprintf("encoding.Int%v", typ.Bitsize)
 	case *ast.Struct:
 		return typ.Name
+	case *ast.StringBaseType:
+		return "encoding.JString"
 	}
 	panic(fmt.Sprintf("unknown type: %T", typ))
 }
@@ -358,6 +360,8 @@ func (c *context) generateEncodeFlags(typ ast.Node) string {
 		return fmt.Sprintf("encoding.NilFlags")
 	case *ast.DeclReference:
 		return fmt.Sprintf("encoding.NilFlags")
+	case *ast.StringBaseType:
+		return fmt.Sprintf("0") /* variable length */
 	default:
 		panic(fmt.Errorf("couldn't do anything with type %T", typ))
 	}

@@ -4,6 +4,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/gtank/isaac"
+
 	"gem/encoding"
 	"gem/log"
 	"gem/protocol"
@@ -23,30 +25,34 @@ type decodeFunc func(*context, *encoding.Buffer) error
 // GameConnection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
 type GameConnection struct {
-	Index       Index
+	Index Index
+	Log   *log.Module
+
+	randIn  isaac.ISAAC
+	randOut isaac.ISAAC
+	randKey [4]int32
+
 	conn        net.Conn
 	readBuffer  *encoding.Buffer
 	writeBuffer *encoding.Buffer
 	decode      decodeFunc
-	active      bool
 	disconnect  chan int
 	canRead     chan int
 	canWrite    chan int
-	fillBuffer  []byte
-	Log         *log.Module
+	active      bool
 }
 
 func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameConnection {
 	return &GameConnection{
-		Index:       index,
+		Log:   parentLogger.SubModule(conn.RemoteAddr().String()),
+		Index: index,
+
 		conn:        conn,
 		readBuffer:  encoding.NewBuffer(),
 		writeBuffer: encoding.NewBuffer(),
 		disconnect:  make(chan int),
 		canRead:     make(chan int, 2),
 		canWrite:    make(chan int, 2),
-		fillBuffer:  make([]byte, 1024),
-		Log:         parentLogger.SubModule(conn.RemoteAddr().String()),
 		active:      true,
 	}
 }
@@ -76,8 +82,9 @@ func (conn *GameConnection) handshake(ctx *context, b *encoding.Buffer) error {
 		conn.decode = ctx.update.handleUpdateRequest
 		return nil
 	case GameService:
-		conn.Log.Errorf("service not implemented: %v", svc)
-		conn.Disconnect()
+		conn.Log.Infof("new game client")
+		conn.decode = ctx.game.handshake
+		return nil
 	default:
 		conn.Log.Errorf("invalid service requested: %v", svc)
 		conn.Disconnect()

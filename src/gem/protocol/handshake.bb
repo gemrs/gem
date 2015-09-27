@@ -13,5 +13,5 @@ type UpdateHandshakeResponse struct {
 type GameHandshakeResponse struct {
     ignored         uint8[8]
     loginRequest    uint8 /* always 0 */
-    ServerISAACSeed uint64
+    ServerISAACSeed int32[2]
 }
