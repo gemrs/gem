@@ -14,12 +14,17 @@ type Buffer struct {
 
 	i int
 	m sync.Mutex
+
+	readFromBuffer []byte
 }
+
+type ReadFunc func(b *Buffer) error
 
 func NewBuffer() *Buffer {
 	return &Buffer{
-		s: make([]byte, 0),
-		i: 0,
+		s:              make([]byte, 0),
+		i:              0,
+		readFromBuffer: make([]byte, 512),
 	}
 }
 
@@ -27,6 +32,10 @@ func NewBufferBytes(s []byte) *Buffer {
 	buffer := NewBuffer()
 	buffer.s = append(buffer.s, s...)
 	return buffer
+}
+
+func (b *Buffer) Len() int {
+	return len(b.s[b.i:])
 }
 
 // Trim discards all data before the current read pointer.
@@ -37,7 +46,7 @@ func (b *Buffer) Trim() {
 
 	// perform a copy, so that the old array (and the discarded data) can be garbage collected
 	oldSlice := b.s
-	b.s = make([]byte, len(oldSlice) - b.i)
+	b.s = make([]byte, len(oldSlice)-b.i)
 	copy(b.s, oldSlice)
 	b.i = 0
 }
@@ -45,7 +54,7 @@ func (b *Buffer) Trim() {
 // Try saves the current position, calls cb, and if cb returns an error, restores the previous position
 // locks the buffer to trimming, to ensure we can always pop back to the original position
 // since the trim mutex is locked until cb returns, deadlock can occur with incorrect usage
-func (b *Buffer) Try(cb func (b *Buffer) error) error {
+func (b *Buffer) Try(cb ReadFunc) error {
 	b.m.Lock()
 	defer b.m.Unlock()
 
@@ -82,6 +91,20 @@ func (b *Buffer) ReadByte() (c byte, err error) {
 	return s[0], nil
 }
 
+func (b *Buffer) ReadFrom(r io.Reader) (int64, error) {
+	n, err := r.Read(b.readFromBuffer)
+	if n > 0 {
+		m, err2 := b.Write(b.readFromBuffer[:n])
+		if m != n {
+			panic("Buffer.ReadFrom: couldn't write entire buffer")
+		}
+		if err2 != nil {
+			panic("Buffer.ReadFrom: error appending to buffer")
+		}
+	}
+	return int64(n), err
+}
+
 func (b *Buffer) Write(p []byte) (n int, err error) {
 	b.s = append(b.s, p...)
 	return len(p), nil
@@ -90,6 +113,12 @@ func (b *Buffer) Write(p []byte) (n int, err error) {
 func (b *Buffer) WriteByte(c byte) error {
 	_, err := b.Write([]byte{c})
 	return err
+}
+
+func (b *Buffer) WriteTo(w io.Writer) (int64, error) {
+	n, err := w.Write(b.s[b.i:])
+	b.i += n
+	return int64(n), err
 }
 
 func (b *Buffer) Seek(offset int64, whence int) (int64, error) {
