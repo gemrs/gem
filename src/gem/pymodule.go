@@ -1,11 +1,12 @@
 package gem
 
 import (
+	"gem/auth"
 	"gem/event"
-	"gem/task"
 	"gem/log"
-	"gem/service"
 	"gem/runite"
+	"gem/service"
+	"gem/task"
 
 	"github.com/qur/gopy/lib"
 )
@@ -17,6 +18,7 @@ var moduleRegisterFuncs = []registerFunc{
 	log.RegisterSysLog,
 	log.RegisterModule,
 
+	auth.InitPyModule,
 	event.InitPyModule,
 	task.InitPyModule,
 	service.InitPyModule,

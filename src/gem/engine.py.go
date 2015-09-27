@@ -4,6 +4,8 @@ package gem
 import (
 	"fmt"
 
+	"gopkg.in/tomb.v2"
+
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
@@ -51,6 +53,19 @@ func (obj Engine) Alloc() (*Engine, error) {
 	alloc.t = obj.t
 
 	return alloc, nil
+}
+
+func (obj *Engine) PyGet_t() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.t, "tomb.Tomb")
+}
+
+func (obj *Engine) PySet_t(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "tomb.Tomb")
+	if err != nil {
+		return err
+	}
+	obj.t = val.(tomb.Tomb)
+	return nil
 }
 
 func (e *Engine) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

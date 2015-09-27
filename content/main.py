@@ -1,3 +1,4 @@
+
 import sys
 import argparse
 
@@ -5,9 +6,11 @@ import config
 import signal_handler
 import console
 import plugins
+import auth
 
 import gem
 import gem.runite
+import gem.auth
 
 from plugin_loader import PluginLoader
 from service_listeners import ServiceListeners

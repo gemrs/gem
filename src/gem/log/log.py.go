@@ -2,8 +2,10 @@
 package log
 
 import (
+	"bytes"
 	"fmt"
 
+	"github.com/op/go-logging"
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
@@ -53,6 +55,19 @@ func (obj SysLog) Alloc() (*SysLog, error) {
 	return alloc, nil
 }
 
+func (obj *SysLog) PyGet_redirectBuffer() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.redirectBuffer, "*bytes.Buffer")
+}
+
+func (obj *SysLog) PySet_redirectBuffer(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "*bytes.Buffer")
+	if err != nil {
+		return err
+	}
+	obj.redirectBuffer = val.(*bytes.Buffer)
+	return nil
+}
+
 var ModuleDef = py.Class{
 	Name:    "Module",
 	Pointer: (*Module)(nil),
@@ -95,6 +110,45 @@ func (obj Module) Alloc() (*Module, error) {
 	alloc.prefix = obj.prefix
 
 	return alloc, nil
+}
+
+func (obj *Module) PyGet_logger() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.logger, "*logging.Logger")
+}
+
+func (obj *Module) PySet_logger(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "*logging.Logger")
+	if err != nil {
+		return err
+	}
+	obj.logger = val.(*logging.Logger)
+	return nil
+}
+
+func (obj *Module) PyGet_parent() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.parent, "*Module")
+}
+
+func (obj *Module) PySet_parent(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "*Module")
+	if err != nil {
+		return err
+	}
+	obj.parent = val.(*Module)
+	return nil
+}
+
+func (obj *Module) PyGet_prefix() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.prefix, "string")
+}
+
+func (obj *Module) PySet_prefix(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "string")
+	if err != nil {
+		return err
+	}
+	obj.prefix = val.(string)
+	return nil
 }
 
 func (log *SysLog) Py_BeginRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

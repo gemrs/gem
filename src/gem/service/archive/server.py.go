@@ -4,6 +4,10 @@ package archive
 import (
 	"fmt"
 	"gem/runite"
+	"gem/runite/format/rt3"
+	"net"
+
+	"gopkg.in/tomb.v2"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
@@ -58,6 +62,58 @@ func (obj Server) Alloc() (*Server, error) {
 	alloc.t = obj.t
 
 	return alloc, nil
+}
+
+func (obj *Server) PyGet_laddr() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.laddr, "string")
+}
+
+func (obj *Server) PySet_laddr(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "string")
+	if err != nil {
+		return err
+	}
+	obj.laddr = val.(string)
+	return nil
+}
+
+func (obj *Server) PyGet_ln() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.ln, "net.Listener")
+}
+
+func (obj *Server) PySet_ln(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "net.Listener")
+	if err != nil {
+		return err
+	}
+	obj.ln = val.(net.Listener)
+	return nil
+}
+
+func (obj *Server) PyGet_archives() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.archives, "*rt3.ArchiveFS")
+}
+
+func (obj *Server) PySet_archives(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "*rt3.ArchiveFS")
+	if err != nil {
+		return err
+	}
+	obj.archives = val.(*rt3.ArchiveFS)
+	return nil
+}
+
+func (obj *Server) PyGet_t() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.t, "tomb.Tomb")
+}
+
+func (obj *Server) PySet_t(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "tomb.Tomb")
+	if err != nil {
+		return err
+	}
+	obj.t = val.(tomb.Tomb)
+	return nil
 }
 
 func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
