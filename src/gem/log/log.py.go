@@ -90,6 +90,10 @@ func (obj Module) Alloc() (*Module, error) {
 
 	alloc.logger = obj.logger
 
+	alloc.parent = obj.parent
+
+	alloc.prefix = obj.prefix
+
 	return alloc, nil
 }
 
@@ -146,6 +150,33 @@ func (log *SysLog) Py_Module(_args *py.Tuple, kwds *py.Dict) (py.Object, error) 
 	}
 
 	res0 := log.Module(in_0.(string))
+
+	out_0, err := gopygen.TypeConvOut(res0, "*Module")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
+}
+
+func (log *Module) Py_SubModule(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SubModule: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "string")
+	if err != nil {
+		return nil, err
+	}
+
+	res0 := log.SubModule(in_0.(string))
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Module")
 	if err != nil {
