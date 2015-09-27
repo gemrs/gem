@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"sync"
 
@@ -158,6 +159,7 @@ L:
 			err := conn.readBuffer.Try(func(b *encoding.Buffer) error {
 				return conn.decode(connCtx, b)
 			})
+
 			if err == nil {
 				// We handled some data, discard it
 				conn.readBuffer.Trim()
@@ -165,6 +167,8 @@ L:
 					// there's still some data buffered
 					conn.canRead <- 1
 				}
+			} else if err != io.EOF {
+				conn.Log.Criticalf("decode returned non EOF error")
 			}
 		case <-conn.canWrite:
 			conn.flushWriteBuffer()

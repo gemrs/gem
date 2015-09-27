@@ -31,7 +31,7 @@ func NewArchiveFS(i *JagFSIndex) *ArchiveFS {
 	return &ArchiveFS{JagFSIndex: i}
 }
 
-func (a *ArchiveFS) generateCrc() {
+func (a *ArchiveFS) generateCrc() error {
 	file := CRCFile{
 		Sum: encoding.Int32(1234),
 	}
@@ -39,8 +39,7 @@ func (a *ArchiveFS) generateCrc() {
 	for i := 0; i < a.FileCount(); i++ {
 		data, err := a.File(i)
 		if err != nil {
-			//todo: panic isn't the right thing to do here
-			panic(err)
+			return err
 		}
 
 		file.Archives[i] = encoding.Int32(crc32.Checksum(data, crc32.IEEETable))
@@ -49,20 +48,20 @@ func (a *ArchiveFS) generateCrc() {
 
 	err := file.Encode(&a.crc, nil)
 	if err != nil {
-		//todo: panic isn't the right thing to do here
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 func (a *ArchiveFS) ResolveArchive(archive string) (crc []byte, err error) {
 	if archive == "crc" {
-		//todo: recover to catch error in generateCrc. fixme
-		/*		defer func() {
-				if e := recover(); e != nil {
-					err = e.(error)
-				}
-			}()*/
-		a.crcOnce.Do(a.generateCrc)
+		a.crcOnce.Do(func() {
+			err := a.generateCrc()
+			if err != nil {
+				// If we can't generate the CRC, then something more serious is wrong. panic
+				panic(err)
+			}
+		})
 		return a.crc.Bytes(), nil
 	}
 
