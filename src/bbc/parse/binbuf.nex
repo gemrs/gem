@@ -37,7 +37,8 @@
 
 /[ \t\n]+/            { /* eat up whitespace */ }
 /\/\/[^\n]*/          { /* eat up one-line comments */ }
-/\/\*[^(\*\/)]*\*\//  { /* eat up multi-line comments */ }
+/\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*\//
+                      { /* eat up multi-line comments. ugly but functional regex */ }
 /./                   { yylex.Error(fmt.Sprintf("unrecognized character: %v", yylex.Text())) }
 //
 package parse

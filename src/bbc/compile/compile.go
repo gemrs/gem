@@ -54,7 +54,7 @@ var fieldFuncArrayTmpl = template.Must(template.New("fieldfunc").Parse(`for i :=
 	}
 }`))
 
-var encodeFuncsTmpl = template.Must(template.New("encodefuncs").Parse(`func (struc *{{.Type}}) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+var encodeFuncsTmpl = template.Must(template.New("encodefuncs").Parse(`func (struc *{{.Type}}) Encode(buf io.Writer, flags interface{}) (err error) {
 {{range .EncodeFields}}{{.}}
 
 {{end}}
@@ -108,7 +108,6 @@ func Compile(filename, pkg, input string) ([]byte, error) {
 func (c *context) goType(typ ast.Node) string {
 	switch typ := typ.(type) {
 	case *ast.ArrayType:
-		array := typ
 		switch typ := typ.Object.(type) {
 		case *ast.StringBaseType:
 			return "encoding.JString"
@@ -116,10 +115,6 @@ func (c *context) goType(typ ast.Node) string {
 			return "encoding.Bytes"
 		default:
 			baseType := c.goType(typ)
-			switch arrayLength := array.Length.(type) {
-			case *ast.StaticLength:
-				return "[" + strconv.Itoa(arrayLength.Length) + "]" + baseType
-			}
 			return "[]" + baseType
 		}
 	case *ast.DeclReference:

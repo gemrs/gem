@@ -1,17 +1,17 @@
 package parse
 
 import (
-	"testing"
 	"encoding/json"
-	"reflect"
 	"fmt"
+	"reflect"
+	"testing"
 
 	"bbc/ast"
 )
 
 type testCase struct {
 	filename string
-	source string
+	source   string
 	expected *ast.File
 }
 
@@ -34,16 +34,16 @@ var tests = []testCase{
 								&ast.Field{
 									Name: "SomeInt",
 									Type: &ast.IntegerType{
-										Signed: true,
-										Bitsize: 8,
+										Signed:    true,
+										Bitsize:   8,
 										Modifiers: nil,
 									},
 								},
 								&ast.Field{
 									Name: "AnotherInt",
 									Type: &ast.IntegerType{
-										Signed: false,
-										Bitsize: 24,
+										Signed:    false,
+										Bitsize:   24,
 										Modifiers: nil,
 									},
 								},
@@ -80,16 +80,16 @@ var tests = []testCase{
 												&ast.Field{
 													Name: "SomeInt",
 													Type: &ast.IntegerType{
-														Signed: true,
-														Bitsize: 8,
+														Signed:    true,
+														Bitsize:   8,
 														Modifiers: nil,
 													},
 												},
 												&ast.Field{
 													Name: "AnotherInt",
 													Type: &ast.IntegerType{
-														Signed: false,
-														Bitsize: 24,
+														Signed:    false,
+														Bitsize:   24,
 														Modifiers: nil,
 													},
 												},
@@ -125,8 +125,8 @@ type AnotherStruct struct {
 								&ast.Field{
 									Name: "Field",
 									Type: &ast.IntegerType{
-										Signed: false,
-										Bitsize: 32,
+										Signed:    false,
+										Bitsize:   32,
 										Modifiers: nil,
 									},
 								},
@@ -140,8 +140,8 @@ type AnotherStruct struct {
 								&ast.Field{
 									Name: "Field",
 									Type: &ast.IntegerType{
-										Signed: false,
-										Bitsize: 32,
+										Signed:    false,
+										Bitsize:   32,
 										Modifiers: nil,
 									},
 								},
@@ -156,6 +156,10 @@ type AnotherStruct struct {
 	{
 		filename: "in_file",
 		source: `type SomeStruct struct/**/{
+    /* Priority is an integer between 02 * /
+         0 Urgent request ie client needs resources for a new area
+         1 Preload request pre-login client update
+         2 Background request low priority */
 	SomeInt int8 /*
   Multi-line comment
 */
@@ -172,16 +176,16 @@ type AnotherStruct struct {
 								&ast.Field{
 									Name: "SomeInt",
 									Type: &ast.IntegerType{
-										Signed: true,
-										Bitsize: 8,
+										Signed:    true,
+										Bitsize:   8,
 										Modifiers: nil,
 									},
 								},
 								&ast.Field{
 									Name: "AnotherInt",
 									Type: &ast.IntegerType{
-										Signed: false,
-										Bitsize: 24,
+										Signed:    false,
+										Bitsize:   24,
 										Modifiers: nil,
 									},
 								},
@@ -192,7 +196,6 @@ type AnotherStruct struct {
 			},
 		},
 	},
-
 
 	{
 		filename: "in_file",
@@ -210,9 +213,9 @@ type AnotherStruct struct {
 								&ast.Field{
 									Name: "SomeInt",
 									Type: &ast.IntegerType{
-										Signed: true,
-										Bitsize: 8,
-										Modifiers: []string{"IntLittleEndian","IntOffset128"},
+										Signed:    true,
+										Bitsize:   8,
+										Modifiers: []string{"IntLittleEndian", "IntOffset128"},
 									},
 								},
 							},
@@ -240,9 +243,9 @@ type AnotherStruct struct {
 									Name: "SomeInt",
 									Type: &ast.ArrayType{
 										Object: &ast.IntegerType{
-											Signed: true,
-											Bitsize: 8,
-											Modifiers: []string{"IntLittleEndian","IntOffset128"},
+											Signed:    true,
+											Bitsize:   8,
+											Modifiers: []string{"IntLittleEndian", "IntOffset128"},
 										},
 										Length: &ast.StaticLength{
 											Length: 10,
@@ -337,8 +340,8 @@ type AnotherStruct struct {
 								&ast.Field{
 									Name: "Field",
 									Type: &ast.IntegerType{
-										Signed: false,
-										Bitsize: 32,
+										Signed:    false,
+										Bitsize:   32,
 										Modifiers: nil,
 									},
 								},
@@ -360,8 +363,8 @@ type AnotherStruct struct {
 													&ast.Field{
 														Name: "Field",
 														Type: &ast.IntegerType{
-															Signed: false,
-															Bitsize: 32,
+															Signed:    false,
+															Bitsize:   32,
 															Modifiers: nil,
 														},
 													},
@@ -377,7 +380,6 @@ type AnotherStruct struct {
 			},
 		},
 	},
-
 }
 
 func dump(file *ast.File) string {
