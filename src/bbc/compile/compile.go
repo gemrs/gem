@@ -108,6 +108,7 @@ func Compile(filename, pkg, input string) ([]byte, error) {
 func (c *context) goType(typ ast.Node) string {
 	switch typ := typ.(type) {
 	case *ast.ArrayType:
+		array := typ
 		switch typ := typ.Object.(type) {
 		case *ast.StringBaseType:
 			return "encoding.JString"
@@ -115,6 +116,10 @@ func (c *context) goType(typ ast.Node) string {
 			return "encoding.Bytes"
 		default:
 			baseType := c.goType(typ)
+			switch arrayLength := array.Length.(type) {
+			case *ast.StaticLength:
+				return "[" + strconv.Itoa(arrayLength.Length) + "]" + baseType
+			}
 			return "[]" + baseType
 		}
 	case *ast.DeclReference:
