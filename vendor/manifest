@@ -8,6 +8,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/gtank/isaac",
+			"repository": "https://github.com/gtank/isaac",
+			"revision": "75fea993003ba298b3123f547c4e42d6bc84b1cc",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/op/go-logging",
 			"repository": "https://github.com/op/go-logging",
 			"revision": "e8d5414f0947014548c2334044a0fac13187dfee",
