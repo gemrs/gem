@@ -3,6 +3,8 @@ package rt3
 import (
 	"bytes"
 	"errors"
+
+	"gem/encoding"
 )
 
 var (
@@ -125,6 +127,7 @@ func (idx *JagFSIndex) constructFile(blockId, length int) (nextBlockId int, err 
 	}
 
 	var block FSBlock
+	block.Data = make(encoding.Bytes, length)
 	buffer := bytes.NewBuffer(idx.data[offset : offset+blockSize])
 	if err := block.Decode(buffer, 0); err != nil {
 		return 0, ErrInvalidData

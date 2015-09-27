@@ -2,7 +2,6 @@
 package protocol
 
 import (
-	"bytes"
 	"gem/encoding"
 	"io"
 )
@@ -13,7 +12,7 @@ type EmbeddedStruct struct {
 	C encoding.Int32
 }
 
-func (struc *EmbeddedStruct) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *EmbeddedStruct) Encode(buf io.Writer, flags interface{}) (err error) {
 	err = struc.A.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
 	if err != nil {
 		return err
@@ -59,7 +58,7 @@ type TestFrame struct {
 	Struc2   [2]EmbeddedStruct
 }
 
-func (struc *TestFrame) Encode(buf *bytes.Buffer, flags interface{}) (err error) {
+func (struc *TestFrame) Encode(buf io.Writer, flags interface{}) (err error) {
 	err = struc.Message.Encode(buf, 16)
 	if err != nil {
 		return err

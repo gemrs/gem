@@ -53,7 +53,13 @@ func (obj Server) Alloc() (*Server, error) {
 
 	alloc.ln = obj.ln
 
+	alloc.update = obj.update
+
 	alloc.runite = obj.runite
+
+	alloc.clients = obj.clients
+
+	alloc.nextIndex = obj.nextIndex
 
 	alloc.t = obj.t
 

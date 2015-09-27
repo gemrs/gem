@@ -5,6 +5,7 @@ import (
 	"net"
 	"sync"
 
+	"gem/encoding"
 	"gem/log"
 	"gem/runite"
 
@@ -15,6 +16,13 @@ import (
 var logInit sync.Once
 var logger *log.Module
 
+type Index int
+
+type context struct {
+	conn   *GameConnection
+	update *updateService
+}
+
 //go:generate gopygen -type Server -exclude "^[a-z].+" $GOFILE
 type Server struct {
 	py.BaseObject
@@ -22,21 +30,29 @@ type Server struct {
 	laddr string
 	ln    net.Listener
 
-	runite *runite.Context
+	update    *updateService
+	runite    *runite.Context
+	clients   map[Index]*GameConnection
+	nextIndex Index
 
 	t tomb.Tomb
 }
 
+// Start creates the tcp listener and starts the connection handler in a goroutine
 func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	var err error
 	s.laddr = laddr
 	s.runite = ctx
+	s.clients = make(map[Index]*GameConnection)
+	s.update = newUpdateService(ctx)
+	go s.update.processQueue()
 
 	logInit.Do(func() {
 		logger = log.New("game")
 	})
 
 	logger.Info("Starting game server...")
+
 	s.ln, err = net.Listen("tcp", s.laddr)
 	if err != nil {
 		return fmt.Errorf("couldn't start game server: %v", err)
@@ -46,6 +62,9 @@ func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	return nil
 }
 
+// Stop signals that the listener thread should be stopped.
+// Existing clients are forcefully disconnected. Blocks until all connections and
+// the listener are closed.
 func (s *Server) Stop() error {
 	logger.Info("Stopping game server...")
 	if s.t.Alive() {
@@ -55,6 +74,8 @@ func (s *Server) Stop() error {
 	return nil
 }
 
+// run is the main tcp handler thread. listens for new connections and starts a new goroutine
+// for each connection to handle i/o
 func (s *Server) run() error {
 	logger.Noticef("Listening on %v", s.laddr)
 
@@ -91,14 +112,62 @@ func (s *Server) run() error {
 	// Stop accepting
 	s.ln.Close()
 
-	// Wait for existing connections to close
+	// Close any existing connections
+	for _, conn := range s.clients {
+		conn.Disconnect()
+	}
 	wg.Wait()
 
 	logger.Noticef("Shut down")
 	return nil
 }
 
-func (s *Server) handle(conn net.Conn) {
-	logger.Debugf("accepted connection from %v", conn)
-	conn.Close()
+// handle is the per-connection i/o goroutine.
+// buffers data into readBuffer and flushes data from writeBuffer.
+// if the disconnect channel is signalled, breaks the main loop and closes the connection
+func (s *Server) handle(netConn net.Conn) {
+	index := s.nextIndex
+	s.nextIndex++
+
+	conn := newConnection(index, netConn, logger)
+	conn.decode = conn.handshake
+	s.clients[index] = conn
+
+	conn.Log.Info("accepted connection")
+
+	connCtx := &context{
+		conn:   conn,
+		update: s.update,
+	}
+
+	go conn.fillReadBuffer()
+
+	// Main client loop
+L:
+	for {
+		select {
+		case <-conn.disconnect:
+			break L
+		case <-conn.canRead:
+			// at this point, the only error should be because we didn't have enough data
+			// todo: formalize this and check for the right error
+			err := conn.readBuffer.Try(func(b *encoding.Buffer) error {
+				return conn.decode(connCtx, b)
+			})
+			if err == nil {
+				// We handled some data, discard it
+				conn.readBuffer.Trim()
+				if conn.readBuffer.Len() > 0 {
+					// there's still some data buffered
+					conn.canRead <- 1
+				}
+			}
+		case <-conn.canWrite:
+			conn.flushWriteBuffer()
+		}
+	}
+
+	conn.Log.Info("connection closed")
+	conn.conn.Close()
+	delete(s.clients, index)
 }

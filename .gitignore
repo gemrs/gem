@@ -3,5 +3,6 @@ __pycache__
 **/bin/
 **/pkg/
 .vagrant/
+client/
 data/
 *.pyc
