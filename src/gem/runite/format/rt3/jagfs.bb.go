@@ -6,6 +6,43 @@ import (
 	"io"
 )
 
+type CRCFile struct {
+	Archives [9]encoding.Int32
+	Sum      encoding.Int32
+}
+
+func (struc *CRCFile) Encode(buf io.Writer, flags interface{}) (err error) {
+	for i := 0; i < 9; i++ {
+		err = struc.Archives[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.Sum.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *CRCFile) Decode(buf io.Reader, flags interface{}) (err error) {
+	for i := 0; i < 9; i++ {
+		err = struc.Archives[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.Sum.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 type FSIndex struct {
 	Length     encoding.Int24
 	StartBlock encoding.Int24
@@ -98,43 +135,6 @@ func (struc *FSBlock) Decode(buf io.Reader, flags interface{}) (err error) {
 	}
 
 	err = struc.Data.Decode(buf, 512)
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-type CRCFile struct {
-	Archives [9]encoding.Int32
-	Sum      encoding.Int32
-}
-
-func (struc *CRCFile) Encode(buf io.Writer, flags interface{}) (err error) {
-	for i := 0; i < 9; i++ {
-		err = struc.Archives[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	err = struc.Sum.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *CRCFile) Decode(buf io.Reader, flags interface{}) (err error) {
-	for i := 0; i < 9; i++ {
-		err = struc.Archives[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	err = struc.Sum.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}

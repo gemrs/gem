@@ -52,6 +52,8 @@ func (obj Profile) Alloc() (*Profile, error) {
 
 	alloc.Password = obj.Password
 
+	alloc.Rights = obj.Rights
+
 	return alloc, nil
 }
 
@@ -78,6 +80,19 @@ func (obj *Profile) PySet_Password(arg py.Object) error {
 		return err
 	}
 	obj.Password = val.(string)
+	return nil
+}
+
+func (obj *Profile) PyGet_Rights() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.Rights, "Rights")
+}
+
+func (obj *Profile) PySet_Rights(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "Rights")
+	if err != nil {
+		return err
+	}
+	obj.Rights = val.(Rights)
 	return nil
 }
 

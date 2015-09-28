@@ -5,6 +5,14 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
+type Rights int
+
+const (
+	RightsPlayer Rights = iota
+	RightsModerator
+	RightsAdmin
+)
+
 //go:generate gopygen -type Profile $GOFILE
 // Profile represents the saved state of a user
 type Profile struct {
@@ -12,6 +20,7 @@ type Profile struct {
 
 	Username string
 	Password string /* todo: hash */
+	Rights   Rights
 }
 
 func (p *Profile) String() string {

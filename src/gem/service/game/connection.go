@@ -48,7 +48,7 @@ func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameCo
 		conn:        conn,
 		readBuffer:  encoding.NewBuffer(),
 		writeBuffer: encoding.NewBuffer(),
-		disconnect:  make(chan int),
+		disconnect:  make(chan int, 2),
 		canRead:     make(chan int, 2),
 		canWrite:    make(chan int, 2),
 		active:      true,

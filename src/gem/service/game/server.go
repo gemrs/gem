@@ -6,6 +6,7 @@ import (
 	"net"
 	"sync"
 
+	"gem/auth"
 	"gem/crypto"
 	"gem/encoding"
 	"gem/log"
@@ -43,7 +44,7 @@ type Server struct {
 }
 
 // Start creates the tcp listener and starts the connection handler in a goroutine
-func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string) error {
+func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, auth auth.Provider) error {
 	logInit.Do(func() {
 		logger = log.New("game")
 	})
@@ -62,7 +63,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string) err
 	s.runite = ctx
 	s.clients = make(map[Index]*GameConnection)
 	s.update = newUpdateService(ctx)
-	s.game = newGameService(ctx, key)
+	s.game = newGameService(ctx, key, auth)
 	go s.update.processQueue()
 
 	s.ln, err = net.Listen("tcp", s.laddr)
@@ -182,6 +183,9 @@ L:
 			conn.flushWriteBuffer()
 		}
 	}
+
+	// ensure any pending data is flushed before disconnecting
+	conn.flushWriteBuffer()
 
 	conn.Log.Info("connection closed")
 	conn.conn.Close()

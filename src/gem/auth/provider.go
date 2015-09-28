@@ -50,6 +50,9 @@ type ProviderImpl struct {
 }
 
 func (p *ProviderImpl) LookupProfile(name, password string) (*player.Profile, AuthResponse) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	obj, err := p.CallMethod("LookupProfile", "(ss)", name, password)
 	if err != nil {
 		panic(fmt.Sprintf("cannot call LookupProfile: %v", err))

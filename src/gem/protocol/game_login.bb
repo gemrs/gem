@@ -21,3 +21,7 @@ type ServerLoginResponse struct {
     Rights   int8
     Flagged  int8
 }
+
+type ServerLoginResponseUnsuccessful struct {
+    Response int8
+}

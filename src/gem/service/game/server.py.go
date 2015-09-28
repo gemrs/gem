@@ -3,6 +3,7 @@ package game
 
 import (
 	"fmt"
+	"gem/auth"
 	"gem/runite"
 	"net"
 
@@ -182,7 +183,7 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 3 {
+	if len(args) != 4 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
 
@@ -201,7 +202,12 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 		return nil, err
 	}
 
-	res0 := s.Start(in_0.(string), in_1.(*runite.Context), in_2.(string))
+	in_3, err := gopygen.TypeConvIn(args[3], "auth.Provider")
+	if err != nil {
+		return nil, err
+	}
+
+	res0 := s.Start(in_0.(string), in_1.(*runite.Context), in_2.(string), in_3.(auth.Provider))
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

@@ -55,6 +55,8 @@ func (obj Session) Alloc() (*Session, error) {
 
 	alloc.RandKey = obj.RandKey
 
+	alloc.SecureBlockSize = obj.SecureBlockSize
+
 	return alloc, nil
 }
 
@@ -94,5 +96,18 @@ func (obj *Session) PySet_RandKey(arg py.Object) error {
 		return err
 	}
 	obj.RandKey = val.([]int32)
+	return nil
+}
+
+func (obj *Session) PyGet_SecureBlockSize() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.SecureBlockSize, "int")
+}
+
+func (obj *Session) PySet_SecureBlockSize(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "int")
+	if err != nil {
+		return err
+	}
+	obj.SecureBlockSize = val.(int)
 	return nil
 }

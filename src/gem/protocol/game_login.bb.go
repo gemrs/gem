@@ -6,6 +6,98 @@ import (
 	"io"
 )
 
+type ClientLoginBlock struct {
+	LoginType       encoding.Int8
+	LoginLen        encoding.Int8
+	Magic           encoding.Int8
+	Revision        encoding.Int16
+	MemType         encoding.Int8
+	ArchiveCRCs     [9]encoding.Int32
+	SecureBlockSize encoding.Int8
+}
+
+func (struc *ClientLoginBlock) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.LoginType.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.LoginLen.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Magic.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Revision.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.MemType.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < 9; i++ {
+		err = struc.ArchiveCRCs[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.SecureBlockSize.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *ClientLoginBlock) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.LoginType.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.LoginLen.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Magic.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Revision.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.MemType.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < 9; i++ {
+		err = struc.ArchiveCRCs[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.SecureBlockSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 type ClientSecureLoginBlock struct {
 	Magic     encoding.Int8
 	ISAACSeed [4]encoding.Int32
@@ -120,50 +212,12 @@ func (struc *ServerLoginResponse) Decode(buf io.Reader, flags interface{}) (err 
 	return err
 }
 
-type ClientLoginBlock struct {
-	LoginType       encoding.Int8
-	LoginLen        encoding.Int8
-	Magic           encoding.Int8
-	Revision        encoding.Int16
-	MemType         encoding.Int8
-	ArchiveCRCs     [9]encoding.Int32
-	SecureBlockSize encoding.Int8
+type ServerLoginResponseUnsuccessful struct {
+	Response encoding.Int8
 }
 
-func (struc *ClientLoginBlock) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.LoginType.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.LoginLen.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Magic.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Revision.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.MemType.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	for i := 0; i < 9; i++ {
-		err = struc.ArchiveCRCs[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	err = struc.SecureBlockSize.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+func (struc *ServerLoginResponseUnsuccessful) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Response.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
@@ -171,40 +225,8 @@ func (struc *ClientLoginBlock) Encode(buf io.Writer, flags interface{}) (err err
 	return err
 }
 
-func (struc *ClientLoginBlock) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.LoginType.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.LoginLen.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Magic.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Revision.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.MemType.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	for i := 0; i < 9; i++ {
-		err = struc.ArchiveCRCs[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	err = struc.SecureBlockSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+func (struc *ServerLoginResponseUnsuccessful) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Response.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}

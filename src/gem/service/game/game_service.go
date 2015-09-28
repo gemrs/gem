@@ -13,12 +13,14 @@ import (
 type gameService struct {
 	runite *runite.Context
 	key    *crypto.Keypair
+	auth   auth.Provider
 }
 
-func newGameService(runite *runite.Context, key *crypto.Keypair) *gameService {
+func newGameService(runite *runite.Context, key *crypto.Keypair, auth auth.Provider) *gameService {
 	return &gameService{
 		runite: runite,
 		key:    key,
+		auth:   auth,
 	}
 }
 
@@ -76,29 +78,43 @@ func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) erro
 	conn := ctx.conn
 	session := conn.Session
 
-	secureBlock := encoding.RSABlock{&protocol.ClientSecureLoginBlock{}}
+	rsaBlock := encoding.RSABlock{&protocol.ClientSecureLoginBlock{}}
 	rsaArgs := encoding.RSADecodeArgs{
 		Key:       svc.key,
 		BlockSize: session.SecureBlockSize,
 	}
-	if err := secureBlock.Decode(b, rsaArgs); err != nil {
+	if err := rsaBlock.Decode(b, rsaArgs); err != nil {
 		return err
 	}
+	secureBlock := rsaBlock.Codable.(*protocol.ClientSecureLoginBlock)
 
-	conn.Log.Debugf("Secure login block: %#v", secureBlock.Codable)
+	conn.Log.Debugf("Secure login block: %#v", secureBlock)
 
-	//TODO: plumb in to auth
+	profile, responseCode := svc.auth.LookupProfile(string(secureBlock.Username), string(secureBlock.Password))
 
-	response := protocol.ServerLoginResponse{
-		Response: encoding.Int8(auth.AuthOkay),
-		Rights:   0,
-		Flagged:  0,
+	conn.Profile = profile
+
+	if responseCode == auth.AuthOkay {
+		response := protocol.ServerLoginResponse{
+			Response: encoding.Int8(responseCode),
+			Rights:   encoding.Int8(conn.Profile.Rights),
+			Flagged:  0,
+		}
+		if err := response.Encode(conn, nil); err != nil {
+			return err
+		}
+		conn.canWrite <- 1
+		conn.decode = svc.decodePacket
+	} else {
+		response := protocol.ServerLoginResponseUnsuccessful{
+			Response: encoding.Int8(responseCode),
+		}
+		if err := response.Encode(conn, nil); err != nil {
+			return err
+		}
+		conn.canWrite <- 1
+		conn.Disconnect()
 	}
-	if err := response.Encode(conn, nil); err != nil {
-		return err
-	}
-	conn.canWrite <- 1
-	conn.decode = svc.decodePacket
 	return nil
 }
 
