@@ -52,7 +52,7 @@ func generateKey(bits int, path string) int {
 		return 1
 	}
 
-	err = crypto.StorePrivateKey(path, key)
+	err = key.Store(path)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to store key %v: %v\n", path, err)
 		return 1
