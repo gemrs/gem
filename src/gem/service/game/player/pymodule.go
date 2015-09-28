@@ -1,23 +1,21 @@
-package game
+package player
 
 import (
 	"github.com/qur/gopy/lib"
-
-	"gem/service/game/player"
 )
 
 type registerFunc func(*py.Module) error
 
 var moduleRegisterFuncs = []registerFunc{
-	RegisterServer,
-	player.InitPyModule,
+	RegisterSession,
+	RegisterProfile,
 }
 
 func InitPyModule(parent *py.Module) error {
 	/* Create package */
 	var err error
 	var module *py.Module
-	if module, err = py.InitModule("gem.service.game", []py.Method{}); err != nil {
+	if module, err = py.InitModule("gem.service.game.player", []py.Method{}); err != nil {
 		return err
 	}
 
@@ -28,7 +26,7 @@ func InitPyModule(parent *py.Module) error {
 		}
 	}
 
-	if err = parent.AddObject("game", module); err != nil {
+	if err = parent.AddObject("player", module); err != nil {
 		return err
 	}
 

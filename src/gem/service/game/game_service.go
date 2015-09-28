@@ -21,9 +21,11 @@ func newGameService(runite *runite.Context) *gameService {
 
 func (svc *gameService) handshake(ctx *context, b *encoding.Buffer) error {
 	conn := ctx.conn
+	session := conn.Session
 
-	conn.randKey[2] = rand.Int31()
-	conn.randKey[3] = rand.Int31()
+	session.RandKey = make([]int32, 4)
+	session.RandKey[2] = rand.Int31()
+	session.RandKey[3] = rand.Int31()
 
 	handshake := protocol.GameHandshake{}
 	if err := handshake.Decode(b, nil); err != nil {
@@ -32,7 +34,7 @@ func (svc *gameService) handshake(ctx *context, b *encoding.Buffer) error {
 
 	response := &protocol.GameHandshakeResponse{
 		ServerISAACSeed: [2]encoding.Int32{
-			encoding.Int32(conn.randKey[2]), encoding.Int32(conn.randKey[3]),
+			encoding.Int32(session.RandKey[2]), encoding.Int32(session.RandKey[3]),
 		},
 	}
 

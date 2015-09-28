@@ -4,11 +4,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/gtank/isaac"
-
 	"gem/encoding"
 	"gem/log"
 	"gem/protocol"
+	"gem/service/game/player"
 )
 
 const (
@@ -25,12 +24,10 @@ type decodeFunc func(*context, *encoding.Buffer) error
 // GameConnection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
 type GameConnection struct {
-	Index Index
-	Log   *log.Module
-
-	randIn  isaac.ISAAC
-	randOut isaac.ISAAC
-	randKey [4]int32
+	Index   Index
+	Log     *log.Module
+	Session *player.Session
+	Profile *player.Profile
 
 	conn        net.Conn
 	readBuffer  *encoding.Buffer
@@ -44,8 +41,9 @@ type GameConnection struct {
 
 func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameConnection {
 	return &GameConnection{
-		Log:   parentLogger.SubModule(conn.RemoteAddr().String()),
-		Index: index,
+		Log:     parentLogger.SubModule(conn.RemoteAddr().String()),
+		Index:   index,
+		Session: new(player.Session),
 
 		conn:        conn,
 		readBuffer:  encoding.NewBuffer(),

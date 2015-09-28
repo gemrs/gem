@@ -1,4 +1,4 @@
-package auth
+package player
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 // Profile represents the saved state of a user
 type Profile struct {
 	py.BaseObject
+
 	Username string
 	Password string /* todo: hash */
 }

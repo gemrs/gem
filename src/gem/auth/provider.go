@@ -2,7 +2,10 @@ package auth
 
 import (
 	"fmt"
+
 	"github.com/qur/gopy/lib"
+
+	"gem/service/game/player"
 )
 
 //go:generate gopygen -type ProviderImpl $GOFILE
@@ -38,7 +41,7 @@ const (
 
 // Provider is a provider of authorization.
 type Provider interface {
-	LookupProfile(name, password string) (*Profile, AuthResponse)
+	LookupProfile(name, password string) (*player.Profile, AuthResponse)
 }
 
 // ProviderImpl is a base class to be extended in Python
@@ -46,7 +49,7 @@ type ProviderImpl struct {
 	py.BaseObject
 }
 
-func (p *ProviderImpl) LookupProfile(name, password string) (*Profile, AuthResponse) {
+func (p *ProviderImpl) LookupProfile(name, password string) (*player.Profile, AuthResponse) {
 	obj, err := p.CallMethod("LookupProfile", "(ss)", name, password)
 	if err != nil {
 		panic(fmt.Sprintf("cannot call LookupProfile: %v", err))
@@ -59,5 +62,5 @@ func (p *ProviderImpl) LookupProfile(name, password string) (*Profile, AuthRespo
 	if err != nil {
 		return nil, AuthIncomplete
 	}
-	return profile.(*Profile), AuthResponse(response)
+	return profile.(*player.Profile), AuthResponse(response)
 }

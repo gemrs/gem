@@ -8,7 +8,6 @@ type registerFunc func(*py.Module) error
 
 var moduleRegisterFuncs = []registerFunc{
 	RegisterProviderImpl,
-	RegisterProfile,
 	createAuthConstants,
 }
 
@@ -32,4 +31,5 @@ func InitPyModule(parent *py.Module) error {
 	}
 
 	return nil
+
 }

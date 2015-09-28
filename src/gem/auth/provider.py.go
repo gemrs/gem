@@ -75,7 +75,7 @@ func (p *ProviderImpl) Py_LookupProfile(_args *py.Tuple, kwds *py.Dict) (py.Obje
 
 	res0, res1 := p.LookupProfile(in_0.(string), in_1.(string))
 
-	out_0, err := gopygen.TypeConvOut(res0, "*Profile")
+	out_0, err := gopygen.TypeConvOut(res0, "*player.Profile")
 	if err != nil {
 		return nil, err
 	}
