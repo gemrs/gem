@@ -5,14 +5,15 @@ type ClientLoginBlock struct {
     Revision    int16
     MemType     int8
     ArchiveCRCs int32[9]
+    SecureBlockSize int8
 }
 
 type ClientSecureLoginBlock struct {
-    Magic           int8 /* always 10 */
-    ClientISAACSeed int32[2]
-    ClientUID       int32
-    Username        string
-    Password        string
+    Magic     int8 /* always 10 */
+    ISAACSeed int32[4]
+    ClientUID int32
+    Username  string
+    Password  string
 }
 
 type ServerLoginResponse struct {

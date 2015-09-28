@@ -51,15 +51,43 @@ func (svc *gameService) handshake(ctx *context, b *encoding.Buffer) error {
 
 func (svc *gameService) decodeLoginBlock(ctx *context, b *encoding.Buffer) error {
 	conn := ctx.conn
+	session := conn.Session
 
 	loginBlock := protocol.ClientLoginBlock{}
 	if err := loginBlock.Decode(b, nil); err != nil {
 		return err
 	}
 
+	expectedSecureBlockSize := int(loginBlock.LoginLen) - ((9 * 4) + 1 + 1 + 1 + 2)
+	if expectedSecureBlockSize != int(loginBlock.SecureBlockSize) {
+		conn.Log.Errorf("Secure block size mismatch: got %v expected %v", loginBlock.SecureBlockSize, expectedSecureBlockSize)
+		conn.Disconnect()
+	}
+
+	session.SecureBlockSize = int(loginBlock.SecureBlockSize)
+
 	conn.Log.Debugf("Login block: %#v", loginBlock)
 
-	//TODO: Parse encrypted block
+	conn.decode = svc.decodeSecureBlock
+	return nil
+}
+
+func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) error {
+	conn := ctx.conn
+	session := conn.Session
+
+	secureBlock := encoding.RSABlock{&protocol.ClientSecureLoginBlock{}}
+	rsaArgs := encoding.RSADecodeArgs{
+		Key:       svc.key,
+		BlockSize: session.SecureBlockSize,
+	}
+	if err := secureBlock.Decode(b, rsaArgs); err != nil {
+		return err
+	}
+
+	conn.Log.Debugf("Secure login block: %#v", secureBlock.Codable)
+
+	//TODO: plumb in to auth
 
 	response := protocol.ServerLoginResponse{
 		Response: encoding.Int8(auth.AuthOkay),

@@ -41,7 +41,7 @@ func printKey(path string) int {
 
 	fmt.Printf("Private Exponent: %v\n", key.D)
 	fmt.Printf("Public Exponent: %v\n", key.PublicKey.E)
-	fmt.Printf("Modulus: %v\n", key.PublicKey.N)
+	fmt.Printf("Modulus: %v\n", key.N)
 	return 0
 }
 

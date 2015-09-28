@@ -6,6 +6,58 @@ import (
 	"io"
 )
 
+type GameHandshakeResponse struct {
+	ignored         [8]encoding.Int8
+	loginRequest    encoding.Int8
+	ServerISAACSeed [2]encoding.Int32
+}
+
+func (struc *GameHandshakeResponse) Encode(buf io.Writer, flags interface{}) (err error) {
+	for i := 0; i < 8; i++ {
+		err = struc.ignored[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.loginRequest.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < 2; i++ {
+		err = struc.ServerISAACSeed[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (struc *GameHandshakeResponse) Decode(buf io.Reader, flags interface{}) (err error) {
+	for i := 0; i < 8; i++ {
+		err = struc.ignored[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	err = struc.loginRequest.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < 2; i++ {
+		err = struc.ServerISAACSeed[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
 type ServiceSelect struct {
 	Service encoding.Int8
 }
@@ -68,58 +120,6 @@ func (struc *UpdateHandshakeResponse) Encode(buf io.Writer, flags interface{}) (
 func (struc *UpdateHandshakeResponse) Decode(buf io.Reader, flags interface{}) (err error) {
 	for i := 0; i < 8; i++ {
 		err = struc.ignored[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	return err
-}
-
-type GameHandshakeResponse struct {
-	ignored         [8]encoding.Int8
-	loginRequest    encoding.Int8
-	ServerISAACSeed [2]encoding.Int32
-}
-
-func (struc *GameHandshakeResponse) Encode(buf io.Writer, flags interface{}) (err error) {
-	for i := 0; i < 8; i++ {
-		err = struc.ignored[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	err = struc.loginRequest.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	for i := 0; i < 2; i++ {
-		err = struc.ServerISAACSeed[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	return err
-}
-
-func (struc *GameHandshakeResponse) Decode(buf io.Reader, flags interface{}) (err error) {
-	for i := 0; i < 8; i++ {
-		err = struc.ignored[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	err = struc.loginRequest.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	for i := 0; i < 2; i++ {
-		err = struc.ServerISAACSeed[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
 			return err
 		}

@@ -12,4 +12,6 @@ type Session struct {
 	RandIn  isaac.ISAAC
 	RandOut isaac.ISAAC
 	RandKey []int32
+
+	SecureBlockSize int
 }
