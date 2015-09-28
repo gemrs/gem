@@ -146,7 +146,7 @@ func TestTrim(t *testing.T) {
 				return err
 			}
 			if x != data[i+trimBytes] {
-				t.Errorf("data read mismatch: got %v expected %v", x, data[i])
+				t.Errorf("data read mismatch: got %v expected %v", x, data[i+trimBytes])
 			}
 		}
 		return nil

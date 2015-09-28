@@ -50,10 +50,10 @@ func Fuzz(data []byte) (ret int) {
 		if err := recover(); err != nil {
 			fmt.Printf("Flags: %b\n", flags)
 			fmt.Printf("Endian: %v\n", flags.endian())
-			fmt.Printf("i8: %x\n", i8.Value())
-			fmt.Printf("i16: %x\n", i16.Value())
-			fmt.Printf("i32: %x\n", i32.Value())
-			fmt.Printf("i64: %x\n", i64.Value())
+			fmt.Printf("i8: %x\n", i8)
+			fmt.Printf("i16: %x\n", i16)
+			fmt.Printf("i32: %x\n", i32)
+			fmt.Printf("i64: %x\n", i64)
 			panic(err)
 		}
 	}()
@@ -79,14 +79,14 @@ func Fuzz(data []byte) (ret int) {
 		buffer = bytes.NewBuffer(encoded)
 
 		for _, v := range values {
-			cpy := v.Value()
+			cpy := v
 			err := v.Decode(buffer, flags)
 			if err != nil {
 				panic(err)
 			}
 
-			if v.Value() != cpy {
-				panic(fmt.Errorf("value mismatch: %x %x", cpy, v.Value()))
+			if v != cpy {
+				panic(fmt.Errorf("value mismatch: %x %x", cpy, v))
 			}
 		}
 	}()

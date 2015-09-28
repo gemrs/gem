@@ -7,7 +7,6 @@ import (
 type Codable interface {
 	Encoder
 	Decoder
-	Value() interface{}
 }
 
 type Decoder interface {

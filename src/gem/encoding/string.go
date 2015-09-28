@@ -38,14 +38,18 @@ func (str *JString) Encode(buf io.Writer, flags_ interface{}) error {
 func (str *JString) Decode(buf io.Reader, flags_ interface{}) error {
 	length := flags_.(int)
 	b := make([]byte, length)
-	i := 0
 	if length == 0 {
 		// variable length array - read until stringDelim
-		for b[i : i+1][0] != stringDelim {
-			_, err := buf.Read(b[i : i+1])
+		chr := make([]byte, 1)
+		for {
+			_, err := buf.Read(chr)
 			if err != nil {
 				return err
 			}
+			if chr[0] == stringDelim {
+				break
+			}
+			b = append(b, chr[0])
 		}
 	} else {
 		// Fixed length array - just fill our buffer with n bytes
