@@ -6,6 +6,7 @@ import (
 	"net"
 	"sync"
 
+	"gem/crypto"
 	"gem/encoding"
 	"gem/log"
 	"gem/runite"
@@ -42,20 +43,27 @@ type Server struct {
 }
 
 // Start creates the tcp listener and starts the connection handler in a goroutine
-func (s *Server) Start(laddr string, ctx *runite.Context) error {
-	var err error
-	s.laddr = laddr
-	s.runite = ctx
-	s.clients = make(map[Index]*GameConnection)
-	s.update = newUpdateService(ctx)
-	s.game = newGameService(ctx)
-	go s.update.processQueue()
-
+func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string) error {
 	logInit.Do(func() {
 		logger = log.New("game")
 	})
 
 	logger.Info("Starting game server...")
+
+	var err error
+	var key *crypto.Keypair
+	key, err = crypto.LoadPrivateKey(rsaKeyPath)
+	if err != nil {
+		return err
+	}
+	logger.Infof("Loaded RSA keypair %v", rsaKeyPath)
+
+	s.laddr = laddr
+	s.runite = ctx
+	s.clients = make(map[Index]*GameConnection)
+	s.update = newUpdateService(ctx)
+	s.game = newGameService(ctx, key)
+	go s.update.processQueue()
 
 	s.ln, err = net.Listen("tcp", s.laddr)
 	if err != nil {

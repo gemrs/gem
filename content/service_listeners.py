@@ -23,7 +23,7 @@ class ServiceListeners(EventListener):
 
         try:
             self.game_server = game.Server()
-            self.game_server.Start(config.game_server_listen, gem.runite.context)
+            self.game_server.Start(config.game_server_listen, gem.runite.context, config.rsa_key_path)
             self.game_server_started = True
         except Exception as e:
             raise Exception("Couldn't start game server: {0}".format(e))

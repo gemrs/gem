@@ -4,6 +4,9 @@ import auth
 game_server_listen = ":43594"
 archive_server_listen = ":43595"
 
+# rsa key
+rsa_key_path = "data/devel.key"
+
 # Game data paths
 data_path = "./data"
 game_data = {

@@ -182,7 +182,7 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 2 {
+	if len(args) != 3 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
 
@@ -196,7 +196,12 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 		return nil, err
 	}
 
-	res0 := s.Start(in_0.(string), in_1.(*runite.Context))
+	in_2, err := gopygen.TypeConvIn(args[2], "string")
+	if err != nil {
+		return nil, err
+	}
+
+	res0 := s.Start(in_0.(string), in_1.(*runite.Context), in_2.(string))
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

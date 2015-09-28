@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"gem/auth"
+	"gem/crypto"
 	"gem/encoding"
 	"gem/protocol"
 	"gem/runite"
@@ -11,11 +12,13 @@ import (
 
 type gameService struct {
 	runite *runite.Context
+	key    *crypto.Keypair
 }
 
-func newGameService(runite *runite.Context) *gameService {
+func newGameService(runite *runite.Context, key *crypto.Keypair) *gameService {
 	return &gameService{
 		runite: runite,
+		key:    key,
 	}
 }
 
