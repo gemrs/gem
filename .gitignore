@@ -4,5 +4,4 @@ __pycache__
 **/pkg/
 .vagrant/
 client/
-data/
 *.pyc
