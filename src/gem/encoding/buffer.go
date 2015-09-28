@@ -47,7 +47,7 @@ func (b *Buffer) Trim() {
 	// perform a copy, so that the old array (and the discarded data) can be garbage collected
 	oldSlice := b.s
 	b.s = make([]byte, len(oldSlice)-b.i)
-	copy(b.s, oldSlice)
+	copy(b.s, oldSlice[b.i:])
 	b.i = 0
 }
 

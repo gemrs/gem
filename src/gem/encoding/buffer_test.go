@@ -1,8 +1,8 @@
 package encoding
 
 import (
-	"testing"
 	"io"
+	"testing"
 	"time"
 )
 
@@ -32,7 +32,7 @@ func TestTry(t *testing.T) {
 	}
 
 	if buffer.i != (pos + 4) {
-		t.Errorf("position mismatch after reading 4 bytes successfully: got %v expected %v", buffer.i, (pos+4))
+		t.Errorf("position mismatch after reading 4 bytes successfully: got %v expected %v", buffer.i, (pos + 4))
 	}
 
 	// Test that Try resets our position on error
@@ -110,7 +110,7 @@ func TestTrim(t *testing.T) {
 	buffer := NewBufferBytes(data)
 
 	l := len(buffer.s)
-	trimBytes := 5
+	trimBytes := len(data) / 2
 	err := buffer.Try(func(b *Buffer) error {
 		for i := 0; i < trimBytes; i++ {
 			x, err := b.ReadByte()
@@ -135,8 +135,25 @@ func TestTrim(t *testing.T) {
 
 	buffer.Trim()
 
-	if len(buffer.s) != l - trimBytes {
+	if len(buffer.s) != l-trimBytes {
 		t.Errorf("data wasn't discarded by trim!")
+	}
+
+	err = buffer.Try(func(b *Buffer) error {
+		for i := 0; i < trimBytes; i++ {
+			x, err := b.ReadByte()
+			if err != nil {
+				return err
+			}
+			if x != data[i+trimBytes] {
+				t.Errorf("data read mismatch: got %v expected %v", x, data[i])
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		t.Errorf("try returned error: %v", err)
 	}
 }
 
