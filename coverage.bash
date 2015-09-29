@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 cd src
 go get github.com/wadey/gocovmerge
 packages=`find gem bbc -type f -name "*.go" -printf "%h\n" | sort | uniq | grep -v vendor`
