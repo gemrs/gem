@@ -1,11 +1,11 @@
 package runite
 
+/*
 import (
 	"strconv"
 	"testing"
 )
 
-/*
 func TestJagFS(t *testing.T) {
 	// paths seem to be relative to source file..
 	// need to either create a smaller set of test data and put it in this dir,
