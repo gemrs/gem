@@ -1,6 +1,10 @@
 package gem
 
+//TODO: move into gem/py
+
 import (
+	gempy "gem/py"
+
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
@@ -31,7 +35,7 @@ func TypeConvOut(value interface{}, typ string) (py.Object, error) {
 	if typ == "error" {
 		if value != nil {
 			err := value.(error)
-			py.Raise(err)
+			gempy.Raise(err)
 			return nil, nil
 		} else {
 			return py.None, nil

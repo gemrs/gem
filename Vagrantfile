@@ -32,6 +32,7 @@ Vagrant.configure(2) do |config|
     tar -C /usr/local -xzf go1.5.1.linux-amd64.tar.gz
     echo 'export GOPATH=$HOME/go' >> /home/vagrant/.profile
     echo 'export PATH=/vagrant/bin:/usr/local/go/bin:$GOPATH/bin:$PATH' >> /home/vagrant/.profile
+    echo 'export GO15VENDOREXPERIMENT=1' >> /home/vagrant/.profile
     echo 'source $HOME/.profile' >> /home/vagrant/.bashrc
     su - vagrant -c 'go get github.com/constabulary/gb/...'
     # Would be nice if gb could handle this, but it doesn't seem to build binaries from vendored packages
