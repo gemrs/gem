@@ -62,11 +62,11 @@ func TestDispatch(t *testing.T) {
 		}
 
 		for _, ev := range tc.register {
-			Dispatcher.Register(ev, callback)
+			Register(ev, callback)
 		}
 
 		for _, ev := range tc.raise {
-			Dispatcher.Raise(ev)
+			Raise(ev)
 		}
 
 		for i, ev := range tc.listen {
