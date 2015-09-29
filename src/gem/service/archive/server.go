@@ -19,7 +19,7 @@ var logInit sync.Once
 var logger *log.Module
 var requestRegexp = regexp.MustCompile("JAGGRAB /([a-z]+)[0-9\\-]+")
 
-//go:generate gopygen -type Server -exclude "^[a-z].+" $GOFILE
+//go:generate gopygen -type Server -excfunc "^[a-z].+" $GOFILE
 type Server struct {
 	py.BaseObject
 

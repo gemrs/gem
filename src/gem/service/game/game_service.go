@@ -6,6 +6,7 @@ import (
 	"gem/auth"
 	"gem/crypto"
 	"gem/encoding"
+	"gem/event"
 	"gem/protocol"
 	"gem/runite"
 )
@@ -115,6 +116,8 @@ func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) erro
 		conn.canWrite <- 1
 		conn.Disconnect()
 	}
+
+	event.Dispatcher.Raise(event.PlayerLogin, conn)
 	return nil
 }
 

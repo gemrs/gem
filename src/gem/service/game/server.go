@@ -27,7 +27,7 @@ type context struct {
 	game   *gameService
 }
 
-//go:generate gopygen -type Server -exclude "^[a-z].+" $GOFILE
+//go:generate gopygen -type Server -excfunc "^[a-z].+" $GOFILE
 type Server struct {
 	py.BaseObject
 

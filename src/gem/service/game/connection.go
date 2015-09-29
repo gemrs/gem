@@ -8,6 +8,8 @@ import (
 	"gem/log"
 	"gem/protocol"
 	"gem/service/game/player"
+
+	"github.com/qur/gopy/lib"
 )
 
 const (
@@ -21,9 +23,12 @@ const (
 // the underlying buffer's read pointer is not altered.
 type decodeFunc func(*context, *encoding.Buffer) error
 
+//go:generate gopygen -type GameConnection -excfield "^[a-z].*" $GOFILE
 // GameConnection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
 type GameConnection struct {
+	py.BaseObject
+
 	Index   Index
 	Log     *log.Module
 	Session *player.Session
@@ -40,10 +45,16 @@ type GameConnection struct {
 }
 
 func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameConnection {
-	return &GameConnection{
+	session, err := player.Session{}.Alloc()
+	if err != nil {
+		panic(err)
+	}
+
+	// FIXME: There's something nasty going on here.. Possibly a data race
+	gameConn, err := GameConnection{
 		Log:     parentLogger.SubModule(conn.RemoteAddr().String()),
 		Index:   index,
-		Session: new(player.Session),
+		Session: session,
 
 		conn:        conn,
 		readBuffer:  encoding.NewBuffer(),
@@ -52,7 +63,12 @@ func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameCo
 		canRead:     make(chan int, 2),
 		canWrite:    make(chan int, 2),
 		active:      true,
+	}.Alloc()
+	if err != nil {
+		panic(err)
 	}
+
+	return gameConn
 }
 
 // disconnect signals to the connection loop that this connection should be, or has been closed

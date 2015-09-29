@@ -2,6 +2,7 @@ package player
 
 import (
 	"fmt"
+
 	"github.com/qur/gopy/lib"
 )
 

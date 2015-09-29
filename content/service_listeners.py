@@ -35,3 +35,10 @@ class ServiceListeners(EventListener):
 
         if self.game_server_started == True:
             self.game_server.Stop()
+
+    def player_login(self, event, player):
+        profile = player.Profile
+        print "LOGIN! {0}".format(profile.Username)
+
+    def player_logout(self, event, player):
+        pass

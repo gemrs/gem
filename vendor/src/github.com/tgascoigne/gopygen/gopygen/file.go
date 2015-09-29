@@ -41,21 +41,23 @@ type FileData struct {
 	TypeDecls   []TypeDecl
 	FuncDecls   []FuncDecl
 	types       []string
-	filter      filterFunc
+	funcFilter  FilterFunc
+	fieldFilter FilterFunc
 }
 
-type filterFunc func(string) bool
+type FilterFunc func(string) bool
 
 type File struct {
 	*FileData
 	fileset *token.FileSet
 }
 
-func NewFile(fileset *token.FileSet, types []string, fn filterFunc) File {
+func NewFile(fileset *token.FileSet, types []string, funcFilter, fieldFilter FilterFunc) File {
 	return File{
 		FileData: &FileData{
-			types:  types,
-			filter: fn,
+			types:       types,
+			funcFilter:  funcFilter,
+			fieldFilter: fieldFilter,
 		},
 		fileset: fileset,
 	}
@@ -75,7 +77,7 @@ func (f *FileData) FilteredFuncName(name string) bool {
 		return true
 	}
 
-	include := f.filter(name)
+	include := f.funcFilter(name)
 	return !include
 }
 
@@ -118,7 +120,7 @@ func (f File) Visit(n ast.Node) ast.Visitor {
 	case *ast.GenDecl:
 		switch node.Tok {
 		case token.TYPE:
-			f.TypeDecls = append(f.TypeDecls, NewTypeDecl(f.fileset))
+			f.TypeDecls = append(f.TypeDecls, NewTypeDecl(f.fileset, f.fieldFilter))
 			return f.TypeDecls[len(f.TypeDecls)-1]
 		}
 	case *ast.FuncDecl:

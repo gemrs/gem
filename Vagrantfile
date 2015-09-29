@@ -4,12 +4,17 @@
 Vagrant.configure(2) do |config|
   config.vm.box = "jimmidyson/centos-7.1"
 
-  config.vm.network "forwarded_port", guest: 80, host: 80 
+  config.vm.network "forwarded_port", guest: 80, host: 80
   config.vm.network "forwarded_port", guest: 43594, host: 43594
   config.vm.network "forwarded_port", guest: 43595, host: 43595
 
   config.vm.synced_folder ".", "/vagrant"
   config.ssh.forward_x11 = true
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 2
+  end
 
   config.vm.provider "libvirt" do |lv, override|
     override.vm.synced_folder ".", "/vagrant", create: true, :nfs => true, :mount_options => ['nolock,vers=3,tcp,noatime'], id: "vagrant-root"

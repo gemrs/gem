@@ -9,15 +9,17 @@ type Event string
 
 // There should be a nice way of doing this. Perhaps a generator or something.
 const (
-	TestEvent1 Event = "TestEvent1"
-	TestEvent2 Event = "TestEvent2"
-	TestEvent3 Event = "TestEvent3"
-	TestEvent4 Event = "TestEvent4"
-	Startup    Event = "Startup"
-	Shutdown   Event = "Shutdown"
-	PreTick    Event = "PreTick"
-	Tick       Event = "Tick"
-	PostTick   Event = "PostTick"
+	TestEvent1   Event = "TestEvent1"
+	TestEvent2   Event = "TestEvent2"
+	TestEvent3   Event = "TestEvent3"
+	TestEvent4   Event = "TestEvent4"
+	Startup      Event = "Startup"
+	Shutdown     Event = "Shutdown"
+	PreTick      Event = "PreTick"
+	Tick         Event = "Tick"
+	PostTick     Event = "PostTick"
+	PlayerLogin  Event = "PlayerLogin"
+	PlayerLogout Event = "PlayerLogout"
 )
 
 var pyEventConstants = []Event{
@@ -30,6 +32,8 @@ var pyEventConstants = []Event{
 	PreTick,
 	Tick,
 	PostTick,
+	PlayerLogin,
+	PlayerLogout,
 }
 
 func createEventConstants(module *py.Module) {

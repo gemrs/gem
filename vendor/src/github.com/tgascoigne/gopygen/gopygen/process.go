@@ -11,7 +11,7 @@ import (
 	"golang.org/x/tools/imports"
 )
 
-func Process(filename string, types []string, fn filterFunc) (string, error) {
+func Process(filename string, types []string, funcFilter, fieldFilter FilterFunc) (string, error) {
 	// Create the AST
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
@@ -29,7 +29,7 @@ func Process(filename string, types []string, fn filterFunc) (string, error) {
 	// Begin our buffer and print the header
 	var filebuffer bytes.Buffer
 
-	file := NewFile(fset, types, fn)
+	file := NewFile(fset, types, funcFilter, fieldFilter)
 	ast.Walk(file, f)
 	fmt.Fprintf(&filebuffer, "%s", file)
 

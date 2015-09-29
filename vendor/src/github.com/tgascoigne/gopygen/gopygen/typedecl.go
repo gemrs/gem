@@ -58,7 +58,7 @@ func Register{{.Ident}}(module *py.Module) error {
 
 const accessorsStr = `
 {{$ident := .Ident}}
-{{range .Fields.Fields}}
+{{with .Field}}
   {{if not .Anonymous}}
 func (obj *{{$ident}}) PyGet_{{.Name}}() (py.Object, error) {
 	return gopygen.TypeConvOut(obj.{{.Name}}, "{{.Type}}")
@@ -82,8 +82,9 @@ var classRegisterTmpl = template.Must(template.New("class_register").Parse(class
 var accessorsTmpl = template.Must(template.New("field_accessors").Parse(accessorsStr))
 
 type TypeDeclData struct {
-	Ident  Ident
-	Fields FieldList
+	Ident       Ident
+	Fields      FieldList
+	fieldFilter FilterFunc
 }
 
 type TypeDecl struct {
@@ -91,11 +92,12 @@ type TypeDecl struct {
 	fileset *token.FileSet
 }
 
-func NewTypeDecl(fileset *token.FileSet) TypeDecl {
+func NewTypeDecl(fileset *token.FileSet, fieldFilter FilterFunc) TypeDecl {
 	return TypeDecl{
 		fileset: fileset,
 		TypeDeclData: &TypeDeclData{
-			Fields: NewFieldList(fileset),
+			Fields:      NewFieldList(fileset),
+			fieldFilter: fieldFilter,
 		},
 	}
 }
@@ -111,11 +113,34 @@ func (d TypeDecl) Visit(n ast.Node) ast.Visitor {
 	return d
 }
 
+func (d *TypeDeclData) FilteredFieldName(name string) bool {
+	return !d.fieldFilter(name)
+}
+
+func (d *TypeDeclData) FilteredFieldDecls() []FieldDecl {
+	newDecls := []FieldDecl{}
+	for _, decl := range d.Fields.Fields {
+		if !d.FilteredFieldName(decl.Name.String()) {
+			newDecls = append(newDecls, decl)
+		}
+	}
+	return newDecls
+}
+
 func (d *TypeDeclData) AccessorFunctions() string {
 	var buffer bytes.Buffer
-	err := accessorsTmpl.Execute(&buffer, d)
-	if err != nil {
-		panic(err)
+	for _, f := range d.FilteredFieldDecls() {
+		tmplData := struct {
+			Ident Ident
+			Field FieldDecl
+		}{
+			Ident: d.Ident,
+			Field: f,
+		}
+		err := accessorsTmpl.Execute(&buffer, tmplData)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return buffer.String()
 }
