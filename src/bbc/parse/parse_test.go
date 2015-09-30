@@ -19,6 +19,163 @@ type testCase struct {
 var tests = []testCase{
 	{
 		filename: "in_file",
+		source: `type SomeFrame frame<100, Var8> struct {
+	SomeInt int8
+	AnotherInt uint24
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Frame{
+						Name:   "SomeFrame",
+						Number: 100,
+						Size:   ast.SzVar8,
+						Object: &ast.Struct{
+							Name: "AnonStruct_X",
+							Scope: &ast.Scope{
+								S: []ast.Node{
+									&ast.Field{
+										Name: "SomeInt",
+										Type: &ast.IntegerType{
+											Signed:    true,
+											Bitsize:   8,
+											Modifiers: nil,
+										},
+									},
+									&ast.Field{
+										Name: "AnotherInt",
+										Type: &ast.IntegerType{
+											Signed:    false,
+											Bitsize:   24,
+											Modifiers: nil,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	{
+		filename: "in_file",
+		source: `type SomeFrame frame<100, Var16> struct {
+	SomeInt int8
+	AnotherInt uint24
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Frame{
+						Name:   "SomeFrame",
+						Number: 100,
+						Size:   ast.SzVar16,
+						Object: &ast.Struct{
+							Name: "AnonStruct_X",
+							Scope: &ast.Scope{
+								S: []ast.Node{
+									&ast.Field{
+										Name: "SomeInt",
+										Type: &ast.IntegerType{
+											Signed:    true,
+											Bitsize:   8,
+											Modifiers: nil,
+										},
+									},
+									&ast.Field{
+										Name: "AnotherInt",
+										Type: &ast.IntegerType{
+											Signed:    false,
+											Bitsize:   24,
+											Modifiers: nil,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	{
+		filename: "in_file",
+		source: `type SomeStruct struct {
+	SomeInt int8
+	AnotherInt uint24
+}
+
+type SomeFrame frame<100, Fixed> SomeStruct`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Struct{
+						Name: "SomeStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "SomeInt",
+									Type: &ast.IntegerType{
+										Signed:    true,
+										Bitsize:   8,
+										Modifiers: nil,
+									},
+								},
+								&ast.Field{
+									Name: "AnotherInt",
+									Type: &ast.IntegerType{
+										Signed:    false,
+										Bitsize:   24,
+										Modifiers: nil,
+									},
+								},
+							},
+						},
+					},
+					&ast.Frame{
+						Name:   "SomeFrame",
+						Number: 100,
+						Size:   ast.SzFixed,
+						Object: &ast.DeclReference{
+							DeclName: "SomeStruct",
+							Object: &ast.Struct{
+								Name: "SomeStruct",
+								Scope: &ast.Scope{
+									S: []ast.Node{
+										&ast.Field{
+											Name: "SomeInt",
+											Type: &ast.IntegerType{
+												Signed:    true,
+												Bitsize:   8,
+												Modifiers: nil,
+											},
+										},
+										&ast.Field{
+											Name: "AnotherInt",
+											Type: &ast.IntegerType{
+												Signed:    false,
+												Bitsize:   24,
+												Modifiers: nil,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	{
+		filename: "in_file",
 		source: `type SomeStruct struct {
 	SomeInt int8
 	AnotherInt uint24

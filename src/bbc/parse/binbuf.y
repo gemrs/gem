@@ -14,6 +14,7 @@ import (
     sval    string
     svalarr []string
     length  ast.LengthSpec
+    size    ast.FrameSize
 }
 
 %token '{' '}' '[' ']' '<' '>' ','
@@ -23,20 +24,22 @@ import (
 %token <sval> tIdentifier
 %token <ival> tNumber
 
-%token tStruct tType
+%token tStruct tType tFrame
+%token tFrameFixed tFrameVar8 tFrameVar16
 %token <n> tStringType tByteType
 %token <n> tIntegerType
 %token <sval> tIntegerFlag
 
 %token tEOL
 
+%type <size> frame_size
 %type <length> array_spec
 %type <n> type int_type string_type bytes_type
 %type <n> field
 %type <n> field_list
 %type <n> scope
 %type <n> reference
-%type <n> struct anon_struct decl
+%type <n> frame struct anon_struct decl
 %type <n> decl_list
 %type <svalarr> int_modifiers
 
@@ -52,15 +55,42 @@ file
 decl_list
     : ws✳ { $$ = ast.NewScope() }
     | decl_list ws✳ decl ws✳
-      { $1.(*ast.Scope).Add($3.(*ast.Struct)) }
+      { $1.(*ast.Scope).Add($3) }
     ;
 
 decl
 	: tType struct
       {
           $$ = $2
-              yylex.(*Lexer).AddDecl($$)
+          yylex.(*Lexer).AddDecl($$)
       }
+    | tType frame
+      {
+          $$ = $2
+          yylex.(*Lexer).AddDecl($$)
+      }
+	;
+
+frame
+	: tIdentifier tFrame '<' tNumber ',' frame_size '>' type
+      {
+          $$ = &ast.Frame{
+              Name: $1,
+              Number: $4,
+              Size: $6,
+              Object: $8,
+          }
+      }
+	;
+
+frame_size
+	: tFrameFixed
+      { $$ = ast.SzFixed }
+	| tFrameVar8
+      { $$ = ast.SzVar8 }
+	| tFrameVar16
+      { $$ = ast.SzVar16 }
+	;
 
 struct
 	: tIdentifier anon_struct

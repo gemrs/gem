@@ -2,14 +2,14 @@ package parse
 
 import (
 	"bytes"
-	"strings"
 	"fmt"
+	"strings"
 
 	"bbc/ast"
 )
 
-//go:generate go tool yacc -o binbuf.y.go binbuf.y
 //go:generate nex -e binbuf.nex
+//go:generate go tool yacc -o binbuf.y.go binbuf.y
 
 type ErrorList []string
 
@@ -22,8 +22,8 @@ func (list ErrorList) String() string {
 }
 
 type result struct {
-	Ast *ast.File
-	Decls map[string]ast.Node
+	Ast    *ast.File
+	Decls  map[string]ast.Node
 	Errors ErrorList
 }
 
@@ -32,14 +32,14 @@ func (res *result) AddError(err string) {
 }
 
 func (l *Lexer) AddDecl(n ast.Node) {
-	struc := n.(*ast.Struct)
+	struc := n
 	result := l.parseResult.(*result)
-	result.Decls[struc.Name] = struc
+	result.Decls[struc.Identifier()] = struc
 }
 
 func (l *Lexer) Ast() *ast.File {
 	result := l.parseResult.(*result)
-    return result.Ast
+	return result.Ast
 }
 
 func (l *Lexer) Error(e string) {
@@ -82,11 +82,11 @@ func (l *Lexer) resolveReferencesTo(name string, typ ast.Node, n ast.Node) {
 
 func Parse(filename, source string) (*ast.File, ErrorList) {
 	result := &result{
-		Ast: ast.NewFile(filename),
-		Decls: make(map[string]ast.Node),
+		Ast:    ast.NewFile(filename),
+		Decls:  make(map[string]ast.Node),
 		Errors: make(ErrorList, 0),
 	}
-	lexer := NewLexerWithInit(bytes.NewBufferString(source), func (lex *Lexer) {
+	lexer := NewLexerWithInit(bytes.NewBufferString(source), func(lex *Lexer) {
 		lex.parseResult = result
 	})
 
