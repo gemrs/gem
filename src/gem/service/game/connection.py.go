@@ -61,21 +61,17 @@ func (obj GameConnection) Alloc() (*GameConnection, error) {
 
 	alloc.conn = obj.conn
 
-	alloc.read = obj.read
-
-	alloc.write = obj.write
-
 	alloc.readBuffer = obj.readBuffer
 
 	alloc.writeBuffer = obj.writeBuffer
 
-	alloc.decode = obj.decode
+	alloc.read = obj.read
+
+	alloc.write = obj.write
 
 	alloc.disconnect = obj.disconnect
 
-	alloc.canDecode = obj.canDecode
-
-	alloc.active = obj.active
+	alloc.decode = obj.decode
 
 	return alloc, nil
 }
@@ -150,6 +146,24 @@ func (conn *GameConnection) Py_Disconnect(_args *py.Tuple, kwds *py.Dict) (py.Ob
 
 }
 
+func (conn *GameConnection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_recover: parameter length mismatch")
+	}
+
+	conn.recover()
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
 func (conn *GameConnection) Py_handshake(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -214,6 +228,52 @@ func (conn *GameConnection) Py_Write(_args *py.Tuple, kwds *py.Dict) (py.Object,
 
 }
 
+func (conn *GameConnection) Py_decodeToReadQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_decodeToReadQueue: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "*context")
+	if err != nil {
+		return nil, err
+	}
+
+	conn.decodeToReadQueue(in_0.(*context))
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (conn *GameConnection) Py_encodeFromWriteQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_encodeFromWriteQueue: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "*context")
+	if err != nil {
+		return nil, err
+	}
+
+	conn.encodeFromWriteQueue(in_0.(*context))
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
 func (conn *GameConnection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -225,10 +285,14 @@ func (conn *GameConnection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) 
 		return nil, fmt.Errorf("Py_flushWriteBuffer: parameter length mismatch")
 	}
 
-	conn.flushWriteBuffer()
+	res0 := conn.flushWriteBuffer()
 
-	py.None.Incref()
-	return py.None, nil
+	out_0, err := gopygen.TypeConvOut(res0, "error")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
 
 }
 
@@ -243,9 +307,13 @@ func (conn *GameConnection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (p
 		return nil, fmt.Errorf("Py_fillReadBuffer: parameter length mismatch")
 	}
 
-	conn.fillReadBuffer()
+	res0 := conn.fillReadBuffer()
 
-	py.None.Incref()
-	return py.None, nil
+	out_0, err := gopygen.TypeConvOut(res0, "error")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
 
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gem/auth"
 	"gem/runite"
+	"sync"
 
 	"gopkg.in/tomb.v2"
 
@@ -62,13 +63,28 @@ func (obj Server) Alloc() (*Server, error) {
 
 	alloc.runite = obj.runite
 
-	alloc.clients = obj.clients
-
 	alloc.nextIndex = obj.nextIndex
+
+	alloc.m = obj.m
+
+	alloc.clients = obj.clients
 
 	alloc.t = obj.t
 
 	return alloc, nil
+}
+
+func (obj *Server) PyGet_m() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.m, "sync.Mutex")
+}
+
+func (obj *Server) PySet_m(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "sync.Mutex")
+	if err != nil {
+		return err
+	}
+	obj.m = val.(sync.Mutex)
+	return nil
 }
 
 func (obj *Server) PyGet_t() (py.Object, error) {

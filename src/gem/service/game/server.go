@@ -2,13 +2,11 @@ package game
 
 import (
 	"fmt"
-	"io"
 	"net"
 	"sync"
 
 	"gem/auth"
 	"gem/crypto"
-	"gem/encoding"
 	"gem/log"
 	"gem/runite"
 
@@ -37,8 +35,10 @@ type Server struct {
 	update    *updateService
 	game      *gameService
 	runite    *runite.Context
-	clients   map[Index]*GameConnection
 	nextIndex chan Index
+
+	m       sync.Mutex
+	clients map[Index]*GameConnection
 
 	t tomb.Tomb
 }
@@ -136,10 +136,12 @@ func (s *Server) run() error {
 	// Stop accepting
 	s.ln.Close()
 
+	s.m.Lock()
 	// Close any existing connections
 	for _, conn := range s.clients {
 		conn.Disconnect()
 	}
+	s.m.Unlock()
 	wg.Wait()
 
 	logger.Noticef("Shut down")
@@ -150,11 +152,12 @@ func (s *Server) run() error {
 // buffers data into readBuffer and flushes data from writeBuffer.
 // if the disconnect channel is signalled, breaks the main loop and closes the connection
 func (s *Server) handle(netConn net.Conn) {
-	index := <-s.nextIndex
-
-	conn := newConnection(index, netConn, logger)
+	conn := newConnection(netConn, logger)
 	conn.decode = conn.handshake
-	s.clients[index] = conn
+	s.registerClient(conn)
+	defer s.unregisterClient(conn)
+
+	defer conn.recover()
 
 	conn.Log.Info("accepted connection")
 
@@ -164,44 +167,37 @@ func (s *Server) handle(netConn net.Conn) {
 		game:   s.game,
 	}
 
-	go conn.fillReadBuffer()
+	go conn.encodeFromWriteQueue(connCtx)
+	go conn.decodeToReadQueue(connCtx)
 
-	// Main client loop
-L:
-	for {
-		select {
-		case <-conn.disconnect:
-			break L
-		case <-conn.canDecode:
-			// at this point, the only error should be because we didn't have enough data
-			// todo: formalize this and check for the right error
-			err := conn.readBuffer.Try(func(b *encoding.Buffer) error {
-				return conn.decode(connCtx, b)
-			})
-
-			if err == nil {
-				// We handled some data, discard it
-				conn.readBuffer.Trim()
-				if conn.readBuffer.Len() > 0 {
-					// there's still some data buffered
-					conn.canDecode <- 1
-				}
-			} else if err != io.EOF {
-				conn.Log.Criticalf("decode returned non EOF error")
-			}
-		case codable := <-conn.write:
-			if err := codable.Encode(conn.writeBuffer, nil); err != nil {
-				conn.Log.Debugf("Error writing: %v", err)
-				conn.disconnect <- 1
-			}
-			conn.flushWriteBuffer()
-		}
-	}
+	// Block this thread until disconnect
+	<-conn.disconnect
 
 	// ensure any pending data is flushed before disconnecting
 	conn.flushWriteBuffer()
 
-	conn.Log.Info("connection closed")
+	close(conn.read)
+	close(conn.write)
 	conn.conn.Close()
-	delete(s.clients, index)
+	conn.Log.Info("connection closed")
+}
+
+// registerClient adds a connection to the clients map
+func (s *Server) registerClient(conn *GameConnection) {
+	s.m.Lock()
+	defer s.m.Unlock()
+
+	index := <-s.nextIndex
+	s.clients[index] = conn
+	conn.Index = index
+}
+
+// unregisterClient removes a connection to the clients map
+func (s *Server) unregisterClient(conn *GameConnection) {
+	s.m.Lock()
+	defer s.m.Unlock()
+
+	delete(s.clients, conn.Index)
+	index := <-s.nextIndex
+	s.clients[index] = conn
 }

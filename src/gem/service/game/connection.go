@@ -1,7 +1,9 @@
 package game
 
 import (
+	"io"
 	"net"
+	"runtime"
 	"time"
 
 	"gem/encoding"
@@ -35,17 +37,15 @@ type GameConnection struct {
 	Profile *player.Profile
 
 	conn        net.Conn
-	read        chan encoding.Codable
-	write       chan encoding.Codable
 	readBuffer  *encoding.Buffer
 	writeBuffer *encoding.Buffer
+	read        chan encoding.Codable
+	write       chan encoding.Codable
+	disconnect  chan bool
 	decode      encodeDecodeFunc
-	disconnect  chan int
-	canDecode   chan int
-	active      bool
 }
 
-func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameConnection {
+func newConnection(conn net.Conn, parentLogger *log.Module) *GameConnection {
 	session, err := player.Session{}.Alloc()
 	if err != nil {
 		panic(err)
@@ -54,17 +54,14 @@ func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameCo
 	// FIXME: There's something nasty going on here.. Possibly a data race
 	gameConn, err := GameConnection{
 		Log:     parentLogger.SubModule(conn.RemoteAddr().String()),
-		Index:   index,
 		Session: session,
 
 		conn:        conn,
-		read:        make(chan encoding.Codable, 16),
-		write:       make(chan encoding.Codable, 16),
 		readBuffer:  encoding.NewBuffer(),
 		writeBuffer: encoding.NewBuffer(),
-		disconnect:  make(chan int, 2),
-		canDecode:   make(chan int, 2),
-		active:      true,
+		read:        make(chan encoding.Codable, 16),
+		write:       make(chan encoding.Codable, 16),
+		disconnect:  make(chan bool),
 	}.Alloc()
 	if err != nil {
 		panic(err)
@@ -75,8 +72,20 @@ func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameCo
 
 // disconnect signals to the connection loop that this connection should be, or has been closed
 func (conn *GameConnection) Disconnect() {
-	conn.active = false
-	conn.disconnect <- 1
+	select {
+	case <-conn.disconnect:
+	default:
+		close(conn.disconnect)
+	}
+}
+
+func (conn *GameConnection) recover() {
+	if err := recover(); err != nil {
+		stack := make([]byte, 1024*10)
+		runtime.Stack(stack, true)
+		conn.Log.Criticalf("Recovered from panic in game client handler: %v", err)
+		conn.Log.Debug(string(stack))
+	}
 }
 
 // handshake reads the service selection byte and points the connection's decode func
@@ -111,32 +120,93 @@ func (conn *GameConnection) Write(p []byte) (n int, err error) {
 	return conn.writeBuffer.Write(p)
 }
 
-// flushWriteBuffer drains the write buffer and ensures that all data is written to
-// the connection. If conn.Write returns an error (timeout), the client is disconnected.
-func (conn *GameConnection) flushWriteBuffer() {
-	for conn.writeBuffer.Len() > 0 {
-		_, err := conn.writeBuffer.WriteTo(conn.conn)
-		if err != nil {
-			conn.Log.Debug("write error")
-			conn.Disconnect()
-			break
-		}
-	}
-	conn.writeBuffer.Trim()
-}
-
-// fillReadBuffer pulls data from the connection and buffers it for decoding into the readBuffer
-// launched in a goroutine by Server.handle
-func (conn *GameConnection) fillReadBuffer() {
+// decodeToReadQueue is the goroutine handling the read buffer
+// reads from the buffer, decodes Codables using conn.decode, which can choose
+// to either handle the data or place a Codable into the read queue
+func (conn *GameConnection) decodeToReadQueue(connCtx *context) {
+	defer conn.recover()
 	for {
-		conn.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-		_, err := conn.readBuffer.ReadFrom(conn.conn)
+		err := conn.fillReadBuffer()
 		if err != nil {
 			conn.Log.Debugf("read error: %v", err)
 			conn.Disconnect()
 			break
 		}
 
-		conn.canDecode <- 1
+		// at this point, the only error should be because we didn't have enough data
+		// todo: formalize this and check for the right error
+		canTrim := false
+		for conn.readBuffer.Len() > 0 && err == nil {
+			err = conn.readBuffer.Try(func(b *encoding.Buffer) error {
+				return conn.decode(connCtx, b)
+			})
+			if err == nil {
+				canTrim = true
+			}
+		}
+
+		if err != nil && err != io.EOF {
+			conn.Log.Criticalf("decode returned non EOF error")
+		}
+
+		if canTrim {
+			// We handled some data, discard it
+			conn.readBuffer.Trim()
+		}
 	}
+}
+
+// encodeFromWriteQueue is the goroutine handling the write buffer
+// picks from conn.write, encodes the Codables, and flushes the write buffer
+func (conn *GameConnection) encodeFromWriteQueue(connCtx *context) {
+	defer conn.recover()
+L:
+	for {
+		select {
+		case codable, ok := <-conn.write:
+			if ok {
+				select {
+				case <-conn.disconnect:
+					ok = false
+				default:
+				}
+			}
+
+			if !ok {
+				break L
+			}
+
+			err := codable.Encode(conn.writeBuffer, nil)
+			if err == nil {
+				err = conn.flushWriteBuffer()
+			}
+
+			if err != nil {
+				conn.Log.Debugf("write error: %v", err)
+				conn.Disconnect()
+				break L
+			}
+		}
+	}
+}
+
+// flushWriteBuffer drains the write buffer and ensures that all data is written to
+// the connection. If conn.Write returns an error (timeout), the client is disconnected.
+func (conn *GameConnection) flushWriteBuffer() error {
+	for conn.writeBuffer.Len() > 0 {
+		_, err := conn.writeBuffer.WriteTo(conn.conn)
+		if err != nil {
+			return err
+		}
+	}
+	conn.writeBuffer.Trim()
+	return nil
+}
+
+// fillReadBuffer pulls data from the connection and buffers it for decoding into the readBuffer
+// launched in a goroutine by Server.handle
+func (conn *GameConnection) fillReadBuffer() error {
+	conn.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+	_, err := conn.readBuffer.ReadFrom(conn.conn)
+	return err
 }

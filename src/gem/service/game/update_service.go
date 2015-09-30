@@ -29,9 +29,11 @@ func (svc *updateService) processQueue() {
 		conn := item.conn
 		log := item.log
 
-		if !conn.active {
+		select {
+		case <-conn.disconnect:
 			// client is disconnecting. discard
 			continue
+		default:
 		}
 
 		data, err := request.Resolve(svc.runite)
