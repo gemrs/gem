@@ -38,7 +38,7 @@ class ServiceListeners(EventListener):
 
     def player_login(self, event, player):
         profile = player.Profile
-        print "LOGIN! {0}".format(profile.Username)
+        player.SendMessage("Welcome to Gielinor")
 
     def player_logout(self, event, player):
         pass

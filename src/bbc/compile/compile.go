@@ -34,12 +34,20 @@ var frameDefTmpl = template.Must(template.New("framedef").Parse(`type {{.Identif
 
 func (frm *{{.Identifier}}) Encode(buf io.Writer, flags interface{}) (err error) {
 struc := (*{{.Object.Identifier}})(frm)
-return struc.Encode(buf, flags)
+return encoding.PacketHeader{
+Number: {{.Number}},
+Size: encoding.{{.Size.String}},
+Object: struc,
+}.Encode(buf, flags)
 }
 
 func (frm *{{.Identifier}}) Decode(buf io.Reader, flags interface{}) (err error) {
 struc := (*{{.Object.Identifier}})(frm)
-return struc.Decode(buf, flags)
+return encoding.PacketHeader{
+Number: {{.Number}},
+Size: encoding.{{.Size.String}},
+Object: struc,
+}.Decode(buf, flags)
 }`))
 
 var fieldFuncTmpl = template.Must(template.New("fieldfunc").Parse(`err = struc.{{.Name}}.{{.Operation}}(buf, {{.Flags}})

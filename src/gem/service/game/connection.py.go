@@ -8,6 +8,7 @@ import (
 	"gem/service/game/player"
 
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -315,5 +316,28 @@ func (conn *Connection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	}
 
 	return out_0, nil
+
+}
+
+func (conn *Connection) Py_SendMessage(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SendMessage: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "string")
+	if err != nil {
+		return nil, err
+	}
+
+	conn.SendMessage(in_0.(string))
+
+	py.None.Incref()
+	return py.None, nil
 
 }

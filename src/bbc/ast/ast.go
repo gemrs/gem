@@ -77,6 +77,7 @@ func (f Field) ByteLength() (int, error) {
 	return f.Type.ByteLength()
 }
 
+//go:generate stringer -type=FrameSize
 const (
 	SzFixed FrameSize = iota
 	SzVar8

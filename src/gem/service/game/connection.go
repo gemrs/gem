@@ -176,7 +176,7 @@ L:
 				break L
 			}
 
-			err := codable.Encode(conn.writeBuffer, nil)
+			err := codable.Encode(conn.writeBuffer, &conn.Session.RandOut)
 			if err == nil {
 				err = conn.flushWriteBuffer()
 			}
@@ -209,4 +209,12 @@ func (conn *Connection) fillReadBuffer() error {
 	conn.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	_, err := conn.readBuffer.ReadFrom(conn.conn)
 	return err
+}
+
+// SendMessage puts a message to the player's chat window
+// todo: this probably doesn't belong here, need to create a place for it..
+func (conn *Connection) SendMessage(message string) {
+	conn.write <- &protocol.ServerChatMessage{
+		Message: encoding.JString(message),
+	}
 }

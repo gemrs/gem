@@ -6,28 +6,6 @@ import (
 	"io"
 )
 
-type ServerLoginResponseUnsuccessful struct {
-	Response encoding.Int8
-}
-
-func (struc *ServerLoginResponseUnsuccessful) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Response.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *ServerLoginResponseUnsuccessful) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Response.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
 type ClientLoginBlock struct {
 	LoginType       encoding.Int8
 	LoginLen        encoding.Int8
@@ -227,6 +205,28 @@ func (struc *ServerLoginResponse) Decode(buf io.Reader, flags interface{}) (err 
 	}
 
 	err = struc.Flagged.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type ServerLoginResponseUnsuccessful struct {
+	Response encoding.Int8
+}
+
+func (struc *ServerLoginResponseUnsuccessful) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Response.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *ServerLoginResponseUnsuccessful) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Response.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
