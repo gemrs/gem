@@ -35,6 +35,9 @@ func NewBufferBytes(s []byte) *Buffer {
 }
 
 func (b *Buffer) Len() int {
+	b.m.Lock()
+	defer b.m.Unlock()
+
 	return len(b.s[b.i:])
 }
 
@@ -106,6 +109,9 @@ func (b *Buffer) ReadFrom(r io.Reader) (int64, error) {
 }
 
 func (b *Buffer) Write(p []byte) (n int, err error) {
+	b.m.Lock()
+	defer b.m.Unlock()
+
 	b.s = append(b.s, p...)
 	return len(p), nil
 }

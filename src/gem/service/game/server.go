@@ -27,7 +27,7 @@ type context struct {
 	game   *gameService
 }
 
-//go:generate gopygen -type Server -excfunc "^[a-z].+" $GOFILE
+//go:generate gopygen -type Server -excfunc "^[a-z].+" -excfield "^[a-z].+" $GOFILE
 type Server struct {
 	py.BaseObject
 
@@ -38,7 +38,7 @@ type Server struct {
 	game      *gameService
 	runite    *runite.Context
 	clients   map[Index]*GameConnection
-	nextIndex Index
+	nextIndex chan Index
 
 	t tomb.Tomb
 }
@@ -71,8 +71,19 @@ func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, aut
 		return fmt.Errorf("couldn't start game server: %v", err)
 	}
 
+	s.nextIndex = make(chan Index)
+	go s.generateNextIndex()
+
 	s.t.Go(s.run)
 	return nil
+}
+
+func (s *Server) generateNextIndex() {
+	index := Index(0)
+	for {
+		s.nextIndex <- index
+		index++
+	}
 }
 
 // Stop signals that the listener thread should be stopped.
@@ -139,8 +150,7 @@ func (s *Server) run() error {
 // buffers data into readBuffer and flushes data from writeBuffer.
 // if the disconnect channel is signalled, breaks the main loop and closes the connection
 func (s *Server) handle(netConn net.Conn) {
-	index := s.nextIndex
-	s.nextIndex++
+	index := <-s.nextIndex
 
 	conn := newConnection(index, netConn, logger)
 	conn.decode = conn.handshake
@@ -162,7 +172,7 @@ L:
 		select {
 		case <-conn.disconnect:
 			break L
-		case <-conn.canRead:
+		case <-conn.canDecode:
 			// at this point, the only error should be because we didn't have enough data
 			// todo: formalize this and check for the right error
 			err := conn.readBuffer.Try(func(b *encoding.Buffer) error {
@@ -174,12 +184,16 @@ L:
 				conn.readBuffer.Trim()
 				if conn.readBuffer.Len() > 0 {
 					// there's still some data buffered
-					conn.canRead <- 1
+					conn.canDecode <- 1
 				}
 			} else if err != io.EOF {
 				conn.Log.Criticalf("decode returned non EOF error")
 			}
-		case <-conn.canWrite:
+		case codable := <-conn.write:
+			if err := codable.Encode(conn.writeBuffer, nil); err != nil {
+				conn.Log.Debugf("Error writing: %v", err)
+				conn.disconnect <- 1
+			}
 			conn.flushWriteBuffer()
 		}
 	}

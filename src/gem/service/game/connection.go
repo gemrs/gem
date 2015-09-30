@@ -17,11 +17,11 @@ const (
 	UpdateService encoding.Int8 = 15
 )
 
-// decodeFunc is the function currently used for parsing the read stream and
+// encodeDecodeFunc is the function currently used for parsing the read stream and
 // dealing with the incoming data.
 // If an error is returned, it is assumed that we didn't have enough data, and
 // the underlying buffer's read pointer is not altered.
-type decodeFunc func(*context, *encoding.Buffer) error
+type encodeDecodeFunc func(*context, *encoding.Buffer) error
 
 //go:generate gopygen -type GameConnection -excfield "^[a-z].*" $GOFILE
 // GameConnection is a network-level representation of the connection.
@@ -35,12 +35,13 @@ type GameConnection struct {
 	Profile *player.Profile
 
 	conn        net.Conn
+	read        chan encoding.Codable
+	write       chan encoding.Codable
 	readBuffer  *encoding.Buffer
 	writeBuffer *encoding.Buffer
-	decode      decodeFunc
+	decode      encodeDecodeFunc
 	disconnect  chan int
-	canRead     chan int
-	canWrite    chan int
+	canDecode   chan int
 	active      bool
 }
 
@@ -57,11 +58,12 @@ func newConnection(index Index, conn net.Conn, parentLogger *log.Module) *GameCo
 		Session: session,
 
 		conn:        conn,
+		read:        make(chan encoding.Codable, 16),
+		write:       make(chan encoding.Codable, 16),
 		readBuffer:  encoding.NewBuffer(),
 		writeBuffer: encoding.NewBuffer(),
 		disconnect:  make(chan int, 2),
-		canRead:     make(chan int, 2),
-		canWrite:    make(chan int, 2),
+		canDecode:   make(chan int, 2),
 		active:      true,
 	}.Alloc()
 	if err != nil {
@@ -87,13 +89,10 @@ func (conn *GameConnection) handshake(ctx *context, b *encoding.Buffer) error {
 
 	switch svc.Service {
 	case UpdateService:
-		if err := new(protocol.UpdateHandshakeResponse).Encode(conn, nil); err != nil {
-			return err
-		}
-		conn.canWrite <- 1
+		conn.write <- new(protocol.UpdateHandshakeResponse)
 
 		conn.Log.Infof("new update client")
-		conn.decode = ctx.update.handleUpdateRequest
+		conn.decode = ctx.update.decodeRequest
 		return nil
 	case GameService:
 		conn.Log.Infof("new game client")
@@ -138,6 +137,6 @@ func (conn *GameConnection) fillReadBuffer() {
 			break
 		}
 
-		conn.canRead <- 1
+		conn.canDecode <- 1
 	}
 }

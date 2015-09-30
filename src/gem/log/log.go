@@ -64,14 +64,14 @@ func (log *SysLog) Module(module string) *Module {
 	return logModule
 }
 
-func (log *Module) SubModule(prefix string) *Module {
-	logModule, err := Module{
-		parent: log,
-		prefix: prefix,
-	}.Alloc()
+func (log *Module) SubModule(prefix string) (out *Module) {
+	logModule, err := Module{}.Alloc()
 	if err != nil {
 		panic(err)
 	}
+
+	logModule.parent = log
+	logModule.prefix = prefix
 
 	return logModule
 }

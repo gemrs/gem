@@ -38,16 +38,12 @@ func (svc *gameService) handshake(ctx *context, b *encoding.Buffer) error {
 		return err
 	}
 
-	response := &protocol.GameHandshakeResponse{
+	conn.write <- &protocol.GameHandshakeResponse{
 		ServerISAACSeed: [2]encoding.Int32{
 			encoding.Int32(session.RandKey[2]), encoding.Int32(session.RandKey[3]),
 		},
 	}
 
-	if err := response.Encode(conn, nil); err != nil {
-		return err
-	}
-	conn.canWrite <- 1
 	conn.decode = svc.decodeLoginBlock
 	return nil
 }
@@ -96,24 +92,16 @@ func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) erro
 	conn.Profile = profile
 
 	if responseCode == auth.AuthOkay {
-		response := protocol.ServerLoginResponse{
+		conn.write <- &protocol.ServerLoginResponse{
 			Response: encoding.Int8(responseCode),
 			Rights:   encoding.Int8(conn.Profile.Rights),
 			Flagged:  0,
 		}
-		if err := response.Encode(conn, nil); err != nil {
-			return err
-		}
-		conn.canWrite <- 1
 		conn.decode = svc.decodePacket
 	} else {
-		response := protocol.ServerLoginResponseUnsuccessful{
+		conn.write <- &protocol.ServerLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),
 		}
-		if err := response.Encode(conn, nil); err != nil {
-			return err
-		}
-		conn.canWrite <- 1
 		conn.Disconnect()
 	}
 

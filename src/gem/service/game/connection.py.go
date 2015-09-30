@@ -61,6 +61,10 @@ func (obj GameConnection) Alloc() (*GameConnection, error) {
 
 	alloc.conn = obj.conn
 
+	alloc.read = obj.read
+
+	alloc.write = obj.write
+
 	alloc.readBuffer = obj.readBuffer
 
 	alloc.writeBuffer = obj.writeBuffer
@@ -69,9 +73,7 @@ func (obj GameConnection) Alloc() (*GameConnection, error) {
 
 	alloc.disconnect = obj.disconnect
 
-	alloc.canRead = obj.canRead
-
-	alloc.canWrite = obj.canWrite
+	alloc.canDecode = obj.canDecode
 
 	alloc.active = obj.active
 

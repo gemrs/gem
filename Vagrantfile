@@ -30,8 +30,9 @@ Vagrant.configure(2) do |config|
     chown -R vagrant:vagrant /home/vagrant/go/
     wget -nv https://storage.googleapis.com/golang/go1.5.1.linux-amd64.tar.gz
     tar -C /usr/local -xzf go1.5.1.linux-amd64.tar.gz
+    echo 'export GOROOT=/usr/local/go' >> /home/vagrant/.profile
+    echo 'export PATH=$GOROOT/bin:$GOPATH/bin:$PATH' >> /home/vagrant/.profile
     echo 'export GOPATH=/vagrant' >> /home/vagrant/.profile
-    echo 'export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH' >> /home/vagrant/.profile
     echo 'export GO15VENDOREXPERIMENT=1' >> /home/vagrant/.profile
     echo 'source $HOME/.profile' >> /home/vagrant/.bashrc
     # Would be nice if gb could handle this, but it doesn't seem to build binaries from vendored packages
