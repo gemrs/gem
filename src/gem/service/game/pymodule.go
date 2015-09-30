@@ -9,7 +9,7 @@ import (
 type registerFunc func(*py.Module) error
 
 var moduleRegisterFuncs = []registerFunc{
-	RegisterGameConnection,
+	RegisterConnection,
 	RegisterServer,
 	player.InitPyModule,
 }

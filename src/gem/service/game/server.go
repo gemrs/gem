@@ -20,7 +20,7 @@ var logger *log.Module
 type Index int
 
 type context struct {
-	conn   *GameConnection
+	conn   *Connection
 	update *updateService
 	game   *gameService
 }
@@ -38,7 +38,7 @@ type Server struct {
 	nextIndex chan Index
 
 	m       sync.Mutex
-	clients map[Index]*GameConnection
+	clients map[Index]*Connection
 
 	t tomb.Tomb
 }
@@ -61,7 +61,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, aut
 
 	s.laddr = laddr
 	s.runite = ctx
-	s.clients = make(map[Index]*GameConnection)
+	s.clients = make(map[Index]*Connection)
 	s.update = newUpdateService(ctx)
 	s.game = newGameService(ctx, key, auth)
 	go s.update.processQueue()
@@ -183,7 +183,7 @@ func (s *Server) handle(netConn net.Conn) {
 }
 
 // registerClient adds a connection to the clients map
-func (s *Server) registerClient(conn *GameConnection) {
+func (s *Server) registerClient(conn *Connection) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
@@ -193,7 +193,7 @@ func (s *Server) registerClient(conn *GameConnection) {
 }
 
 // unregisterClient removes a connection to the clients map
-func (s *Server) unregisterClient(conn *GameConnection) {
+func (s *Server) unregisterClient(conn *Connection) {
 	s.m.Lock()
 	defer s.m.Unlock()
 

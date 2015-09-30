@@ -16,20 +16,20 @@ import (
 var _ = fmt.Sprintf("")
 var _ = gopygen.Dummy
 
-var GameConnectionDef = py.Class{
-	Name:    "GameConnection",
-	Pointer: (*GameConnection)(nil),
+var ConnectionDef = py.Class{
+	Name:    "Connection",
+	Pointer: (*Connection)(nil),
 }
 
 // Registers this type with a python module
-func RegisterGameConnection(module *py.Module) error {
+func RegisterConnection(module *py.Module) error {
 	var err error
 	var class *py.Type
-	if class, err = GameConnectionDef.Create(); err != nil {
+	if class, err = ConnectionDef.Create(); err != nil {
 		return err
 	}
 
-	if err = module.AddObject("GameConnection", class); err != nil {
+	if err = module.AddObject("Connection", class); err != nil {
 		return err
 	}
 
@@ -39,16 +39,16 @@ func RegisterGameConnection(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj GameConnection) Alloc() (*GameConnection, error) {
+func (obj Connection) Alloc() (*Connection, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
 	// Allocate
-	alloc_, err := GameConnectionDef.Alloc(0)
+	alloc_, err := ConnectionDef.Alloc(0)
 	if err != nil {
 		return nil, err
 	}
-	alloc := alloc_.(*GameConnection)
+	alloc := alloc_.(*Connection)
 	// Copy fields
 
 	alloc.Index = obj.Index
@@ -76,11 +76,11 @@ func (obj GameConnection) Alloc() (*GameConnection, error) {
 	return alloc, nil
 }
 
-func (obj *GameConnection) PyGet_Index() (py.Object, error) {
+func (obj *Connection) PyGet_Index() (py.Object, error) {
 	return gopygen.TypeConvOut(obj.Index, "Index")
 }
 
-func (obj *GameConnection) PySet_Index(arg py.Object) error {
+func (obj *Connection) PySet_Index(arg py.Object) error {
 	val, err := gopygen.TypeConvIn(arg, "Index")
 	if err != nil {
 		return err
@@ -89,11 +89,11 @@ func (obj *GameConnection) PySet_Index(arg py.Object) error {
 	return nil
 }
 
-func (obj *GameConnection) PyGet_Log() (py.Object, error) {
+func (obj *Connection) PyGet_Log() (py.Object, error) {
 	return gopygen.TypeConvOut(obj.Log, "*log.Module")
 }
 
-func (obj *GameConnection) PySet_Log(arg py.Object) error {
+func (obj *Connection) PySet_Log(arg py.Object) error {
 	val, err := gopygen.TypeConvIn(arg, "*log.Module")
 	if err != nil {
 		return err
@@ -102,11 +102,11 @@ func (obj *GameConnection) PySet_Log(arg py.Object) error {
 	return nil
 }
 
-func (obj *GameConnection) PyGet_Session() (py.Object, error) {
+func (obj *Connection) PyGet_Session() (py.Object, error) {
 	return gopygen.TypeConvOut(obj.Session, "*player.Session")
 }
 
-func (obj *GameConnection) PySet_Session(arg py.Object) error {
+func (obj *Connection) PySet_Session(arg py.Object) error {
 	val, err := gopygen.TypeConvIn(arg, "*player.Session")
 	if err != nil {
 		return err
@@ -115,11 +115,11 @@ func (obj *GameConnection) PySet_Session(arg py.Object) error {
 	return nil
 }
 
-func (obj *GameConnection) PyGet_Profile() (py.Object, error) {
+func (obj *Connection) PyGet_Profile() (py.Object, error) {
 	return gopygen.TypeConvOut(obj.Profile, "*player.Profile")
 }
 
-func (obj *GameConnection) PySet_Profile(arg py.Object) error {
+func (obj *Connection) PySet_Profile(arg py.Object) error {
 	val, err := gopygen.TypeConvIn(arg, "*player.Profile")
 	if err != nil {
 		return err
@@ -128,7 +128,7 @@ func (obj *GameConnection) PySet_Profile(arg py.Object) error {
 	return nil
 }
 
-func (conn *GameConnection) Py_Disconnect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_Disconnect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -146,7 +146,7 @@ func (conn *GameConnection) Py_Disconnect(_args *py.Tuple, kwds *py.Dict) (py.Ob
 
 }
 
-func (conn *GameConnection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -164,7 +164,7 @@ func (conn *GameConnection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Objec
 
 }
 
-func (conn *GameConnection) Py_handshake(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_handshake(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -196,7 +196,7 @@ func (conn *GameConnection) Py_handshake(_args *py.Tuple, kwds *py.Dict) (py.Obj
 
 }
 
-func (conn *GameConnection) Py_Write(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_Write(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -228,7 +228,7 @@ func (conn *GameConnection) Py_Write(_args *py.Tuple, kwds *py.Dict) (py.Object,
 
 }
 
-func (conn *GameConnection) Py_decodeToReadQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_decodeToReadQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -251,7 +251,7 @@ func (conn *GameConnection) Py_decodeToReadQueue(_args *py.Tuple, kwds *py.Dict)
 
 }
 
-func (conn *GameConnection) Py_encodeFromWriteQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_encodeFromWriteQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -274,7 +274,7 @@ func (conn *GameConnection) Py_encodeFromWriteQueue(_args *py.Tuple, kwds *py.Di
 
 }
 
-func (conn *GameConnection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -296,7 +296,7 @@ func (conn *GameConnection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) 
 
 }
 
-func (conn *GameConnection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 

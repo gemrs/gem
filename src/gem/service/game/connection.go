@@ -25,10 +25,10 @@ const (
 // the underlying buffer's read pointer is not altered.
 type encodeDecodeFunc func(*context, *encoding.Buffer) error
 
-//go:generate gopygen -type GameConnection -excfield "^[a-z].*" $GOFILE
-// GameConnection is a network-level representation of the connection.
+//go:generate gopygen -type Connection -excfield "^[a-z].*" $GOFILE
+// Connection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
-type GameConnection struct {
+type Connection struct {
 	py.BaseObject
 
 	Index   Index
@@ -45,14 +45,14 @@ type GameConnection struct {
 	decode      encodeDecodeFunc
 }
 
-func newConnection(conn net.Conn, parentLogger *log.Module) *GameConnection {
+func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
 	session, err := player.Session{}.Alloc()
 	if err != nil {
 		panic(err)
 	}
 
 	// FIXME: There's something nasty going on here.. Possibly a data race
-	gameConn, err := GameConnection{
+	gameConn, err := Connection{
 		Log:     parentLogger.SubModule(conn.RemoteAddr().String()),
 		Session: session,
 
@@ -71,7 +71,7 @@ func newConnection(conn net.Conn, parentLogger *log.Module) *GameConnection {
 }
 
 // disconnect signals to the connection loop that this connection should be, or has been closed
-func (conn *GameConnection) Disconnect() {
+func (conn *Connection) Disconnect() {
 	select {
 	case <-conn.disconnect:
 	default:
@@ -79,7 +79,7 @@ func (conn *GameConnection) Disconnect() {
 	}
 }
 
-func (conn *GameConnection) recover() {
+func (conn *Connection) recover() {
 	if err := recover(); err != nil {
 		stack := make([]byte, 1024*10)
 		runtime.Stack(stack, true)
@@ -90,7 +90,7 @@ func (conn *GameConnection) recover() {
 
 // handshake reads the service selection byte and points the connection's decode func
 // towards the decode func for the selected service
-func (conn *GameConnection) handshake(ctx *context, b *encoding.Buffer) error {
+func (conn *Connection) handshake(ctx *context, b *encoding.Buffer) error {
 	var svc protocol.ServiceSelect
 	if err := svc.Decode(b, nil); err != nil {
 		return err
@@ -116,14 +116,14 @@ func (conn *GameConnection) handshake(ctx *context, b *encoding.Buffer) error {
 }
 
 // Write is a convenience wrapper around writeBuffer.Write(p)
-func (conn *GameConnection) Write(p []byte) (n int, err error) {
+func (conn *Connection) Write(p []byte) (n int, err error) {
 	return conn.writeBuffer.Write(p)
 }
 
 // decodeToReadQueue is the goroutine handling the read buffer
 // reads from the buffer, decodes Codables using conn.decode, which can choose
 // to either handle the data or place a Codable into the read queue
-func (conn *GameConnection) decodeToReadQueue(connCtx *context) {
+func (conn *Connection) decodeToReadQueue(connCtx *context) {
 	defer conn.recover()
 	for {
 		err := conn.fillReadBuffer()
@@ -158,7 +158,7 @@ func (conn *GameConnection) decodeToReadQueue(connCtx *context) {
 
 // encodeFromWriteQueue is the goroutine handling the write buffer
 // picks from conn.write, encodes the Codables, and flushes the write buffer
-func (conn *GameConnection) encodeFromWriteQueue(connCtx *context) {
+func (conn *Connection) encodeFromWriteQueue(connCtx *context) {
 	defer conn.recover()
 L:
 	for {
@@ -192,7 +192,7 @@ L:
 
 // flushWriteBuffer drains the write buffer and ensures that all data is written to
 // the connection. If conn.Write returns an error (timeout), the client is disconnected.
-func (conn *GameConnection) flushWriteBuffer() error {
+func (conn *Connection) flushWriteBuffer() error {
 	for conn.writeBuffer.Len() > 0 {
 		_, err := conn.writeBuffer.WriteTo(conn.conn)
 		if err != nil {
@@ -205,7 +205,7 @@ func (conn *GameConnection) flushWriteBuffer() error {
 
 // fillReadBuffer pulls data from the connection and buffers it for decoding into the readBuffer
 // launched in a goroutine by Server.handle
-func (conn *GameConnection) fillReadBuffer() error {
+func (conn *Connection) fillReadBuffer() error {
 	conn.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	_, err := conn.readBuffer.ReadFrom(conn.conn)
 	return err
