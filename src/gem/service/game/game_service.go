@@ -85,6 +85,16 @@ func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) erro
 	}
 	secureBlock := rsaBlock.Codable.(*protocol.ClientSecureLoginBlock)
 
+	// Seed the RNGs
+	inSeed := make([]uint32, 4)
+	outSeed := make([]uint32, 4)
+	for i := range inSeed {
+		inSeed[i] = uint32(secureBlock.ISAACSeed[i])
+		outSeed[i] = uint32(secureBlock.ISAACSeed[i]) + 50
+	}
+	session.RandIn.SeedArray(inSeed)
+	session.RandOut.SeedArray(outSeed)
+
 	conn.Log.Debugf("Secure login block: %#v", secureBlock)
 
 	profile, responseCode := svc.auth.LookupProfile(string(secureBlock.Username), string(secureBlock.Password))
