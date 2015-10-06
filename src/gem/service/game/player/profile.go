@@ -20,7 +20,7 @@ type Profile struct {
 	py.BaseObject
 
 	Username string
-	Password string /* todo: hash */
+	Password string
 	Rights   Rights
 }
 

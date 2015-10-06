@@ -97,7 +97,11 @@ func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) erro
 
 	conn.Log.Debugf("Secure login block: %#v", secureBlock)
 
-	profile, responseCode := svc.auth.LookupProfile(string(secureBlock.Username), string(secureBlock.Password))
+	username := string(secureBlock.Username)
+	password := string(secureBlock.Password)
+	password = auth.HashPassword(password)
+
+	profile, responseCode := svc.auth.LookupProfile(username, password)
 
 	conn.Profile = profile
 
