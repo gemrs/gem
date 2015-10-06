@@ -4,7 +4,8 @@ import:
   - package: github.com/tgascoigne/gopygen
   - package: gopkg.in/tomb.v2
   - package: github.com/op/go-logging
-  - package: github.com/gtank/isaac
+# managed outside glide
+#  - package: github.com/gtank/isaac
   - package: golang.org/x/crypto
     subpackages:
       - /bcrypt
