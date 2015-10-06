@@ -1,13 +1,13 @@
 package auth
 
 import (
-	"gopkg.in/hlandau/passlib.v1"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPassword(plain string) string {
-	hash, err := passlib.Hash(plain)
+	hash, err := bcrypt.GenerateFromPassword([]byte(plain), bcrypt.DefaultCost)
 	if err != nil {
 		panic(err)
 	}
-	return hash
+	return string(hash)
 }
