@@ -9,6 +9,7 @@ import (
 	"github.com/qur/gopy/lib"
 
 	"gem"
+	gempy "gem/py"
 )
 
 func main() {
@@ -26,6 +27,8 @@ func pythonInit() *py.Lock {
 	}()
 
 	lock := py.InitAndLock()
+
+	gempy.SetTypeConvFuncs()
 
 	if err := gem.InitPyModule(); err != nil {
 		panic(err)
