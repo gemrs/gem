@@ -1,12 +1,1 @@
-package: gem
-import:
-  - package: github.com/qur/gopy
-  - package: github.com/tgascoigne/gopygen
-  - package: gopkg.in/tomb.v2
-  - package: github.com/op/go-logging
-# managed outside glide
-#  - package: github.com/gtank/isaac
-  - package: golang.org/x/crypto
-    subpackages:
-      - /bcrypt
-  - package: golang.org/x/tools
+Oops! Top YAML node must be a map.
