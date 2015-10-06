@@ -1,0 +1,1061 @@
+     0  *ast.File {                                                             
+     1  .  Package: goobject.go:1:1
+     2  .  Name: *ast.Ident {
+     3  .  .  NamePos: goobject.go:1:9
+     4  .  .  Name: "example"
+     5  .  }
+     6  .  Decls: []ast.Decl (len = 9) {
+     7  .  .  0: *ast.GenDecl {
+     8  .  .  .  TokPos: goobject.go:3:1
+     9  .  .  .  Tok: import
+    10  .  .  .  Lparen: goobject.go:3:8
+    11  .  .  .  Specs: []ast.Spec (len = 1) {
+    12  .  .  .  .  0: *ast.ImportSpec {
+    13  .  .  .  .  .  Path: *ast.BasicLit {
+    14  .  .  .  .  .  .  ValuePos: goobject.go:4:2
+    15  .  .  .  .  .  .  Kind: STRING
+    16  .  .  .  .  .  .  Value: "\"github.com/qur/gopy/lib\""
+    17  .  .  .  .  .  }
+    18  .  .  .  .  .  EndPos: -
+    19  .  .  .  .  }
+    20  .  .  .  }
+    21  .  .  .  Rparen: goobject.go:5:1
+    22  .  .  }
+    23  .  .  1: *ast.GenDecl {
+    24  .  .  .  Doc: *ast.CommentGroup {
+    25  .  .  .  .  List: []*ast.Comment (len = 1) {
+    26  .  .  .  .  .  0: *ast.Comment {
+    27  .  .  .  .  .  .  Slash: goobject.go:9:1
+    28  .  .  .  .  .  .  Text: "//gopygen:\"gen.GoObject\""
+    29  .  .  .  .  .  }
+    30  .  .  .  .  }
+    31  .  .  .  }
+    32  .  .  .  TokPos: goobject.go:10:1
+    33  .  .  .  Tok: type
+    34  .  .  .  Lparen: -
+    35  .  .  .  Specs: []ast.Spec (len = 1) {
+    36  .  .  .  .  0: *ast.TypeSpec {
+    37  .  .  .  .  .  Name: *ast.Ident {
+    38  .  .  .  .  .  .  NamePos: goobject.go:10:6
+    39  .  .  .  .  .  .  Name: "GoObject"
+    40  .  .  .  .  .  .  Obj: *ast.Object {
+    41  .  .  .  .  .  .  .  Kind: type
+    42  .  .  .  .  .  .  .  Name: "GoObject"
+    43  .  .  .  .  .  .  .  Decl: *(obj @ 36)
+    44  .  .  .  .  .  .  }
+    45  .  .  .  .  .  }
+    46  .  .  .  .  .  Type: *ast.StructType {
+    47  .  .  .  .  .  .  Struct: goobject.go:10:15
+    48  .  .  .  .  .  .  Fields: *ast.FieldList {
+    49  .  .  .  .  .  .  .  Opening: goobject.go:10:22
+    50  .  .  .  .  .  .  .  List: []*ast.Field (len = 6) {
+    51  .  .  .  .  .  .  .  .  0: *ast.Field {
+    52  .  .  .  .  .  .  .  .  .  Type: *ast.SelectorExpr {
+    53  .  .  .  .  .  .  .  .  .  .  X: *ast.Ident {
+    54  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:11:2
+    55  .  .  .  .  .  .  .  .  .  .  .  Name: "py"
+    56  .  .  .  .  .  .  .  .  .  .  }
+    57  .  .  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+    58  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:11:5
+    59  .  .  .  .  .  .  .  .  .  .  .  Name: "BaseObject"
+    60  .  .  .  .  .  .  .  .  .  .  }
+    61  .  .  .  .  .  .  .  .  .  }
+    62  .  .  .  .  .  .  .  .  }
+    63  .  .  .  .  .  .  .  .  1: *ast.Field {
+    64  .  .  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+    65  .  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+    66  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:12:2
+    67  .  .  .  .  .  .  .  .  .  .  .  Name: "X"
+    68  .  .  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+    69  .  .  .  .  .  .  .  .  .  .  .  .  Kind: var
+    70  .  .  .  .  .  .  .  .  .  .  .  .  Name: "X"
+    71  .  .  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 63)
+    72  .  .  .  .  .  .  .  .  .  .  .  }
+    73  .  .  .  .  .  .  .  .  .  .  }
+    74  .  .  .  .  .  .  .  .  .  }
+    75  .  .  .  .  .  .  .  .  .  Type: *ast.Ident {
+    76  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:12:13
+    77  .  .  .  .  .  .  .  .  .  .  Name: "int"
+    78  .  .  .  .  .  .  .  .  .  }
+    79  .  .  .  .  .  .  .  .  .  Tag: *ast.BasicLit {
+    80  .  .  .  .  .  .  .  .  .  .  ValuePos: goobject.go:12:17
+    81  .  .  .  .  .  .  .  .  .  .  Kind: STRING
+    82  .  .  .  .  .  .  .  .  .  .  Value: "`Py:\"X\"`"
+    83  .  .  .  .  .  .  .  .  .  }
+    84  .  .  .  .  .  .  .  .  }
+    85  .  .  .  .  .  .  .  .  2: *ast.Field {
+    86  .  .  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+    87  .  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+    88  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:13:2
+    89  .  .  .  .  .  .  .  .  .  .  .  Name: "Y"
+    90  .  .  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+    91  .  .  .  .  .  .  .  .  .  .  .  .  Kind: var
+    92  .  .  .  .  .  .  .  .  .  .  .  .  Name: "Y"
+    93  .  .  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 85)
+    94  .  .  .  .  .  .  .  .  .  .  .  }
+    95  .  .  .  .  .  .  .  .  .  .  }
+    96  .  .  .  .  .  .  .  .  .  }
+    97  .  .  .  .  .  .  .  .  .  Type: *ast.Ident {
+    98  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:13:13
+    99  .  .  .  .  .  .  .  .  .  .  Name: "int"
+   100  .  .  .  .  .  .  .  .  .  }
+   101  .  .  .  .  .  .  .  .  .  Comment: *ast.CommentGroup {
+   102  .  .  .  .  .  .  .  .  .  .  List: []*ast.Comment (len = 1) {
+   103  .  .  .  .  .  .  .  .  .  .  .  0: *ast.Comment {
+   104  .  .  .  .  .  .  .  .  .  .  .  .  Slash: goobject.go:13:17
+   105  .  .  .  .  .  .  .  .  .  .  .  .  Text: "//gopygen:\"Y,set,get\""
+   106  .  .  .  .  .  .  .  .  .  .  .  }
+   107  .  .  .  .  .  .  .  .  .  .  }
+   108  .  .  .  .  .  .  .  .  .  }
+   109  .  .  .  .  .  .  .  .  }
+   110  .  .  .  .  .  .  .  .  3: *ast.Field {
+   111  .  .  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   112  .  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   113  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:14:2
+   114  .  .  .  .  .  .  .  .  .  .  .  Name: "Z"
+   115  .  .  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   116  .  .  .  .  .  .  .  .  .  .  .  .  Kind: var
+   117  .  .  .  .  .  .  .  .  .  .  .  .  Name: "Z"
+   118  .  .  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 110)
+   119  .  .  .  .  .  .  .  .  .  .  .  }
+   120  .  .  .  .  .  .  .  .  .  .  }
+   121  .  .  .  .  .  .  .  .  .  }
+   122  .  .  .  .  .  .  .  .  .  Type: *ast.Ident {
+   123  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:14:13
+   124  .  .  .  .  .  .  .  .  .  .  Name: "int"
+   125  .  .  .  .  .  .  .  .  .  }
+   126  .  .  .  .  .  .  .  .  }
+   127  .  .  .  .  .  .  .  .  4: *ast.Field {
+   128  .  .  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   129  .  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   130  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:15:2
+   131  .  .  .  .  .  .  .  .  .  .  .  Name: "unexported"
+   132  .  .  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   133  .  .  .  .  .  .  .  .  .  .  .  .  Kind: var
+   134  .  .  .  .  .  .  .  .  .  .  .  .  Name: "unexported"
+   135  .  .  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 127)
+   136  .  .  .  .  .  .  .  .  .  .  .  }
+   137  .  .  .  .  .  .  .  .  .  .  }
+   138  .  .  .  .  .  .  .  .  .  }
+   139  .  .  .  .  .  .  .  .  .  Type: *ast.Ident {
+   140  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:15:13
+   141  .  .  .  .  .  .  .  .  .  .  Name: "int"
+   142  .  .  .  .  .  .  .  .  .  }
+   143  .  .  .  .  .  .  .  .  .  Comment: *ast.CommentGroup {
+   144  .  .  .  .  .  .  .  .  .  .  List: []*ast.Comment (len = 1) {
+   145  .  .  .  .  .  .  .  .  .  .  .  0: *ast.Comment {
+   146  .  .  .  .  .  .  .  .  .  .  .  .  Slash: goobject.go:15:17
+   147  .  .  .  .  .  .  .  .  .  .  .  .  Text: "//gopygen:\"unexp,set,get\""
+   148  .  .  .  .  .  .  .  .  .  .  .  }
+   149  .  .  .  .  .  .  .  .  .  .  }
+   150  .  .  .  .  .  .  .  .  .  }
+   151  .  .  .  .  .  .  .  .  }
+   152  .  .  .  .  .  .  .  .  5: *ast.Field {
+   153  .  .  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   154  .  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   155  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:16:2
+   156  .  .  .  .  .  .  .  .  .  .  .  Name: "Map"
+   157  .  .  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   158  .  .  .  .  .  .  .  .  .  .  .  .  Kind: var
+   159  .  .  .  .  .  .  .  .  .  .  .  .  Name: "Map"
+   160  .  .  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 152)
+   161  .  .  .  .  .  .  .  .  .  .  .  }
+   162  .  .  .  .  .  .  .  .  .  .  }
+   163  .  .  .  .  .  .  .  .  .  }
+   164  .  .  .  .  .  .  .  .  .  Type: *ast.MapType {
+   165  .  .  .  .  .  .  .  .  .  .  Map: goobject.go:16:13
+   166  .  .  .  .  .  .  .  .  .  .  Key: *ast.Ident {
+   167  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:16:17
+   168  .  .  .  .  .  .  .  .  .  .  .  Name: "int"
+   169  .  .  .  .  .  .  .  .  .  .  }
+   170  .  .  .  .  .  .  .  .  .  .  Value: *ast.InterfaceType {
+   171  .  .  .  .  .  .  .  .  .  .  .  Interface: goobject.go:16:21
+   172  .  .  .  .  .  .  .  .  .  .  .  Methods: *ast.FieldList {
+   173  .  .  .  .  .  .  .  .  .  .  .  .  Opening: goobject.go:16:30
+   174  .  .  .  .  .  .  .  .  .  .  .  .  Closing: goobject.go:16:31
+   175  .  .  .  .  .  .  .  .  .  .  .  }
+   176  .  .  .  .  .  .  .  .  .  .  .  Incomplete: false
+   177  .  .  .  .  .  .  .  .  .  .  }
+   178  .  .  .  .  .  .  .  .  .  }
+   179  .  .  .  .  .  .  .  .  }
+   180  .  .  .  .  .  .  .  }
+   181  .  .  .  .  .  .  .  Closing: goobject.go:17:1
+   182  .  .  .  .  .  .  }
+   183  .  .  .  .  .  .  Incomplete: false
+   184  .  .  .  .  .  }
+   185  .  .  .  .  }
+   186  .  .  .  }
+   187  .  .  .  Rparen: -
+   188  .  .  }
+   189  .  .  2: *ast.FuncDecl {
+   190  .  .  .  Recv: *ast.FieldList {
+   191  .  .  .  .  Opening: goobject.go:19:6
+   192  .  .  .  .  List: []*ast.Field (len = 1) {
+   193  .  .  .  .  .  0: *ast.Field {
+   194  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   195  .  .  .  .  .  .  .  0: *ast.Ident {
+   196  .  .  .  .  .  .  .  .  NamePos: goobject.go:19:7
+   197  .  .  .  .  .  .  .  .  Name: "o"
+   198  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   199  .  .  .  .  .  .  .  .  .  Kind: var
+   200  .  .  .  .  .  .  .  .  .  Name: "o"
+   201  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 193)
+   202  .  .  .  .  .  .  .  .  }
+   203  .  .  .  .  .  .  .  }
+   204  .  .  .  .  .  .  }
+   205  .  .  .  .  .  .  Type: *ast.StarExpr {
+   206  .  .  .  .  .  .  .  Star: goobject.go:19:9
+   207  .  .  .  .  .  .  .  X: *ast.Ident {
+   208  .  .  .  .  .  .  .  .  NamePos: goobject.go:19:10
+   209  .  .  .  .  .  .  .  .  Name: "GoObject"
+   210  .  .  .  .  .  .  .  .  Obj: *(obj @ 40)
+   211  .  .  .  .  .  .  .  }
+   212  .  .  .  .  .  .  }
+   213  .  .  .  .  .  }
+   214  .  .  .  .  }
+   215  .  .  .  .  Closing: goobject.go:19:18
+   216  .  .  .  }
+   217  .  .  .  Name: *ast.Ident {
+   218  .  .  .  .  NamePos: goobject.go:19:20
+   219  .  .  .  .  Name: "FooBar_1"
+   220  .  .  .  }
+   221  .  .  .  Type: *ast.FuncType {
+   222  .  .  .  .  Func: goobject.go:19:1
+   223  .  .  .  .  Params: *ast.FieldList {
+   224  .  .  .  .  .  Opening: goobject.go:19:28
+   225  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   226  .  .  .  .  .  .  0: *ast.Field {
+   227  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   228  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   229  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:19:29
+   230  .  .  .  .  .  .  .  .  .  Name: "z"
+   231  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   232  .  .  .  .  .  .  .  .  .  .  Kind: var
+   233  .  .  .  .  .  .  .  .  .  .  Name: "z"
+   234  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 226)
+   235  .  .  .  .  .  .  .  .  .  }
+   236  .  .  .  .  .  .  .  .  }
+   237  .  .  .  .  .  .  .  }
+   238  .  .  .  .  .  .  .  Type: *ast.Ident {
+   239  .  .  .  .  .  .  .  .  NamePos: goobject.go:19:31
+   240  .  .  .  .  .  .  .  .  Name: "int"
+   241  .  .  .  .  .  .  .  }
+   242  .  .  .  .  .  .  }
+   243  .  .  .  .  .  }
+   244  .  .  .  .  .  Closing: goobject.go:19:34
+   245  .  .  .  .  }
+   246  .  .  .  .  Results: *ast.FieldList {
+   247  .  .  .  .  .  Opening: -
+   248  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   249  .  .  .  .  .  .  0: *ast.Field {
+   250  .  .  .  .  .  .  .  Type: *ast.Ident {
+   251  .  .  .  .  .  .  .  .  NamePos: goobject.go:19:36
+   252  .  .  .  .  .  .  .  .  Name: "int"
+   253  .  .  .  .  .  .  .  }
+   254  .  .  .  .  .  .  }
+   255  .  .  .  .  .  }
+   256  .  .  .  .  .  Closing: -
+   257  .  .  .  .  }
+   258  .  .  .  }
+   259  .  .  .  Body: *ast.BlockStmt {
+   260  .  .  .  .  Lbrace: goobject.go:19:40
+   261  .  .  .  .  List: []ast.Stmt (len = 1) {
+   262  .  .  .  .  .  0: *ast.ReturnStmt {
+   263  .  .  .  .  .  .  Return: goobject.go:20:2
+   264  .  .  .  .  .  .  Results: []ast.Expr (len = 1) {
+   265  .  .  .  .  .  .  .  0: *ast.BinaryExpr {
+   266  .  .  .  .  .  .  .  .  X: *ast.BinaryExpr {
+   267  .  .  .  .  .  .  .  .  .  X: *ast.SelectorExpr {
+   268  .  .  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   269  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:20:9
+   270  .  .  .  .  .  .  .  .  .  .  .  Name: "o"
+   271  .  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 198)
+   272  .  .  .  .  .  .  .  .  .  .  }
+   273  .  .  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   274  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:20:11
+   275  .  .  .  .  .  .  .  .  .  .  .  Name: "X"
+   276  .  .  .  .  .  .  .  .  .  .  }
+   277  .  .  .  .  .  .  .  .  .  }
+   278  .  .  .  .  .  .  .  .  .  OpPos: goobject.go:20:13
+   279  .  .  .  .  .  .  .  .  .  Op: *
+   280  .  .  .  .  .  .  .  .  .  Y: *ast.SelectorExpr {
+   281  .  .  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   282  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:20:15
+   283  .  .  .  .  .  .  .  .  .  .  .  Name: "o"
+   284  .  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 198)
+   285  .  .  .  .  .  .  .  .  .  .  }
+   286  .  .  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   287  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:20:17
+   288  .  .  .  .  .  .  .  .  .  .  .  Name: "Y"
+   289  .  .  .  .  .  .  .  .  .  .  }
+   290  .  .  .  .  .  .  .  .  .  }
+   291  .  .  .  .  .  .  .  .  }
+   292  .  .  .  .  .  .  .  .  OpPos: goobject.go:20:19
+   293  .  .  .  .  .  .  .  .  Op: *
+   294  .  .  .  .  .  .  .  .  Y: *ast.Ident {
+   295  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:20:21
+   296  .  .  .  .  .  .  .  .  .  Name: "z"
+   297  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 231)
+   298  .  .  .  .  .  .  .  .  }
+   299  .  .  .  .  .  .  .  }
+   300  .  .  .  .  .  .  }
+   301  .  .  .  .  .  }
+   302  .  .  .  .  }
+   303  .  .  .  .  Rbrace: goobject.go:21:1
+   304  .  .  .  }
+   305  .  .  }
+   306  .  .  3: *ast.FuncDecl {
+   307  .  .  .  Recv: *ast.FieldList {
+   308  .  .  .  .  Opening: goobject.go:23:6
+   309  .  .  .  .  List: []*ast.Field (len = 1) {
+   310  .  .  .  .  .  0: *ast.Field {
+   311  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   312  .  .  .  .  .  .  .  0: *ast.Ident {
+   313  .  .  .  .  .  .  .  .  NamePos: goobject.go:23:7
+   314  .  .  .  .  .  .  .  .  Name: "o"
+   315  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   316  .  .  .  .  .  .  .  .  .  Kind: var
+   317  .  .  .  .  .  .  .  .  .  Name: "o"
+   318  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 310)
+   319  .  .  .  .  .  .  .  .  }
+   320  .  .  .  .  .  .  .  }
+   321  .  .  .  .  .  .  }
+   322  .  .  .  .  .  .  Type: *ast.StarExpr {
+   323  .  .  .  .  .  .  .  Star: goobject.go:23:9
+   324  .  .  .  .  .  .  .  X: *ast.Ident {
+   325  .  .  .  .  .  .  .  .  NamePos: goobject.go:23:10
+   326  .  .  .  .  .  .  .  .  Name: "GoObject"
+   327  .  .  .  .  .  .  .  .  Obj: *(obj @ 40)
+   328  .  .  .  .  .  .  .  }
+   329  .  .  .  .  .  .  }
+   330  .  .  .  .  .  }
+   331  .  .  .  .  }
+   332  .  .  .  .  Closing: goobject.go:23:18
+   333  .  .  .  }
+   334  .  .  .  Name: *ast.Ident {
+   335  .  .  .  .  NamePos: goobject.go:23:20
+   336  .  .  .  .  Name: "FooBar_2"
+   337  .  .  .  }
+   338  .  .  .  Type: *ast.FuncType {
+   339  .  .  .  .  Func: goobject.go:23:1
+   340  .  .  .  .  Params: *ast.FieldList {
+   341  .  .  .  .  .  Opening: goobject.go:23:28
+   342  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   343  .  .  .  .  .  .  0: *ast.Field {
+   344  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   345  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   346  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:23:29
+   347  .  .  .  .  .  .  .  .  .  Name: "z"
+   348  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   349  .  .  .  .  .  .  .  .  .  .  Kind: var
+   350  .  .  .  .  .  .  .  .  .  .  Name: "z"
+   351  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 343)
+   352  .  .  .  .  .  .  .  .  .  }
+   353  .  .  .  .  .  .  .  .  }
+   354  .  .  .  .  .  .  .  }
+   355  .  .  .  .  .  .  .  Type: *ast.Ident {
+   356  .  .  .  .  .  .  .  .  NamePos: goobject.go:23:31
+   357  .  .  .  .  .  .  .  .  Name: "int"
+   358  .  .  .  .  .  .  .  }
+   359  .  .  .  .  .  .  }
+   360  .  .  .  .  .  }
+   361  .  .  .  .  .  Closing: goobject.go:23:34
+   362  .  .  .  .  }
+   363  .  .  .  .  Results: *ast.FieldList {
+   364  .  .  .  .  .  Opening: goobject.go:23:36
+   365  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   366  .  .  .  .  .  .  0: *ast.Field {
+   367  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   368  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   369  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:23:37
+   370  .  .  .  .  .  .  .  .  .  Name: "a"
+   371  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   372  .  .  .  .  .  .  .  .  .  .  Kind: var
+   373  .  .  .  .  .  .  .  .  .  .  Name: "a"
+   374  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 366)
+   375  .  .  .  .  .  .  .  .  .  }
+   376  .  .  .  .  .  .  .  .  }
+   377  .  .  .  .  .  .  .  }
+   378  .  .  .  .  .  .  .  Type: *ast.Ident {
+   379  .  .  .  .  .  .  .  .  NamePos: goobject.go:23:39
+   380  .  .  .  .  .  .  .  .  Name: "int"
+   381  .  .  .  .  .  .  .  }
+   382  .  .  .  .  .  .  }
+   383  .  .  .  .  .  }
+   384  .  .  .  .  .  Closing: goobject.go:23:42
+   385  .  .  .  .  }
+   386  .  .  .  }
+   387  .  .  .  Body: *ast.BlockStmt {
+   388  .  .  .  .  Lbrace: goobject.go:23:44
+   389  .  .  .  .  List: []ast.Stmt (len = 2) {
+   390  .  .  .  .  .  0: *ast.AssignStmt {
+   391  .  .  .  .  .  .  Lhs: []ast.Expr (len = 1) {
+   392  .  .  .  .  .  .  .  0: *ast.Ident {
+   393  .  .  .  .  .  .  .  .  NamePos: goobject.go:24:2
+   394  .  .  .  .  .  .  .  .  Name: "a"
+   395  .  .  .  .  .  .  .  .  Obj: *(obj @ 371)
+   396  .  .  .  .  .  .  .  }
+   397  .  .  .  .  .  .  }
+   398  .  .  .  .  .  .  TokPos: goobject.go:24:4
+   399  .  .  .  .  .  .  Tok: =
+   400  .  .  .  .  .  .  Rhs: []ast.Expr (len = 1) {
+   401  .  .  .  .  .  .  .  0: *ast.BinaryExpr {
+   402  .  .  .  .  .  .  .  .  X: *ast.BinaryExpr {
+   403  .  .  .  .  .  .  .  .  .  X: *ast.SelectorExpr {
+   404  .  .  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   405  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:24:6
+   406  .  .  .  .  .  .  .  .  .  .  .  Name: "o"
+   407  .  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 315)
+   408  .  .  .  .  .  .  .  .  .  .  }
+   409  .  .  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   410  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:24:8
+   411  .  .  .  .  .  .  .  .  .  .  .  Name: "X"
+   412  .  .  .  .  .  .  .  .  .  .  }
+   413  .  .  .  .  .  .  .  .  .  }
+   414  .  .  .  .  .  .  .  .  .  OpPos: goobject.go:24:10
+   415  .  .  .  .  .  .  .  .  .  Op: *
+   416  .  .  .  .  .  .  .  .  .  Y: *ast.SelectorExpr {
+   417  .  .  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   418  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:24:12
+   419  .  .  .  .  .  .  .  .  .  .  .  Name: "o"
+   420  .  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 315)
+   421  .  .  .  .  .  .  .  .  .  .  }
+   422  .  .  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   423  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:24:14
+   424  .  .  .  .  .  .  .  .  .  .  .  Name: "Y"
+   425  .  .  .  .  .  .  .  .  .  .  }
+   426  .  .  .  .  .  .  .  .  .  }
+   427  .  .  .  .  .  .  .  .  }
+   428  .  .  .  .  .  .  .  .  OpPos: goobject.go:24:16
+   429  .  .  .  .  .  .  .  .  Op: *
+   430  .  .  .  .  .  .  .  .  Y: *ast.Ident {
+   431  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:24:18
+   432  .  .  .  .  .  .  .  .  .  Name: "z"
+   433  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 348)
+   434  .  .  .  .  .  .  .  .  }
+   435  .  .  .  .  .  .  .  }
+   436  .  .  .  .  .  .  }
+   437  .  .  .  .  .  }
+   438  .  .  .  .  .  1: *ast.ReturnStmt {
+   439  .  .  .  .  .  .  Return: goobject.go:25:2
+   440  .  .  .  .  .  }
+   441  .  .  .  .  }
+   442  .  .  .  .  Rbrace: goobject.go:26:1
+   443  .  .  .  }
+   444  .  .  }
+   445  .  .  4: *ast.FuncDecl {
+   446  .  .  .  Recv: *ast.FieldList {
+   447  .  .  .  .  Opening: goobject.go:28:6
+   448  .  .  .  .  List: []*ast.Field (len = 1) {
+   449  .  .  .  .  .  0: *ast.Field {
+   450  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   451  .  .  .  .  .  .  .  0: *ast.Ident {
+   452  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:7
+   453  .  .  .  .  .  .  .  .  Name: "o"
+   454  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   455  .  .  .  .  .  .  .  .  .  Kind: var
+   456  .  .  .  .  .  .  .  .  .  Name: "o"
+   457  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 449)
+   458  .  .  .  .  .  .  .  .  }
+   459  .  .  .  .  .  .  .  }
+   460  .  .  .  .  .  .  }
+   461  .  .  .  .  .  .  Type: *ast.StarExpr {
+   462  .  .  .  .  .  .  .  Star: goobject.go:28:9
+   463  .  .  .  .  .  .  .  X: *ast.Ident {
+   464  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:10
+   465  .  .  .  .  .  .  .  .  Name: "GoObject"
+   466  .  .  .  .  .  .  .  .  Obj: *(obj @ 40)
+   467  .  .  .  .  .  .  .  }
+   468  .  .  .  .  .  .  }
+   469  .  .  .  .  .  }
+   470  .  .  .  .  }
+   471  .  .  .  .  Closing: goobject.go:28:18
+   472  .  .  .  }
+   473  .  .  .  Name: *ast.Ident {
+   474  .  .  .  .  NamePos: goobject.go:28:20
+   475  .  .  .  .  Name: "FooBar_3"
+   476  .  .  .  }
+   477  .  .  .  Type: *ast.FuncType {
+   478  .  .  .  .  Func: goobject.go:28:1
+   479  .  .  .  .  Params: *ast.FieldList {
+   480  .  .  .  .  .  Opening: goobject.go:28:28
+   481  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   482  .  .  .  .  .  .  0: *ast.Field {
+   483  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 2) {
+   484  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   485  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:29
+   486  .  .  .  .  .  .  .  .  .  Name: "a"
+   487  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   488  .  .  .  .  .  .  .  .  .  .  Kind: var
+   489  .  .  .  .  .  .  .  .  .  .  Name: "a"
+   490  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 482)
+   491  .  .  .  .  .  .  .  .  .  }
+   492  .  .  .  .  .  .  .  .  }
+   493  .  .  .  .  .  .  .  .  1: *ast.Ident {
+   494  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:32
+   495  .  .  .  .  .  .  .  .  .  Name: "b"
+   496  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   497  .  .  .  .  .  .  .  .  .  .  Kind: var
+   498  .  .  .  .  .  .  .  .  .  .  Name: "b"
+   499  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 482)
+   500  .  .  .  .  .  .  .  .  .  }
+   501  .  .  .  .  .  .  .  .  }
+   502  .  .  .  .  .  .  .  }
+   503  .  .  .  .  .  .  .  Type: *ast.Ident {
+   504  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:34
+   505  .  .  .  .  .  .  .  .  Name: "string"
+   506  .  .  .  .  .  .  .  }
+   507  .  .  .  .  .  .  }
+   508  .  .  .  .  .  }
+   509  .  .  .  .  .  Closing: goobject.go:28:40
+   510  .  .  .  .  }
+   511  .  .  .  .  Results: *ast.FieldList {
+   512  .  .  .  .  .  Opening: goobject.go:28:42
+   513  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   514  .  .  .  .  .  .  0: *ast.Field {
+   515  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 2) {
+   516  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   517  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:43
+   518  .  .  .  .  .  .  .  .  .  Name: "x"
+   519  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   520  .  .  .  .  .  .  .  .  .  .  Kind: var
+   521  .  .  .  .  .  .  .  .  .  .  Name: "x"
+   522  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 514)
+   523  .  .  .  .  .  .  .  .  .  }
+   524  .  .  .  .  .  .  .  .  }
+   525  .  .  .  .  .  .  .  .  1: *ast.Ident {
+   526  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:46
+   527  .  .  .  .  .  .  .  .  .  Name: "y"
+   528  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   529  .  .  .  .  .  .  .  .  .  .  Kind: var
+   530  .  .  .  .  .  .  .  .  .  .  Name: "y"
+   531  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 514)
+   532  .  .  .  .  .  .  .  .  .  }
+   533  .  .  .  .  .  .  .  .  }
+   534  .  .  .  .  .  .  .  }
+   535  .  .  .  .  .  .  .  Type: *ast.Ident {
+   536  .  .  .  .  .  .  .  .  NamePos: goobject.go:28:48
+   537  .  .  .  .  .  .  .  .  Name: "int"
+   538  .  .  .  .  .  .  .  }
+   539  .  .  .  .  .  .  }
+   540  .  .  .  .  .  }
+   541  .  .  .  .  .  Closing: goobject.go:28:51
+   542  .  .  .  .  }
+   543  .  .  .  }
+   544  .  .  .  Body: *ast.BlockStmt {
+   545  .  .  .  .  Lbrace: goobject.go:28:53
+   546  .  .  .  .  List: []ast.Stmt (len = 1) {
+   547  .  .  .  .  .  0: *ast.ReturnStmt {
+   548  .  .  .  .  .  .  Return: goobject.go:29:2
+   549  .  .  .  .  .  .  Results: []ast.Expr (len = 2) {
+   550  .  .  .  .  .  .  .  0: *ast.CallExpr {
+   551  .  .  .  .  .  .  .  .  Fun: *ast.Ident {
+   552  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:29:9
+   553  .  .  .  .  .  .  .  .  .  Name: "len"
+   554  .  .  .  .  .  .  .  .  }
+   555  .  .  .  .  .  .  .  .  Lparen: goobject.go:29:12
+   556  .  .  .  .  .  .  .  .  Args: []ast.Expr (len = 1) {
+   557  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   558  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:29:13
+   559  .  .  .  .  .  .  .  .  .  .  Name: "a"
+   560  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 487)
+   561  .  .  .  .  .  .  .  .  .  }
+   562  .  .  .  .  .  .  .  .  }
+   563  .  .  .  .  .  .  .  .  Ellipsis: -
+   564  .  .  .  .  .  .  .  .  Rparen: goobject.go:29:14
+   565  .  .  .  .  .  .  .  }
+   566  .  .  .  .  .  .  .  1: *ast.CallExpr {
+   567  .  .  .  .  .  .  .  .  Fun: *ast.Ident {
+   568  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:29:17
+   569  .  .  .  .  .  .  .  .  .  Name: "len"
+   570  .  .  .  .  .  .  .  .  }
+   571  .  .  .  .  .  .  .  .  Lparen: goobject.go:29:20
+   572  .  .  .  .  .  .  .  .  Args: []ast.Expr (len = 1) {
+   573  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   574  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:29:21
+   575  .  .  .  .  .  .  .  .  .  .  Name: "b"
+   576  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 496)
+   577  .  .  .  .  .  .  .  .  .  }
+   578  .  .  .  .  .  .  .  .  }
+   579  .  .  .  .  .  .  .  .  Ellipsis: -
+   580  .  .  .  .  .  .  .  .  Rparen: goobject.go:29:22
+   581  .  .  .  .  .  .  .  }
+   582  .  .  .  .  .  .  }
+   583  .  .  .  .  .  }
+   584  .  .  .  .  }
+   585  .  .  .  .  Rbrace: goobject.go:30:1
+   586  .  .  .  }
+   587  .  .  }
+   588  .  .  5: *ast.FuncDecl {
+   589  .  .  .  Recv: *ast.FieldList {
+   590  .  .  .  .  Opening: goobject.go:32:6
+   591  .  .  .  .  List: []*ast.Field (len = 1) {
+   592  .  .  .  .  .  0: *ast.Field {
+   593  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   594  .  .  .  .  .  .  .  0: *ast.Ident {
+   595  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:7
+   596  .  .  .  .  .  .  .  .  Name: "o"
+   597  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   598  .  .  .  .  .  .  .  .  .  Kind: var
+   599  .  .  .  .  .  .  .  .  .  Name: "o"
+   600  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 592)
+   601  .  .  .  .  .  .  .  .  }
+   602  .  .  .  .  .  .  .  }
+   603  .  .  .  .  .  .  }
+   604  .  .  .  .  .  .  Type: *ast.StarExpr {
+   605  .  .  .  .  .  .  .  Star: goobject.go:32:9
+   606  .  .  .  .  .  .  .  X: *ast.Ident {
+   607  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:10
+   608  .  .  .  .  .  .  .  .  Name: "GoObject"
+   609  .  .  .  .  .  .  .  .  Obj: *(obj @ 40)
+   610  .  .  .  .  .  .  .  }
+   611  .  .  .  .  .  .  }
+   612  .  .  .  .  .  }
+   613  .  .  .  .  }
+   614  .  .  .  .  Closing: goobject.go:32:18
+   615  .  .  .  }
+   616  .  .  .  Name: *ast.Ident {
+   617  .  .  .  .  NamePos: goobject.go:32:20
+   618  .  .  .  .  Name: "FooBar_4"
+   619  .  .  .  }
+   620  .  .  .  Type: *ast.FuncType {
+   621  .  .  .  .  Func: goobject.go:32:1
+   622  .  .  .  .  Params: *ast.FieldList {
+   623  .  .  .  .  .  Opening: goobject.go:32:28
+   624  .  .  .  .  .  List: []*ast.Field (len = 2) {
+   625  .  .  .  .  .  .  0: *ast.Field {
+   626  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   627  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   628  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:29
+   629  .  .  .  .  .  .  .  .  .  Name: "a"
+   630  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   631  .  .  .  .  .  .  .  .  .  .  Kind: var
+   632  .  .  .  .  .  .  .  .  .  .  Name: "a"
+   633  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 625)
+   634  .  .  .  .  .  .  .  .  .  }
+   635  .  .  .  .  .  .  .  .  }
+   636  .  .  .  .  .  .  .  }
+   637  .  .  .  .  .  .  .  Type: *ast.Ident {
+   638  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:31
+   639  .  .  .  .  .  .  .  .  Name: "string"
+   640  .  .  .  .  .  .  .  }
+   641  .  .  .  .  .  .  }
+   642  .  .  .  .  .  .  1: *ast.Field {
+   643  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   644  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   645  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:39
+   646  .  .  .  .  .  .  .  .  .  Name: "b"
+   647  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   648  .  .  .  .  .  .  .  .  .  .  Kind: var
+   649  .  .  .  .  .  .  .  .  .  .  Name: "b"
+   650  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 642)
+   651  .  .  .  .  .  .  .  .  .  }
+   652  .  .  .  .  .  .  .  .  }
+   653  .  .  .  .  .  .  .  }
+   654  .  .  .  .  .  .  .  Type: *ast.Ident {
+   655  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:41
+   656  .  .  .  .  .  .  .  .  Name: "string"
+   657  .  .  .  .  .  .  .  }
+   658  .  .  .  .  .  .  }
+   659  .  .  .  .  .  }
+   660  .  .  .  .  .  Closing: goobject.go:32:47
+   661  .  .  .  .  }
+   662  .  .  .  .  Results: *ast.FieldList {
+   663  .  .  .  .  .  Opening: goobject.go:32:49
+   664  .  .  .  .  .  List: []*ast.Field (len = 2) {
+   665  .  .  .  .  .  .  0: *ast.Field {
+   666  .  .  .  .  .  .  .  Type: *ast.Ident {
+   667  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:50
+   668  .  .  .  .  .  .  .  .  Name: "int"
+   669  .  .  .  .  .  .  .  }
+   670  .  .  .  .  .  .  }
+   671  .  .  .  .  .  .  1: *ast.Field {
+   672  .  .  .  .  .  .  .  Type: *ast.Ident {
+   673  .  .  .  .  .  .  .  .  NamePos: goobject.go:32:55
+   674  .  .  .  .  .  .  .  .  Name: "int"
+   675  .  .  .  .  .  .  .  }
+   676  .  .  .  .  .  .  }
+   677  .  .  .  .  .  }
+   678  .  .  .  .  .  Closing: goobject.go:32:58
+   679  .  .  .  .  }
+   680  .  .  .  }
+   681  .  .  .  Body: *ast.BlockStmt {
+   682  .  .  .  .  Lbrace: goobject.go:32:60
+   683  .  .  .  .  List: []ast.Stmt (len = 1) {
+   684  .  .  .  .  .  0: *ast.ReturnStmt {
+   685  .  .  .  .  .  .  Return: goobject.go:33:2
+   686  .  .  .  .  .  .  Results: []ast.Expr (len = 2) {
+   687  .  .  .  .  .  .  .  0: *ast.CallExpr {
+   688  .  .  .  .  .  .  .  .  Fun: *ast.Ident {
+   689  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:33:9
+   690  .  .  .  .  .  .  .  .  .  Name: "len"
+   691  .  .  .  .  .  .  .  .  }
+   692  .  .  .  .  .  .  .  .  Lparen: goobject.go:33:12
+   693  .  .  .  .  .  .  .  .  Args: []ast.Expr (len = 1) {
+   694  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   695  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:33:13
+   696  .  .  .  .  .  .  .  .  .  .  Name: "a"
+   697  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 630)
+   698  .  .  .  .  .  .  .  .  .  }
+   699  .  .  .  .  .  .  .  .  }
+   700  .  .  .  .  .  .  .  .  Ellipsis: -
+   701  .  .  .  .  .  .  .  .  Rparen: goobject.go:33:14
+   702  .  .  .  .  .  .  .  }
+   703  .  .  .  .  .  .  .  1: *ast.CallExpr {
+   704  .  .  .  .  .  .  .  .  Fun: *ast.Ident {
+   705  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:33:17
+   706  .  .  .  .  .  .  .  .  .  Name: "len"
+   707  .  .  .  .  .  .  .  .  }
+   708  .  .  .  .  .  .  .  .  Lparen: goobject.go:33:20
+   709  .  .  .  .  .  .  .  .  Args: []ast.Expr (len = 1) {
+   710  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   711  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:33:21
+   712  .  .  .  .  .  .  .  .  .  .  Name: "b"
+   713  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 647)
+   714  .  .  .  .  .  .  .  .  .  }
+   715  .  .  .  .  .  .  .  .  }
+   716  .  .  .  .  .  .  .  .  Ellipsis: -
+   717  .  .  .  .  .  .  .  .  Rparen: goobject.go:33:22
+   718  .  .  .  .  .  .  .  }
+   719  .  .  .  .  .  .  }
+   720  .  .  .  .  .  }
+   721  .  .  .  .  }
+   722  .  .  .  .  Rbrace: goobject.go:34:1
+   723  .  .  .  }
+   724  .  .  }
+   725  .  .  6: *ast.FuncDecl {
+   726  .  .  .  Recv: *ast.FieldList {
+   727  .  .  .  .  Opening: goobject.go:36:6
+   728  .  .  .  .  List: []*ast.Field (len = 1) {
+   729  .  .  .  .  .  0: *ast.Field {
+   730  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   731  .  .  .  .  .  .  .  0: *ast.Ident {
+   732  .  .  .  .  .  .  .  .  NamePos: goobject.go:36:7
+   733  .  .  .  .  .  .  .  .  Name: "o"
+   734  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   735  .  .  .  .  .  .  .  .  .  Kind: var
+   736  .  .  .  .  .  .  .  .  .  Name: "o"
+   737  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 729)
+   738  .  .  .  .  .  .  .  .  }
+   739  .  .  .  .  .  .  .  }
+   740  .  .  .  .  .  .  }
+   741  .  .  .  .  .  .  Type: *ast.StarExpr {
+   742  .  .  .  .  .  .  .  Star: goobject.go:36:9
+   743  .  .  .  .  .  .  .  X: *ast.Ident {
+   744  .  .  .  .  .  .  .  .  NamePos: goobject.go:36:10
+   745  .  .  .  .  .  .  .  .  Name: "GoObject"
+   746  .  .  .  .  .  .  .  .  Obj: *(obj @ 40)
+   747  .  .  .  .  .  .  .  }
+   748  .  .  .  .  .  .  }
+   749  .  .  .  .  .  }
+   750  .  .  .  .  }
+   751  .  .  .  .  Closing: goobject.go:36:18
+   752  .  .  .  }
+   753  .  .  .  Name: *ast.Ident {
+   754  .  .  .  .  NamePos: goobject.go:36:20
+   755  .  .  .  .  Name: "FooBar_5"
+   756  .  .  .  }
+   757  .  .  .  Type: *ast.FuncType {
+   758  .  .  .  .  Func: goobject.go:36:1
+   759  .  .  .  .  Params: *ast.FieldList {
+   760  .  .  .  .  .  Opening: goobject.go:36:28
+   761  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   762  .  .  .  .  .  .  0: *ast.Field {
+   763  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   764  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   765  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:36:29
+   766  .  .  .  .  .  .  .  .  .  Name: "z"
+   767  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   768  .  .  .  .  .  .  .  .  .  .  Kind: var
+   769  .  .  .  .  .  .  .  .  .  .  Name: "z"
+   770  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 762)
+   771  .  .  .  .  .  .  .  .  .  }
+   772  .  .  .  .  .  .  .  .  }
+   773  .  .  .  .  .  .  .  }
+   774  .  .  .  .  .  .  .  Type: *ast.Ident {
+   775  .  .  .  .  .  .  .  .  NamePos: goobject.go:36:31
+   776  .  .  .  .  .  .  .  .  Name: "int"
+   777  .  .  .  .  .  .  .  }
+   778  .  .  .  .  .  .  }
+   779  .  .  .  .  .  }
+   780  .  .  .  .  .  Closing: goobject.go:36:34
+   781  .  .  .  .  }
+   782  .  .  .  }
+   783  .  .  .  Body: *ast.BlockStmt {
+   784  .  .  .  .  Lbrace: goobject.go:36:36
+   785  .  .  .  .  List: []ast.Stmt (len = 1) {
+   786  .  .  .  .  .  0: *ast.AssignStmt {
+   787  .  .  .  .  .  .  Lhs: []ast.Expr (len = 1) {
+   788  .  .  .  .  .  .  .  0: *ast.SelectorExpr {
+   789  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   790  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:37:2
+   791  .  .  .  .  .  .  .  .  .  Name: "o"
+   792  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 734)
+   793  .  .  .  .  .  .  .  .  }
+   794  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   795  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:37:4
+   796  .  .  .  .  .  .  .  .  .  Name: "Z"
+   797  .  .  .  .  .  .  .  .  }
+   798  .  .  .  .  .  .  .  }
+   799  .  .  .  .  .  .  }
+   800  .  .  .  .  .  .  TokPos: goobject.go:37:6
+   801  .  .  .  .  .  .  Tok: =
+   802  .  .  .  .  .  .  Rhs: []ast.Expr (len = 1) {
+   803  .  .  .  .  .  .  .  0: *ast.Ident {
+   804  .  .  .  .  .  .  .  .  NamePos: goobject.go:37:8
+   805  .  .  .  .  .  .  .  .  Name: "z"
+   806  .  .  .  .  .  .  .  .  Obj: *(obj @ 767)
+   807  .  .  .  .  .  .  .  }
+   808  .  .  .  .  .  .  }
+   809  .  .  .  .  .  }
+   810  .  .  .  .  }
+   811  .  .  .  .  Rbrace: goobject.go:38:1
+   812  .  .  .  }
+   813  .  .  }
+   814  .  .  7: *ast.FuncDecl {
+   815  .  .  .  Recv: *ast.FieldList {
+   816  .  .  .  .  Opening: goobject.go:40:6
+   817  .  .  .  .  List: []*ast.Field (len = 1) {
+   818  .  .  .  .  .  0: *ast.Field {
+   819  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   820  .  .  .  .  .  .  .  0: *ast.Ident {
+   821  .  .  .  .  .  .  .  .  NamePos: goobject.go:40:7
+   822  .  .  .  .  .  .  .  .  Name: "o"
+   823  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   824  .  .  .  .  .  .  .  .  .  Kind: var
+   825  .  .  .  .  .  .  .  .  .  Name: "o"
+   826  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 818)
+   827  .  .  .  .  .  .  .  .  }
+   828  .  .  .  .  .  .  .  }
+   829  .  .  .  .  .  .  }
+   830  .  .  .  .  .  .  Type: *ast.StarExpr {
+   831  .  .  .  .  .  .  .  Star: goobject.go:40:9
+   832  .  .  .  .  .  .  .  X: *ast.Ident {
+   833  .  .  .  .  .  .  .  .  NamePos: goobject.go:40:10
+   834  .  .  .  .  .  .  .  .  Name: "GoObject"
+   835  .  .  .  .  .  .  .  .  Obj: *(obj @ 40)
+   836  .  .  .  .  .  .  .  }
+   837  .  .  .  .  .  .  }
+   838  .  .  .  .  .  }
+   839  .  .  .  .  }
+   840  .  .  .  .  Closing: goobject.go:40:18
+   841  .  .  .  }
+   842  .  .  .  Name: *ast.Ident {
+   843  .  .  .  .  NamePos: goobject.go:40:20
+   844  .  .  .  .  Name: "FooBar_6"
+   845  .  .  .  }
+   846  .  .  .  Type: *ast.FuncType {
+   847  .  .  .  .  Func: goobject.go:40:1
+   848  .  .  .  .  Params: *ast.FieldList {
+   849  .  .  .  .  .  Opening: goobject.go:40:28
+   850  .  .  .  .  .  Closing: goobject.go:40:29
+   851  .  .  .  .  }
+   852  .  .  .  .  Results: *ast.FieldList {
+   853  .  .  .  .  .  Opening: -
+   854  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   855  .  .  .  .  .  .  0: *ast.Field {
+   856  .  .  .  .  .  .  .  Type: *ast.Ident {
+   857  .  .  .  .  .  .  .  .  NamePos: goobject.go:40:31
+   858  .  .  .  .  .  .  .  .  Name: "int"
+   859  .  .  .  .  .  .  .  }
+   860  .  .  .  .  .  .  }
+   861  .  .  .  .  .  }
+   862  .  .  .  .  .  Closing: -
+   863  .  .  .  .  }
+   864  .  .  .  }
+   865  .  .  .  Body: *ast.BlockStmt {
+   866  .  .  .  .  Lbrace: goobject.go:40:35
+   867  .  .  .  .  List: []ast.Stmt (len = 1) {
+   868  .  .  .  .  .  0: *ast.ReturnStmt {
+   869  .  .  .  .  .  .  Return: goobject.go:41:2
+   870  .  .  .  .  .  .  Results: []ast.Expr (len = 1) {
+   871  .  .  .  .  .  .  .  0: *ast.SelectorExpr {
+   872  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   873  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:41:9
+   874  .  .  .  .  .  .  .  .  .  Name: "o"
+   875  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 823)
+   876  .  .  .  .  .  .  .  .  }
+   877  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   878  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:41:11
+   879  .  .  .  .  .  .  .  .  .  Name: "Z"
+   880  .  .  .  .  .  .  .  .  }
+   881  .  .  .  .  .  .  .  }
+   882  .  .  .  .  .  .  }
+   883  .  .  .  .  .  }
+   884  .  .  .  .  }
+   885  .  .  .  .  Rbrace: goobject.go:42:1
+   886  .  .  .  }
+   887  .  .  }
+   888  .  .  8: *ast.FuncDecl {
+   889  .  .  .  Doc: *ast.CommentGroup {
+   890  .  .  .  .  List: []*ast.Comment (len = 1) {
+   891  .  .  .  .  .  0: *ast.Comment {
+   892  .  .  .  .  .  .  Slash: goobject.go:44:1
+   893  .  .  .  .  .  .  Text: "// Non-pointer reciever - ignored"
+   894  .  .  .  .  .  }
+   895  .  .  .  .  }
+   896  .  .  .  }
+   897  .  .  .  Recv: *ast.FieldList {
+   898  .  .  .  .  Opening: goobject.go:45:6
+   899  .  .  .  .  List: []*ast.Field (len = 1) {
+   900  .  .  .  .  .  0: *ast.Field {
+   901  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   902  .  .  .  .  .  .  .  0: *ast.Ident {
+   903  .  .  .  .  .  .  .  .  NamePos: goobject.go:45:7
+   904  .  .  .  .  .  .  .  .  Name: "o"
+   905  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   906  .  .  .  .  .  .  .  .  .  Kind: var
+   907  .  .  .  .  .  .  .  .  .  Name: "o"
+   908  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 900)
+   909  .  .  .  .  .  .  .  .  }
+   910  .  .  .  .  .  .  .  }
+   911  .  .  .  .  .  .  }
+   912  .  .  .  .  .  .  Type: *ast.Ident {
+   913  .  .  .  .  .  .  .  NamePos: goobject.go:45:9
+   914  .  .  .  .  .  .  .  Name: "GoObject"
+   915  .  .  .  .  .  .  .  Obj: *(obj @ 40)
+   916  .  .  .  .  .  .  }
+   917  .  .  .  .  .  }
+   918  .  .  .  .  }
+   919  .  .  .  .  Closing: goobject.go:45:17
+   920  .  .  .  }
+   921  .  .  .  Name: *ast.Ident {
+   922  .  .  .  .  NamePos: goobject.go:45:19
+   923  .  .  .  .  Name: "BarFoo"
+   924  .  .  .  }
+   925  .  .  .  Type: *ast.FuncType {
+   926  .  .  .  .  Func: goobject.go:45:1
+   927  .  .  .  .  Params: *ast.FieldList {
+   928  .  .  .  .  .  Opening: goobject.go:45:25
+   929  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   930  .  .  .  .  .  .  0: *ast.Field {
+   931  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+   932  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   933  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:45:26
+   934  .  .  .  .  .  .  .  .  .  Name: "z"
+   935  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+   936  .  .  .  .  .  .  .  .  .  .  Kind: var
+   937  .  .  .  .  .  .  .  .  .  .  Name: "z"
+   938  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 930)
+   939  .  .  .  .  .  .  .  .  .  }
+   940  .  .  .  .  .  .  .  .  }
+   941  .  .  .  .  .  .  .  }
+   942  .  .  .  .  .  .  .  Type: *ast.Ident {
+   943  .  .  .  .  .  .  .  .  NamePos: goobject.go:45:28
+   944  .  .  .  .  .  .  .  .  Name: "int"
+   945  .  .  .  .  .  .  .  }
+   946  .  .  .  .  .  .  }
+   947  .  .  .  .  .  }
+   948  .  .  .  .  .  Closing: goobject.go:45:31
+   949  .  .  .  .  }
+   950  .  .  .  .  Results: *ast.FieldList {
+   951  .  .  .  .  .  Opening: -
+   952  .  .  .  .  .  List: []*ast.Field (len = 1) {
+   953  .  .  .  .  .  .  0: *ast.Field {
+   954  .  .  .  .  .  .  .  Type: *ast.Ident {
+   955  .  .  .  .  .  .  .  .  NamePos: goobject.go:45:33
+   956  .  .  .  .  .  .  .  .  Name: "int"
+   957  .  .  .  .  .  .  .  }
+   958  .  .  .  .  .  .  }
+   959  .  .  .  .  .  }
+   960  .  .  .  .  .  Closing: -
+   961  .  .  .  .  }
+   962  .  .  .  }
+   963  .  .  .  Body: *ast.BlockStmt {
+   964  .  .  .  .  Lbrace: goobject.go:45:37
+   965  .  .  .  .  List: []ast.Stmt (len = 1) {
+   966  .  .  .  .  .  0: *ast.ReturnStmt {
+   967  .  .  .  .  .  .  Return: goobject.go:46:2
+   968  .  .  .  .  .  .  Results: []ast.Expr (len = 1) {
+   969  .  .  .  .  .  .  .  0: *ast.BinaryExpr {
+   970  .  .  .  .  .  .  .  .  X: *ast.BinaryExpr {
+   971  .  .  .  .  .  .  .  .  .  X: *ast.SelectorExpr {
+   972  .  .  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   973  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:46:9
+   974  .  .  .  .  .  .  .  .  .  .  .  Name: "o"
+   975  .  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 905)
+   976  .  .  .  .  .  .  .  .  .  .  }
+   977  .  .  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   978  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:46:11
+   979  .  .  .  .  .  .  .  .  .  .  .  Name: "X"
+   980  .  .  .  .  .  .  .  .  .  .  }
+   981  .  .  .  .  .  .  .  .  .  }
+   982  .  .  .  .  .  .  .  .  .  OpPos: goobject.go:46:13
+   983  .  .  .  .  .  .  .  .  .  Op: *
+   984  .  .  .  .  .  .  .  .  .  Y: *ast.SelectorExpr {
+   985  .  .  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   986  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:46:15
+   987  .  .  .  .  .  .  .  .  .  .  .  Name: "o"
+   988  .  .  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 905)
+   989  .  .  .  .  .  .  .  .  .  .  }
+   990  .  .  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   991  .  .  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:46:17
+   992  .  .  .  .  .  .  .  .  .  .  .  Name: "Y"
+   993  .  .  .  .  .  .  .  .  .  .  }
+   994  .  .  .  .  .  .  .  .  .  }
+   995  .  .  .  .  .  .  .  .  }
+   996  .  .  .  .  .  .  .  .  OpPos: goobject.go:46:19
+   997  .  .  .  .  .  .  .  .  Op: *
+   998  .  .  .  .  .  .  .  .  Y: *ast.Ident {
+   999  .  .  .  .  .  .  .  .  .  NamePos: goobject.go:46:21
+  1000  .  .  .  .  .  .  .  .  .  Name: "z"
+  1001  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 935)
+  1002  .  .  .  .  .  .  .  .  }
+  1003  .  .  .  .  .  .  .  }
+  1004  .  .  .  .  .  .  }
+  1005  .  .  .  .  .  }
+  1006  .  .  .  .  }
+  1007  .  .  .  .  Rbrace: goobject.go:47:1
+  1008  .  .  .  }
+  1009  .  .  }
+  1010  .  }
+  1011  .  Scope: *ast.Scope {
+  1012  .  .  Objects: map[string]*ast.Object (len = 1) {
+  1013  .  .  .  "GoObject": *(obj @ 40)
+  1014  .  .  }
+  1015  .  }
+  1016  .  Imports: []*ast.ImportSpec (len = 1) {
+  1017  .  .  0: *(obj @ 12)
+  1018  .  }
+  1019  .  Unresolved: []*ast.Ident (len = 24) {
+  1020  .  .  0: *(obj @ 53)
+  1021  .  .  1: *(obj @ 75)
+  1022  .  .  2: *(obj @ 97)
+  1023  .  .  3: *(obj @ 122)
+  1024  .  .  4: *(obj @ 139)
+  1025  .  .  5: *(obj @ 166)
+  1026  .  .  6: *(obj @ 238)
+  1027  .  .  7: *(obj @ 250)
+  1028  .  .  8: *(obj @ 355)
+  1029  .  .  9: *(obj @ 378)
+  1030  .  .  10: *(obj @ 503)
+  1031  .  .  11: *(obj @ 535)
+  1032  .  .  12: *(obj @ 551)
+  1033  .  .  13: *(obj @ 567)
+  1034  .  .  14: *(obj @ 637)
+  1035  .  .  15: *(obj @ 654)
+  1036  .  .  16: *(obj @ 666)
+  1037  .  .  17: *(obj @ 672)
+  1038  .  .  18: *(obj @ 688)
+  1039  .  .  19: *(obj @ 704)
+  1040  .  .  20: *(obj @ 774)
+  1041  .  .  21: *(obj @ 856)
+  1042  .  .  22: *(obj @ 942)
+  1043  .  .  23: *(obj @ 954)
+  1044  .  }
+  1045  .  Comments: []*ast.CommentGroup (len = 5) {
+  1046  .  .  0: *ast.CommentGroup {
+  1047  .  .  .  List: []*ast.Comment (len = 1) {
+  1048  .  .  .  .  0: *ast.Comment {
+  1049  .  .  .  .  .  Slash: goobject.go:7:1
+  1050  .  .  .  .  .  Text: "//go:generate gopygen $GOFILE"
+  1051  .  .  .  .  }
+  1052  .  .  .  }
+  1053  .  .  }
+  1054  .  .  1: *(obj @ 24)
+  1055  .  .  2: *(obj @ 101)
+  1056  .  .  3: *(obj @ 143)
+  1057  .  .  4: *(obj @ 889)
+  1058  .  }
+  1059  }
+
