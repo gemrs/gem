@@ -1,2 +1,2 @@
-# Gem [![Build Status](https://drone.io/github.com/sinusoids/gem/status.png)](https://drone.io/github.com/sinusoids/gem/latest) [![Coverage Status](https://coveralls.io/repos/sinusoids/gem/badge.svg?branch=master&service=github)](https://coveralls.io/github/sinusoids/gem?branch=master)
+# Gem [![Build Status](https://drone.io/github.com/sinusoids/gem/status.png)](https://drone.io/github.com/sinusoids/gem/latest) [![Go Report Card](http://goreportcard.com/badge/sinusoids/gem)](http://goreportcard.com/report/sinusoids/gem) [![Coverage Status](https://coveralls.io/repos/sinusoids/gem/badge.svg?branch=master&service=github)](https://coveralls.io/github/sinusoids/gem?branch=master)
 Gielinor Emulator
