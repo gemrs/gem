@@ -1,0 +1,123 @@
+
+                                                     Gem Architecture                                            Gem 1.0
+
+1. Description
+
+   Gem is comprised of two major components.
+
+   1.1. Kernel
+
+      The kernel implements the core functionality and some low level game logic. Its primary roles are to do the
+      complex and/or compute-intensive work, and to abstract the protocol and implementation details away from game
+      logic as much as possible.
+
+      The kernel is implemented in Go and thus is deployed as a natively compiled binary.
+
+      The kernel acts as a Python interpreter, and is responsible for invoking the Python layer, and for providing
+      a runtime and to allow access to the abstracted low-level protocol and implementation details through a clean
+      Python native API binding.
+
+      The kernel should ensure fault tolerance in the event of unhandled exceptions or error conditions in Python
+      code. Interpreted languages are a tradeoff between ease of implementation and runtime safety; wrapping the Python
+      layer in a controlled environment means that the kernel can prioritise runtime safety and avoid fatal crashes.
+
+   1.2. Python
+
+      The Python layer's role is to provide the high level game logic, and to enable easy and intuitive implementation
+      of content. The Python layer should aim to be as protocol agnostic as possible, with the assistance of the kernel.
+
+      For much of the areas of functionality within Gem, it may be desirable to provide alternate backends to fit into
+      external components. In these cases, the choice has been made to delegate the implementation to the Python layer.
+      This simplifies the process of integration with other components and minimizes the amount of configuration and
+      third-party code needs to go into the kernel.
+
+      An example of where this comes in useful is in authentication. It may be desirable to use an external authentication
+      backend to identify players. The developer can implement an entirely new authentication backend without ever needing
+      to touch the kernel.
+
+   1.3. Kernel/Python API compatibility guarantee
+
+      The Python layer depends heavily on the kernel, and interaction between the two layers is performed through the
+      Python native API provided by the Kernel.
+
+      The Python native interface is guaranteed to remain backwards compatible for a minimum of 1 minor release. This
+      guarantee ensures that changes to the native API must be made in a backwards compatible manner for the duration of
+      the minor release in which they were introduced. Deprecation of an API should be made clear within this minor release
+      period through the use of release notes, and through log messages at runtime.
+
+      The reference implementation of the Python layer will always drop dependency on deprecated interfaces in the same minor
+      release they are introduced to the kernel.
+
+      An example is provided for clarity:
+
+         Feature X is introduced in release 1.0 along with it's native API interface. In version 1.2, it's native API
+         interface is modified, deprecated, or extended. In version 1.2, changes to Feature X's interface must be compatible
+         with dependant Python code written for versions 1.0, 1.1, and any patches of these minor releases.
+
+         In version 1.2, the reference implementation of the Python layer removes all usage of the deprecated APIs and matches
+         any changes made in the kernel to the interface of Feature X.
+
+         In version 1.2, interfaces to Feature X which have become deprecated are clearly marked in both release notes and
+         in runtime log messages.
+
+         With the release of version 1.3, the deprecated interface to Feature X may be removed, and dependant code which has
+         yet to be updated may be broken.
+
+      This relatively short deprecation cycle enables Gem to iterate quickly in it's early development stage without having
+      to maintain APIs which have been deemed inadequate, incomplete, or otherwise unfit for use. This ability to deprecate
+      APIs quickly has been chosen in favor of interface stability for two main reasons:
+
+         1. Ensuring the best possible code quality and APIs provided by the kernel in the early stages of development
+         2. Ensuring that forked versions of the Python layer are kept closely in sync with the reference implementation.
+
+2. Kernel/Python boundary
+
+   The following diagram shows where each system or element of game logic belong within the Gem architecture.
+
+   Loosely, each row is a layer of within the heirarchy, with the upper layers denoting core functionality, and the lower
+   layers denoting high level game logic. A few exceptions to this rule are made for increased readability. Similarly, some
+   blocks may simultanously exist at higher or lower levels within the heirarchy, where this makes sense from a design
+   point of view.
+
+
+                              --    +-------------+---------------+-------------+---------------+
+                             |      |   network   |    logging    | py binding  |    crypto     |
+                             |      +-------------+----+----------+--------+----+---------------+
+                     Core    |      |     protocol     |       task        |       event        |
+                             |      +-----------------------------------------------------------+
+                             |      |   game service   |  archive service  |       runite       |
+                              >-    +-------------+----+---------+---------+----+---------------+
+                             |      |    world    |   profile    |   session    |    engine     |
+                             |      +-------------+----+---------+---------+----+---------------+
+                             |      |     movement     |      objects      |        npcs        |
+                             |      +-----------------------------------------------------------+
+                             |      |      combat      |     inventory     |    player chat     | ^
+                             |      +------------------+-------------------+--------------------+ |  Kernel (Go)
+               Game Logic    |                                                                    |
+                             |      =============================================================
+                             |                                                                    |
+                             |      +-------------+--------------+--------------+---------------+ |  Python
+                             |      | persistence |     auth     |  world init  |   npc chat    | v
+                             |      +-------------+----+---------+---------+----+---------------+
+                             |      |    interfaces    |      trading      |   object actions   |
+                             |      +-----------------------------------------------------------+
+                             |      |      skills      |     minigames     |       quests       |
+                             |      +------------------+-------------------+--------------------+
+                             |      |                     other game logic                      |
+                              --    +-----------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                              -.     .-.
+                                                              --\---/---\--
+                                                                 '-'     '-
