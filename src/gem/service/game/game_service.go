@@ -1,6 +1,7 @@
 package game
 
 import (
+	"io"
 	"math/rand"
 
 	"gem/auth"
@@ -120,10 +121,14 @@ func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) erro
 	}
 
 	event.Dispatcher.Raise(event.PlayerLogin, conn)
+	go func() {
+		<-conn.disconnect
+		event.Dispatcher.Raise(event.PlayerLogout, conn)
+	}()
 	return nil
 }
 
 func (svc *gameService) decodePacket(ctx *context, b *encoding.Buffer) error {
 	//TODO: Parse packets
-	return nil
+	return io.EOF
 }

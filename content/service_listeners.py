@@ -4,16 +4,15 @@ import gem.service.archive as archive
 import gem.service.game as game
 
 import config
-from event_listener import EventListener
+import event
 
-class ServiceListeners(EventListener):
+@event.listener
+class ServiceListeners(object):
     archive_server_started = False
     game_server_started = False
 
-    def __init__(self):
-        pass
-
-    def startup(self, event):
+    @event.callback(gem.event.Startup)
+    def startup(self):
         try:
             self.archive_server = archive.Server()
             self.archive_server.Start(config.archive_server_listen, gem.runite.context)
@@ -28,17 +27,10 @@ class ServiceListeners(EventListener):
         except Exception as e:
             raise Exception("Couldn't start game server: {0}".format(e))
 
-
-    def shutdown(self, event):
+    @event.callback(gem.event.Shutdown)
+    def shutdown(self):
         if self.archive_server_started == True:
             self.archive_server.Stop()
 
         if self.game_server_started == True:
             self.game_server.Stop()
-
-    def player_login(self, event, player):
-        profile = player.Profile
-        player.SendMessage("Welcome to Gielinor")
-
-    def player_logout(self, event, player):
-        pass

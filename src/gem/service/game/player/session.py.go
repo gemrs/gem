@@ -3,8 +3,10 @@ package player
 
 import (
 	"fmt"
+	"gem/encoding"
 
 	"github.com/gtank/isaac"
+
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
@@ -56,6 +58,8 @@ func (obj Session) Alloc() (*Session, error) {
 	alloc.RandKey = obj.RandKey
 
 	alloc.SecureBlockSize = obj.SecureBlockSize
+
+	alloc.target = obj.target
 
 	return alloc, nil
 }
@@ -110,4 +114,63 @@ func (obj *Session) PySet_SecureBlockSize(arg py.Object) error {
 	}
 	obj.SecureBlockSize = val.(int)
 	return nil
+}
+
+func (obj *Session) PyGet_target() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.target, "encoding.Writer")
+}
+
+func (obj *Session) PySet_target(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "encoding.Writer")
+	if err != nil {
+		return err
+	}
+	obj.target = val.(encoding.Writer)
+	return nil
+}
+
+func (session *Session) Py_SendMessage(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SendMessage: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "string")
+	if err != nil {
+		return nil, err
+	}
+
+	session.SendMessage(in_0.(string))
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (session *Session) Py_SetTarget(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SetTarget: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Writer")
+	if err != nil {
+		return nil, err
+	}
+
+	session.SetTarget(in_0.(encoding.Writer))
+
+	py.None.Incref()
+	return py.None, nil
+
 }

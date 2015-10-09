@@ -5,16 +5,20 @@ import (
 )
 
 type Codable interface {
-	Encoder
-	Decoder
+	Encodable
+	Decodable
 }
 
-type Decoder interface {
+type Decodable interface {
 	Decode(buf io.Reader, flags_ interface{}) error
 }
 
-type Encoder interface {
+type Encodable interface {
 	Encode(buf io.Writer, flags_ interface{}) error
+}
+
+type Writer interface {
+	WriteEncodable(e Encodable)
 }
 
 var NilFlags int = 0

@@ -4,7 +4,6 @@ import (
 	"io"
 	"net"
 	"runtime"
-	"time"
 
 	"gem/encoding"
 	"gem/log"
@@ -39,8 +38,8 @@ type Connection struct {
 	conn        net.Conn
 	readBuffer  *encoding.Buffer
 	writeBuffer *encoding.Buffer
-	read        chan encoding.Codable
-	write       chan encoding.Codable
+	read        chan encoding.Decodable
+	write       chan encoding.Encodable
 	disconnect  chan bool
 	decode      encodeDecodeFunc
 }
@@ -59,13 +58,15 @@ func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
 		conn:        conn,
 		readBuffer:  encoding.NewBuffer(),
 		writeBuffer: encoding.NewBuffer(),
-		read:        make(chan encoding.Codable, 16),
-		write:       make(chan encoding.Codable, 16),
+		read:        make(chan encoding.Decodable, 16),
+		write:       make(chan encoding.Encodable, 16),
 		disconnect:  make(chan bool),
 	}.Alloc()
 	if err != nil {
 		panic(err)
 	}
+
+	gameConn.Session.SetTarget(gameConn)
 
 	return gameConn
 }
@@ -136,7 +137,8 @@ func (conn *Connection) decodeToReadQueue(connCtx *context) {
 		// at this point, the only error should be because we didn't have enough data
 		// todo: formalize this and check for the right error
 		canTrim := false
-		for conn.readBuffer.Len() > 0 && err == nil {
+		toRead := conn.readBuffer.Len()
+		for toRead > 0 && err == nil {
 			err = conn.readBuffer.Try(func(b *encoding.Buffer) error {
 				return conn.decode(connCtx, b)
 			})
@@ -206,15 +208,11 @@ func (conn *Connection) flushWriteBuffer() error {
 // fillReadBuffer pulls data from the connection and buffers it for decoding into the readBuffer
 // launched in a goroutine by Server.handle
 func (conn *Connection) fillReadBuffer() error {
-	conn.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	_, err := conn.readBuffer.ReadFrom(conn.conn)
 	return err
 }
 
-// SendMessage puts a message to the player's chat window
-// todo: this probably doesn't belong here, need to create a place for it..
-func (conn *Connection) SendMessage(message string) {
-	conn.write <- &protocol.ServerChatMessage{
-		Message: encoding.JString(message),
-	}
+// WriteEncodable implements encoding.Writer
+func (conn *Connection) WriteEncodable(e encoding.Encodable) {
+	conn.write <- e
 }

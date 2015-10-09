@@ -6,6 +6,7 @@ import signal_handler
 import console
 import plugins
 import auth
+import world
 
 import gem
 import gem.runite
@@ -39,7 +40,6 @@ def main():
         # init service listeners
         # inserts an engine.Start hook to launch listeners
         listeners = ServiceListeners()
-        listeners.register()
 
         # start the engine
         engine = gem.Engine()

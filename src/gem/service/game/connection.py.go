@@ -8,7 +8,6 @@ import (
 	"gem/service/game/player"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -78,11 +77,11 @@ func (obj Connection) Alloc() (*Connection, error) {
 }
 
 func (obj *Connection) PyGet_Index() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Index, "Index")
+	return gopygen.TypeConvOut(int(obj.Index), "int")
 }
 
 func (obj *Connection) PySet_Index(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "Index")
+	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
@@ -319,7 +318,7 @@ func (conn *Connection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 
 }
 
-func (conn *Connection) Py_SendMessage(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (conn *Connection) Py_WriteEncodable(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -327,15 +326,15 @@ func (conn *Connection) Py_SendMessage(_args *py.Tuple, kwds *py.Dict) (py.Objec
 	_ = err
 	args := _args.Slice()
 	if len(args) != 1 {
-		return nil, fmt.Errorf("Py_SendMessage: parameter length mismatch")
+		return nil, fmt.Errorf("Py_WriteEncodable: parameter length mismatch")
 	}
 
-	in_0, err := gopygen.TypeConvIn(args[0], "string")
+	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Encodable")
 	if err != nil {
 		return nil, err
 	}
 
-	conn.SendMessage(in_0.(string))
+	conn.WriteEncodable(in_0.(encoding.Encodable))
 
 	py.None.Incref()
 	return py.None, nil

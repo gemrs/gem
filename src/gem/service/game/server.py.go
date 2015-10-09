@@ -7,9 +7,9 @@ import (
 	"gem/runite"
 	"sync"
 
-	"github.com/qur/gopy/lib"
 	"gopkg.in/tomb.v2"
 
+	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
