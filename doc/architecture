@@ -85,7 +85,7 @@
 
    The following diagram shows where each system or element of game logic belong within the Gem architecture.
 
-   Loosely, each row is a layer of within the heirarchy, with the upper layers denoting core functionality, and the
+   Loosely, each row is a layer of depth within the heirarchy, with the upper layers denoting core functionality, and the
    lower layers denoting high level game logic. A few exceptions to this rule are made for increased
    readability. Similarly, some blocks may simultanously exist at higher or lower levels within the heirarchy, where
    this makes sense from a design point of view.
