@@ -2,6 +2,7 @@ package encoding
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 
 	"github.com/gtank/isaac"
@@ -16,6 +17,7 @@ const (
 )
 
 type PacketHeader struct {
+	Type   Codable
 	Number int
 	Size   FrameSize
 	Object Codable
@@ -63,5 +65,40 @@ func (p *PacketHeader) Encode(buf io.Writer, flags interface{}) error {
 }
 
 func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) error {
-	panic("not implemented")
+	var err error
+	rand := flags.(uint32)
+
+	/* decode the packet number */
+	var shiftedNumber Int8
+	err = shiftedNumber.Decode(buf, IntNilFlag)
+	if err != nil {
+		return err
+	}
+
+	number := uint8(uint32(shiftedNumber) - rand)
+
+	if int(number) != p.Number {
+		return fmt.Errorf("packet number mismatch. Got %v, expected %v", int(number), p.Number)
+	}
+
+	/* decode the packet size */
+	//TODO: verify size matches expected
+	switch p.Size {
+	case SzFixed:
+	case SzVar8:
+		var size8 Int8
+		err = size8.Decode(buf, IntNilFlag)
+		if err != nil {
+			return err
+		}
+	case SzVar16:
+		var size16 Int16
+		err = size16.Decode(buf, IntNilFlag)
+		if err != nil {
+			return err
+		}
+	}
+
+	/* decode the payload */
+	return p.Object.Decode(buf, nil)
 }

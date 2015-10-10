@@ -31,6 +31,7 @@ func (struc *anonymous_outbound_packets_bb_0) Decode(buf io.Reader, flags interf
 type OutboundChatMessage anonymous_outbound_packets_bb_0
 
 var OutboundChatMessageDefinition = encoding.PacketHeader{
+	Type:   (*OutboundChatMessage)(nil),
 	Number: 253,
 	Size:   encoding.SzVar8,
 }

@@ -22,6 +22,7 @@ func (struc *anonymous_inbound_packets_bb_0) Decode(buf io.Reader, flags interfa
 type InboundPing anonymous_inbound_packets_bb_0
 
 var InboundPingDefinition = encoding.PacketHeader{
+	Type:   (*InboundPing)(nil),
 	Number: 0,
 	Size:   encoding.SzFixed,
 }

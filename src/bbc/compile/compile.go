@@ -33,6 +33,7 @@ var typeDefTmpl = template.Must(template.New("typedef").Parse(`type {{.Name}} st
 var frameDefTmpl = template.Must(template.New("framedef").Parse(`type {{.Identifier}} {{.Object.Identifier}}
 
 var {{.Identifier}}Definition = encoding.PacketHeader{
+Type: (*{{.Identifier}})(nil),
 Number: {{.Number}},
 Size: encoding.{{.Size.String}},
 }

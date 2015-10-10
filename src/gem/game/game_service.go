@@ -1,11 +1,12 @@
 package game
 
 import (
-	"io"
+	"fmt"
 
 	"gem/auth"
 	"gem/crypto"
 	"gem/encoding"
+	"gem/protocol"
 	"gem/runite"
 )
 
@@ -32,6 +33,18 @@ func (svc *gameService) encodePacket(conn *Connection, b *encoding.Buffer, codab
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
 func (svc *gameService) decodePacket(conn *Connection, b *encoding.Buffer) error {
+	data, err := b.Peek(1)
+	if err != nil {
+		return err
+	}
 
-	return io.EOF
+	idByte := int(data[0])
+
+	rand := conn.Session.RandIn.Rand()
+	realId := uint8(uint32(idByte) - rand)
+	packet, err := protocol.NewInboundPacket(int(realId))
+	if err != nil {
+		return fmt.Errorf("%v: packet %v", err, realId)
+	}
+	return packet.Decode(b, rand)
 }

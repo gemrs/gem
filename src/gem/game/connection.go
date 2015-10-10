@@ -129,7 +129,7 @@ func (conn *Connection) decodeToReadQueue() {
 		}
 
 		if err != nil && err != io.EOF {
-			conn.Log.Criticalf("decode returned non EOF error")
+			conn.Log.Criticalf("decode returned non EOF error: %v", err)
 		}
 
 		if canTrim {
