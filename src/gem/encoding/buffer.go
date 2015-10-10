@@ -127,6 +127,21 @@ func (b *Buffer) WriteTo(w io.Writer) (int64, error) {
 	return int64(n), err
 }
 
+func (b *Buffer) Peek(n int) ([]byte, error) {
+	if b.i+n > len(b.s) {
+		return nil, io.EOF
+	}
+
+	data := b.s[b.i : b.i+n]
+	copied := make([]byte, n)
+	i := copy(copied, data)
+	if i != n {
+		return nil, io.EOF
+	}
+
+	return copied, nil
+}
+
 func (b *Buffer) Seek(offset int64, whence int) (int64, error) {
 	var abs int64
 	switch whence {

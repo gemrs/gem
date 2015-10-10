@@ -79,6 +79,37 @@ func TestCopySemantics(t *testing.T) {
 	}
 }
 
+func TestCopySemanticsOnPeek(t *testing.T) {
+	buffer := NewBufferBytes(data)
+
+	copied, err := buffer.Peek(2)
+	if err != nil {
+		t.Errorf("Peek returned error: %v", err)
+	}
+
+	for i := range copied {
+		if copied[i] != data[i] {
+			t.Errorf("Peeked data incorrect")
+		}
+		copied[i]++
+	}
+
+	actual := make([]byte, 2)
+	_, err = buffer.Read(actual)
+	if err != nil {
+		t.Errorf("Read returned error: %v", err)
+	}
+
+	for i := range copied {
+		if actual[i] == copied[i] {
+			t.Errorf("original slice was modified")
+		}
+		if actual[i] != data[i] {
+			t.Errorf("original slice was modified")
+		}
+	}
+}
+
 func TestCopySemanticsOnWrite(t *testing.T) {
 	dataCopy := make([]byte, len(data))
 	copy(dataCopy, data)
