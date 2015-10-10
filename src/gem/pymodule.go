@@ -1,11 +1,12 @@
 package gem
 
 import (
+	"gem/archive"
 	"gem/auth"
 	"gem/event"
+	"gem/game"
 	"gem/log"
 	"gem/runite"
-	"gem/service"
 	"gem/task"
 
 	"github.com/qur/gopy/lib"
@@ -21,8 +22,10 @@ var moduleRegisterFuncs = []registerFunc{
 	auth.InitPyModule,
 	event.InitPyModule,
 	task.InitPyModule,
-	service.InitPyModule,
 	runite.InitPyModule,
+
+	archive.InitPyModule,
+	game.InitPyModule,
 }
 
 func InitPyModule() error {

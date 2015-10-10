@@ -4,8 +4,8 @@ package game
 import (
 	"fmt"
 	"gem/encoding"
+	"gem/game/player"
 	"gem/log"
-	"gem/service/game/player"
 
 	"github.com/qur/gopy/lib"
 

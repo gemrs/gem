@@ -1,7 +1,7 @@
 import gem
 import gem.runite
-import gem.service.archive as archive
-import gem.service.game as game
+import gem.archive as archive
+import gem.game as game
 
 import config
 import event

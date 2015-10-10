@@ -1,6 +1,6 @@
 import gem
 import gem.auth
-import gem.service.game.player as player
+import gem.game.player as player
 
 logger = gem.syslog.Module(__name__)
 
