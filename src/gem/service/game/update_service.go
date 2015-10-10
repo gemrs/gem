@@ -6,6 +6,7 @@ import (
 	"gem/runite"
 )
 
+// updateService represents the internal state of the update servuce
 type updateService struct {
 	runite *runite.Context
 	queue  updateQueue

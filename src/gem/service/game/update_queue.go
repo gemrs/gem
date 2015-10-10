@@ -12,7 +12,7 @@ type queueItem struct {
 	log     *log.Module
 }
 
-// A updateQueue is a three-level priority queue
+// A updateQueue is a three-level priority queue, used for prioritising update requests
 type updateQueue struct {
 	c [3]chan *queueItem
 }
@@ -27,6 +27,7 @@ func newUpdateQueue() updateQueue {
 	}
 }
 
+// Push adds a new update request to the queue
 func (pq *updateQueue) Push(x interface{}) {
 	item := x.(*queueItem)
 	priority := item.request.Priority
@@ -38,6 +39,7 @@ func (pq *updateQueue) Push(x interface{}) {
 	pq.c[priority] <- item
 }
 
+// Pop pulls the next update request from the queue in priority order
 func (pq *updateQueue) Pop() interface{} {
 	for {
 		select {

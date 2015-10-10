@@ -20,6 +20,8 @@ var logInit sync.Once
 var logger *log.Module
 
 //go:generate gopygen -type Server -excfunc "^[a-z].+" -excfield "^[a-z].+" $GOFILE
+
+// Server is the listener object and its associated state
 type Server struct {
 	py.BaseObject
 
@@ -72,6 +74,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, aut
 	return nil
 }
 
+// generateNextIndex puts the next incremental client intex onto the Server.nextIndex channel
 func (s *Server) generateNextIndex() {
 	index := 0
 	for {

@@ -9,6 +9,7 @@ import (
 )
 
 //go:generate gopygen -type Session $GOFILE
+// Session is the set of non-persistant properties of a player
 type Session struct {
 	py.BaseObject
 
@@ -28,6 +29,7 @@ func (session *Session) SendMessage(message string) {
 	})
 }
 
+// SetTarget directs where packets should be sent.
 func (session *Session) SetTarget(e encoding.Writer) {
 	session.target = e
 }
