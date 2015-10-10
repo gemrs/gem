@@ -6,15 +6,15 @@ import (
 	"gem/runite"
 )
 
-func (req *UpdateRequest) String() string {
+func (req *InboundUpdateRequest) String() string {
 	return fmt.Sprintf("Cache %v, File %v, Priority %v", req.Index, req.File, req.Priority)
 }
 
-func (res *UpdateResponse) String() string {
+func (res *OutboundUpdateResponse) String() string {
 	return fmt.Sprintf("Cache %v, File %v, Size %v, Chunk %v", res.Index, res.File, res.Size, res.Chunk)
 }
 
-func (req *UpdateRequest) Resolve(ctx *runite.Context) ([]byte, error) {
+func (req *InboundUpdateRequest) Resolve(ctx *runite.Context) ([]byte, error) {
 	fs := ctx.FS
 	indexID := int(req.Index) + 1
 	if indexID < 0 || indexID > fs.IndexCount() {

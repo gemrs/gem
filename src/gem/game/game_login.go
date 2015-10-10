@@ -17,12 +17,12 @@ func (svc *gameService) handshake(conn *Connection, b *encoding.Buffer) error {
 	session.RandKey[2] = rand.Int31()
 	session.RandKey[3] = rand.Int31()
 
-	handshake := protocol.GameHandshake{}
+	handshake := protocol.InboundGameHandshake{}
 	if err := handshake.Decode(b, nil); err != nil {
 		return err
 	}
 
-	conn.write <- &protocol.GameHandshakeResponse{
+	conn.write <- &protocol.OutboundGameHandshake{
 		ServerISAACSeed: [2]encoding.Int32{
 			encoding.Int32(session.RandKey[2]), encoding.Int32(session.RandKey[3]),
 		},
@@ -36,7 +36,7 @@ func (svc *gameService) handshake(conn *Connection, b *encoding.Buffer) error {
 func (svc *gameService) decodeLoginBlock(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
-	loginBlock := protocol.ClientLoginBlock{}
+	loginBlock := protocol.InboundLoginBlock{}
 	if err := loginBlock.Decode(b, nil); err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (svc *gameService) decodeLoginBlock(conn *Connection, b *encoding.Buffer) e
 func (svc *gameService) decodeSecureBlock(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
-	rsaBlock := encoding.RSABlock{&protocol.ClientSecureLoginBlock{}}
+	rsaBlock := encoding.RSABlock{&protocol.InboundSecureLoginBlock{}}
 	rsaArgs := encoding.RSADecodeArgs{
 		Key:       svc.key,
 		BlockSize: session.SecureBlockSize,
@@ -67,7 +67,7 @@ func (svc *gameService) decodeSecureBlock(conn *Connection, b *encoding.Buffer) 
 	if err := rsaBlock.Decode(b, rsaArgs); err != nil {
 		return err
 	}
-	secureBlock := rsaBlock.Codable.(*protocol.ClientSecureLoginBlock)
+	secureBlock := rsaBlock.Codable.(*protocol.InboundSecureLoginBlock)
 
 	// Seed the RNGs
 	inSeed := make([]uint32, 4)
@@ -95,7 +95,7 @@ func (svc *gameService) doLogin(conn *Connection, username, password string) err
 	conn.Profile = profile
 
 	if responseCode != auth.AuthOkay {
-		conn.write <- &protocol.ServerLoginResponseUnsuccessful{
+		conn.write <- &protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),
 		}
 		conn.Disconnect()
@@ -103,7 +103,7 @@ func (svc *gameService) doLogin(conn *Connection, username, password string) err
 	}
 
 	// Successful login, do all the stuff
-	conn.write <- &protocol.ServerLoginResponse{
+	conn.write <- &protocol.OutboundLoginResponse{
 		Response: encoding.Int8(responseCode),
 		Rights:   encoding.Int8(conn.Profile.Rights),
 		Flagged:  0,

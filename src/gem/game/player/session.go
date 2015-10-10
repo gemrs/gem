@@ -24,7 +24,7 @@ type Session struct {
 
 // SendMessage puts a message to the player's chat window
 func (session *Session) SendMessage(message string) {
-	session.target.WriteEncodable(&protocol.ServerChatMessage{
+	session.target.WriteEncodable(&protocol.OutboundChatMessage{
 		Message: encoding.JString(message),
 	})
 }

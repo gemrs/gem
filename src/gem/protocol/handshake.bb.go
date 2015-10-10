@@ -6,11 +6,11 @@ import (
 	"io"
 )
 
-type ServiceSelect struct {
+type InboundServiceSelect struct {
 	Service encoding.Int8
 }
 
-func (struc *ServiceSelect) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *InboundServiceSelect) Encode(buf io.Writer, flags interface{}) (err error) {
 	err = struc.Service.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -19,7 +19,7 @@ func (struc *ServiceSelect) Encode(buf io.Writer, flags interface{}) (err error)
 	return err
 }
 
-func (struc *ServiceSelect) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.Service.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -28,11 +28,11 @@ func (struc *ServiceSelect) Decode(buf io.Reader, flags interface{}) (err error)
 	return err
 }
 
-type GameHandshake struct {
+type InboundGameHandshake struct {
 	NameHash encoding.Int8
 }
 
-func (struc *GameHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *InboundGameHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
 	err = struc.NameHash.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func (struc *GameHandshake) Encode(buf io.Writer, flags interface{}) (err error)
 	return err
 }
 
-func (struc *GameHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *InboundGameHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.NameHash.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -50,13 +50,13 @@ func (struc *GameHandshake) Decode(buf io.Reader, flags interface{}) (err error)
 	return err
 }
 
-type GameHandshakeResponse struct {
+type OutboundGameHandshake struct {
 	ignored         [8]encoding.Int8
 	loginRequest    encoding.Int8
 	ServerISAACSeed [2]encoding.Int32
 }
 
-func (struc *GameHandshakeResponse) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *OutboundGameHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
 	for i := 0; i < 8; i++ {
 		err = struc.ignored[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
@@ -79,7 +79,7 @@ func (struc *GameHandshakeResponse) Encode(buf io.Writer, flags interface{}) (er
 	return err
 }
 
-func (struc *GameHandshakeResponse) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *OutboundGameHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
 	for i := 0; i < 8; i++ {
 		err = struc.ignored[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
@@ -102,11 +102,11 @@ func (struc *GameHandshakeResponse) Decode(buf io.Reader, flags interface{}) (er
 	return err
 }
 
-type UpdateHandshakeResponse struct {
+type OutboundUpdateHandshake struct {
 	ignored [8]encoding.Int8
 }
 
-func (struc *UpdateHandshakeResponse) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *OutboundUpdateHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
 	for i := 0; i < 8; i++ {
 		err = struc.ignored[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
@@ -117,7 +117,7 @@ func (struc *UpdateHandshakeResponse) Encode(buf io.Writer, flags interface{}) (
 	return err
 }
 
-func (struc *UpdateHandshakeResponse) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *OutboundUpdateHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
 	for i := 0; i < 8; i++ {
 		err = struc.ignored[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {

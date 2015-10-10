@@ -2,7 +2,7 @@
    Index 0 corresponds to a file in idx1 (rather than idx0)
    Priority identifies how urgent the request is, and the server prioritizes requests accordingly.
 */
-type UpdateRequest struct {
+type InboundUpdateRequest struct {
     Index int8
     File  int16
     /* Priority is an integer between 0-2
@@ -16,7 +16,7 @@ type UpdateRequest struct {
    bytes of the file.
    The last chunk of a file is not padded out to the full 500 bytes
 */
-type UpdateResponse struct {
+type OutboundUpdateResponse struct {
     Index int8
     File  int16
     Size  int16

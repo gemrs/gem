@@ -32,6 +32,6 @@ func (svc *gameService) encodePacket(conn *Connection, b *encoding.Buffer, codab
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
 func (svc *gameService) decodePacket(conn *Connection, b *encoding.Buffer) error {
-	//TODO: Parse packets
+
 	return io.EOF
 }

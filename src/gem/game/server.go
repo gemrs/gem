@@ -196,7 +196,7 @@ func (s *Server) unregisterClient(conn *Connection) {
 // handshake reads the service selection byte and points the connection's decode func
 // towards the decode func for the selected service
 func (s *Server) handshake(conn *Connection, b *encoding.Buffer) error {
-	var svc protocol.ServiceSelect
+	var svc protocol.InboundServiceSelect
 	if err := svc.Decode(b, nil); err != nil {
 		return err
 	}
@@ -207,7 +207,7 @@ func (s *Server) handshake(conn *Connection, b *encoding.Buffer) error {
 		conn.decode = s.update.decodeRequest
 		conn.encode = conn.encodeCodable
 
-		conn.write <- new(protocol.UpdateHandshakeResponse)
+		conn.write <- new(protocol.OutboundUpdateHandshake)
 		return nil
 	case GameService:
 		conn.Log.Infof("new game client")

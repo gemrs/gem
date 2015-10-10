@@ -1,7 +1,7 @@
 /* ServiceSelect is the very first byte sent by the client, and is used to identify
    which service (update or game) the this session is for.
 */
-type ServiceSelect struct {
+type InboundServiceSelect struct {
     Service uint8
 }
 
@@ -9,7 +9,7 @@ type ServiceSelect struct {
    This is probably used to select the login server or something, but we have no real
    use for it
 */
-type GameHandshake struct {
+type InboundGameHandshake struct {
     NameHash int8
 }
 
@@ -18,7 +18,7 @@ type GameHandshake struct {
    64 bits of randomness.
    From here, the client sends the ClientLoginBlock (see game_login.bb)
 */
-type GameHandshakeResponse struct {
+type OutboundGameHandshake struct {
     ignored         uint8[8]
     loginRequest    uint8 /* always 0 */
     ServerISAACSeed int32[2]
@@ -27,6 +27,6 @@ type GameHandshakeResponse struct {
 /* If ServiceSelect.Service is 15, the server sends 8 bytes, which is ignored by the client
    From here, the client begins making it's UpdateRequest's (see update_service.bb)
 */
-type UpdateHandshakeResponse struct {
+type OutboundUpdateHandshake struct {
     ignored int8[8]
 }

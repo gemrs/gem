@@ -7,7 +7,7 @@ import (
 
 // An queueItem is something we manage in a priority queue.
 type queueItem struct {
-	request protocol.UpdateRequest
+	request protocol.InboundUpdateRequest
 	conn    *Connection
 	log     *log.Module
 }

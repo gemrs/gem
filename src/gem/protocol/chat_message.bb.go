@@ -28,23 +28,28 @@ func (struc *AnonStruct_X) Decode(buf io.Reader, flags interface{}) (err error) 
 	return err
 }
 
-type ServerChatMessage AnonStruct_X
+type OutboundChatMessage AnonStruct_X
 
-func (frm *ServerChatMessage) Encode(buf io.Writer, flags interface{}) (err error) {
+var OutboundChatMessageDefinition = encoding.PacketHeader{
+	Number: 253,
+	Size:   encoding.SzVar8,
+}
+
+func (frm *OutboundChatMessage) Encode(buf io.Writer, flags interface{}) (err error) {
 	struc := (*AnonStruct_X)(frm)
 	hdr := encoding.PacketHeader{
-		Number: 253,
-		Size:   encoding.SzVar8,
+		Number: OutboundChatMessageDefinition.Number,
+		Size:   OutboundChatMessageDefinition.Size,
 		Object: struc,
 	}
 	return hdr.Encode(buf, flags)
 }
 
-func (frm *ServerChatMessage) Decode(buf io.Reader, flags interface{}) (err error) {
+func (frm *OutboundChatMessage) Decode(buf io.Reader, flags interface{}) (err error) {
 	struc := (*AnonStruct_X)(frm)
 	hdr := encoding.PacketHeader{
-		Number: 253,
-		Size:   encoding.SzVar8,
+		Number: OutboundChatMessageDefinition.Number,
+		Size:   OutboundChatMessageDefinition.Size,
 		Object: struc,
 	}
 	return hdr.Decode(buf, flags)

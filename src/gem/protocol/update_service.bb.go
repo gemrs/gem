@@ -6,13 +6,13 @@ import (
 	"io"
 )
 
-type UpdateRequest struct {
+type InboundUpdateRequest struct {
 	Index    encoding.Int8
 	File     encoding.Int16
 	Priority encoding.Int8
 }
 
-func (struc *UpdateRequest) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *InboundUpdateRequest) Encode(buf io.Writer, flags interface{}) (err error) {
 	err = struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func (struc *UpdateRequest) Encode(buf io.Writer, flags interface{}) (err error)
 	return err
 }
 
-func (struc *UpdateRequest) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *InboundUpdateRequest) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func (struc *UpdateRequest) Decode(buf io.Reader, flags interface{}) (err error)
 	return err
 }
 
-type UpdateResponse struct {
+type OutboundUpdateResponse struct {
 	Index encoding.Int8
 	File  encoding.Int16
 	Size  encoding.Int16
@@ -58,7 +58,7 @@ type UpdateResponse struct {
 	Data  encoding.Bytes
 }
 
-func (struc *UpdateResponse) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *OutboundUpdateResponse) Encode(buf io.Writer, flags interface{}) (err error) {
 	err = struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func (struc *UpdateResponse) Encode(buf io.Writer, flags interface{}) (err error
 	return err
 }
 
-func (struc *UpdateResponse) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *OutboundUpdateResponse) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err

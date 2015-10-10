@@ -53,7 +53,7 @@ func (svc *updateService) processQueue() {
 			}
 			chunk := data[wrote : wrote+chunkSize]
 
-			conn.write <- &protocol.UpdateResponse{
+			conn.write <- &protocol.OutboundUpdateResponse{
 				Index: request.Index,
 				File:  request.File,
 				Size:  encoding.Int16(len(data)),
@@ -69,7 +69,7 @@ func (svc *updateService) processQueue() {
 
 // decodeRequest decodes requests and enqueues them
 func (svc *updateService) decodeRequest(conn *Connection, b *encoding.Buffer) error {
-	var request protocol.UpdateRequest
+	var request protocol.InboundUpdateRequest
 	if err := request.Decode(b, nil); err != nil {
 		return err
 	}
