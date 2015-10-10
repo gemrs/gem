@@ -20,18 +20,11 @@ const (
 // decodeFunc is used for parsing the read stream and dealing with the incoming data.
 // If io.EOF is returned, it is assumed that we didn't have enough data, and
 // the underlying buffer's read pointer is not altered.
-type decodeFunc func(*context, *encoding.Buffer) error
+type decodeFunc func(*Connection, *encoding.Buffer) error
 
 // encodeFunc is used for flushing the write queue to the write buffer
 // If error is returned, the client is disconnected.
-type encodeFunc func(*context, *encoding.Buffer, encoding.Encodable) error
-
-// context is used to provide access to connection and services within encodeFunc and decodeFunc
-type context struct {
-	conn   *Connection
-	update *updateService
-	game   *gameService
-}
+type encodeFunc func(*Connection, *encoding.Buffer, encoding.Encodable) error
 
 //go:generate gopygen -type Connection -excfield "^[a-z].*" $GOFILE
 // Connection is a network-level representation of the connection.
@@ -39,7 +32,7 @@ type context struct {
 type Connection struct {
 	py.BaseObject
 
-	Index   Index
+	Index   int
 	Log     *log.Module
 	Session *player.Session
 	Profile *player.Profile
@@ -105,14 +98,14 @@ func (conn *Connection) Write(p []byte) (n int, err error) {
 }
 
 // encodeCodable is a generic codable encoder
-func (conn *Connection) encodeCodable(ctx *context, b *encoding.Buffer, codable encoding.Encodable) error {
+func (conn *Connection) encodeCodable(_ *Connection, b *encoding.Buffer, codable encoding.Encodable) error {
 	return codable.Encode(conn.writeBuffer, nil)
 }
 
 // decodeToReadQueue is the goroutine handling the read buffer
 // reads from the buffer, decodes Codables using conn.decode, which can choose
 // to either handle the data or place a Codable into the read queue
-func (conn *Connection) decodeToReadQueue(connCtx *context) {
+func (conn *Connection) decodeToReadQueue() {
 	defer conn.recover()
 	for {
 		err := conn.fillReadBuffer()
@@ -128,7 +121,7 @@ func (conn *Connection) decodeToReadQueue(connCtx *context) {
 		toRead := conn.readBuffer.Len()
 		for toRead > 0 && err == nil {
 			err = conn.readBuffer.Try(func(b *encoding.Buffer) error {
-				return conn.decode(connCtx, b)
+				return conn.decode(conn, b)
 			})
 			if err == nil {
 				canTrim = true
@@ -148,7 +141,7 @@ func (conn *Connection) decodeToReadQueue(connCtx *context) {
 
 // encodeFromWriteQueue is the goroutine handling the write buffer
 // picks from conn.write, encodes the Codables, and flushes the write buffer
-func (conn *Connection) encodeFromWriteQueue(connCtx *context) {
+func (conn *Connection) encodeFromWriteQueue() {
 	defer conn.recover()
 L:
 	for {
@@ -166,7 +159,7 @@ L:
 				break L
 			}
 
-			err := conn.encode(connCtx, conn.writeBuffer, codable)
+			err := conn.encode(conn, conn.writeBuffer, codable)
 			if err == nil {
 				err = conn.flushWriteBuffer()
 			}

@@ -23,12 +23,11 @@ func newGameService(runite *runite.Context, key *crypto.Keypair, auth auth.Provi
 	}
 }
 
-func (svc *gameService) encodePacket(ctx *context, b *encoding.Buffer, codable encoding.Encodable) error {
-	conn := ctx.conn
+func (svc *gameService) encodePacket(conn *Connection, b *encoding.Buffer, codable encoding.Encodable) error {
 	return codable.Encode(conn.writeBuffer, &conn.Session.RandOut)
 }
 
-func (svc *gameService) decodePacket(ctx *context, b *encoding.Buffer) error {
+func (svc *gameService) decodePacket(conn *Connection, b *encoding.Buffer) error {
 	//TODO: Parse packets
 	return io.EOF
 }

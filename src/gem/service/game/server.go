@@ -19,8 +19,6 @@ import (
 var logInit sync.Once
 var logger *log.Module
 
-type Index int
-
 //go:generate gopygen -type Server -excfunc "^[a-z].+" -excfield "^[a-z].+" $GOFILE
 type Server struct {
 	py.BaseObject
@@ -31,10 +29,10 @@ type Server struct {
 	update    *updateService
 	game      *gameService
 	runite    *runite.Context
-	nextIndex chan Index
+	nextIndex chan int
 
 	m       sync.Mutex
-	clients map[Index]*Connection
+	clients map[int]*Connection
 
 	t tomb.Tomb
 }
@@ -57,7 +55,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, aut
 
 	s.laddr = laddr
 	s.runite = ctx
-	s.clients = make(map[Index]*Connection)
+	s.clients = make(map[int]*Connection)
 	s.update = newUpdateService(ctx)
 	s.game = newGameService(ctx, key, auth)
 	go s.update.processQueue()
@@ -67,7 +65,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, aut
 		return fmt.Errorf("couldn't start game server: %v", err)
 	}
 
-	s.nextIndex = make(chan Index)
+	s.nextIndex = make(chan int)
 	go s.generateNextIndex()
 
 	s.t.Go(s.run)
@@ -75,7 +73,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, aut
 }
 
 func (s *Server) generateNextIndex() {
-	index := Index(0)
+	index := 0
 	for {
 		s.nextIndex <- index
 		index++
@@ -157,14 +155,8 @@ func (s *Server) handle(netConn net.Conn) {
 
 	conn.Log.Info("accepted connection")
 
-	connCtx := &context{
-		conn:   conn,
-		update: s.update,
-		game:   s.game,
-	}
-
-	go conn.encodeFromWriteQueue(connCtx)
-	go conn.decodeToReadQueue(connCtx)
+	go conn.encodeFromWriteQueue()
+	go conn.decodeToReadQueue()
 
 	// Block this thread until disconnect
 	<-conn.disconnect
@@ -200,25 +192,23 @@ func (s *Server) unregisterClient(conn *Connection) {
 
 // handshake reads the service selection byte and points the connection's decode func
 // towards the decode func for the selected service
-func (s *Server) handshake(ctx *context, b *encoding.Buffer) error {
+func (s *Server) handshake(conn *Connection, b *encoding.Buffer) error {
 	var svc protocol.ServiceSelect
 	if err := svc.Decode(b, nil); err != nil {
 		return err
 	}
 
-	conn := ctx.conn
-
 	switch svc.Service {
 	case UpdateService:
 		conn.Log.Infof("new update client")
-		conn.decode = ctx.update.decodeRequest
+		conn.decode = s.update.decodeRequest
 		conn.encode = conn.encodeCodable
 
 		conn.write <- new(protocol.UpdateHandshakeResponse)
 		return nil
 	case GameService:
 		conn.Log.Infof("new game client")
-		conn.decode = ctx.game.handshake
+		conn.decode = s.game.handshake
 		conn.encode = conn.encodeCodable
 		return nil
 	default:

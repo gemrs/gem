@@ -8,6 +8,7 @@ import (
 	"gem/service/game/player"
 
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -73,11 +74,13 @@ func (obj Connection) Alloc() (*Connection, error) {
 
 	alloc.decode = obj.decode
 
+	alloc.encode = obj.encode
+
 	return alloc, nil
 }
 
 func (obj *Connection) PyGet_Index() (py.Object, error) {
-	return gopygen.TypeConvOut(int(obj.Index), "int")
+	return gopygen.TypeConvOut(obj.Index, "int")
 }
 
 func (obj *Connection) PySet_Index(arg py.Object) error {
@@ -85,7 +88,7 @@ func (obj *Connection) PySet_Index(arg py.Object) error {
 	if err != nil {
 		return err
 	}
-	obj.Index = val.(Index)
+	obj.Index = val.(int)
 	return nil
 }
 
@@ -196,6 +199,43 @@ func (conn *Connection) Py_Write(_args *py.Tuple, kwds *py.Dict) (py.Object, err
 
 }
 
+func (conn *Connection) Py_encodeCodable(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 3 {
+		return nil, fmt.Errorf("Py_encodeCodable: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "*Connection")
+	if err != nil {
+		return nil, err
+	}
+
+	in_1, err := gopygen.TypeConvIn(args[1], "*encoding.Buffer")
+	if err != nil {
+		return nil, err
+	}
+
+	in_2, err := gopygen.TypeConvIn(args[2], "encoding.Encodable")
+	if err != nil {
+		return nil, err
+	}
+
+	res0 := conn.encodeCodable(in_0.(*Connection), in_1.(*encoding.Buffer), in_2.(encoding.Encodable))
+
+	out_0, err := gopygen.TypeConvOut(res0, "error")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
+}
+
 func (conn *Connection) Py_decodeToReadQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -203,16 +243,11 @@ func (conn *Connection) Py_decodeToReadQueue(_args *py.Tuple, kwds *py.Dict) (py
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 1 {
+	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_decodeToReadQueue: parameter length mismatch")
 	}
 
-	in_0, err := gopygen.TypeConvIn(args[0], "*context")
-	if err != nil {
-		return nil, err
-	}
-
-	conn.decodeToReadQueue(in_0.(*context))
+	conn.decodeToReadQueue()
 
 	py.None.Incref()
 	return py.None, nil
@@ -226,16 +261,11 @@ func (conn *Connection) Py_encodeFromWriteQueue(_args *py.Tuple, kwds *py.Dict) 
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 1 {
+	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_encodeFromWriteQueue: parameter length mismatch")
 	}
 
-	in_0, err := gopygen.TypeConvIn(args[0], "*context")
-	if err != nil {
-		return nil, err
-	}
-
-	conn.encodeFromWriteQueue(in_0.(*context))
+	conn.encodeFromWriteQueue()
 
 	py.None.Incref()
 	return py.None, nil

@@ -67,7 +67,7 @@ func (svc *updateService) processQueue() {
 }
 
 // decodeRequest decodes requests and enqueues them
-func (svc *updateService) decodeRequest(ctx *context, b *encoding.Buffer) error {
+func (svc *updateService) decodeRequest(conn *Connection, b *encoding.Buffer) error {
 	var request protocol.UpdateRequest
 	if err := request.Decode(b, nil); err != nil {
 		return err
@@ -75,8 +75,8 @@ func (svc *updateService) decodeRequest(ctx *context, b *encoding.Buffer) error 
 
 	svc.queue.Push(&queueItem{
 		request: request,
-		conn:    ctx.conn,
-		log:     ctx.conn.Log.SubModule(request.String()),
+		conn:    conn,
+		log:     conn.Log.SubModule(request.String()),
 	})
 	return nil
 }

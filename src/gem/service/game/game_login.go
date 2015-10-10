@@ -9,8 +9,7 @@ import (
 	"gem/protocol"
 )
 
-func (svc *gameService) handshake(ctx *context, b *encoding.Buffer) error {
-	conn := ctx.conn
+func (svc *gameService) handshake(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
 	session.RandKey = make([]int32, 4)
@@ -32,8 +31,7 @@ func (svc *gameService) handshake(ctx *context, b *encoding.Buffer) error {
 	return nil
 }
 
-func (svc *gameService) decodeLoginBlock(ctx *context, b *encoding.Buffer) error {
-	conn := ctx.conn
+func (svc *gameService) decodeLoginBlock(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
 	loginBlock := protocol.ClientLoginBlock{}
@@ -55,8 +53,7 @@ func (svc *gameService) decodeLoginBlock(ctx *context, b *encoding.Buffer) error
 	return nil
 }
 
-func (svc *gameService) decodeSecureBlock(ctx *context, b *encoding.Buffer) error {
-	conn := ctx.conn
+func (svc *gameService) decodeSecureBlock(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
 	rsaBlock := encoding.RSABlock{&protocol.ClientSecureLoginBlock{}}
