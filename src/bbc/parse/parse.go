@@ -3,6 +3,7 @@ package parse
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"bbc/ast"
@@ -22,9 +23,10 @@ func (list ErrorList) String() string {
 }
 
 type result struct {
-	Ast    *ast.File
-	Decls  map[string]ast.Node
-	Errors ErrorList
+	Ast     *ast.File
+	Decls   map[string]ast.Node
+	Errors  ErrorList
+	AnonIdx int
 }
 
 func (res *result) AddError(err string) {
@@ -45,6 +47,21 @@ func (l *Lexer) Ast() *ast.File {
 func (l *Lexer) Error(e string) {
 	result := l.parseResult.(*result)
 	result.AddError(e)
+}
+
+func (l *Lexer) NameAnonStruct() string {
+	// convert filename to something suitable for a variable name
+	filename := l.Ast().Name
+	filename = strings.Map(func(r rune) rune {
+		if match, _ := regexp.MatchString("[a-zA-Z0-9_]", string(r)); match != true {
+			return '_'
+		}
+		return r
+	}, filename)
+
+	idx := l.parseResult.(*result).AnonIdx
+	l.parseResult.(*result).AnonIdx++
+	return fmt.Sprintf("anonymous_%v_%v", filename, idx)
 }
 
 func (l *Lexer) resolveReferencesTo(name string, typ ast.Node, n ast.Node) {

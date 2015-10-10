@@ -22,6 +22,11 @@ var tests = []testCase{
 		source: `type SomeFrame frame<100, Var8> struct {
 	SomeInt int8
 	AnotherInt uint24
+}
+
+type AnotherFrame frame<101, Fixed> struct {
+	SomeInt int8
+	AnotherInt uint24
 }`,
 		expected: &ast.File{
 			Name: "in_file",
@@ -32,7 +37,35 @@ var tests = []testCase{
 						Number: 100,
 						Size:   ast.SzVar8,
 						Object: &ast.Struct{
-							Name: "AnonStruct_X",
+							Name: "anonymous_in_file_0",
+							Scope: &ast.Scope{
+								S: []ast.Node{
+									&ast.Field{
+										Name: "SomeInt",
+										Type: &ast.IntegerType{
+											Signed:    true,
+											Bitsize:   8,
+											Modifiers: nil,
+										},
+									},
+									&ast.Field{
+										Name: "AnotherInt",
+										Type: &ast.IntegerType{
+											Signed:    false,
+											Bitsize:   24,
+											Modifiers: nil,
+										},
+									},
+								},
+							},
+						},
+					},
+					&ast.Frame{
+						Name:   "AnotherFrame",
+						Number: 101,
+						Size:   ast.SzFixed,
+						Object: &ast.Struct{
+							Name: "anonymous_in_file_1",
 							Scope: &ast.Scope{
 								S: []ast.Node{
 									&ast.Field{
@@ -75,7 +108,7 @@ var tests = []testCase{
 						Number: 100,
 						Size:   ast.SzVar16,
 						Object: &ast.Struct{
-							Name: "AnonStruct_X",
+							Name: "anonymous_in_file_0",
 							Scope: &ast.Scope{
 								S: []ast.Node{
 									&ast.Field{
@@ -231,7 +264,7 @@ type SomeFrame frame<100, Fixed> SomeStruct`,
 								&ast.Field{
 									Name: "SomeStruct",
 									Type: &ast.Struct{
-										Name: "AnonStruct_X",
+										Name: "anonymous_in_file_0",
 										Scope: &ast.Scope{
 											S: []ast.Node{
 												&ast.Field{

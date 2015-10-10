@@ -103,8 +103,9 @@ struct
 anon_struct
     : tStruct scope
       {
+
           $$ = &ast.Struct{
-              Name: "AnonStruct_X",
+	          Name: yylex.(*Lexer).NameAnonStruct(),
               Scope: $2.(*ast.Scope),
           }
       }

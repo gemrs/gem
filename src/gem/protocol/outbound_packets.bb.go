@@ -6,11 +6,11 @@ import (
 	"io"
 )
 
-type AnonStruct_X struct {
+type anonymous_outbound_packets_bb_0 struct {
 	Message encoding.JString
 }
 
-func (struc *AnonStruct_X) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *anonymous_outbound_packets_bb_0) Encode(buf io.Writer, flags interface{}) (err error) {
 	err = struc.Message.Encode(buf, 0)
 	if err != nil {
 		return err
@@ -19,7 +19,7 @@ func (struc *AnonStruct_X) Encode(buf io.Writer, flags interface{}) (err error) 
 	return err
 }
 
-func (struc *AnonStruct_X) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *anonymous_outbound_packets_bb_0) Decode(buf io.Reader, flags interface{}) (err error) {
 	err = struc.Message.Decode(buf, 0)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (struc *AnonStruct_X) Decode(buf io.Reader, flags interface{}) (err error) 
 	return err
 }
 
-type OutboundChatMessage AnonStruct_X
+type OutboundChatMessage anonymous_outbound_packets_bb_0
 
 var OutboundChatMessageDefinition = encoding.PacketHeader{
 	Number: 253,
@@ -36,7 +36,7 @@ var OutboundChatMessageDefinition = encoding.PacketHeader{
 }
 
 func (frm *OutboundChatMessage) Encode(buf io.Writer, flags interface{}) (err error) {
-	struc := (*AnonStruct_X)(frm)
+	struc := (*anonymous_outbound_packets_bb_0)(frm)
 	hdr := encoding.PacketHeader{
 		Number: OutboundChatMessageDefinition.Number,
 		Size:   OutboundChatMessageDefinition.Size,
@@ -46,7 +46,7 @@ func (frm *OutboundChatMessage) Encode(buf io.Writer, flags interface{}) (err er
 }
 
 func (frm *OutboundChatMessage) Decode(buf io.Reader, flags interface{}) (err error) {
-	struc := (*AnonStruct_X)(frm)
+	struc := (*anonymous_outbound_packets_bb_0)(frm)
 	hdr := encoding.PacketHeader{
 		Number: OutboundChatMessageDefinition.Number,
 		Size:   OutboundChatMessageDefinition.Size,

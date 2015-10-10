@@ -67,7 +67,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line binbuf.y:205
+//line binbuf.y:206
 
 //line yacctab:1
 var yyExca = [...]int{
@@ -577,32 +577,33 @@ yydefault:
 		yyDollar = yyS[yypt-2 : yypt+1]
 		//line binbuf.y:105
 		{
+
 			yyVAL.n = &ast.Struct{
-				Name:  "AnonStruct_X",
+				Name:  yylex.(*Lexer).NameAnonStruct(),
 				Scope: yyDollar[2].n.(*ast.Scope),
 			}
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:115
+		//line binbuf.y:116
 		{
 			yyVAL.n = yyDollar[2].n
 		}
 	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:119
+		//line binbuf.y:120
 		{
 			yyVAL.n = ast.NewScope()
 		}
 	case 14:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:121
+		//line binbuf.y:122
 		{
 			yyDollar[1].n.(*ast.Scope).Add(yyDollar[2].n.(ast.Node))
 		}
 	case 15:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:126
+		//line binbuf.y:127
 		{
 			yyVAL.n = &ast.Field{
 				Name: yyDollar[1].sval,
@@ -611,32 +612,32 @@ yydefault:
 		}
 	case 17:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line binbuf.y:137
+		//line binbuf.y:138
 		{
 			yyDollar[1].n.(*ast.IntegerType).Modifiers = yyDollar[3].svalarr
 			yyVAL.n = yyDollar[1].n
 		}
 	case 18:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:144
+		//line binbuf.y:145
 		{
 			yyVAL.svalarr = make([]string, 0)
 		}
 	case 19:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:146
+		//line binbuf.y:147
 		{
 			yyVAL.svalarr = append(yyVAL.svalarr, yyDollar[1].sval)
 		}
 	case 20:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:148
+		//line binbuf.y:149
 		{
 			yyVAL.svalarr = append(yyVAL.svalarr, yyDollar[3].sval)
 		}
 	case 21:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:153
+		//line binbuf.y:154
 		{
 			yyVAL.n = &ast.DeclReference{
 				DeclName: yyDollar[1].sval,
@@ -644,7 +645,7 @@ yydefault:
 		}
 	case 27:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:167
+		//line binbuf.y:168
 		{
 			yyVAL.n = &ast.ArrayType{
 				Object: yyDollar[1].n,
@@ -653,19 +654,19 @@ yydefault:
 		}
 	case 28:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:177
+		//line binbuf.y:178
 		{
 			yyVAL.n = &ast.ByteBaseType{}
 		}
 	case 29:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:182
+		//line binbuf.y:183
 		{
 			yyVAL.n = &ast.StringBaseType{}
 		}
 	case 30:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:187
+		//line binbuf.y:188
 		{
 			yyVAL.length = &ast.StaticLength{
 				Length: yyDollar[2].ival,

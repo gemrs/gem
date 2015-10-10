@@ -6,4 +6,7 @@ package protocol
 //go:generate bbc game_login.bb game_login.bb.go
 
 /* generate server -> client packets */
-//go:generate bbc chat_message.bb chat_message.bb.go
+//go:generate bbc outbound_packets.bb outbound_packets.bb.go
+
+/* generate client -> server packets */
+//go:generate bbc inbound_packets.bb inbound_packets.bb.go
