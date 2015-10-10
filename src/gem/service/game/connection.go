@@ -53,7 +53,6 @@ func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
 		panic(err)
 	}
 
-	// FIXME: There's something nasty going on here.. Possibly a data race
 	gameConn, err := Connection{
 		Log:     parentLogger.SubModule(conn.RemoteAddr().String()),
 		Session: session,
@@ -83,6 +82,7 @@ func (conn *Connection) Disconnect() {
 	}
 }
 
+// recover captures panics in the game client handler and prints a stack trace
 func (conn *Connection) recover() {
 	if err := recover(); err != nil {
 		stack := make([]byte, 1024*10)
@@ -90,11 +90,6 @@ func (conn *Connection) recover() {
 		conn.Log.Criticalf("Recovered from panic in game client handler: %v", err)
 		conn.Log.Debug(string(stack))
 	}
-}
-
-// Write is a convenience wrapper around writeBuffer.Write(p)
-func (conn *Connection) Write(p []byte) (n int, err error) {
-	return conn.writeBuffer.Write(p)
 }
 
 // encodeCodable is a generic codable encoder

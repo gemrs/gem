@@ -167,38 +167,6 @@ func (conn *Connection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, e
 
 }
 
-func (conn *Connection) Py_Write(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 1 {
-		return nil, fmt.Errorf("Py_Write: parameter length mismatch")
-	}
-
-	in_0, err := gopygen.TypeConvIn(args[0], "[]byte")
-	if err != nil {
-		return nil, err
-	}
-
-	res0, res1 := conn.Write(in_0.([]byte))
-
-	out_0, err := gopygen.TypeConvOut(res0, "int")
-	if err != nil {
-		return nil, err
-	}
-
-	out_1, err := gopygen.TypeConvOut(res1, "error")
-	if err != nil {
-		return nil, err
-	}
-
-	return py.PackTuple(out_0, out_1)
-
-}
-
 func (conn *Connection) Py_encodeCodable(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
