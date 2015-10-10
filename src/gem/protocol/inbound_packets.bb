@@ -1,0 +1,1 @@
+type InboundPing frame<0, Fixed> struct {}
