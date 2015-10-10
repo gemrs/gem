@@ -32,22 +32,29 @@ var typeDefTmpl = template.Must(template.New("typedef").Parse(`type {{.Name}} st
 
 var frameDefTmpl = template.Must(template.New("framedef").Parse(`type {{.Identifier}} {{.Object.Identifier}}
 
-func (frm *{{.Identifier}}) Encode(buf io.Writer, flags interface{}) (err error) {
-struc := (*{{.Object.Identifier}})(frm)
-return encoding.PacketHeader{
+var {{.Identifier}}Definition = encoding.PacketHeader{
 Number: {{.Number}},
 Size: encoding.{{.Size.String}},
+}
+
+func (frm *{{.Identifier}}) Encode(buf io.Writer, flags interface{}) (err error) {
+struc := (*{{.Object.Identifier}})(frm)
+hdr := encoding.PacketHeader{
+Number: {{.Identifier}}Definition.Number,
+Size: {{.Identifier}}Definition.Size,
 Object: struc,
-}.Encode(buf, flags)
+}
+return hdr.Encode(buf, flags)
 }
 
 func (frm *{{.Identifier}}) Decode(buf io.Reader, flags interface{}) (err error) {
 struc := (*{{.Object.Identifier}})(frm)
-return encoding.PacketHeader{
-Number: {{.Number}},
-Size: encoding.{{.Size.String}},
+hdr := encoding.PacketHeader{
+Number: {{.Identifier}}Definition.Number,
+Size: {{.Identifier}}Definition.Size,
 Object: struc,
-}.Decode(buf, flags)
+}
+return hdr.Decode(buf, flags)
 }`))
 
 var fieldFuncTmpl = template.Must(template.New("fieldfunc").Parse(`err = struc.{{.Name}}.{{.Operation}}(buf, {{.Flags}})
