@@ -7,7 +7,9 @@ import (
 
 	"gem/auth"
 	"gem/crypto"
+	"gem/encoding"
 	"gem/log"
+	"gem/protocol"
 	"gem/runite"
 
 	"github.com/qur/gopy/lib"
@@ -18,12 +20,6 @@ var logInit sync.Once
 var logger *log.Module
 
 type Index int
-
-type context struct {
-	conn   *Connection
-	update *updateService
-	game   *gameService
-}
 
 //go:generate gopygen -type Server -excfunc "^[a-z].+" -excfield "^[a-z].+" $GOFILE
 type Server struct {
@@ -153,7 +149,7 @@ func (s *Server) run() error {
 // if the disconnect channel is signalled, breaks the main loop and closes the connection
 func (s *Server) handle(netConn net.Conn) {
 	conn := newConnection(netConn, logger)
-	conn.decode = conn.handshake
+	conn.decode = s.handshake
 	s.registerClient(conn)
 	defer s.unregisterClient(conn)
 
@@ -200,4 +196,35 @@ func (s *Server) unregisterClient(conn *Connection) {
 	delete(s.clients, conn.Index)
 	index := <-s.nextIndex
 	s.clients[index] = conn
+}
+
+// handshake reads the service selection byte and points the connection's decode func
+// towards the decode func for the selected service
+func (s *Server) handshake(ctx *context, b *encoding.Buffer) error {
+	var svc protocol.ServiceSelect
+	if err := svc.Decode(b, nil); err != nil {
+		return err
+	}
+
+	conn := ctx.conn
+
+	switch svc.Service {
+	case UpdateService:
+		conn.Log.Infof("new update client")
+		conn.decode = ctx.update.decodeRequest
+		conn.encode = conn.encodeCodable
+
+		conn.write <- new(protocol.UpdateHandshakeResponse)
+		return nil
+	case GameService:
+		conn.Log.Infof("new game client")
+		conn.decode = ctx.game.handshake
+		conn.encode = conn.encodeCodable
+		return nil
+	default:
+		conn.Log.Errorf("invalid service requested: %v", svc)
+		conn.Disconnect()
+	}
+
+	return nil
 }

@@ -7,7 +7,6 @@ import (
 
 	"gem/encoding"
 	"gem/log"
-	"gem/protocol"
 	"gem/service/game/player"
 
 	"github.com/qur/gopy/lib"
@@ -18,11 +17,21 @@ const (
 	UpdateService encoding.Int8 = 15
 )
 
-// encodeDecodeFunc is the function currently used for parsing the read stream and
-// dealing with the incoming data.
-// If an error is returned, it is assumed that we didn't have enough data, and
+// decodeFunc is used for parsing the read stream and dealing with the incoming data.
+// If io.EOF is returned, it is assumed that we didn't have enough data, and
 // the underlying buffer's read pointer is not altered.
-type encodeDecodeFunc func(*context, *encoding.Buffer) error
+type decodeFunc func(*context, *encoding.Buffer) error
+
+// encodeFunc is used for flushing the write queue to the write buffer
+// If error is returned, the client is disconnected.
+type encodeFunc func(*context, *encoding.Buffer, encoding.Encodable) error
+
+// context is used to provide access to connection and services within encodeFunc and decodeFunc
+type context struct {
+	conn   *Connection
+	update *updateService
+	game   *gameService
+}
 
 //go:generate gopygen -type Connection -excfield "^[a-z].*" $GOFILE
 // Connection is a network-level representation of the connection.
@@ -41,7 +50,8 @@ type Connection struct {
 	read        chan encoding.Decodable
 	write       chan encoding.Encodable
 	disconnect  chan bool
-	decode      encodeDecodeFunc
+	decode      decodeFunc
+	encode      encodeFunc
 }
 
 func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
@@ -89,36 +99,14 @@ func (conn *Connection) recover() {
 	}
 }
 
-// handshake reads the service selection byte and points the connection's decode func
-// towards the decode func for the selected service
-func (conn *Connection) handshake(ctx *context, b *encoding.Buffer) error {
-	var svc protocol.ServiceSelect
-	if err := svc.Decode(b, nil); err != nil {
-		return err
-	}
-
-	switch svc.Service {
-	case UpdateService:
-		conn.write <- new(protocol.UpdateHandshakeResponse)
-
-		conn.Log.Infof("new update client")
-		conn.decode = ctx.update.decodeRequest
-		return nil
-	case GameService:
-		conn.Log.Infof("new game client")
-		conn.decode = ctx.game.handshake
-		return nil
-	default:
-		conn.Log.Errorf("invalid service requested: %v", svc)
-		conn.Disconnect()
-	}
-
-	return nil
-}
-
 // Write is a convenience wrapper around writeBuffer.Write(p)
 func (conn *Connection) Write(p []byte) (n int, err error) {
 	return conn.writeBuffer.Write(p)
+}
+
+// encodeCodable is a generic codable encoder
+func (conn *Connection) encodeCodable(ctx *context, b *encoding.Buffer, codable encoding.Encodable) error {
+	return codable.Encode(conn.writeBuffer, nil)
 }
 
 // decodeToReadQueue is the goroutine handling the read buffer
@@ -178,7 +166,7 @@ L:
 				break L
 			}
 
-			err := codable.Encode(conn.writeBuffer, &conn.Session.RandOut)
+			err := conn.encode(connCtx, conn.writeBuffer, codable)
 			if err == nil {
 				err = conn.flushWriteBuffer()
 			}

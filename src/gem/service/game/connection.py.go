@@ -164,38 +164,6 @@ func (conn *Connection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, e
 
 }
 
-func (conn *Connection) Py_handshake(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 2 {
-		return nil, fmt.Errorf("Py_handshake: parameter length mismatch")
-	}
-
-	in_0, err := gopygen.TypeConvIn(args[0], "*context")
-	if err != nil {
-		return nil, err
-	}
-
-	in_1, err := gopygen.TypeConvIn(args[1], "*encoding.Buffer")
-	if err != nil {
-		return nil, err
-	}
-
-	res0 := conn.handshake(in_0.(*context), in_1.(*encoding.Buffer))
-
-	out_0, err := gopygen.TypeConvOut(res0, "error")
-	if err != nil {
-		return nil, err
-	}
-
-	return out_0, nil
-
-}
-
 func (conn *Connection) Py_Write(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
