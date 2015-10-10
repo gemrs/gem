@@ -26,7 +26,7 @@ func init() {
 func NewInboundPacket(id int) (encoding.Codable, error) {
 	typePtr, ok := inboundTypes[id]
 	if !ok {
-		return nil, ErrUnknownPacket
+		return new(UnknownPacket), nil
 	}
 	typ := reflect.TypeOf(typePtr)
 	value := reflect.New(typ)

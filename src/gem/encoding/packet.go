@@ -8,6 +8,7 @@ import (
 	"github.com/gtank/isaac"
 )
 
+//go:generate stringer -type=FrameSize
 type FrameSize int
 
 const (

@@ -46,5 +46,31 @@ func (svc *gameService) decodePacket(conn *Connection, b *encoding.Buffer) error
 	if err != nil {
 		return fmt.Errorf("%v: packet %v", err, realId)
 	}
-	return packet.Decode(b, rand)
+	err = packet.Decode(b, rand)
+	if err != nil {
+		return err
+	}
+
+	conn.read <- packet
+	return nil
+}
+
+// packetConsumer is the goroutine which picks packets from the readQueue and does something with them
+func (svc *gameService) packetConsumer(conn *Connection) {
+L:
+	for {
+		select {
+		case <-conn.disconnect:
+			break L
+		case packet := <-conn.read:
+			if _, ok := packet.(*protocol.UnknownPacket); ok {
+				/* unknown packet; dump to the log */
+				conn.Log.Debugf("Got unknown packet: %v", packet)
+				continue
+			}
+			// TODO: route known packets to a handler
+			conn.Log.Debugf("Got known packet %T", packet)
+		}
+
+	}
 }

@@ -110,6 +110,7 @@ func (svc *gameService) doLogin(conn *Connection, username, password string) err
 	}
 	conn.decode = svc.decodePacket
 	conn.encode = svc.encodePacket
+	go svc.packetConsumer(conn)
 
 	event.Dispatcher.Raise(event.PlayerLogin, conn)
 	go func() {
