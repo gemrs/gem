@@ -9,6 +9,7 @@ import (
 	"gem/protocol"
 )
 
+// handshake performs the isaac key exchange
 func (svc *gameService) handshake(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
@@ -31,6 +32,7 @@ func (svc *gameService) handshake(conn *Connection, b *encoding.Buffer) error {
 	return nil
 }
 
+// decodeLoginBlock handles the unencrypted login block
 func (svc *gameService) decodeLoginBlock(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
@@ -53,6 +55,7 @@ func (svc *gameService) decodeLoginBlock(conn *Connection, b *encoding.Buffer) e
 	return nil
 }
 
+// decodeSecureBlock handles the secure login block and the login response (via doLogin)
 func (svc *gameService) decodeSecureBlock(conn *Connection, b *encoding.Buffer) error {
 	session := conn.Session
 
@@ -82,6 +85,11 @@ func (svc *gameService) decodeSecureBlock(conn *Connection, b *encoding.Buffer) 
 	password := string(secureBlock.Password)
 	password = auth.HashPassword(password)
 
+	return svc.doLogin(conn, username, password)
+}
+
+// doLogin authenticates the user, sends the login response, and sets up the client for standard packet processing
+func (svc *gameService) doLogin(conn *Connection, username, password string) error {
 	profile, responseCode := svc.auth.LookupProfile(username, password)
 
 	conn.Profile = profile

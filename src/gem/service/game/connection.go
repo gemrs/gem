@@ -82,6 +82,11 @@ func (conn *Connection) Disconnect() {
 	}
 }
 
+// WriteEncodable implements encoding.Writer
+func (conn *Connection) WriteEncodable(e encoding.Encodable) {
+	conn.write <- e
+}
+
 // recover captures panics in the game client handler and prints a stack trace
 func (conn *Connection) recover() {
 	if err := recover(); err != nil {
@@ -186,9 +191,4 @@ func (conn *Connection) flushWriteBuffer() error {
 func (conn *Connection) fillReadBuffer() error {
 	_, err := conn.readBuffer.ReadFrom(conn.conn)
 	return err
-}
-
-// WriteEncodable implements encoding.Writer
-func (conn *Connection) WriteEncodable(e encoding.Encodable) {
-	conn.write <- e
 }
