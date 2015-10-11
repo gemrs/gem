@@ -43,13 +43,13 @@ func (svc *GameService) decodeLoginBlock(client *GameClient) error {
 
 	expectedSecureBlockSize := int(loginBlock.LoginLen) - ((9 * 4) + 1 + 1 + 1 + 2)
 	if expectedSecureBlockSize != int(loginBlock.SecureBlockSize) {
-		client.Log.Errorf("Secure block size mismatch: got %v expected %v", loginBlock.SecureBlockSize, expectedSecureBlockSize)
+		client.Log().Errorf("Secure block size mismatch: got %v expected %v", loginBlock.SecureBlockSize, expectedSecureBlockSize)
 		client.Disconnect()
 	}
 
 	session.SecureBlockSize = int(loginBlock.SecureBlockSize)
 
-	client.Log.Debugf("Login block: %#v", loginBlock)
+	client.Log().Debugf("Login block: %#v", loginBlock)
 
 	client.decode = svc.decodeSecureBlock
 	return nil
@@ -79,7 +79,7 @@ func (svc *GameService) decodeSecureBlock(client *GameClient) error {
 	session.RandIn.SeedArray(inSeed)
 	session.RandOut.SeedArray(outSeed)
 
-	client.Log.Debugf("Secure login block: %#v", secureBlock)
+	client.Log().Debugf("Secure login block: %#v", secureBlock)
 
 	username := string(secureBlock.Username)
 	password := string(secureBlock.Password)

@@ -6,6 +6,7 @@ import (
 	"runtime"
 
 	"gem/encoding"
+	"gem/game/player"
 	"gem/log"
 
 	"github.com/qur/gopy/lib"
@@ -18,12 +19,21 @@ const (
 
 // Client is a common interface to game/update clients
 type Client interface {
+	encoding.Writer
 	Conn() *Connection
 	Decode() error
 	Encode(encoding.Encodable) error
 	Disconnect()
 	Index() int
 	SetIndex(index int)
+	Log() *log.Module
+}
+
+// Player is a Client which has a Profile and a Session
+type Player interface {
+	Client
+	Profile() *player.Profile
+	Session() *player.Session
 }
 
 //go:generate gopygen -type Connection -excfield ".*" $GOFILE
@@ -32,26 +42,30 @@ type Client interface {
 type Connection struct {
 	py.BaseObject
 
-	Log            *log.Module
 	ReadBuffer     *encoding.Buffer
 	WriteBuffer    *encoding.Buffer
 	Read           chan encoding.Decodable
 	Write          chan encoding.Encodable
 	DisconnectChan chan bool
 
+	log   *log.Module
 	index int
 	conn  net.Conn
 }
 
+func (c *Connection) Log() *log.Module {
+	return c.log
+}
+
 func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
 	gameConn, err := Connection{
-		Log:            parentLogger.SubModule(conn.RemoteAddr().String()),
 		ReadBuffer:     encoding.NewBuffer(),
 		WriteBuffer:    encoding.NewBuffer(),
 		Read:           make(chan encoding.Decodable, 16),
 		Write:          make(chan encoding.Encodable, 16),
 		DisconnectChan: make(chan bool),
 
+		log:  parentLogger.SubModule(conn.RemoteAddr().String()),
 		conn: conn,
 	}.Alloc()
 	if err != nil {
@@ -106,8 +120,8 @@ func (conn *Connection) recover() {
 	if err := recover(); err != nil {
 		stack := make([]byte, 1024*10)
 		runtime.Stack(stack, true)
-		conn.Log.Criticalf("Recovered from panic in game client handler: %v", err)
-		conn.Log.Debug(string(stack))
+		conn.Log().Criticalf("Recovered from panic in game client handler: %v", err)
+		conn.Log().Debug(string(stack))
 	}
 }
 
@@ -120,7 +134,7 @@ func decodeToReadQueue(client Client) {
 	for {
 		err := conn.fillReadBuffer()
 		if err != nil {
-			conn.Log.Debugf("read error: %v", err)
+			conn.Log().Debugf("read error: %v", err)
 			conn.Disconnect()
 			break
 		}
@@ -139,7 +153,7 @@ func decodeToReadQueue(client Client) {
 		}
 
 		if err != nil && err != io.EOF {
-			conn.Log.Criticalf("decode returned non EOF error: %v", err)
+			conn.Log().Criticalf("decode returned non EOF error: %v", err)
 		}
 
 		if canTrim {
@@ -176,7 +190,7 @@ L:
 			}
 
 			if err != nil {
-				conn.Log.Debugf("write error: %v", err)
+				conn.Log().Debugf("write error: %v", err)
 				conn.Disconnect()
 				break L
 			}

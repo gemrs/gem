@@ -38,7 +38,7 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 }
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
-	conn.Log.Infof("new game client")
+	conn.Log().Infof("new game client")
 	return NewGameClient(conn, svc)
 }
 
@@ -63,7 +63,9 @@ func (svc *GameService) decodePacket(client *GameClient) error {
 		return err
 	}
 
-	client.Conn().Read <- packet
+	if !client.IsDisconnecting() {
+		client.Conn().Read <- packet
+	}
 	return nil
 }
 
@@ -77,11 +79,11 @@ L:
 		case packet := <-client.Conn().Read:
 			if _, ok := packet.(*protocol.UnknownPacket); ok {
 				/* unknown packet; dump to the log */
-				client.Log.Debugf("Got unknown packet: %v", packet)
+				client.Log().Debugf("Got unknown packet: %v", packet)
 				continue
 			}
 			// TODO: route known packets to a handler
-			client.Log.Debugf("Got known packet %T", packet)
+			client.Log().Debugf("Got known packet %T", packet)
 		}
 
 	}

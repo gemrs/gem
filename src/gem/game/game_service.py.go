@@ -120,7 +120,7 @@ func (svc *GameService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object,
 
 	res0 := svc.NewClient(in_0.(*server.Connection), in_1.(int))
 
-	out_0, err := gopygen.TypeConvOut(res0, "Client")
+	out_0, err := gopygen.TypeConvOut(res0, "server.Client")
 	if err != nil {
 		return nil, err
 	}

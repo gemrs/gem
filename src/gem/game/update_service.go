@@ -28,7 +28,7 @@ func (svc *UpdateService) Init(runite *runite.Context) {
 }
 
 func (svc *UpdateService) NewClient(conn *server.Connection, service int) server.Client {
-	conn.Log.Infof("new update client")
+	conn.Log().Infof("new update client")
 	conn.Write <- new(protocol.OutboundUpdateHandshake)
 	return NewUpdateClient(conn, svc)
 }

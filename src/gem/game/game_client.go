@@ -4,7 +4,6 @@ import (
 	"gem/encoding"
 	"gem/game/player"
 	"gem/game/server"
-	"gem/log"
 
 	"github.com/qur/gopy/lib"
 )
@@ -24,7 +23,6 @@ type GameClient struct {
 	service *GameService
 	decode  decodeFunc
 
-	Log     *log.Module
 	Session *player.Session
 	Profile *player.Profile
 }
@@ -43,7 +41,6 @@ func NewGameClient(conn *server.Connection, svc *GameService) *GameClient {
 		service:    svc,
 		decode:     svc.handshake,
 		Session:    session,
-		Log:        conn.Log,
 	}.Alloc()
 	if err != nil {
 		panic(err)

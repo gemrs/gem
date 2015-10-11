@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gem/encoding"
 	"gem/game/player"
-	"gem/log"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
@@ -55,26 +54,11 @@ func (obj GameClient) Alloc() (*GameClient, error) {
 
 	alloc.decode = obj.decode
 
-	alloc.Log = obj.Log
-
 	alloc.Session = obj.Session
 
 	alloc.Profile = obj.Profile
 
 	return alloc, nil
-}
-
-func (obj *GameClient) PyGet_Log() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Log, "*log.Module")
-}
-
-func (obj *GameClient) PySet_Log(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "*log.Module")
-	if err != nil {
-		return err
-	}
-	obj.Log = val.(*log.Module)
-	return nil
 }
 
 func (obj *GameClient) PyGet_Session() (py.Object, error) {

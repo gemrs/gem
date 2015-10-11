@@ -49,8 +49,6 @@ func (obj Connection) Alloc() (*Connection, error) {
 	alloc := alloc_.(*Connection)
 	// Copy fields
 
-	alloc.Log = obj.Log
-
 	alloc.ReadBuffer = obj.ReadBuffer
 
 	alloc.WriteBuffer = obj.WriteBuffer
@@ -61,11 +59,35 @@ func (obj Connection) Alloc() (*Connection, error) {
 
 	alloc.DisconnectChan = obj.DisconnectChan
 
+	alloc.log = obj.log
+
 	alloc.index = obj.index
 
 	alloc.conn = obj.conn
 
 	return alloc, nil
+}
+
+func (c *Connection) Py_Log(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Log: parameter length mismatch")
+	}
+
+	res0 := c.Log()
+
+	out_0, err := gopygen.TypeConvOut(res0, "*log.Module")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
 }
 
 func (conn *Connection) Py_WaitForDisconnect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

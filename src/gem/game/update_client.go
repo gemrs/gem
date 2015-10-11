@@ -3,7 +3,6 @@ package game
 import (
 	"gem/encoding"
 	"gem/game/server"
-	"gem/log"
 	"gem/protocol"
 )
 
@@ -11,7 +10,6 @@ import (
 type UpdateClient struct {
 	*server.Connection
 	service *UpdateService
-	Log     *log.Module
 }
 
 // NewUpdateClient constructs a new UpdateClient
@@ -37,7 +35,7 @@ func (client *UpdateClient) Decode() error {
 	client.service.queue.Push(&queueItem{
 		request: request,
 		client:  client,
-		log:     client.Log.SubModule(request.String()),
+		log:     client.Log().SubModule(request.String()),
 	})
 	return nil
 }

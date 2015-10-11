@@ -152,7 +152,7 @@ func (s *Server) handle(netConn net.Conn) {
 
 		defer conn.recover()
 
-		conn.Log.Info("accepted connection")
+		conn.Log().Info("accepted connection")
 
 		go encodeFromWriteQueue(client)
 		go decodeToReadQueue(client)
@@ -167,7 +167,7 @@ func (s *Server) handle(netConn net.Conn) {
 	close(conn.Read)
 	close(conn.Write)
 	conn.conn.Close()
-	conn.Log.Info("connection closed")
+	conn.Log().Info("connection closed")
 }
 
 // registerClient adds a connection to the clients map
@@ -201,7 +201,7 @@ func (s *Server) handshake(conn *Connection) (Client, error) {
 	service, ok := s.services[selector]
 	if !ok {
 		err := fmt.Errorf("invalid service requested: %v", serviceSelect)
-		conn.Log.Errorf("%v", err)
+		conn.Log().Errorf("%v", err)
 		conn.Disconnect()
 		return nil, err
 	}
