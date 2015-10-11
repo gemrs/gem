@@ -23,8 +23,8 @@ type GameClient struct {
 	service *GameService
 	decode  decodeFunc
 
-	Session *player.Session
-	Profile *player.Profile
+	session *player.Session
+	profile *player.Profile
 }
 
 // NewGameClient constructs a new GameClient
@@ -40,7 +40,7 @@ func NewGameClient(conn *server.Connection, svc *GameService) *GameClient {
 		Connection: conn,
 		service:    svc,
 		decode:     svc.handshake,
-		Session:    session,
+		session:    session,
 	}.Alloc()
 	if err != nil {
 		panic(err)
@@ -50,6 +50,14 @@ func NewGameClient(conn *server.Connection, svc *GameService) *GameClient {
 	client.Connection = conn
 
 	return client
+}
+
+func (client *GameClient) Session() *player.Session {
+	return client.session
+}
+
+func (client *GameClient) Profile() *player.Profile {
+	return client.profile
 }
 
 // Conn returns the underlying Connection
@@ -64,5 +72,5 @@ func (client *GameClient) Decode() error {
 
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator
 func (client *GameClient) Encode(codable encoding.Encodable) error {
-	return codable.Encode(client.Conn().WriteBuffer, &client.Session.RandOut)
+	return codable.Encode(client.Conn().WriteBuffer, &client.Session().RandOut)
 }

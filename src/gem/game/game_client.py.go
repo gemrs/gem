@@ -4,7 +4,6 @@ package game
 import (
 	"fmt"
 	"gem/encoding"
-	"gem/game/player"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
@@ -54,37 +53,55 @@ func (obj GameClient) Alloc() (*GameClient, error) {
 
 	alloc.decode = obj.decode
 
-	alloc.Session = obj.Session
+	alloc.session = obj.session
 
-	alloc.Profile = obj.Profile
+	alloc.profile = obj.profile
 
 	return alloc, nil
 }
 
-func (obj *GameClient) PyGet_Session() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Session, "*player.Session")
-}
+func (client *GameClient) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-func (obj *GameClient) PySet_Session(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "*player.Session")
-	if err != nil {
-		return err
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Session: parameter length mismatch")
 	}
-	obj.Session = val.(*player.Session)
-	return nil
-}
 
-func (obj *GameClient) PyGet_Profile() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Profile, "*player.Profile")
-}
+	res0 := client.Session()
 
-func (obj *GameClient) PySet_Profile(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "*player.Profile")
+	out_0, err := gopygen.TypeConvOut(res0, "*player.Session")
 	if err != nil {
-		return err
+		return nil, err
 	}
-	obj.Profile = val.(*player.Profile)
-	return nil
+
+	return out_0, nil
+
+}
+
+func (client *GameClient) Py_Profile(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Profile: parameter length mismatch")
+	}
+
+	res0 := client.Profile()
+
+	out_0, err := gopygen.TypeConvOut(res0, "*player.Profile")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
 }
 
 func (client *GameClient) Py_Conn(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

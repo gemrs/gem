@@ -5,6 +5,7 @@ import (
 
 	"gem/auth"
 	"gem/crypto"
+	"gem/game/packet"
 	"gem/game/server"
 	"gem/protocol"
 	"gem/runite"
@@ -52,7 +53,7 @@ func (svc *GameService) decodePacket(client *GameClient) error {
 
 	idByte := int(data[0])
 
-	rand := client.Session.RandIn.Rand()
+	rand := client.Session().RandIn.Rand()
 	realId := uint8(uint32(idByte) - rand)
 	packet, err := protocol.NewInboundPacket(int(realId))
 	if err != nil {
@@ -76,14 +77,13 @@ L:
 		select {
 		case <-client.Conn().DisconnectChan:
 			break L
-		case packet := <-client.Conn().Read:
-			if _, ok := packet.(*protocol.UnknownPacket); ok {
+		case pkt := <-client.Conn().Read:
+			if _, ok := pkt.(*protocol.UnknownPacket); ok {
 				/* unknown packet; dump to the log */
-				client.Log().Debugf("Got unknown packet: %v", packet)
+				client.Log().Debugf("Got unknown packet: %v", pkt)
 				continue
 			}
-			// TODO: route known packets to a handler
-			client.Log().Debugf("Got known packet %T", packet)
+			packet.Dispatch(client, pkt)
 		}
 
 	}
