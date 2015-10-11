@@ -112,9 +112,9 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 	go svc.packetConsumer(client)
 
 	event.Dispatcher.Raise(event.PlayerLogin, client)
-	go func() {
+	/*	go func() {
 		client.WaitForDisconnect()
 		event.Dispatcher.Raise(event.PlayerLogout, client)
-	}()
+	}()*/
 	return nil
 }
