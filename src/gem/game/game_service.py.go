@@ -4,6 +4,7 @@ package game
 import (
 	"fmt"
 	"gem/auth"
+	"gem/game/server"
 	"gem/runite"
 
 	"github.com/qur/gopy/lib"
@@ -107,7 +108,7 @@ func (svc *GameService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object,
 		return nil, fmt.Errorf("Py_NewClient: parameter length mismatch")
 	}
 
-	in_0, err := gopygen.TypeConvIn(args[0], "*Connection")
+	in_0, err := gopygen.TypeConvIn(args[0], "*server.Connection")
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +118,7 @@ func (svc *GameService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object,
 		return nil, err
 	}
 
-	res0 := svc.NewClient(in_0.(*Connection), in_1.(int))
+	res0 := svc.NewClient(in_0.(*server.Connection), in_1.(int))
 
 	out_0, err := gopygen.TypeConvOut(res0, "Client")
 	if err != nil {

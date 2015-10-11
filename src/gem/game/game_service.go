@@ -5,6 +5,7 @@ import (
 
 	"gem/auth"
 	"gem/crypto"
+	"gem/game/server"
 	"gem/protocol"
 	"gem/runite"
 
@@ -36,14 +37,14 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 	return nil
 }
 
-func (svc *GameService) NewClient(conn *Connection, service int) Client {
+func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log.Infof("new game client")
 	return NewGameClient(conn, svc)
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
 func (svc *GameService) decodePacket(client *GameClient) error {
-	b := client.Conn().readBuffer
+	b := client.Conn().ReadBuffer
 	data, err := b.Peek(1)
 	if err != nil {
 		return err
@@ -62,7 +63,7 @@ func (svc *GameService) decodePacket(client *GameClient) error {
 		return err
 	}
 
-	client.Conn().read <- packet
+	client.Conn().Read <- packet
 	return nil
 }
 
@@ -71,9 +72,9 @@ func (svc *GameService) packetConsumer(client *GameClient) {
 L:
 	for {
 		select {
-		case <-client.Conn().disconnect:
+		case <-client.Conn().DisconnectChan:
 			break L
-		case packet := <-client.Conn().read:
+		case packet := <-client.Conn().Read:
 			if _, ok := packet.(*protocol.UnknownPacket); ok {
 				/* unknown packet; dump to the log */
 				client.Log.Debugf("Got unknown packet: %v", packet)

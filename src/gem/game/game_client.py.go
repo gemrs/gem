@@ -116,7 +116,7 @@ func (client *GameClient) Py_Conn(_args *py.Tuple, kwds *py.Dict) (py.Object, er
 
 	res0 := client.Conn()
 
-	out_0, err := gopygen.TypeConvOut(res0, "*Connection")
+	out_0, err := gopygen.TypeConvOut(res0, "*server.Connection")
 	if err != nil {
 		return nil, err
 	}

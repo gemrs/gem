@@ -1,4 +1,4 @@
-package game
+package server
 
 import (
 	"fmt"
@@ -33,10 +33,12 @@ type Server struct {
 	t tomb.Tomb
 }
 
+// A Service is capable of creating Clients specific to each service (game/update)
 type Service interface {
 	NewClient(conn *Connection, service int) Client
 }
 
+// SetService registers a service with it's selector id (see protocol.InboundServiceSelect)
 func (s *Server) SetService(selector int, service Service) {
 	if s.services == nil {
 		s.services = make(map[int]Service)
@@ -156,14 +158,14 @@ func (s *Server) handle(netConn net.Conn) {
 		go decodeToReadQueue(client)
 
 		// Block this thread until disconnect
-		<-conn.disconnect
+		<-conn.DisconnectChan
 
 		// ensure any pending data is flushed before disconnecting
 		conn.flushWriteBuffer()
 	}
 
-	close(conn.read)
-	close(conn.write)
+	close(conn.Read)
+	close(conn.Write)
 	conn.conn.Close()
 	conn.Log.Info("connection closed")
 }

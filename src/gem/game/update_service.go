@@ -2,6 +2,7 @@ package game
 
 import (
 	"gem/encoding"
+	"gem/game/server"
 	"gem/protocol"
 	"gem/runite"
 
@@ -26,9 +27,9 @@ func (svc *UpdateService) Init(runite *runite.Context) {
 	go svc.processQueue()
 }
 
-func (svc *UpdateService) NewClient(conn *Connection, service int) Client {
+func (svc *UpdateService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log.Infof("new update client")
-	conn.write <- new(protocol.OutboundUpdateHandshake)
+	conn.Write <- new(protocol.OutboundUpdateHandshake)
 	return NewUpdateClient(conn, svc)
 }
 
@@ -61,7 +62,7 @@ func (svc *UpdateService) processQueue() {
 			}
 			chunk := data[wrote : wrote+chunkSize]
 
-			client.Conn().write <- &protocol.OutboundUpdateResponse{
+			client.Conn().Write <- &protocol.OutboundUpdateResponse{
 				Index: request.Index,
 				File:  request.File,
 				Size:  encoding.Int16(len(data)),

@@ -18,11 +18,11 @@ func (svc *GameService) handshake(client *GameClient) error {
 	session.RandKey[3] = rand.Int31()
 
 	handshake := protocol.InboundGameHandshake{}
-	if err := handshake.Decode(client.Conn().readBuffer, nil); err != nil {
+	if err := handshake.Decode(client.Conn().ReadBuffer, nil); err != nil {
 		return err
 	}
 
-	client.Conn().write <- &protocol.OutboundGameHandshake{
+	client.Conn().Write <- &protocol.OutboundGameHandshake{
 		ServerISAACSeed: [2]encoding.Int32{
 			encoding.Int32(session.RandKey[2]), encoding.Int32(session.RandKey[3]),
 		},
@@ -37,7 +37,7 @@ func (svc *GameService) decodeLoginBlock(client *GameClient) error {
 	session := client.Session
 
 	loginBlock := protocol.InboundLoginBlock{}
-	if err := loginBlock.Decode(client.Conn().readBuffer, nil); err != nil {
+	if err := loginBlock.Decode(client.Conn().ReadBuffer, nil); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func (svc *GameService) decodeSecureBlock(client *GameClient) error {
 		Key:       svc.key,
 		BlockSize: session.SecureBlockSize,
 	}
-	if err := rsaBlock.Decode(client.Conn().readBuffer, rsaArgs); err != nil {
+	if err := rsaBlock.Decode(client.Conn().ReadBuffer, rsaArgs); err != nil {
 		return err
 	}
 	secureBlock := rsaBlock.Codable.(*protocol.InboundSecureLoginBlock)
@@ -95,7 +95,7 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 	client.Profile = profile
 
 	if responseCode != auth.AuthOkay {
-		client.Conn().write <- &protocol.OutboundLoginResponseUnsuccessful{
+		client.Conn().Write <- &protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),
 		}
 		client.Disconnect()
@@ -103,7 +103,7 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 	}
 
 	// Successful login, do all the stuff
-	client.Conn().write <- &protocol.OutboundLoginResponse{
+	client.Conn().Write <- &protocol.OutboundLoginResponse{
 		Response: encoding.Int8(responseCode),
 		Rights:   encoding.Int8(client.Profile.Rights),
 		Flagged:  0,

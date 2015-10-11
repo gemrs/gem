@@ -2,6 +2,7 @@ import gem
 import gem.runite
 import gem.archive as archive
 import gem.game as game
+import gem.game.server as server
 
 import config
 import event
@@ -27,7 +28,7 @@ class ServiceListeners(object):
             update_service = game.UpdateService()
             update_service.Init(gem.runite.context)
 
-            self.game_server = game.Server()
+            self.game_server = server.Server()
             self.game_server.SetService(14, game_service)
             self.game_server.SetService(15, update_service)
             self.game_server.Start(config.game_server_listen)

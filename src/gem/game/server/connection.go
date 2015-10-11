@@ -1,4 +1,4 @@
-package game
+package server
 
 import (
 	"io"
@@ -26,33 +26,33 @@ type Client interface {
 	SetIndex(index int)
 }
 
-//go:generate gopygen -type Connection -excfield "^[a-z].*" $GOFILE
+//go:generate gopygen -type Connection -excfield ".*" $GOFILE
 // Connection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
 type Connection struct {
 	py.BaseObject
 
-	Log *log.Module
+	Log            *log.Module
+	ReadBuffer     *encoding.Buffer
+	WriteBuffer    *encoding.Buffer
+	Read           chan encoding.Decodable
+	Write          chan encoding.Encodable
+	DisconnectChan chan bool
 
-	index       int
-	conn        net.Conn
-	readBuffer  *encoding.Buffer
-	writeBuffer *encoding.Buffer
-	read        chan encoding.Decodable
-	write       chan encoding.Encodable
-	disconnect  chan bool
+	index int
+	conn  net.Conn
 }
 
 func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
 	gameConn, err := Connection{
-		Log: parentLogger.SubModule(conn.RemoteAddr().String()),
+		Log:            parentLogger.SubModule(conn.RemoteAddr().String()),
+		ReadBuffer:     encoding.NewBuffer(),
+		WriteBuffer:    encoding.NewBuffer(),
+		Read:           make(chan encoding.Decodable, 16),
+		Write:          make(chan encoding.Encodable, 16),
+		DisconnectChan: make(chan bool),
 
-		conn:        conn,
-		readBuffer:  encoding.NewBuffer(),
-		writeBuffer: encoding.NewBuffer(),
-		read:        make(chan encoding.Decodable, 16),
-		write:       make(chan encoding.Encodable, 16),
-		disconnect:  make(chan bool),
+		conn: conn,
 	}.Alloc()
 	if err != nil {
 		panic(err)
@@ -63,13 +63,13 @@ func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
 
 // WaitForDisconnect blocks until the connection has been closed
 func (conn *Connection) WaitForDisconnect() {
-	<-conn.disconnect
+	<-conn.DisconnectChan
 }
 
 // IsDisconnecting checks whether the client should be disconnecting or not
 func (conn *Connection) IsDisconnecting() bool {
 	select {
-	case <-conn.disconnect:
+	case <-conn.DisconnectChan:
 		// client is disconnecting. discard
 		return true
 	default:
@@ -80,9 +80,9 @@ func (conn *Connection) IsDisconnecting() bool {
 // disconnect signals to the connection loop that this connection should be, or has been closed
 func (conn *Connection) Disconnect() {
 	select {
-	case <-conn.disconnect:
+	case <-conn.DisconnectChan:
 	default:
-		close(conn.disconnect)
+		close(conn.DisconnectChan)
 	}
 }
 
@@ -98,7 +98,7 @@ func (conn *Connection) SetIndex(index int) {
 
 // WriteEncodable implements encoding.Writer
 func (conn *Connection) WriteEncodable(e encoding.Encodable) {
-	conn.write <- e
+	conn.Write <- e
 }
 
 // recover captures panics in the game client handler and prints a stack trace
@@ -128,9 +128,9 @@ func decodeToReadQueue(client Client) {
 		// at this point, the only error should be because we didn't have enough data
 		// todo: formalize this and check for the right error
 		canTrim := false
-		toRead := conn.readBuffer.Len()
+		toRead := conn.ReadBuffer.Len()
 		for toRead > 0 && err == nil {
-			err = conn.readBuffer.Try(func(b *encoding.Buffer) error {
+			err = conn.ReadBuffer.Try(func(b *encoding.Buffer) error {
 				return client.Decode()
 			})
 			if err == nil {
@@ -144,7 +144,7 @@ func decodeToReadQueue(client Client) {
 
 		if canTrim {
 			// We handled some data, discard it
-			conn.readBuffer.Trim()
+			conn.ReadBuffer.Trim()
 		}
 	}
 }
@@ -157,10 +157,10 @@ func encodeFromWriteQueue(client Client) {
 L:
 	for {
 		select {
-		case codable, ok := <-conn.write:
+		case codable, ok := <-conn.Write:
 			if ok {
 				select {
-				case <-conn.disconnect:
+				case <-conn.DisconnectChan:
 					ok = false
 				default:
 				}
@@ -187,19 +187,19 @@ L:
 // flushWriteBuffer drains the write buffer and ensures that all data is written to
 // the connection. If conn.Write returns an error (timeout), the client is disconnected.
 func (conn *Connection) flushWriteBuffer() error {
-	for conn.writeBuffer.Len() > 0 {
-		_, err := conn.writeBuffer.WriteTo(conn.conn)
+	for conn.WriteBuffer.Len() > 0 {
+		_, err := conn.WriteBuffer.WriteTo(conn.conn)
 		if err != nil {
 			return err
 		}
 	}
-	conn.writeBuffer.Trim()
+	conn.WriteBuffer.Trim()
 	return nil
 }
 
 // fillReadBuffer pulls data from the connection and buffers it for decoding into the readBuffer
 // launched in a goroutine by Server.handle
 func (conn *Connection) fillReadBuffer() error {
-	_, err := conn.readBuffer.ReadFrom(conn.conn)
+	_, err := conn.ReadBuffer.ReadFrom(conn.conn)
 	return err
 }

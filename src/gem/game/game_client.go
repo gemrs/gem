@@ -3,6 +3,7 @@ package game
 import (
 	"gem/encoding"
 	"gem/game/player"
+	"gem/game/server"
 	"gem/log"
 
 	"github.com/qur/gopy/lib"
@@ -19,7 +20,7 @@ type decodeFunc func(*GameClient) error
 type GameClient struct {
 	py.BaseObject
 
-	*Connection
+	*server.Connection
 	service *GameService
 	decode  decodeFunc
 
@@ -29,7 +30,7 @@ type GameClient struct {
 }
 
 // NewGameClient constructs a new GameClient
-func NewGameClient(conn *Connection, svc *GameService) *GameClient {
+func NewGameClient(conn *server.Connection, svc *GameService) *GameClient {
 	session, err := player.Session{}.Alloc()
 	if err != nil {
 		panic(err)
@@ -55,7 +56,7 @@ func NewGameClient(conn *Connection, svc *GameService) *GameClient {
 }
 
 // Conn returns the underlying Connection
-func (client *GameClient) Conn() *Connection {
+func (client *GameClient) Conn() *server.Connection {
 	return client.Connection
 }
 
@@ -66,5 +67,5 @@ func (client *GameClient) Decode() error {
 
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator
 func (client *GameClient) Encode(codable encoding.Encodable) error {
-	return codable.Encode(client.Conn().writeBuffer, &client.Session.RandOut)
+	return codable.Encode(client.Conn().WriteBuffer, &client.Session.RandOut)
 }
