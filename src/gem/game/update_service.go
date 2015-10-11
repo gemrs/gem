@@ -4,43 +4,51 @@ import (
 	"gem/encoding"
 	"gem/protocol"
 	"gem/runite"
+
+	"github.com/qur/gopy/lib"
 )
 
+//go:generate gopygen -type UpdateService -excfield "^[a-z].*" $GOFILE
+
 // updateService represents the internal state of the update servuce
-type updateService struct {
+type UpdateService struct {
+	py.BaseObject
+
 	runite *runite.Context
 	queue  updateQueue
 	notify chan int
 }
 
-func newUpdateService(runite *runite.Context) *updateService {
-	return &updateService{
-		runite: runite,
-		queue:  newUpdateQueue(),
-		notify: make(chan int, 16),
-	}
+func (svc *UpdateService) Init(runite *runite.Context) {
+	svc.runite = runite
+	svc.queue = newUpdateQueue()
+	svc.notify = make(chan int, 16)
+	go svc.processQueue()
+}
+
+func (svc *UpdateService) NewClient(conn *Connection, service int) Client {
+	conn.Log.Infof("new update client")
+	conn.write <- new(protocol.OutboundUpdateHandshake)
+	return NewUpdateClient(conn, svc)
 }
 
 // processQueue resolves requests from the local cache and buffers the responses
 // requests are processed in priority order
-func (svc *updateService) processQueue() {
+func (svc *UpdateService) processQueue() {
 	for {
 		item := svc.queue.Pop().(*queueItem)
 		request := item.request
-		conn := item.conn
+		client := item.client
 		log := item.log
 
-		select {
-		case <-conn.disconnect:
-			// client is disconnecting. discard
+		if client.IsDisconnecting() {
 			continue
-		default:
 		}
 
 		data, err := request.Resolve(svc.runite)
 		if err != nil {
 			log.Errorf(err.Error())
-			conn.Disconnect()
+			client.Disconnect()
 			continue
 		}
 
@@ -53,7 +61,7 @@ func (svc *updateService) processQueue() {
 			}
 			chunk := data[wrote : wrote+chunkSize]
 
-			conn.write <- &protocol.OutboundUpdateResponse{
+			client.Conn().write <- &protocol.OutboundUpdateResponse{
 				Index: request.Index,
 				File:  request.File,
 				Size:  encoding.Int16(len(data)),
@@ -65,19 +73,4 @@ func (svc *updateService) processQueue() {
 			chunkCount++
 		}
 	}
-}
-
-// decodeRequest decodes requests and enqueues them
-func (svc *updateService) decodeRequest(conn *Connection, b *encoding.Buffer) error {
-	var request protocol.InboundUpdateRequest
-	if err := request.Decode(b, nil); err != nil {
-		return err
-	}
-
-	svc.queue.Push(&queueItem{
-		request: request,
-		conn:    conn,
-		log:     conn.Log.SubModule(request.String()),
-	})
-	return nil
 }

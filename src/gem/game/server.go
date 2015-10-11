@@ -5,12 +5,8 @@ import (
 	"net"
 	"sync"
 
-	"gem/auth"
-	"gem/crypto"
-	"gem/encoding"
 	"gem/log"
 	"gem/protocol"
-	"gem/runite"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
@@ -28,39 +24,36 @@ type Server struct {
 	laddr string
 	ln    net.Listener
 
-	update    *updateService
-	game      *gameService
-	runite    *runite.Context
 	nextIndex chan int
 
-	m       sync.Mutex
-	clients map[int]*Connection
+	m        sync.Mutex
+	clients  map[int]Client
+	services map[int]Service
 
 	t tomb.Tomb
 }
 
+type Service interface {
+	NewClient(conn *Connection, service int) Client
+}
+
+func (s *Server) SetService(selector int, service Service) {
+	if s.services == nil {
+		s.services = make(map[int]Service)
+	}
+	s.services[selector] = service
+}
+
 // Start creates the tcp listener and starts the connection handler in a goroutine
-func (s *Server) Start(laddr string, ctx *runite.Context, rsaKeyPath string, auth auth.Provider) error {
+func (s *Server) Start(laddr string) (err error) {
 	logInit.Do(func() {
 		logger = log.New("game")
 	})
 
 	logger.Info("Starting game server...")
 
-	var err error
-	var key *crypto.Keypair
-	key, err = crypto.LoadPrivateKey(rsaKeyPath)
-	if err != nil {
-		return err
-	}
-	logger.Infof("Loaded RSA keypair %v", rsaKeyPath)
-
 	s.laddr = laddr
-	s.runite = ctx
-	s.clients = make(map[int]*Connection)
-	s.update = newUpdateService(ctx)
-	s.game = newGameService(ctx, key, auth)
-	go s.update.processQueue()
+	s.clients = make(map[int]Client)
 
 	s.ln, err = net.Listen("tcp", s.laddr)
 	if err != nil {
@@ -150,22 +143,24 @@ func (s *Server) run() error {
 // if the disconnect channel is signalled, breaks the main loop and closes the connection
 func (s *Server) handle(netConn net.Conn) {
 	conn := newConnection(netConn, logger)
-	conn.decode = s.handshake
-	s.registerClient(conn)
-	defer s.unregisterClient(conn)
+	client, err := s.handshake(conn)
+	if err == nil && client != nil {
+		s.registerClient(client)
+		defer s.unregisterClient(client)
 
-	defer conn.recover()
+		defer conn.recover()
 
-	conn.Log.Info("accepted connection")
+		conn.Log.Info("accepted connection")
 
-	go conn.encodeFromWriteQueue()
-	go conn.decodeToReadQueue()
+		go encodeFromWriteQueue(client)
+		go decodeToReadQueue(client)
 
-	// Block this thread until disconnect
-	<-conn.disconnect
+		// Block this thread until disconnect
+		<-conn.disconnect
 
-	// ensure any pending data is flushed before disconnecting
-	conn.flushWriteBuffer()
+		// ensure any pending data is flushed before disconnecting
+		conn.flushWriteBuffer()
+	}
 
 	close(conn.read)
 	close(conn.write)
@@ -174,50 +169,42 @@ func (s *Server) handle(netConn net.Conn) {
 }
 
 // registerClient adds a connection to the clients map
-func (s *Server) registerClient(conn *Connection) {
+func (s *Server) registerClient(client Client) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
 	index := <-s.nextIndex
-	s.clients[index] = conn
-	conn.Index = index
+	s.clients[index] = client
+	client.SetIndex(index)
 }
 
-// unregisterClient removes a connection to the clients map
-func (s *Server) unregisterClient(conn *Connection) {
+// unregisterClient removes a client from the clients map
+func (s *Server) unregisterClient(client Client) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
-	delete(s.clients, conn.Index)
-	index := <-s.nextIndex
-	s.clients[index] = conn
+	delete(s.clients, client.Index())
 }
 
 // handshake reads the service selection byte and points the connection's decode func
 // towards the decode func for the selected service
-func (s *Server) handshake(conn *Connection, b *encoding.Buffer) error {
-	var svc protocol.InboundServiceSelect
-	if err := svc.Decode(b, nil); err != nil {
-		return err
+func (s *Server) handshake(conn *Connection) (Client, error) {
+	var serviceSelect protocol.InboundServiceSelect
+	if err := serviceSelect.Decode(conn.conn, nil); err != nil {
+		return nil, err
 	}
 
-	switch svc.Service {
-	case UpdateService:
-		conn.Log.Infof("new update client")
-		conn.decode = s.update.decodeRequest
-		conn.encode = conn.encodeCodable
+	selector := int(serviceSelect.Service)
 
-		conn.write <- new(protocol.OutboundUpdateHandshake)
-		return nil
-	case GameService:
-		conn.Log.Infof("new game client")
-		conn.decode = s.game.handshake
-		conn.encode = conn.encodeCodable
-		return nil
-	default:
-		conn.Log.Errorf("invalid service requested: %v", svc)
+	service, ok := s.services[selector]
+	if !ok {
+		err := fmt.Errorf("invalid service requested: %v", serviceSelect)
+		conn.Log.Errorf("%v", err)
 		conn.Disconnect()
+		return nil, err
 	}
 
-	return nil
+	client := service.NewClient(conn, selector)
+
+	return client, nil
 }

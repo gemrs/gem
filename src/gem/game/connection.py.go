@@ -4,11 +4,9 @@ package game
 import (
 	"fmt"
 	"gem/encoding"
-	"gem/game/player"
 	"gem/log"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -52,13 +50,9 @@ func (obj Connection) Alloc() (*Connection, error) {
 	alloc := alloc_.(*Connection)
 	// Copy fields
 
-	alloc.Index = obj.Index
-
 	alloc.Log = obj.Log
 
-	alloc.Session = obj.Session
-
-	alloc.Profile = obj.Profile
+	alloc.index = obj.index
 
 	alloc.conn = obj.conn
 
@@ -72,24 +66,7 @@ func (obj Connection) Alloc() (*Connection, error) {
 
 	alloc.disconnect = obj.disconnect
 
-	alloc.decode = obj.decode
-
-	alloc.encode = obj.encode
-
 	return alloc, nil
-}
-
-func (obj *Connection) PyGet_Index() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Index, "int")
-}
-
-func (obj *Connection) PySet_Index(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "int")
-	if err != nil {
-		return err
-	}
-	obj.Index = val.(int)
-	return nil
 }
 
 func (obj *Connection) PyGet_Log() (py.Object, error) {
@@ -105,30 +82,44 @@ func (obj *Connection) PySet_Log(arg py.Object) error {
 	return nil
 }
 
-func (obj *Connection) PyGet_Session() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Session, "*player.Session")
-}
+func (conn *Connection) Py_WaitForDisconnect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-func (obj *Connection) PySet_Session(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "*player.Session")
-	if err != nil {
-		return err
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_WaitForDisconnect: parameter length mismatch")
 	}
-	obj.Session = val.(*player.Session)
-	return nil
+
+	conn.WaitForDisconnect()
+
+	py.None.Incref()
+	return py.None, nil
+
 }
 
-func (obj *Connection) PyGet_Profile() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Profile, "*player.Profile")
-}
+func (conn *Connection) Py_IsDisconnecting(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-func (obj *Connection) PySet_Profile(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "*player.Profile")
-	if err != nil {
-		return err
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_IsDisconnecting: parameter length mismatch")
 	}
-	obj.Profile = val.(*player.Profile)
-	return nil
+
+	res0 := conn.IsDisconnecting()
+
+	out_0, err := gopygen.TypeConvOut(res0, "bool")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
 }
 
 func (conn *Connection) Py_Disconnect(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
@@ -149,6 +140,74 @@ func (conn *Connection) Py_Disconnect(_args *py.Tuple, kwds *py.Dict) (py.Object
 
 }
 
+func (conn *Connection) Py_Index(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Index: parameter length mismatch")
+	}
+
+	res0 := conn.Index()
+
+	out_0, err := gopygen.TypeConvOut(res0, "int")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
+}
+
+func (conn *Connection) Py_SetIndex(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SetIndex: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "int")
+	if err != nil {
+		return nil, err
+	}
+
+	conn.SetIndex(in_0.(int))
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (conn *Connection) Py_WriteEncodable(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_WriteEncodable: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Encodable")
+	if err != nil {
+		return nil, err
+	}
+
+	conn.WriteEncodable(in_0.(encoding.Encodable))
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
 func (conn *Connection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -161,79 +220,6 @@ func (conn *Connection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, e
 	}
 
 	conn.recover()
-
-	py.None.Incref()
-	return py.None, nil
-
-}
-
-func (conn *Connection) Py_encodeCodable(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 3 {
-		return nil, fmt.Errorf("Py_encodeCodable: parameter length mismatch")
-	}
-
-	in_0, err := gopygen.TypeConvIn(args[0], "*Connection")
-	if err != nil {
-		return nil, err
-	}
-
-	in_1, err := gopygen.TypeConvIn(args[1], "*encoding.Buffer")
-	if err != nil {
-		return nil, err
-	}
-
-	in_2, err := gopygen.TypeConvIn(args[2], "encoding.Encodable")
-	if err != nil {
-		return nil, err
-	}
-
-	res0 := conn.encodeCodable(in_0.(*Connection), in_1.(*encoding.Buffer), in_2.(encoding.Encodable))
-
-	out_0, err := gopygen.TypeConvOut(res0, "error")
-	if err != nil {
-		return nil, err
-	}
-
-	return out_0, nil
-
-}
-
-func (conn *Connection) Py_decodeToReadQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 0 {
-		return nil, fmt.Errorf("Py_decodeToReadQueue: parameter length mismatch")
-	}
-
-	conn.decodeToReadQueue()
-
-	py.None.Incref()
-	return py.None, nil
-
-}
-
-func (conn *Connection) Py_encodeFromWriteQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 0 {
-		return nil, fmt.Errorf("Py_encodeFromWriteQueue: parameter length mismatch")
-	}
-
-	conn.encodeFromWriteQueue()
 
 	py.None.Incref()
 	return py.None, nil
@@ -281,28 +267,5 @@ func (conn *Connection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	}
 
 	return out_0, nil
-
-}
-
-func (conn *Connection) Py_WriteEncodable(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 1 {
-		return nil, fmt.Errorf("Py_WriteEncodable: parameter length mismatch")
-	}
-
-	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Encodable")
-	if err != nil {
-		return nil, err
-	}
-
-	conn.WriteEncodable(in_0.(encoding.Encodable))
-
-	py.None.Incref()
-	return py.None, nil
 
 }

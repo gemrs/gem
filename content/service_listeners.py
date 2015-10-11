@@ -21,8 +21,16 @@ class ServiceListeners(object):
             raise Exception("Couldn't start archive server: {0}".format(e))
 
         try:
+            game_service = game.GameService()
+            game_service.Init(gem.runite.context, config.rsa_key_path, config.auth_provider)
+
+            update_service = game.UpdateService()
+            update_service.Init(gem.runite.context)
+
             self.game_server = game.Server()
-            self.game_server.Start(config.game_server_listen, gem.runite.context, config.rsa_key_path, config.auth_provider)
+            self.game_server.SetService(14, game_service)
+            self.game_server.SetService(15, update_service)
+            self.game_server.Start(config.game_server_listen)
             self.game_server_started = True
         except Exception as e:
             raise Exception("Couldn't start game server: {0}".format(e))

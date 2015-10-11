@@ -6,25 +6,25 @@ import (
 	"runtime"
 
 	"gem/encoding"
-	"gem/game/player"
 	"gem/log"
 
 	"github.com/qur/gopy/lib"
 )
 
 const (
-	GameService   encoding.Int8 = 14
-	UpdateService encoding.Int8 = 15
+	GameServiceType   encoding.Int8 = 14
+	UpdateServiceType encoding.Int8 = 15
 )
 
-// decodeFunc is used for parsing the read stream and dealing with the incoming data.
-// If io.EOF is returned, it is assumed that we didn't have enough data, and
-// the underlying buffer's read pointer is not altered.
-type decodeFunc func(*Connection, *encoding.Buffer) error
-
-// encodeFunc is used for flushing the write queue to the write buffer
-// If error is returned, the client is disconnected.
-type encodeFunc func(*Connection, *encoding.Buffer, encoding.Encodable) error
+// Client is a common interface to game/update clients
+type Client interface {
+	Conn() *Connection
+	Decode() error
+	Encode(encoding.Encodable) error
+	Disconnect()
+	Index() int
+	SetIndex(index int)
+}
 
 //go:generate gopygen -type Connection -excfield "^[a-z].*" $GOFILE
 // Connection is a network-level representation of the connection.
@@ -32,30 +32,20 @@ type encodeFunc func(*Connection, *encoding.Buffer, encoding.Encodable) error
 type Connection struct {
 	py.BaseObject
 
-	Index   int
-	Log     *log.Module
-	Session *player.Session
-	Profile *player.Profile
+	Log *log.Module
 
+	index       int
 	conn        net.Conn
 	readBuffer  *encoding.Buffer
 	writeBuffer *encoding.Buffer
 	read        chan encoding.Decodable
 	write       chan encoding.Encodable
 	disconnect  chan bool
-	decode      decodeFunc
-	encode      encodeFunc
 }
 
 func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
-	session, err := player.Session{}.Alloc()
-	if err != nil {
-		panic(err)
-	}
-
 	gameConn, err := Connection{
-		Log:     parentLogger.SubModule(conn.RemoteAddr().String()),
-		Session: session,
+		Log: parentLogger.SubModule(conn.RemoteAddr().String()),
 
 		conn:        conn,
 		readBuffer:  encoding.NewBuffer(),
@@ -68,9 +58,23 @@ func newConnection(conn net.Conn, parentLogger *log.Module) *Connection {
 		panic(err)
 	}
 
-	gameConn.Session.SetTarget(gameConn)
-
 	return gameConn
+}
+
+// WaitForDisconnect blocks until the connection has been closed
+func (conn *Connection) WaitForDisconnect() {
+	<-conn.disconnect
+}
+
+// IsDisconnecting checks whether the client should be disconnecting or not
+func (conn *Connection) IsDisconnecting() bool {
+	select {
+	case <-conn.disconnect:
+		// client is disconnecting. discard
+		return true
+	default:
+	}
+	return false
 }
 
 // disconnect signals to the connection loop that this connection should be, or has been closed
@@ -80,6 +84,16 @@ func (conn *Connection) Disconnect() {
 	default:
 		close(conn.disconnect)
 	}
+}
+
+// Index returns the connection's unique index
+func (conn *Connection) Index() int {
+	return conn.index
+}
+
+// Index sets the connection's unique index
+func (conn *Connection) SetIndex(index int) {
+	conn.index = index
 }
 
 // WriteEncodable implements encoding.Writer
@@ -97,15 +111,11 @@ func (conn *Connection) recover() {
 	}
 }
 
-// encodeCodable is a generic codable encoder
-func (conn *Connection) encodeCodable(_ *Connection, b *encoding.Buffer, codable encoding.Encodable) error {
-	return codable.Encode(conn.writeBuffer, nil)
-}
-
 // decodeToReadQueue is the goroutine handling the read buffer
 // reads from the buffer, decodes Codables using conn.decode, which can choose
 // to either handle the data or place a Codable into the read queue
-func (conn *Connection) decodeToReadQueue() {
+func decodeToReadQueue(client Client) {
+	conn := client.Conn()
 	defer conn.recover()
 	for {
 		err := conn.fillReadBuffer()
@@ -121,7 +131,7 @@ func (conn *Connection) decodeToReadQueue() {
 		toRead := conn.readBuffer.Len()
 		for toRead > 0 && err == nil {
 			err = conn.readBuffer.Try(func(b *encoding.Buffer) error {
-				return conn.decode(conn, b)
+				return client.Decode()
 			})
 			if err == nil {
 				canTrim = true
@@ -141,7 +151,8 @@ func (conn *Connection) decodeToReadQueue() {
 
 // encodeFromWriteQueue is the goroutine handling the write buffer
 // picks from conn.write, encodes the Codables, and flushes the write buffer
-func (conn *Connection) encodeFromWriteQueue() {
+func encodeFromWriteQueue(client Client) {
+	conn := client.Conn()
 	defer conn.recover()
 L:
 	for {
@@ -159,7 +170,7 @@ L:
 				break L
 			}
 
-			err := conn.encode(conn, conn.writeBuffer, codable)
+			err := client.Encode(codable)
 			if err == nil {
 				err = conn.flushWriteBuffer()
 			}

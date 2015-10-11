@@ -3,13 +3,11 @@ package game
 
 import (
 	"fmt"
-	"gem/auth"
-	"gem/runite"
 	"sync"
 
-	"github.com/qur/gopy/lib"
 	"gopkg.in/tomb.v2"
 
+	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -57,17 +55,13 @@ func (obj Server) Alloc() (*Server, error) {
 
 	alloc.ln = obj.ln
 
-	alloc.update = obj.update
-
-	alloc.game = obj.game
-
-	alloc.runite = obj.runite
-
 	alloc.nextIndex = obj.nextIndex
 
 	alloc.m = obj.m
 
 	alloc.clients = obj.clients
+
+	alloc.services = obj.services
 
 	alloc.t = obj.t
 
@@ -100,6 +94,34 @@ func (obj *Server) PySet_t(arg py.Object) error {
 	return nil
 }
 
+func (s *Server) Py_SetService(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 2 {
+		return nil, fmt.Errorf("Py_SetService: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "int")
+	if err != nil {
+		return nil, err
+	}
+
+	in_1, err := gopygen.TypeConvIn(args[1], "Service")
+	if err != nil {
+		return nil, err
+	}
+
+	s.SetService(in_0.(int), in_1.(Service))
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
 func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -107,7 +129,7 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 4 {
+	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
 
@@ -116,22 +138,7 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 		return nil, err
 	}
 
-	in_1, err := gopygen.TypeConvIn(args[1], "*runite.Context")
-	if err != nil {
-		return nil, err
-	}
-
-	in_2, err := gopygen.TypeConvIn(args[2], "string")
-	if err != nil {
-		return nil, err
-	}
-
-	in_3, err := gopygen.TypeConvIn(args[3], "auth.Provider")
-	if err != nil {
-		return nil, err
-	}
-
-	res0 := s.Start(in_0.(string), in_1.(*runite.Context), in_2.(string), in_3.(auth.Provider))
+	res0 := s.Start(in_0.(string))
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

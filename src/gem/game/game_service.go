@@ -5,34 +5,45 @@ import (
 
 	"gem/auth"
 	"gem/crypto"
-	"gem/encoding"
 	"gem/protocol"
 	"gem/runite"
+
+	"github.com/qur/gopy/lib"
 )
 
+//go:generate gopygen -type GameService -excfield "^[a-z].*" $GOFILE
+
 // gameService represents the internal state of the game
-type gameService struct {
+type GameService struct {
+	py.BaseObject
+
 	runite *runite.Context
 	key    *crypto.Keypair
 	auth   auth.Provider
 }
 
-// newGameService constructs a new gameService
-func newGameService(runite *runite.Context, key *crypto.Keypair, auth auth.Provider) *gameService {
-	return &gameService{
-		runite: runite,
-		key:    key,
-		auth:   auth,
+func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth auth.Provider) error {
+	var err error
+	var key *crypto.Keypair
+	key, err = crypto.LoadPrivateKey(rsaKeyPath)
+	if err != nil {
+		return err
 	}
+
+	svc.runite = runite
+	svc.key = key
+	svc.auth = auth
+	return nil
 }
 
-// encodePacket encodes an encoding.Encodable using the ISAAC rand generator
-func (svc *gameService) encodePacket(conn *Connection, b *encoding.Buffer, codable encoding.Encodable) error {
-	return codable.Encode(conn.writeBuffer, &conn.Session.RandOut)
+func (svc *GameService) NewClient(conn *Connection, service int) Client {
+	conn.Log.Infof("new game client")
+	return NewGameClient(conn, svc)
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
-func (svc *gameService) decodePacket(conn *Connection, b *encoding.Buffer) error {
+func (svc *GameService) decodePacket(client *GameClient) error {
+	b := client.Conn().readBuffer
 	data, err := b.Peek(1)
 	if err != nil {
 		return err
@@ -40,7 +51,7 @@ func (svc *gameService) decodePacket(conn *Connection, b *encoding.Buffer) error
 
 	idByte := int(data[0])
 
-	rand := conn.Session.RandIn.Rand()
+	rand := client.Session.RandIn.Rand()
 	realId := uint8(uint32(idByte) - rand)
 	packet, err := protocol.NewInboundPacket(int(realId))
 	if err != nil {
@@ -51,25 +62,25 @@ func (svc *gameService) decodePacket(conn *Connection, b *encoding.Buffer) error
 		return err
 	}
 
-	conn.read <- packet
+	client.Conn().read <- packet
 	return nil
 }
 
 // packetConsumer is the goroutine which picks packets from the readQueue and does something with them
-func (svc *gameService) packetConsumer(conn *Connection) {
+func (svc *GameService) packetConsumer(client *GameClient) {
 L:
 	for {
 		select {
-		case <-conn.disconnect:
+		case <-client.Conn().disconnect:
 			break L
-		case packet := <-conn.read:
+		case packet := <-client.Conn().read:
 			if _, ok := packet.(*protocol.UnknownPacket); ok {
 				/* unknown packet; dump to the log */
-				conn.Log.Debugf("Got unknown packet: %v", packet)
+				client.Log.Debugf("Got unknown packet: %v", packet)
 				continue
 			}
 			// TODO: route known packets to a handler
-			conn.Log.Debugf("Got known packet %T", packet)
+			client.Log.Debugf("Got known packet %T", packet)
 		}
 
 	}

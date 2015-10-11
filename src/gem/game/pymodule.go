@@ -11,6 +11,9 @@ type registerFunc func(*py.Module) error
 var moduleRegisterFuncs = []registerFunc{
 	RegisterConnection,
 	RegisterServer,
+	RegisterGameService,
+	RegisterGameClient,
+	RegisterUpdateService,
 	player.InitPyModule,
 }
 
