@@ -1,4 +1,4 @@
-package py
+package python
 
 // #include <python2.7/Python.h>
 // #cgo LDFLAGS: -lpython2.7

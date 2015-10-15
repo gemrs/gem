@@ -1,4 +1,4 @@
-package main
+package python
 
 import (
 	"fmt"
@@ -7,18 +7,9 @@ import (
 	"syscall"
 
 	"github.com/qur/gopy/lib"
-
-	"gem"
-	"gem/python"
 )
 
-func main() {
-	_ = pythonInit()
-	py.Main(os.Args)
-	py.Finalize()
-}
-
-func pythonInit() *py.Lock {
+func pythonInit() {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("initializing python: %s", r)
@@ -26,13 +17,9 @@ func pythonInit() *py.Lock {
 		}
 	}()
 
-	lock := py.InitAndLock()
+	_ = py.InitAndLock()
 
-	python.SetTypeConvFuncs()
-
-	if err := gem.InitPyModule(); err != nil {
-		panic(err)
-	}
+	SetTypeConvFuncs()
 
 	/* Create our globals */
 	if globals, err := py.NewDict(); err != nil {
@@ -49,13 +36,17 @@ func pythonInit() *py.Lock {
 	signal.Notify(c, syscall.SIGTERM)
 	go func() {
 		<-c
-
-		lock := py.NewLock()
-		py.Finalize()
-		lock.Unlock()
-
+		pythonExit()
 		os.Exit(0)
 	}()
+}
 
-	return lock
+func pythonExit() {
+	lock := py.NewLock()
+	py.Finalize()
+	lock.Unlock()
+}
+
+func init() {
+	pythonInit()
 }

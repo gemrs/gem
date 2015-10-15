@@ -1,4 +1,4 @@
-package py
+package python
 
 import (
 	"github.com/qur/gopy/lib"
