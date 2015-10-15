@@ -17,6 +17,7 @@ var Sys *SysLog
 type SysLog struct {
 	py.BaseObject
 	redirectBuffer *bytes.Buffer
+	modules        map[string]*Module
 }
 
 type Module struct {
@@ -56,10 +57,20 @@ func (log *SysLog) EndRedirect() {
 }
 
 func (log *SysLog) Module(module string) *Module {
+	if log.modules == nil {
+		log.modules = make(map[string]*Module)
+	}
+
+	if logModule, ok := log.modules[module]; ok {
+		return logModule
+	}
+
 	logModule, err := Module{logger: logging.MustGetLogger(module)}.Alloc()
 	if err != nil {
 		panic(err)
 	}
+
+	log.modules[module] = logModule
 
 	return logModule
 }

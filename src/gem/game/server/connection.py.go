@@ -216,24 +216,6 @@ func (conn *Connection) Py_WriteEncodable(_args *py.Tuple, kwds *py.Dict) (py.Ob
 
 }
 
-func (conn *Connection) Py_recover(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 0 {
-		return nil, fmt.Errorf("Py_recover: parameter length mismatch")
-	}
-
-	conn.recover()
-
-	py.None.Incref()
-	return py.None, nil
-
-}
-
 func (conn *Connection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()

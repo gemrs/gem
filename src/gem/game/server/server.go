@@ -7,6 +7,7 @@ import (
 
 	"gem/log"
 	"gem/protocol"
+	"gem/safe"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
@@ -150,7 +151,7 @@ func (s *Server) handle(netConn net.Conn) {
 		s.registerClient(client)
 		defer s.unregisterClient(client)
 
-		defer conn.recover()
+		defer safe.Recover(conn.Log())
 
 		conn.Log().Info("accepted connection")
 

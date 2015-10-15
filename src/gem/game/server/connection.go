@@ -3,11 +3,11 @@ package server
 import (
 	"io"
 	"net"
-	"runtime"
 
 	"gem/encoding"
 	"gem/game/player"
 	"gem/log"
+	"gem/safe"
 
 	"github.com/qur/gopy/lib"
 )
@@ -115,22 +115,12 @@ func (conn *Connection) WriteEncodable(e encoding.Encodable) {
 	conn.Write <- e
 }
 
-// recover captures panics in the game client handler and prints a stack trace
-func (conn *Connection) recover() {
-	if err := recover(); err != nil {
-		stack := make([]byte, 1024*10)
-		runtime.Stack(stack, true)
-		conn.Log().Criticalf("Recovered from panic in game client handler: %v", err)
-		conn.Log().Debug(string(stack))
-	}
-}
-
 // decodeToReadQueue is the goroutine handling the read buffer
 // reads from the buffer, decodes Codables using conn.decode, which can choose
 // to either handle the data or place a Codable into the read queue
 func decodeToReadQueue(client Client) {
 	conn := client.Conn()
-	defer conn.recover()
+	defer safe.Recover(conn.Log())
 	for {
 		err := conn.fillReadBuffer()
 		if err != nil {
@@ -167,7 +157,7 @@ func decodeToReadQueue(client Client) {
 // picks from conn.write, encodes the Codables, and flushes the write buffer
 func encodeFromWriteQueue(client Client) {
 	conn := client.Conn()
-	defer conn.recover()
+	defer safe.Recover(conn.Log())
 L:
 	for {
 		select {
