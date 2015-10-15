@@ -2,9 +2,11 @@ package event
 
 import (
 	"github.com/qur/gopy/lib"
+
+	"gem/python"
 )
 
-func InitPyModule(parent *py.Module) error {
+func init() {
 	/* Create package */
 	var err error
 	var module *py.Module
@@ -13,15 +15,9 @@ func InitPyModule(parent *py.Module) error {
 		{"raise_event", Py_RaiseEvent, "raise an event"},
 		{"clear", Py_Clear, "clear all events"},
 	}
-	if module, err = py.InitModule("gem.event", methods); err != nil {
-		return err
+	if module, err = python.InitModule("gem.event", methods); err != nil {
+		panic(err)
 	}
 
 	createEventConstants(module)
-
-	if err = parent.AddObject("event", module); err != nil {
-		return err
-	}
-
-	return nil
 }
