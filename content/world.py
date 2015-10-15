@@ -9,12 +9,12 @@ class World(object):
 
     @event.callback(gem.event.PlayerLogin)
     def register_player(self, player):
-        self.players[player.Index] = player
+        self.players[player.Index()] = player
         logger.Info("registered player %s" % player)
 
     @event.callback(gem.event.PlayerLogout)
     def unregister_player(self, player):
-        del self.players[player.Index]
+        del self.players[player.Index()]
         logger.Info("unregistered player %s" % player)
 
     def get_players(self):
