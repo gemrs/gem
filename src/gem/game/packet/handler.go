@@ -2,7 +2,7 @@ package packet
 
 import (
 	"gem/encoding"
-	"gem/game/server"
+	"gem/game/player"
 )
 
-type Handler func(server.Player, encoding.Decodable)
+type Handler func(player.Player, encoding.Decodable)

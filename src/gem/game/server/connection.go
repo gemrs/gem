@@ -5,7 +5,6 @@ import (
 	"net"
 
 	"gem/encoding"
-	"gem/game/player"
 	"gem/log"
 	"gem/safe"
 
@@ -27,13 +26,6 @@ type Client interface {
 	Index() int
 	SetIndex(index int)
 	Log() *log.Module
-}
-
-// Player is a Client which has a Profile and a Session
-type Player interface {
-	Client
-	Profile() *player.Profile
-	Session() *player.Session
 }
 
 //go:generate gopygen -type Connection -excfield ".*" $GOFILE
