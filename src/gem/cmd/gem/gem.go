@@ -11,6 +11,7 @@ import (
 	_ "gem/event"
 	_ "gem/game"
 	_ "gem/game/player"
+	_ "gem/game/position"
 	_ "gem/game/server"
 	"gem/python"
 	_ "gem/runite"

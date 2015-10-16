@@ -6,6 +6,7 @@ import (
 	"gem/encoding"
 
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -140,6 +141,28 @@ func (client *GameClient) Py_Decode(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 	res0 := client.Decode()
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
+}
+
+func (client *GameClient) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Position: parameter length mismatch")
+	}
+
+	res0 := client.Position()
+
+	out_0, err := gopygen.TypeConvOut(res0, "*position.Absolute")
 	if err != nil {
 		return nil, err
 	}

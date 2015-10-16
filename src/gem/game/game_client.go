@@ -3,6 +3,7 @@ package game
 import (
 	"gem/encoding"
 	"gem/game/player"
+	"gem/game/position"
 	"gem/game/server"
 
 	"github.com/qur/gopy/lib"
@@ -68,6 +69,11 @@ func (client *GameClient) Conn() *server.Connection {
 // Decode processes incoming packets and adds them to the read queue
 func (client *GameClient) Decode() error {
 	return client.decode(client)
+}
+
+// Position returns the absolute position of the player
+func (client *GameClient) Position() *position.Absolute {
+	return client.Profile().Pos
 }
 
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator

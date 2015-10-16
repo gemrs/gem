@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/qur/gopy/lib"
+
+	"gem/game/position"
 )
 
 type Rights int
@@ -22,6 +24,7 @@ type Profile struct {
 	Username string
 	Password string
 	Rights   Rights
+	Pos      *position.Absolute
 }
 
 func (p *Profile) String() string {
