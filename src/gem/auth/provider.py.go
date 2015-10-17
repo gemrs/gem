@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -32,24 +33,6 @@ func RegisterProviderImpl(module *py.Module) error {
 	}
 
 	return nil
-}
-
-// Alloc allocates an object for use in python land.
-// Copies the member fields from this object to the newly allocated object
-// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj ProviderImpl) Alloc() (*ProviderImpl, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	// Allocate
-	alloc_, err := ProviderImplDef.Alloc(0)
-	if err != nil {
-		return nil, err
-	}
-	alloc := alloc_.(*ProviderImpl)
-	// Copy fields
-
-	return alloc, nil
 }
 
 func (p *ProviderImpl) Py_LookupProfile(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

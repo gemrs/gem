@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/qur/gopy/lib"
 	"gopkg.in/tomb.v2"
 
-	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -18,6 +18,7 @@ var _ = gopygen.Dummy
 
 var ServerDef = py.Class{
 	Name:    "Server",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Server)(nil),
 }
 
@@ -39,7 +40,7 @@ func RegisterServer(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Server) Alloc() (*Server, error) {
+func NewServer(arg_0 string) (*Server, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -49,23 +50,27 @@ func (obj Server) Alloc() (*Server, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Server)
-	// Copy fields
+	err = alloc.Init(arg_0)
+	return alloc, err
+}
 
-	alloc.laddr = obj.laddr
+func (obj *Server) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.ln = obj.ln
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return fmt.Errorf("(Server) PyInit: parameter length mismatch")
+	}
 
-	alloc.nextIndex = obj.nextIndex
+	in_0, err := gopygen.TypeConvIn(args[0], "string")
+	if err != nil {
+		return err
+	}
 
-	alloc.m = obj.m
-
-	alloc.clients = obj.clients
-
-	alloc.services = obj.services
-
-	alloc.t = obj.t
-
-	return alloc, nil
+	return obj.Init(in_0.(string))
 }
 
 func (obj *Server) PyGet_m() (py.Object, error) {
@@ -129,16 +134,11 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 1 {
+	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
 
-	in_0, err := gopygen.TypeConvIn(args[0], "string")
-	if err != nil {
-		return nil, err
-	}
-
-	res0 := s.Start(in_0.(string))
+	res0 := s.Start()
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

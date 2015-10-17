@@ -4,8 +4,11 @@ package server
 import (
 	"fmt"
 	"gem/encoding"
+	"gem/log"
+	"net"
 
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -16,6 +19,7 @@ var _ = gopygen.Dummy
 
 var ConnectionDef = py.Class{
 	Name:    "Connection",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Connection)(nil),
 }
 
@@ -37,7 +41,7 @@ func RegisterConnection(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Connection) Alloc() (*Connection, error) {
+func NewConnection(arg_0 net.Conn, arg_1 *log.Module) (*Connection, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -47,25 +51,32 @@ func (obj Connection) Alloc() (*Connection, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Connection)
-	// Copy fields
+	err = alloc.Init(arg_0, arg_1)
+	return alloc, err
+}
 
-	alloc.ReadBuffer = obj.ReadBuffer
+func (obj *Connection) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.WriteBuffer = obj.WriteBuffer
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 2 {
+		return fmt.Errorf("(Connection) PyInit: parameter length mismatch")
+	}
 
-	alloc.Read = obj.Read
+	in_0, err := gopygen.TypeConvIn(args[0], "net.Conn")
+	if err != nil {
+		return err
+	}
 
-	alloc.Write = obj.Write
+	in_1, err := gopygen.TypeConvIn(args[1], "*log.Module")
+	if err != nil {
+		return err
+	}
 
-	alloc.DisconnectChan = obj.DisconnectChan
-
-	alloc.log = obj.log
-
-	alloc.index = obj.index
-
-	alloc.conn = obj.conn
-
-	return alloc, nil
+	return obj.Init(in_0.(net.Conn), in_1.(*log.Module))
 }
 
 func (c *Connection) Py_Log(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

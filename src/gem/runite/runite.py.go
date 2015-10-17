@@ -6,6 +6,7 @@ import (
 	"gem/runite/format/rt3"
 
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -16,6 +17,7 @@ var _ = gopygen.Dummy
 
 var ContextDef = py.Class{
 	Name:    "Context",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Context)(nil),
 }
 
@@ -32,26 +34,6 @@ func RegisterContext(module *py.Module) error {
 	}
 
 	return nil
-}
-
-// Alloc allocates an object for use in python land.
-// Copies the member fields from this object to the newly allocated object
-// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Context) Alloc() (*Context, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	// Allocate
-	alloc_, err := ContextDef.Alloc(0)
-	if err != nil {
-		return nil, err
-	}
-	alloc := alloc_.(*Context)
-	// Copy fields
-
-	alloc.FS = obj.FS
-
-	return alloc, nil
 }
 
 func (obj *Context) PyGet_FS() (py.Object, error) {

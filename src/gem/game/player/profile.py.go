@@ -3,10 +3,10 @@ package player
 
 import (
 	"fmt"
-
 	"gem/game/position"
 
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -17,6 +17,7 @@ var _ = gopygen.Dummy
 
 var ProfileDef = py.Class{
 	Name:    "Profile",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Profile)(nil),
 }
 
@@ -33,30 +34,6 @@ func RegisterProfile(module *py.Module) error {
 	}
 
 	return nil
-}
-
-// Alloc allocates an object for use in python land.
-// Copies the member fields from this object to the newly allocated object
-// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Profile) Alloc() (*Profile, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	// Allocate
-	alloc_, err := ProfileDef.Alloc(0)
-	if err != nil {
-		return nil, err
-	}
-	alloc := alloc_.(*Profile)
-	// Copy fields
-
-	alloc.Username = obj.Username
-
-	alloc.Password = obj.Password
-
-	alloc.Rights = obj.Rights
-
-	return alloc, nil
 }
 
 func (obj *Profile) PyGet_Username() (py.Object, error) {
@@ -85,19 +62,6 @@ func (obj *Profile) PySet_Password(arg py.Object) error {
 	return nil
 }
 
-func (obj *Profile) PyGet_Pos() (py.Object, error) {
-	return gopygen.TypeConvOut(obj.Pos, "*position.Absolute")
-}
-
-func (obj *Profile) PySet_Pos(arg py.Object) error {
-	val, err := gopygen.TypeConvIn(arg, "*position.Absolute")
-	if err != nil {
-		return err
-	}
-	obj.Pos = val.(*position.Absolute)
-	return nil
-}
-
 func (obj *Profile) PyGet_Rights() (py.Object, error) {
 	return gopygen.TypeConvOut(obj.Rights, "Rights")
 }
@@ -108,6 +72,19 @@ func (obj *Profile) PySet_Rights(arg py.Object) error {
 		return err
 	}
 	obj.Rights = val.(Rights)
+	return nil
+}
+
+func (obj *Profile) PyGet_Pos() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.Pos, "*position.Absolute")
+}
+
+func (obj *Profile) PySet_Pos(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "*position.Absolute")
+	if err != nil {
+		return err
+	}
+	obj.Pos = val.(*position.Absolute)
 	return nil
 }
 

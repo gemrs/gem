@@ -22,6 +22,10 @@ type Session struct {
 	target encoding.Writer
 }
 
+func (s *Session) Init() error {
+	return nil
+}
+
 // SendMessage puts a message to the player's chat window
 func (session *Session) SendMessage(message string) {
 	session.target.WriteEncodable(&protocol.OutboundChatMessage{

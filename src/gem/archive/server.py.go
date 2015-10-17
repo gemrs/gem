@@ -7,9 +7,9 @@ import (
 	"gem/runite/format/rt3"
 	"net"
 
+	"github.com/qur/gopy/lib"
 	"gopkg.in/tomb.v2"
 
-	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -20,6 +20,7 @@ var _ = gopygen.Dummy
 
 var ServerDef = py.Class{
 	Name:    "Server",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Server)(nil),
 }
 
@@ -36,32 +37,6 @@ func RegisterServer(module *py.Module) error {
 	}
 
 	return nil
-}
-
-// Alloc allocates an object for use in python land.
-// Copies the member fields from this object to the newly allocated object
-// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Server) Alloc() (*Server, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	// Allocate
-	alloc_, err := ServerDef.Alloc(0)
-	if err != nil {
-		return nil, err
-	}
-	alloc := alloc_.(*Server)
-	// Copy fields
-
-	alloc.laddr = obj.laddr
-
-	alloc.ln = obj.ln
-
-	alloc.archives = obj.archives
-
-	alloc.t = obj.t
-
-	return alloc, nil
 }
 
 func (obj *Server) PyGet_laddr() (py.Object, error) {

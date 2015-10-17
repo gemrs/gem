@@ -49,6 +49,10 @@ type ProviderImpl struct {
 	py.BaseObject
 }
 
+func (p *ProviderImpl) Init() error {
+	return nil
+}
+
 func (p *ProviderImpl) LookupProfile(name, password string) (*player.Profile, AuthResponse) {
 	lock := py.NewLock()
 	defer lock.Unlock()

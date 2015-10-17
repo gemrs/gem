@@ -39,6 +39,12 @@ type Service interface {
 	NewClient(conn *Connection, service int) Client
 }
 
+func (s *Server) Init(laddr string) error {
+	s.laddr = laddr
+	s.clients = make(map[int]Client)
+	return nil
+}
+
 // SetService registers a service with it's selector id (see protocol.InboundServiceSelect)
 func (s *Server) SetService(selector int, service Service) {
 	if s.services == nil {
@@ -48,15 +54,12 @@ func (s *Server) SetService(selector int, service Service) {
 }
 
 // Start creates the tcp listener and starts the connection handler in a goroutine
-func (s *Server) Start(laddr string) (err error) {
+func (s *Server) Start() (err error) {
 	logInit.Do(func() {
 		logger = log.New("game")
 	})
 
 	logger.Info("Starting game server...")
-
-	s.laddr = laddr
-	s.clients = make(map[int]Client)
 
 	s.ln, err = net.Listen("tcp", s.laddr)
 	if err != nil {
@@ -145,7 +148,10 @@ func (s *Server) run() error {
 // buffers data into readBuffer and flushes data from writeBuffer.
 // if the disconnect channel is signalled, breaks the main loop and closes the connection
 func (s *Server) handle(netConn net.Conn) {
-	conn := newConnection(netConn, logger)
+	conn, err := NewConnection(netConn, logger)
+	if err != nil {
+		panic(err)
+	}
 	client, err := s.handshake(conn)
 	if err == nil && client != nil {
 		s.registerClient(client)

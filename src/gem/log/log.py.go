@@ -7,6 +7,7 @@ import (
 
 	"github.com/op/go-logging"
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -17,6 +18,7 @@ var _ = gopygen.Dummy
 
 var SysLogDef = py.Class{
 	Name:    "SysLog",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*SysLog)(nil),
 }
 
@@ -38,7 +40,7 @@ func RegisterSysLog(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj SysLog) Alloc() (*SysLog, error) {
+func NewSysLog() (*SysLog, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -48,11 +50,22 @@ func (obj SysLog) Alloc() (*SysLog, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*SysLog)
-	// Copy fields
+	err = alloc.Init()
+	return alloc, err
+}
 
-	alloc.redirectBuffer = obj.redirectBuffer
+func (obj *SysLog) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	return alloc, nil
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return fmt.Errorf("(SysLog) PyInit: parameter length mismatch")
+	}
+
+	return obj.Init()
 }
 
 func (obj *SysLog) PyGet_redirectBuffer() (py.Object, error) {
@@ -68,8 +81,22 @@ func (obj *SysLog) PySet_redirectBuffer(arg py.Object) error {
 	return nil
 }
 
+func (obj *SysLog) PyGet_modules() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.modules, "map[string]*Module")
+}
+
+func (obj *SysLog) PySet_modules(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "map[string]*Module")
+	if err != nil {
+		return err
+	}
+	obj.modules = val.(map[string]*Module)
+	return nil
+}
+
 var ModuleDef = py.Class{
 	Name:    "Module",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Module)(nil),
 }
 
@@ -91,7 +118,7 @@ func RegisterModule(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Module) Alloc() (*Module, error) {
+func NewModule() (*Module, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -101,15 +128,22 @@ func (obj Module) Alloc() (*Module, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Module)
-	// Copy fields
+	err = alloc.Init()
+	return alloc, err
+}
 
-	alloc.logger = obj.logger
+func (obj *Module) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.parent = obj.parent
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return fmt.Errorf("(Module) PyInit: parameter length mismatch")
+	}
 
-	alloc.prefix = obj.prefix
-
-	return alloc, nil
+	return obj.Init()
 }
 
 func (obj *Module) PyGet_logger() (py.Object, error) {

@@ -19,6 +19,7 @@ var _ = gopygen.Dummy
 
 var GameServiceDef = py.Class{
 	Name:    "GameService",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*GameService)(nil),
 }
 
@@ -40,7 +41,7 @@ func RegisterGameService(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj GameService) Alloc() (*GameService, error) {
+func NewGameService(arg_0 *runite.Context, arg_1 string, arg_2 auth.Provider) (*GameService, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -50,18 +51,11 @@ func (obj GameService) Alloc() (*GameService, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*GameService)
-	// Copy fields
-
-	alloc.runite = obj.runite
-
-	alloc.key = obj.key
-
-	alloc.auth = obj.auth
-
-	return alloc, nil
+	err = alloc.Init(arg_0, arg_1, arg_2)
+	return alloc, err
 }
 
-func (svc *GameService) Py_Init(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (obj *GameService) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -69,33 +63,25 @@ func (svc *GameService) Py_Init(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	_ = err
 	args := _args.Slice()
 	if len(args) != 3 {
-		return nil, fmt.Errorf("Py_Init: parameter length mismatch")
+		return fmt.Errorf("(GameService) PyInit: parameter length mismatch")
 	}
 
 	in_0, err := gopygen.TypeConvIn(args[0], "*runite.Context")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	in_1, err := gopygen.TypeConvIn(args[1], "string")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	in_2, err := gopygen.TypeConvIn(args[2], "auth.Provider")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	res0 := svc.Init(in_0.(*runite.Context), in_1.(string), in_2.(auth.Provider))
-
-	out_0, err := gopygen.TypeConvOut(res0, "error")
-	if err != nil {
-		return nil, err
-	}
-
-	return out_0, nil
-
+	return obj.Init(in_0.(*runite.Context), in_1.(string), in_2.(auth.Provider))
 }
 
 func (svc *GameService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

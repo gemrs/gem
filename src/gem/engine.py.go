@@ -4,9 +4,9 @@ package gem
 import (
 	"fmt"
 
+	"github.com/qur/gopy/lib"
 	"gopkg.in/tomb.v2"
 
-	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -17,6 +17,7 @@ var _ = gopygen.Dummy
 
 var EngineDef = py.Class{
 	Name:    "Engine",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Engine)(nil),
 }
 
@@ -33,26 +34,6 @@ func RegisterEngine(module *py.Module) error {
 	}
 
 	return nil
-}
-
-// Alloc allocates an object for use in python land.
-// Copies the member fields from this object to the newly allocated object
-// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Engine) Alloc() (*Engine, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	// Allocate
-	alloc_, err := EngineDef.Alloc(0)
-	if err != nil {
-		return nil, err
-	}
-	alloc := alloc_.(*Engine)
-	// Copy fields
-
-	alloc.t = obj.t
-
-	return alloc, nil
 }
 
 func (obj *Engine) PyGet_t() (py.Object, error) {

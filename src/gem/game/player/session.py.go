@@ -6,8 +6,8 @@ import (
 	"gem/encoding"
 
 	"github.com/gtank/isaac"
-
 	"github.com/qur/gopy/lib"
+
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -18,6 +18,7 @@ var _ = gopygen.Dummy
 
 var SessionDef = py.Class{
 	Name:    "Session",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Session)(nil),
 }
 
@@ -39,7 +40,7 @@ func RegisterSession(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Session) Alloc() (*Session, error) {
+func NewSession() (*Session, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -49,19 +50,22 @@ func (obj Session) Alloc() (*Session, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Session)
-	// Copy fields
+	err = alloc.Init()
+	return alloc, err
+}
 
-	alloc.RandIn = obj.RandIn
+func (obj *Session) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.RandOut = obj.RandOut
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return fmt.Errorf("(Session) PyInit: parameter length mismatch")
+	}
 
-	alloc.RandKey = obj.RandKey
-
-	alloc.SecureBlockSize = obj.SecureBlockSize
-
-	alloc.target = obj.target
-
-	return alloc, nil
+	return obj.Init()
 }
 
 func (obj *Session) PyGet_RandIn() (py.Object, error) {

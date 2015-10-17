@@ -22,6 +22,10 @@ type Engine struct {
 
 var EngineTick = 600 * time.Millisecond
 
+func (e *Engine) Init() error {
+	return nil
+}
+
 func (e *Engine) Start() {
 	logger = log.New("engine")
 	logger.Info("Starting engine")

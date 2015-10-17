@@ -29,28 +29,19 @@ type GameClient struct {
 }
 
 // NewGameClient constructs a new GameClient
-func NewGameClient(conn *server.Connection, svc *GameService) *GameClient {
-	session, err := player.Session{}.Alloc()
+func (client *GameClient) Init(conn *server.Connection, svc *GameService) error {
+	session, err := player.NewSession()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	session.SetTarget(conn)
 
-	client, err := GameClient{
-		Connection: conn,
-		service:    svc,
-		decode:     svc.handshake,
-		session:    session,
-	}.Alloc()
-	if err != nil {
-		panic(err)
-	}
-
-	// gopygen doesn't populate embedded fields
 	client.Connection = conn
-
-	return client
+	client.service = svc
+	client.decode = svc.handshake
+	client.session = session
+	return nil
 }
 
 func (client *GameClient) Session() *player.Session {

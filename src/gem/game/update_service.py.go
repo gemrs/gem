@@ -18,6 +18,7 @@ var _ = gopygen.Dummy
 
 var UpdateServiceDef = py.Class{
 	Name:    "UpdateService",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*UpdateService)(nil),
 }
 
@@ -39,7 +40,7 @@ func RegisterUpdateService(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj UpdateService) Alloc() (*UpdateService, error) {
+func NewUpdateService(arg_0 *runite.Context) (*UpdateService, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -49,18 +50,11 @@ func (obj UpdateService) Alloc() (*UpdateService, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*UpdateService)
-	// Copy fields
-
-	alloc.runite = obj.runite
-
-	alloc.queue = obj.queue
-
-	alloc.notify = obj.notify
-
-	return alloc, nil
+	err = alloc.Init(arg_0)
+	return alloc, err
 }
 
-func (svc *UpdateService) Py_Init(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (obj *UpdateService) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -68,19 +62,15 @@ func (svc *UpdateService) Py_Init(_args *py.Tuple, kwds *py.Dict) (py.Object, er
 	_ = err
 	args := _args.Slice()
 	if len(args) != 1 {
-		return nil, fmt.Errorf("Py_Init: parameter length mismatch")
+		return fmt.Errorf("(UpdateService) PyInit: parameter length mismatch")
 	}
 
 	in_0, err := gopygen.TypeConvIn(args[0], "*runite.Context")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	svc.Init(in_0.(*runite.Context))
-
-	py.None.Incref()
-	return py.None, nil
-
+	return obj.Init(in_0.(*runite.Context))
 }
 
 func (svc *UpdateService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

@@ -4,6 +4,7 @@ package game
 import (
 	"fmt"
 	"gem/encoding"
+	"gem/game/server"
 
 	"github.com/qur/gopy/lib"
 
@@ -17,6 +18,7 @@ var _ = gopygen.Dummy
 
 var GameClientDef = py.Class{
 	Name:    "GameClient",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*GameClient)(nil),
 }
 
@@ -38,7 +40,7 @@ func RegisterGameClient(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj GameClient) Alloc() (*GameClient, error) {
+func NewGameClient(arg_0 *server.Connection, arg_1 *GameService) (*GameClient, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -48,17 +50,32 @@ func (obj GameClient) Alloc() (*GameClient, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*GameClient)
-	// Copy fields
+	err = alloc.Init(arg_0, arg_1)
+	return alloc, err
+}
 
-	alloc.service = obj.service
+func (obj *GameClient) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.decode = obj.decode
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 2 {
+		return fmt.Errorf("(GameClient) PyInit: parameter length mismatch")
+	}
 
-	alloc.session = obj.session
+	in_0, err := gopygen.TypeConvIn(args[0], "*server.Connection")
+	if err != nil {
+		return err
+	}
 
-	alloc.profile = obj.profile
+	in_1, err := gopygen.TypeConvIn(args[1], "*GameService")
+	if err != nil {
+		return err
+	}
 
-	return alloc, nil
+	return obj.Init(in_0.(*server.Connection), in_1.(*GameService))
 }
 
 func (client *GameClient) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

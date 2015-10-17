@@ -44,7 +44,11 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log().Infof("new game client")
-	return NewGameClient(conn, svc)
+	client, err := NewGameClient(conn, svc)
+	if err != nil {
+		panic(err)
+	}
+	return client
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator

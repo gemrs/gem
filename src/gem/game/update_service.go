@@ -20,11 +20,12 @@ type UpdateService struct {
 	notify chan int
 }
 
-func (svc *UpdateService) Init(runite *runite.Context) {
+func (svc *UpdateService) Init(runite *runite.Context) error {
 	svc.runite = runite
 	svc.queue = newUpdateQueue()
 	svc.notify = make(chan int, 16)
 	go svc.processQueue()
+	return nil
 }
 
 func (svc *UpdateService) NewClient(conn *server.Connection, service int) server.Client {
