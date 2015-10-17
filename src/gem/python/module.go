@@ -14,7 +14,6 @@ func InitModule(name string, methods []py.Method) (*py.Module, error) {
 	if err != nil {
 		return module, err
 	}
-	fmt.Printf("registered %v\n", name)
 	gemModules[name] = module
 	return module, err
 }
