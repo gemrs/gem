@@ -60,8 +60,6 @@ func (p *UnknownPacket) Decode(buf io.Reader, flags interface{}) error {
 		p.SizeType = encoding.SzVar8
 	}
 
-	fmt.Printf("decoding ")
-
 	/* decode the payload */
 	p.Payload = make([]byte, p.Size)
 	i, err := buf.Read(p.Payload)

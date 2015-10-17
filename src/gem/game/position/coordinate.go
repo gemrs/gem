@@ -1,6 +1,8 @@
 package position
 
 import (
+	"fmt"
+
 	"github.com/qur/gopy/lib"
 )
 
@@ -21,6 +23,10 @@ type Absolute struct {
 	py.BaseObject
 
 	X, Y, Z int
+}
+
+func (pos *Absolute) String() string {
+	return fmt.Sprintf("Absolute<%v, %v, %v>", pos.X, pos.Y, pos.Z)
 }
 
 func (pos *Absolute) Init(x, y, z int) error {

@@ -112,8 +112,6 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 	client.decode = svc.decodePacket
 	go svc.packetConsumer(client)
 
-	fmt.Printf("logged in, pos: %V\n", client.Position())
-
 	event.Dispatcher.Raise(event.PlayerLogin, client)
 	go func() {
 		client.WaitForDisconnect()
