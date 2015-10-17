@@ -2,6 +2,7 @@ package position
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/qur/gopy/lib"
 )
@@ -13,9 +14,10 @@ const (
 
 //go:generate gopygen -type Absolute -type Sector -type Region -type Local $GOFILE
 
-// Locatable is an object which has an absolute position in the world
-type Locatable interface {
+// Positionable is an object which has an absolute position in the world
+type Positionable interface {
 	Position() *Absolute
+	SetPosition(*Absolute)
 }
 
 // Absolute is a coordinate mapping to a single tile within the world
@@ -47,6 +49,16 @@ func (pos *Absolute) Sector() *Sector {
 		panic(err)
 	}
 	return sector
+}
+
+// RegionOf returns a Region centered on this position
+func (pos *Absolute) RegionOf() *Region {
+	region, err := NewRegion(nil)
+	if err != nil {
+		panic(err)
+	}
+	region.Rebase(pos)
+	return region
 }
 
 // LocalTo calculates the local coordinates of an Absolute relative to a region
@@ -87,6 +99,13 @@ type Region struct {
 }
 
 func (region *Region) Init(origin *Sector) error {
+	if origin == nil {
+		sector, err := NewSector(0, 0, 0)
+		if err != nil {
+			return err
+		}
+		origin = sector
+	}
 	region.Origin = origin
 	return nil
 }
@@ -102,6 +121,15 @@ func (region *Region) Rebase(absolute *Absolute) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// SectorDelta calculates the delta between two regions in terms of sectors
+func (region *Region) SectorDelta(other *Region) (x, y, z int) {
+	x = int(math.Abs(float64(other.Origin.X - region.Origin.X)))
+	y = int(math.Abs(float64(other.Origin.Y - region.Origin.Y)))
+	z = int(math.Abs(float64(other.Origin.Z - region.Origin.Z)))
+
+	return x, y, z
 }
 
 // Local is a coordinate relative to the base of a Region

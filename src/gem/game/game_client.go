@@ -16,6 +16,10 @@ import (
 // the underlying buffer's read pointer is not altered.
 type decodeFunc func(*GameClient) error
 
+const (
+	PlayerRegionUpdate = (1 << iota)
+)
+
 // GameClient is a client which serves players
 type GameClient struct {
 	py.BaseObject
@@ -26,6 +30,8 @@ type GameClient struct {
 
 	session *player.Session
 	profile *player.Profile
+	region  *position.Region
+	flags   uint32
 }
 
 // NewGameClient constructs a new GameClient
@@ -41,7 +47,9 @@ func (client *GameClient) Init(conn *server.Connection, svc *GameService) error 
 	client.service = svc
 	client.decode = svc.handshake
 	client.session = session
-	return nil
+
+	client.region, err = position.NewRegion(nil)
+	return err
 }
 
 func (client *GameClient) Session() *player.Session {
@@ -65,6 +73,17 @@ func (client *GameClient) Decode() error {
 // Position returns the absolute position of the player
 func (client *GameClient) Position() *position.Absolute {
 	return client.Profile().Pos
+}
+
+// SetPosition warps the player to a given location
+func (client *GameClient) SetPosition(pos *position.Absolute) {
+	client.Profile().Pos = pos
+	oldRegion := client.region
+	client.region = pos.RegionOf()
+	dx, dy, dz := client.region.SectorDelta(oldRegion)
+	if dx >= 5 || dy >= 5 || dz >= 1 {
+		client.flags |= PlayerRegionUpdate
+	}
 }
 
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator

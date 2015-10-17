@@ -8,7 +8,7 @@ import (
 
 // An Entity is a 'thing' within the world, with a position, and an index.
 type Entity interface {
-	position.Locatable
+	position.Positionable
 }
 
 // Player is an Entity representing a player
