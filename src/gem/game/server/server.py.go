@@ -65,12 +65,17 @@ func (obj *Server) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Server) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(string))
+	err = obj.Init(in_0.(string))
+
+	args[0].Decref()
+
+	return err
 }
 
 func (obj *Server) PyGet_m() (py.Object, error) {
@@ -78,11 +83,26 @@ func (obj *Server) PyGet_m() (py.Object, error) {
 }
 
 func (obj *Server) PySet_m(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "sync.Mutex")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.m
 	obj.m = val.(sync.Mutex)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -91,11 +111,26 @@ func (obj *Server) PyGet_t() (py.Object, error) {
 }
 
 func (obj *Server) PySet_t(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "tomb.Tomb")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.t
 	obj.t = val.(tomb.Tomb)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -109,18 +144,29 @@ func (s *Server) Py_SetService(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 	if len(args) != 2 {
 		return nil, fmt.Errorf("Py_SetService: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "int")
 	if err != nil {
 		return nil, err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "Service")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	s.SetService(in_0.(int), in_1.(Service))
+
+	// Remove local references
+
+	args[0].Decref()
+
+	args[1].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -137,8 +183,13 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := s.Start()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {
@@ -159,8 +210,13 @@ func (s *Server) Py_Stop(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Stop: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := s.Stop()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

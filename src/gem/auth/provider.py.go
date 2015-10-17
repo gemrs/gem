@@ -63,7 +63,9 @@ func (obj *ProviderImpl) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(ProviderImpl) PyInit: parameter length mismatch")
 	}
 
-	return obj.Init()
+	err = obj.Init()
+
+	return err
 }
 
 func (p *ProviderImpl) Py_LookupProfile(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
@@ -76,18 +78,29 @@ func (p *ProviderImpl) Py_LookupProfile(_args *py.Tuple, kwds *py.Dict) (py.Obje
 	if len(args) != 2 {
 		return nil, fmt.Errorf("Py_LookupProfile: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0, res1 := p.LookupProfile(in_0.(string), in_1.(string))
+
+	// Remove local references
+
+	args[0].Decref()
+
+	args[1].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "*player.Profile")
 	if err != nil {

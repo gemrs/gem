@@ -66,17 +66,25 @@ func (obj *GameClient) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(GameClient) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*server.Connection")
 	if err != nil {
 		return err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "*GameService")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(*server.Connection), in_1.(*GameService))
+	err = obj.Init(in_0.(*server.Connection), in_1.(*GameService))
+
+	args[0].Decref()
+
+	args[1].Decref()
+
+	return err
 }
 
 func (client *GameClient) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
@@ -89,8 +97,13 @@ func (client *GameClient) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object,
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Session: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := client.Session()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*player.Session")
 	if err != nil {
@@ -111,8 +124,13 @@ func (client *GameClient) Py_Profile(_args *py.Tuple, kwds *py.Dict) (py.Object,
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Profile: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := client.Profile()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*player.Profile")
 	if err != nil {
@@ -133,8 +151,13 @@ func (client *GameClient) Py_Conn(_args *py.Tuple, kwds *py.Dict) (py.Object, er
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Conn: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := client.Conn()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*server.Connection")
 	if err != nil {
@@ -155,8 +178,13 @@ func (client *GameClient) Py_Decode(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Decode: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := client.Decode()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {
@@ -177,8 +205,13 @@ func (client *GameClient) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Position: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := client.Position()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*position.Absolute")
 	if err != nil {
@@ -199,13 +232,21 @@ func (client *GameClient) Py_SetPosition(_args *py.Tuple, kwds *py.Dict) (py.Obj
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_SetPosition: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*position.Absolute")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	client.SetPosition(in_0.(*position.Absolute))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -222,13 +263,21 @@ func (client *GameClient) Py_Encode(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Encode: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Encodable")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := client.Encode(in_0.(encoding.Encodable))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

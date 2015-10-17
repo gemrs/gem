@@ -41,11 +41,26 @@ func (obj *Profile) PyGet_Username() (py.Object, error) {
 }
 
 func (obj *Profile) PySet_Username(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "string")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Username
 	obj.Username = val.(string)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -54,11 +69,26 @@ func (obj *Profile) PyGet_Password() (py.Object, error) {
 }
 
 func (obj *Profile) PySet_Password(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "string")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Password
 	obj.Password = val.(string)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -67,11 +97,26 @@ func (obj *Profile) PyGet_Rights() (py.Object, error) {
 }
 
 func (obj *Profile) PySet_Rights(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "Rights")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Rights
 	obj.Rights = val.(Rights)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -80,11 +125,26 @@ func (obj *Profile) PyGet_Pos() (py.Object, error) {
 }
 
 func (obj *Profile) PySet_Pos(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*position.Absolute")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Pos
 	obj.Pos = val.(*position.Absolute)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -98,8 +158,13 @@ func (p *Profile) Py_String(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_String: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := p.String()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "string")
 	if err != nil {

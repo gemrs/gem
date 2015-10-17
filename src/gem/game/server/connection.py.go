@@ -66,17 +66,25 @@ func (obj *Connection) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Connection) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "net.Conn")
 	if err != nil {
 		return err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "*log.Module")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(net.Conn), in_1.(*log.Module))
+	err = obj.Init(in_0.(net.Conn), in_1.(*log.Module))
+
+	args[0].Decref()
+
+	args[1].Decref()
+
+	return err
 }
 
 func (c *Connection) Py_Log(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
@@ -89,8 +97,13 @@ func (c *Connection) Py_Log(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Log: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := c.Log()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*log.Module")
 	if err != nil {
@@ -111,8 +124,13 @@ func (conn *Connection) Py_WaitForDisconnect(_args *py.Tuple, kwds *py.Dict) (py
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_WaitForDisconnect: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	conn.WaitForDisconnect()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil
@@ -129,8 +147,13 @@ func (conn *Connection) Py_IsDisconnecting(_args *py.Tuple, kwds *py.Dict) (py.O
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_IsDisconnecting: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := conn.IsDisconnecting()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "bool")
 	if err != nil {
@@ -151,8 +174,13 @@ func (conn *Connection) Py_Disconnect(_args *py.Tuple, kwds *py.Dict) (py.Object
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Disconnect: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	conn.Disconnect()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil
@@ -169,8 +197,13 @@ func (conn *Connection) Py_Index(_args *py.Tuple, kwds *py.Dict) (py.Object, err
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Index: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := conn.Index()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "int")
 	if err != nil {
@@ -191,13 +224,21 @@ func (conn *Connection) Py_SetIndex(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_SetIndex: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "int")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	conn.SetIndex(in_0.(int))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -214,13 +255,21 @@ func (conn *Connection) Py_WriteEncodable(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_WriteEncodable: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Encodable")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	conn.WriteEncodable(in_0.(encoding.Encodable))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -237,8 +286,13 @@ func (conn *Connection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) (py.
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_flushWriteBuffer: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := conn.flushWriteBuffer()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {
@@ -259,8 +313,13 @@ func (conn *Connection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_fillReadBuffer: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := conn.fillReadBuffer()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

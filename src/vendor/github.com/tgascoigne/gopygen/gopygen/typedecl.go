@@ -61,11 +61,26 @@ func (obj *{{$ident}}) PyGet_{{.Name}}() (py.Object, error) {
 }
 
 func (obj *{{$ident}}) PySet_{{.Name}}(arg py.Object) error {
+    arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "{{.Type}}")
 	if err != nil {
 		return err
 	}
+
+    if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+	    val.(py.Object).Incref()
+    }
+    arg.Decref()
+
+    var tmp interface{}
+    tmp = &obj.{{.Name}}
 	obj.{{.Name}} = val.({{.Type}})
+
+    if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+        oldObj.Decref()
+    }
 	return nil
 }
   {{end}}
@@ -86,13 +101,20 @@ func (obj *{{$recv}}) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	}
 {{with .Params.Fields}}
   {{range $i, $param := .}}
+    args[{{$i}}].Incref()
 	in_{{$i}}, err := gopygen.TypeConvIn(args[{{$i}}], "{{$param.Type}}")
 	if err != nil {
 		return err
 	}
   {{end}}
 {{end}}
-return obj.Init({{.Params.ParamList "in_"}})
+    err = obj.Init({{.Params.ParamList "in_"}})
+{{with .Params.Fields}}
+  {{range $i, $param := .}}
+    args[{{$i}}].Decref()
+  {{end}}
+{{end}}
+    return err
 }
 `
 

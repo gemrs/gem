@@ -44,11 +44,26 @@ func (obj *Server) PyGet_laddr() (py.Object, error) {
 }
 
 func (obj *Server) PySet_laddr(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "string")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.laddr
 	obj.laddr = val.(string)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -57,11 +72,26 @@ func (obj *Server) PyGet_ln() (py.Object, error) {
 }
 
 func (obj *Server) PySet_ln(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "net.Listener")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.ln
 	obj.ln = val.(net.Listener)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -70,11 +100,26 @@ func (obj *Server) PyGet_archives() (py.Object, error) {
 }
 
 func (obj *Server) PySet_archives(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*rt3.ArchiveFS")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.archives
 	obj.archives = val.(*rt3.ArchiveFS)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -83,11 +128,26 @@ func (obj *Server) PyGet_t() (py.Object, error) {
 }
 
 func (obj *Server) PySet_t(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "tomb.Tomb")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.t
 	obj.t = val.(tomb.Tomb)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -101,18 +161,29 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "*runite.Context")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := s.Start(in_0.(string), in_1.(*runite.Context))
+
+	// Remove local references
+
+	args[0].Decref()
+
+	args[1].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {
@@ -133,8 +204,13 @@ func (s *Server) Py_Stop(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Stop: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := s.Stop()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

@@ -66,22 +66,33 @@ func (obj *GameService) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(GameService) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*runite.Context")
 	if err != nil {
 		return err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "string")
 	if err != nil {
 		return err
 	}
 
+	args[2].Incref()
 	in_2, err := gopygen.TypeConvIn(args[2], "auth.Provider")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(*runite.Context), in_1.(string), in_2.(auth.Provider))
+	err = obj.Init(in_0.(*runite.Context), in_1.(string), in_2.(auth.Provider))
+
+	args[0].Decref()
+
+	args[1].Decref()
+
+	args[2].Decref()
+
+	return err
 }
 
 func (svc *GameService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
@@ -94,18 +105,29 @@ func (svc *GameService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object,
 	if len(args) != 2 {
 		return nil, fmt.Errorf("Py_NewClient: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*server.Connection")
 	if err != nil {
 		return nil, err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "int")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := svc.NewClient(in_0.(*server.Connection), in_1.(int))
+
+	// Remove local references
+
+	args[0].Decref()
+
+	args[1].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "server.Client")
 	if err != nil {
@@ -126,13 +148,21 @@ func (svc *GameService) Py_decodePacket(_args *py.Tuple, kwds *py.Dict) (py.Obje
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_decodePacket: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*GameClient")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := svc.decodePacket(in_0.(*GameClient))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {
@@ -153,13 +183,21 @@ func (svc *GameService) Py_packetConsumer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_packetConsumer: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*GameClient")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	svc.packetConsumer(in_0.(*GameClient))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil

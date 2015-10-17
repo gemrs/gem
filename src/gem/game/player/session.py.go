@@ -65,7 +65,9 @@ func (obj *Session) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Session) PyInit: parameter length mismatch")
 	}
 
-	return obj.Init()
+	err = obj.Init()
+
+	return err
 }
 
 func (obj *Session) PyGet_RandIn() (py.Object, error) {
@@ -73,11 +75,26 @@ func (obj *Session) PyGet_RandIn() (py.Object, error) {
 }
 
 func (obj *Session) PySet_RandIn(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "isaac.ISAAC")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.RandIn
 	obj.RandIn = val.(isaac.ISAAC)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -86,11 +103,26 @@ func (obj *Session) PyGet_RandOut() (py.Object, error) {
 }
 
 func (obj *Session) PySet_RandOut(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "isaac.ISAAC")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.RandOut
 	obj.RandOut = val.(isaac.ISAAC)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -99,11 +131,26 @@ func (obj *Session) PyGet_RandKey() (py.Object, error) {
 }
 
 func (obj *Session) PySet_RandKey(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "[]int32")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.RandKey
 	obj.RandKey = val.([]int32)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -112,11 +159,26 @@ func (obj *Session) PyGet_SecureBlockSize() (py.Object, error) {
 }
 
 func (obj *Session) PySet_SecureBlockSize(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.SecureBlockSize
 	obj.SecureBlockSize = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -125,11 +187,26 @@ func (obj *Session) PyGet_target() (py.Object, error) {
 }
 
 func (obj *Session) PySet_target(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "encoding.Writer")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.target
 	obj.target = val.(encoding.Writer)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -143,13 +220,21 @@ func (session *Session) Py_SendMessage(_args *py.Tuple, kwds *py.Dict) (py.Objec
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_SendMessage: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	session.SendMessage(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -166,13 +251,21 @@ func (session *Session) Py_SetTarget(_args *py.Tuple, kwds *py.Dict) (py.Object,
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_SetTarget: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Writer")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	session.SetTarget(in_0.(encoding.Writer))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil

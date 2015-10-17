@@ -41,11 +41,26 @@ func (obj *Context) PyGet_FS() (py.Object, error) {
 }
 
 func (obj *Context) PySet_FS(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*rt3.JagFS")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.FS
 	obj.FS = val.(*rt3.JagFS)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -59,18 +74,29 @@ func (r *Context) Py_Unpack(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("Py_Unpack: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "[]string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := r.Unpack(in_0.(string), in_1.([]string))
+
+	// Remove local references
+
+	args[0].Decref()
+
+	args[1].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "error")
 	if err != nil {

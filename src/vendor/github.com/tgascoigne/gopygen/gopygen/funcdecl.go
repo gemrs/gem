@@ -20,17 +20,29 @@ func ({{$recv}}) Py_{{.Name}}(_args *py.Tuple, kwds *py.Dict) (py.Object, error)
 	if len(args) != {{len .Params.Fields}} {
 		return nil, fmt.Errorf("Py_{{.Name}}: parameter length mismatch")
 	}
+    // Convert parameters
 {{with .Params.Fields}}
   {{range $i, $param := .}}
+    args[{{$i}}].Incref()
 	in_{{$i}}, err := gopygen.TypeConvIn(args[{{$i}}], "{{$param.Type}}")
 	if err != nil {
 		return nil, err
 	}
   {{end}}
 {{end}}
+
+    // Make the function call
 {{with .Results}}
   {{if gt $num_results 0}}
     {{.VarList "res"}} := {{end}}{{end}}{{$recv.Name}}.{{.Name}}({{.Params.ParamList "in_"}})
+
+    // Remove local references
+{{with .Params.Fields}}
+  {{range $i, $param := .}}
+    args[{{$i}}].Decref()
+  {{end}}
+{{end}}
+
 {{with .Results}}
   {{if eq $num_results 0}}
 	py.None.Incref()

@@ -64,7 +64,9 @@ func (obj *Engine) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Engine) PyInit: parameter length mismatch")
 	}
 
-	return obj.Init()
+	err = obj.Init()
+
+	return err
 }
 
 func (obj *Engine) PyGet_t() (py.Object, error) {
@@ -72,11 +74,26 @@ func (obj *Engine) PyGet_t() (py.Object, error) {
 }
 
 func (obj *Engine) PySet_t(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "tomb.Tomb")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.t
 	obj.t = val.(tomb.Tomb)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -90,8 +107,13 @@ func (e *Engine) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Start: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	e.Start()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil
@@ -108,8 +130,13 @@ func (e *Engine) Py_Join(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Join: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := e.Join()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "bool")
 	if err != nil {
@@ -130,8 +157,13 @@ func (e *Engine) Py_Stop(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Stop: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	e.Stop()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil

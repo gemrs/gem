@@ -65,7 +65,9 @@ func (obj *SysLog) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(SysLog) PyInit: parameter length mismatch")
 	}
 
-	return obj.Init()
+	err = obj.Init()
+
+	return err
 }
 
 func (obj *SysLog) PyGet_redirectBuffer() (py.Object, error) {
@@ -73,11 +75,26 @@ func (obj *SysLog) PyGet_redirectBuffer() (py.Object, error) {
 }
 
 func (obj *SysLog) PySet_redirectBuffer(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*bytes.Buffer")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.redirectBuffer
 	obj.redirectBuffer = val.(*bytes.Buffer)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -86,11 +103,26 @@ func (obj *SysLog) PyGet_modules() (py.Object, error) {
 }
 
 func (obj *SysLog) PySet_modules(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "map[string]*Module")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.modules
 	obj.modules = val.(map[string]*Module)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -143,7 +175,9 @@ func (obj *Module) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Module) PyInit: parameter length mismatch")
 	}
 
-	return obj.Init()
+	err = obj.Init()
+
+	return err
 }
 
 func (obj *Module) PyGet_logger() (py.Object, error) {
@@ -151,11 +185,26 @@ func (obj *Module) PyGet_logger() (py.Object, error) {
 }
 
 func (obj *Module) PySet_logger(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*logging.Logger")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.logger
 	obj.logger = val.(*logging.Logger)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -164,11 +213,26 @@ func (obj *Module) PyGet_parent() (py.Object, error) {
 }
 
 func (obj *Module) PySet_parent(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*Module")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.parent
 	obj.parent = val.(*Module)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -177,11 +241,26 @@ func (obj *Module) PyGet_prefix() (py.Object, error) {
 }
 
 func (obj *Module) PySet_prefix(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "string")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.prefix
 	obj.prefix = val.(string)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -195,8 +274,13 @@ func (log *SysLog) Py_BeginRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_BeginRedirect: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	log.BeginRedirect()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil
@@ -213,8 +297,13 @@ func (log *SysLog) Py_EndRedirect(_args *py.Tuple, kwds *py.Dict) (py.Object, er
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_EndRedirect: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	log.EndRedirect()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil
@@ -231,13 +320,21 @@ func (log *SysLog) Py_Module(_args *py.Tuple, kwds *py.Dict) (py.Object, error) 
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Module: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := log.Module(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Module")
 	if err != nil {
@@ -258,13 +355,21 @@ func (log *Module) Py_SubModule(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_SubModule: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := log.SubModule(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Module")
 	if err != nil {
@@ -285,13 +390,21 @@ func (log *Module) Py_Critical(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Critical: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	log.Critical(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -308,13 +421,21 @@ func (log *Module) Py_Debug(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Debug: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	log.Debug(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -331,13 +452,21 @@ func (log *Module) Py_Error(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Error: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	log.Error(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -354,13 +483,21 @@ func (log *Module) Py_Fatal(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Fatal: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	log.Fatal(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -377,13 +514,21 @@ func (log *Module) Py_Info(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Info: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	log.Info(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -400,13 +545,21 @@ func (log *Module) Py_Notice(_args *py.Tuple, kwds *py.Dict) (py.Object, error) 
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Notice: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	log.Notice(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -423,13 +576,21 @@ func (log *Module) Py_Warning(_args *py.Tuple, kwds *py.Dict) (py.Object, error)
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Warning: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "string")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	log.Warning(in_0.(string))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil

@@ -84,6 +84,7 @@ func (client *GameClient) SetPosition(pos *position.Absolute) {
 	if dx >= 5 || dy >= 5 || dz >= 1 {
 		client.flags |= PlayerRegionUpdate
 	}
+	client.Log().Debugf("Warping to %v", pos)
 }
 
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator

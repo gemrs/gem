@@ -65,12 +65,17 @@ func (obj *UpdateService) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(UpdateService) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*runite.Context")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(*runite.Context))
+	err = obj.Init(in_0.(*runite.Context))
+
+	args[0].Decref()
+
+	return err
 }
 
 func (svc *UpdateService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
@@ -83,18 +88,29 @@ func (svc *UpdateService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Objec
 	if len(args) != 2 {
 		return nil, fmt.Errorf("Py_NewClient: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*server.Connection")
 	if err != nil {
 		return nil, err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "int")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := svc.NewClient(in_0.(*server.Connection), in_1.(int))
+
+	// Remove local references
+
+	args[0].Decref()
+
+	args[1].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "server.Client")
 	if err != nil {
@@ -115,8 +131,13 @@ func (svc *UpdateService) Py_processQueue(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_processQueue: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	svc.processQueue()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil

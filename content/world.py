@@ -7,6 +7,10 @@ logger = gem.syslog.Module(__name__)
 class World(object):
     players = {}
 
+    @event.callback(gem.event.PlayerLoadProfile)
+    def load_profile(self, player):
+        player.SetPosition(player.Profile().Pos)
+
     @event.callback(gem.event.PlayerLogin)
     def register_player(self, player):
         self.players[player.Index()] = player

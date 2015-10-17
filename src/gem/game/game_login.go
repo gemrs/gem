@@ -94,6 +94,8 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 
 	client.profile = profile
 
+	event.Dispatcher.Raise(event.PlayerLoadProfile, client)
+
 	if responseCode != auth.AuthOkay {
 		client.Conn().Write <- &protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),

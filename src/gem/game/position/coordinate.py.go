@@ -63,22 +63,33 @@ func (obj *Absolute) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Absolute) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "int")
 	if err != nil {
 		return err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "int")
 	if err != nil {
 		return err
 	}
 
+	args[2].Incref()
 	in_2, err := gopygen.TypeConvIn(args[2], "int")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(int), in_1.(int), in_2.(int))
+	err = obj.Init(in_0.(int), in_1.(int), in_2.(int))
+
+	args[0].Decref()
+
+	args[1].Decref()
+
+	args[2].Decref()
+
+	return err
 }
 
 func (obj *Absolute) PyGet_X() (py.Object, error) {
@@ -86,11 +97,26 @@ func (obj *Absolute) PyGet_X() (py.Object, error) {
 }
 
 func (obj *Absolute) PySet_X(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.X
 	obj.X = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -99,11 +125,26 @@ func (obj *Absolute) PyGet_Y() (py.Object, error) {
 }
 
 func (obj *Absolute) PySet_Y(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Y
 	obj.Y = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -112,11 +153,26 @@ func (obj *Absolute) PyGet_Z() (py.Object, error) {
 }
 
 func (obj *Absolute) PySet_Z(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Z
 	obj.Z = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -169,22 +225,33 @@ func (obj *Sector) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Sector) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "int")
 	if err != nil {
 		return err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "int")
 	if err != nil {
 		return err
 	}
 
+	args[2].Incref()
 	in_2, err := gopygen.TypeConvIn(args[2], "int")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(int), in_1.(int), in_2.(int))
+	err = obj.Init(in_0.(int), in_1.(int), in_2.(int))
+
+	args[0].Decref()
+
+	args[1].Decref()
+
+	args[2].Decref()
+
+	return err
 }
 
 func (obj *Sector) PyGet_X() (py.Object, error) {
@@ -192,11 +259,26 @@ func (obj *Sector) PyGet_X() (py.Object, error) {
 }
 
 func (obj *Sector) PySet_X(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.X
 	obj.X = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -205,11 +287,26 @@ func (obj *Sector) PyGet_Y() (py.Object, error) {
 }
 
 func (obj *Sector) PySet_Y(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Y
 	obj.Y = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -218,11 +315,26 @@ func (obj *Sector) PyGet_Z() (py.Object, error) {
 }
 
 func (obj *Sector) PySet_Z(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Z
 	obj.Z = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -275,12 +387,17 @@ func (obj *Region) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Region) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*Sector")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(*Sector))
+	err = obj.Init(in_0.(*Sector))
+
+	args[0].Decref()
+
+	return err
 }
 
 func (obj *Region) PyGet_Origin() (py.Object, error) {
@@ -288,11 +405,26 @@ func (obj *Region) PyGet_Origin() (py.Object, error) {
 }
 
 func (obj *Region) PySet_Origin(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*Sector")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Origin
 	obj.Origin = val.(*Sector)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -345,27 +477,41 @@ func (obj *Local) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return fmt.Errorf("(Local) PyInit: parameter length mismatch")
 	}
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "int")
 	if err != nil {
 		return err
 	}
 
+	args[1].Incref()
 	in_1, err := gopygen.TypeConvIn(args[1], "int")
 	if err != nil {
 		return err
 	}
 
+	args[2].Incref()
 	in_2, err := gopygen.TypeConvIn(args[2], "int")
 	if err != nil {
 		return err
 	}
 
+	args[3].Incref()
 	in_3, err := gopygen.TypeConvIn(args[3], "*Region")
 	if err != nil {
 		return err
 	}
 
-	return obj.Init(in_0.(int), in_1.(int), in_2.(int), in_3.(*Region))
+	err = obj.Init(in_0.(int), in_1.(int), in_2.(int), in_3.(*Region))
+
+	args[0].Decref()
+
+	args[1].Decref()
+
+	args[2].Decref()
+
+	args[3].Decref()
+
+	return err
 }
 
 func (obj *Local) PyGet_X() (py.Object, error) {
@@ -373,11 +519,26 @@ func (obj *Local) PyGet_X() (py.Object, error) {
 }
 
 func (obj *Local) PySet_X(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.X
 	obj.X = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -386,11 +547,26 @@ func (obj *Local) PyGet_Y() (py.Object, error) {
 }
 
 func (obj *Local) PySet_Y(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Y
 	obj.Y = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -399,11 +575,26 @@ func (obj *Local) PyGet_Z() (py.Object, error) {
 }
 
 func (obj *Local) PySet_Z(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "int")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Z
 	obj.Z = val.(int)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -412,11 +603,26 @@ func (obj *Local) PyGet_Region() (py.Object, error) {
 }
 
 func (obj *Local) PySet_Region(arg py.Object) error {
+	arg.Incref()
 	val, err := gopygen.TypeConvIn(arg, "*Region")
 	if err != nil {
 		return err
 	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Region
 	obj.Region = val.(*Region)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
 	return nil
 }
 
@@ -430,8 +636,13 @@ func (pos *Absolute) Py_String(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_String: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := pos.String()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "string")
 	if err != nil {
@@ -452,8 +663,13 @@ func (pos *Absolute) Py_Sector(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Sector: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := pos.Sector()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Sector")
 	if err != nil {
@@ -474,8 +690,13 @@ func (pos *Absolute) Py_RegionOf(_args *py.Tuple, kwds *py.Dict) (py.Object, err
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_RegionOf: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := pos.RegionOf()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Region")
 	if err != nil {
@@ -496,13 +717,21 @@ func (pos *Absolute) Py_LocalTo(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_LocalTo: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*Region")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0 := pos.LocalTo(in_0.(*Region))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Local")
 	if err != nil {
@@ -523,13 +752,21 @@ func (region *Region) Py_Rebase(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_Rebase: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*Absolute")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	region.Rebase(in_0.(*Absolute))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	py.None.Incref()
 	return py.None, nil
@@ -546,13 +783,21 @@ func (region *Region) Py_SectorDelta(_args *py.Tuple, kwds *py.Dict) (py.Object,
 	if len(args) != 1 {
 		return nil, fmt.Errorf("Py_SectorDelta: parameter length mismatch")
 	}
+	// Convert parameters
 
+	args[0].Incref()
 	in_0, err := gopygen.TypeConvIn(args[0], "*Region")
 	if err != nil {
 		return nil, err
 	}
 
+	// Make the function call
+
 	res0, res1, res2 := region.SectorDelta(in_0.(*Region))
+
+	// Remove local references
+
+	args[0].Decref()
 
 	out_0, err := gopygen.TypeConvOut(res0, "int")
 	if err != nil {
@@ -583,8 +828,13 @@ func (local *Local) Py_Absolute(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if len(args) != 0 {
 		return nil, fmt.Errorf("Py_Absolute: parameter length mismatch")
 	}
+	// Convert parameters
+
+	// Make the function call
 
 	res0 := local.Absolute()
+
+	// Remove local references
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Absolute")
 	if err != nil {
