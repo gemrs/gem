@@ -7,6 +7,8 @@ import (
 	"go/parser"
 	"go/token"
 	"log"
+	"os"
+	"strings"
 
 	"golang.org/x/tools/imports"
 )
@@ -34,7 +36,12 @@ func Process(filename string, types []string, funcFilter, fieldFilter FilterFunc
 	file.ResolveConstructors()
 	fmt.Fprintf(&filebuffer, "%s", file)
 
-	return doImports(filename, filebuffer.String()), nil
+	generated := doImports(filename, filebuffer.String())
+	if os.Getenv("GO15VENDOREXPERIMENT") == "1" {
+		// Naive support for GO15VENDOREXPERIMENT - just remove "vendor/" in imports
+		generated = strings.Replace(generated, "vendor/", "", -1)
+	}
+	return generated, nil
 }
 
 func doImports(filename, in string) string {

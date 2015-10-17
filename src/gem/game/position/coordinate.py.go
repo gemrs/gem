@@ -420,6 +420,28 @@ func (obj *Local) PySet_Region(arg py.Object) error {
 	return nil
 }
 
+func (pos *Absolute) Py_String(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_String: parameter length mismatch")
+	}
+
+	res0 := pos.String()
+
+	out_0, err := gopygen.TypeConvOut(res0, "string")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
+}
+
 func (pos *Absolute) Py_Sector(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -434,6 +456,28 @@ func (pos *Absolute) Py_Sector(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 	res0 := pos.Sector()
 
 	out_0, err := gopygen.TypeConvOut(res0, "*Sector")
+	if err != nil {
+		return nil, err
+	}
+
+	return out_0, nil
+
+}
+
+func (pos *Absolute) Py_RegionOf(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_RegionOf: parameter length mismatch")
+	}
+
+	res0 := pos.RegionOf()
+
+	out_0, err := gopygen.TypeConvOut(res0, "*Region")
 	if err != nil {
 		return nil, err
 	}
@@ -489,6 +533,43 @@ func (region *Region) Py_Rebase(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 
 	py.None.Incref()
 	return py.None, nil
+
+}
+
+func (region *Region) Py_SectorDelta(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SectorDelta: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "*Region")
+	if err != nil {
+		return nil, err
+	}
+
+	res0, res1, res2 := region.SectorDelta(in_0.(*Region))
+
+	out_0, err := gopygen.TypeConvOut(res0, "int")
+	if err != nil {
+		return nil, err
+	}
+
+	out_1, err := gopygen.TypeConvOut(res1, "int")
+	if err != nil {
+		return nil, err
+	}
+
+	out_2, err := gopygen.TypeConvOut(res2, "int")
+	if err != nil {
+		return nil, err
+	}
+
+	return py.PackTuple(out_0, out_1, out_2)
 
 }
 

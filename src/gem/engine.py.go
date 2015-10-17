@@ -36,6 +36,37 @@ func RegisterEngine(module *py.Module) error {
 	return nil
 }
 
+// Alloc allocates an object for use in python land.
+// Copies the member fields from this object to the newly allocated object
+// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
+func NewEngine() (*Engine, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	// Allocate
+	alloc_, err := EngineDef.Alloc(0)
+	if err != nil {
+		return nil, err
+	}
+	alloc := alloc_.(*Engine)
+	err = alloc.Init()
+	return alloc, err
+}
+
+func (obj *Engine) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return fmt.Errorf("(Engine) PyInit: parameter length mismatch")
+	}
+
+	return obj.Init()
+}
+
 func (obj *Engine) PyGet_t() (py.Object, error) {
 	return gopygen.TypeConvOut(obj.t, "tomb.Tomb")
 }

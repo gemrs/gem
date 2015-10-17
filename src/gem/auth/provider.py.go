@@ -35,6 +35,37 @@ func RegisterProviderImpl(module *py.Module) error {
 	return nil
 }
 
+// Alloc allocates an object for use in python land.
+// Copies the member fields from this object to the newly allocated object
+// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
+func NewProviderImpl() (*ProviderImpl, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	// Allocate
+	alloc_, err := ProviderImplDef.Alloc(0)
+	if err != nil {
+		return nil, err
+	}
+	alloc := alloc_.(*ProviderImpl)
+	err = alloc.Init()
+	return alloc, err
+}
+
+func (obj *ProviderImpl) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return fmt.Errorf("(ProviderImpl) PyInit: parameter length mismatch")
+	}
+
+	return obj.Init()
+}
+
 func (p *ProviderImpl) Py_LookupProfile(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()

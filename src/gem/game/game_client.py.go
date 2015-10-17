@@ -4,6 +4,7 @@ package game
 import (
 	"fmt"
 	"gem/encoding"
+	"gem/game/position"
 	"gem/game/server"
 
 	"github.com/qur/gopy/lib"
@@ -185,6 +186,29 @@ func (client *GameClient) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object
 	}
 
 	return out_0, nil
+
+}
+
+func (client *GameClient) Py_SetPosition(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SetPosition: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "*position.Absolute")
+	if err != nil {
+		return nil, err
+	}
+
+	client.SetPosition(in_0.(*position.Absolute))
+
+	py.None.Incref()
+	return py.None, nil
 
 }
 
