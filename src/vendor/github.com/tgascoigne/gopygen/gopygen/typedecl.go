@@ -11,6 +11,7 @@ import (
 const classDefinitionStr = `
 var {{.Ident}}Def = py.Class{
 	Name: "{{.Ident}}",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*{{.Ident}})(nil),
 }
 `
@@ -19,7 +20,7 @@ const objectAllocFunctionStr = `
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj {{.Ident}}) Alloc() (*{{.Ident}}, error) {
+func New{{.Ident}}({{.Args.FuncParamList "arg_"}}) (*{{.Ident}}, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -29,13 +30,8 @@ func (obj {{.Ident}}) Alloc() (*{{.Ident}}, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*{{.Ident}})
-	// Copy fields
-{{range .Fields.Fields}}
-  {{if not .Anonymous}}
-	alloc.{{.Name}} = obj.{{.Name}}
-  {{end}}
-{{end}}
-	return alloc, nil
+	err = alloc.Init({{.Args.VarList "arg_"}})
+	return alloc, err
 }
 `
 
@@ -76,15 +72,41 @@ func (obj *{{$ident}}) PySet_{{.Name}}(arg py.Object) error {
 {{end}}
 `
 
+const constructorWrapperStr = `{{$recv := .Recv}}
+{{$num_results := len .Results.Fields}}
+func (obj *{{$recv}}) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != {{len .Params.Fields}} {
+		return fmt.Errorf("({{$recv}}) PyInit: parameter length mismatch")
+	}
+{{with .Params.Fields}}
+  {{range $i, $param := .}}
+	in_{{$i}}, err := gopygen.TypeConvIn(args[{{$i}}], "{{$param.Type}}")
+	if err != nil {
+		return err
+	}
+  {{end}}
+{{end}}
+return obj.Init({{.Params.ParamList "in_"}})
+}
+`
+
 var classDefinitionTmpl = template.Must(template.New("class_definition").Parse(classDefinitionStr))
 var objectAllocFunctionTmpl = template.Must(template.New("object_alloc").Parse(objectAllocFunctionStr))
 var classRegisterTmpl = template.Must(template.New("class_register").Parse(classRegisterStr))
 var accessorsTmpl = template.Must(template.New("field_accessors").Parse(accessorsStr))
+var constructorWrapperTmpl = template.Must(template.New("constructor_wrapper").Parse(constructorWrapperStr))
 
 type TypeDeclData struct {
 	Ident       Ident
 	Fields      FieldList
 	fieldFilter FilterFunc
+	NewFunc     *FuncDecl
 }
 
 type TypeDecl struct {
@@ -146,8 +168,20 @@ func (d *TypeDeclData) AccessorFunctions() string {
 }
 
 func (d *TypeDeclData) AllocateFunction() string {
+	if d.NewFunc == nil {
+		return ""
+	}
+
+	tmplData := struct {
+		Args FieldList
+		*TypeDeclData
+	}{
+		Args:         d.NewFunc.Params,
+		TypeDeclData: d,
+	}
+
 	var buffer bytes.Buffer
-	err := objectAllocFunctionTmpl.Execute(&buffer, d)
+	err := objectAllocFunctionTmpl.Execute(&buffer, tmplData)
 	if err != nil {
 		panic(err)
 	}
@@ -157,6 +191,27 @@ func (d *TypeDeclData) AllocateFunction() string {
 func (d *TypeDeclData) RegisterFunction() string {
 	var buffer bytes.Buffer
 	err := classRegisterTmpl.Execute(&buffer, d)
+	if err != nil {
+		panic(err)
+	}
+	return buffer.String()
+}
+
+func (d *TypeDeclData) Constructor() string {
+	if d.NewFunc == nil {
+		return ""
+	}
+
+	tmplData := struct {
+		Recv Ident
+		*FuncDecl
+	}{
+		Recv:     d.Ident,
+		FuncDecl: d.NewFunc,
+	}
+
+	var buffer bytes.Buffer
+	err := constructorWrapperTmpl.Execute(&buffer, tmplData)
 	if err != nil {
 		panic(err)
 	}

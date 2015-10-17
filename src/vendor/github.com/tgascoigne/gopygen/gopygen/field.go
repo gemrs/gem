@@ -113,6 +113,16 @@ func (f *FieldListData) ParamList(prefix string) string {
 	return strings.Join(fieldStrs, ", ")
 }
 
+func (f *FieldListData) FuncParamList(prefix string) string {
+	fieldStrs := []string{}
+	for i, field := range f.Fields {
+		fieldName := fmt.Sprintf("%v", i)
+
+		fieldStrs = append(fieldStrs, fmt.Sprintf("%s%s %s", prefix, fieldName, field.Type.String()))
+	}
+	return strings.Join(fieldStrs, ", ")
+}
+
 func (f *FieldListData) String() string {
 	fieldStrs := []string{}
 	for _, field := range f.Fields {

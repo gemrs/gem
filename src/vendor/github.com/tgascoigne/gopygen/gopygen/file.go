@@ -26,6 +26,7 @@ var _ = gopygen.Dummy
 {{range .FilteredTypeDecls}}{{.ClassDeclaration}}
 {{.RegisterFunction}}
 {{.AllocateFunction}}
+{{.Constructor}}
 {{.AccessorFunctions}}
 {{end}}
 {{range .FilteredFuncDecls}}{{.Wrap}}
@@ -91,6 +92,28 @@ func (f *FileData) FilteredTypeDecls() []TypeDecl {
 	return newDecls
 }
 
+func (f *FileData) ConstructorForType(typ string) *FuncDecl {
+	for _, decl := range f.FuncDecls {
+		if decl.Recievers.Empty() {
+			continue
+		}
+
+		recv := decl.Recievers.Fields[0]
+
+		if recv.Type.BaseType() != typ {
+			continue
+		}
+
+		if decl.Name.String() != "Init" {
+			// Init is handled elsewhere
+			continue
+		}
+
+		return &decl
+	}
+	return nil
+}
+
 func (f *FileData) FilteredFuncDecls() []FuncDecl {
 	newDecls := []FuncDecl{}
 	for _, decl := range f.FuncDecls {
@@ -105,6 +128,11 @@ func (f *FileData) FilteredFuncDecls() []FuncDecl {
 		}
 
 		if f.FilteredType(recv.Type.BaseType()) {
+			continue
+		}
+
+		if decl.Name.String() == "Init" {
+			// Init is handled elsewhere
 			continue
 		}
 
@@ -130,6 +158,14 @@ func (f File) Visit(n ast.Node) ast.Visitor {
 		return nil
 	}
 	return f
+}
+
+func (f *FileData) ResolveConstructors() {
+	for _, typeDecl := range f.TypeDecls {
+		if funcDecl := f.ConstructorForType(typeDecl.Ident.String()); funcDecl != nil {
+			typeDecl.NewFunc = funcDecl
+		}
+	}
 }
 
 func (f *FileData) String() string {

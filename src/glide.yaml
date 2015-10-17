@@ -3,7 +3,7 @@ import:
   - package: github.com/qur/gopy
     ref:     028c5288397ff885306051a27d42231d633c2b77
   - package: github.com/tgascoigne/gopygen
-    ref:     3e86b1f62220349fec452cd5412099fef4c374d2
+    ref:     520527bcd26d5142a31607a9d602117f7c0e7007
   - package: gopkg.in/tomb.v2
     ref:     14b3d72120e8d10ea6e6b7f87f7175734b1faab8
   - package: github.com/op/go-logging

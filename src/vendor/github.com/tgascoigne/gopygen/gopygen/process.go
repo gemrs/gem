@@ -31,6 +31,7 @@ func Process(filename string, types []string, funcFilter, fieldFilter FilterFunc
 
 	file := NewFile(fset, types, funcFilter, fieldFilter)
 	ast.Walk(file, f)
+	file.ResolveConstructors()
 	fmt.Fprintf(&filebuffer, "%s", file)
 
 	return doImports(filename, filebuffer.String()), nil
