@@ -23,31 +23,38 @@ type Absolute struct {
 	X, Y, Z int
 }
 
-func NewAbsolute(x, y, z int) *Absolute {
-	pos, err := Absolute{X: x, Y: y, Z: z}.Alloc()
-	if err != nil {
-		panic(err)
-	}
-	return pos
+func (pos *Absolute) Init(x, y, z int) error {
+	pos.X = x
+	pos.Y = y
+	pos.Z = z
+	return nil
 }
 
 // Sector calculates the sector which contains an Absolute
 func (pos *Absolute) Sector() *Sector {
-	return NewSector(
+	sector, err := NewSector(
 		pos.X/AreaSize,
 		pos.Y/AreaSize,
 		pos.Z,
 	)
+	if err != nil {
+		panic(err)
+	}
+	return sector
 }
 
 // LocalTo calculates the local coordinates of an Absolute relative to a region
 func (pos *Absolute) LocalTo(region *Region) *Local {
-	return NewLocal(
+	local, err := NewLocal(
 		pos.X-(AreaSize*region.Origin.X),
 		pos.Y-(AreaSize*region.Origin.Y),
 		pos.Z,
 		region,
 	)
+	if err != nil {
+		panic(err)
+	}
+	return local
 }
 
 // A Sector is an 8x8 tile chunk of the map
@@ -57,12 +64,11 @@ type Sector struct {
 	X, Y, Z int
 }
 
-func NewSector(x, y, z int) *Sector {
-	pos, err := Sector{X: x, Y: y, Z: z}.Alloc()
-	if err != nil {
-		panic(err)
-	}
-	return pos
+func (s *Sector) Init(x, y, z int) error {
+	s.X = x
+	s.Y = y
+	s.Z = z
+	return nil
 }
 
 // A region is a 13x13 sector (104x104 tile) chunk.
@@ -74,21 +80,22 @@ type Region struct {
 	Origin *Sector
 }
 
-func NewRegion(origin *Sector) *Region {
-	pos, err := Region{Origin: origin}.Alloc()
-	if err != nil {
-		panic(err)
-	}
-	return pos
+func (region *Region) Init(origin *Sector) error {
+	region.Origin = origin
+	return nil
 }
 
 // Rebase adjusts the region such that it's new center is the sector containing the given Absolute
 func (region *Region) Rebase(absolute *Absolute) {
-	region.Origin = NewSector(
+	var err error
+	region.Origin, err = NewSector(
 		absolute.Sector().X-((RegionSize-1)/2),
 		absolute.Sector().Y-((RegionSize-1)/2),
 		absolute.Sector().Z,
 	)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Local is a coordinate relative to the base of a Region
@@ -100,22 +107,23 @@ type Local struct {
 	Region *Region
 }
 
-func NewLocal(x, y, z int, region *Region) *Local {
-	pos, err := Local{
-		X: x, Y: y, Z: z,
-		Region: region,
-	}.Alloc()
-	if err != nil {
-		panic(err)
-	}
-	return pos
+func (local *Local) Init(x, y, z int, region *Region) error {
+	local.X = x
+	local.Y = y
+	local.Z = z
+	local.Region = region
+	return nil
 }
 
 // Absolute converts a local coordinate into an absolute coordinate
 func (local *Local) Absolute() *Absolute {
-	return NewAbsolute(
+	abs, err := NewAbsolute(
 		local.X+(AreaSize*local.Region.Origin.X),
 		local.Y+(AreaSize*local.Region.Origin.Y),
 		local.Z,
 	)
+	if err != nil {
+		panic(err)
+	}
+	return abs
 }

@@ -1,6 +1,7 @@
 import gem
 import gem.auth
 import gem.game.player as player
+import gem.game.position as position
 
 logger = gem.syslog.Module(__name__)
 
@@ -13,4 +14,5 @@ class DummyProvider(gem.auth.ProviderImpl):
         profile = player.Profile()
         profile.Username = username
         profile.Password = password
+        profile.Pos = position.Absolute(3200, 3200, 0)
         return profile, gem.auth.AuthOkay

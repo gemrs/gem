@@ -4,6 +4,8 @@ package player
 import (
 	"fmt"
 
+	"gem/game/position"
+
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
@@ -80,6 +82,19 @@ func (obj *Profile) PySet_Password(arg py.Object) error {
 		return err
 	}
 	obj.Password = val.(string)
+	return nil
+}
+
+func (obj *Profile) PyGet_Pos() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.Pos, "*position.Absolute")
+}
+
+func (obj *Profile) PySet_Pos(arg py.Object) error {
+	val, err := gopygen.TypeConvIn(arg, "*position.Absolute")
+	if err != nil {
+		return err
+	}
+	obj.Pos = val.(*position.Absolute)
 	return nil
 }
 

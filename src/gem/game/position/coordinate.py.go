@@ -16,6 +16,7 @@ var _ = gopygen.Dummy
 
 var AbsoluteDef = py.Class{
 	Name:    "Absolute",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Absolute)(nil),
 }
 
@@ -37,7 +38,7 @@ func RegisterAbsolute(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Absolute) Alloc() (*Absolute, error) {
+func NewAbsolute(arg_0 int, arg_1 int, arg_2 int) (*Absolute, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -47,15 +48,37 @@ func (obj Absolute) Alloc() (*Absolute, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Absolute)
-	// Copy fields
+	err = alloc.Init(arg_0, arg_1, arg_2)
+	return alloc, err
+}
 
-	alloc.X = obj.X
+func (obj *Absolute) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.Y = obj.Y
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 3 {
+		return fmt.Errorf("(Absolute) PyInit: parameter length mismatch")
+	}
 
-	alloc.Z = obj.Z
+	in_0, err := gopygen.TypeConvIn(args[0], "int")
+	if err != nil {
+		return err
+	}
 
-	return alloc, nil
+	in_1, err := gopygen.TypeConvIn(args[1], "int")
+	if err != nil {
+		return err
+	}
+
+	in_2, err := gopygen.TypeConvIn(args[2], "int")
+	if err != nil {
+		return err
+	}
+
+	return obj.Init(in_0.(int), in_1.(int), in_2.(int))
 }
 
 func (obj *Absolute) PyGet_X() (py.Object, error) {
@@ -99,6 +122,7 @@ func (obj *Absolute) PySet_Z(arg py.Object) error {
 
 var SectorDef = py.Class{
 	Name:    "Sector",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Sector)(nil),
 }
 
@@ -120,7 +144,7 @@ func RegisterSector(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Sector) Alloc() (*Sector, error) {
+func NewSector(arg_0 int, arg_1 int, arg_2 int) (*Sector, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -130,15 +154,37 @@ func (obj Sector) Alloc() (*Sector, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Sector)
-	// Copy fields
+	err = alloc.Init(arg_0, arg_1, arg_2)
+	return alloc, err
+}
 
-	alloc.X = obj.X
+func (obj *Sector) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.Y = obj.Y
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 3 {
+		return fmt.Errorf("(Sector) PyInit: parameter length mismatch")
+	}
 
-	alloc.Z = obj.Z
+	in_0, err := gopygen.TypeConvIn(args[0], "int")
+	if err != nil {
+		return err
+	}
 
-	return alloc, nil
+	in_1, err := gopygen.TypeConvIn(args[1], "int")
+	if err != nil {
+		return err
+	}
+
+	in_2, err := gopygen.TypeConvIn(args[2], "int")
+	if err != nil {
+		return err
+	}
+
+	return obj.Init(in_0.(int), in_1.(int), in_2.(int))
 }
 
 func (obj *Sector) PyGet_X() (py.Object, error) {
@@ -182,6 +228,7 @@ func (obj *Sector) PySet_Z(arg py.Object) error {
 
 var RegionDef = py.Class{
 	Name:    "Region",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Region)(nil),
 }
 
@@ -203,7 +250,7 @@ func RegisterRegion(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Region) Alloc() (*Region, error) {
+func NewRegion(arg_0 *Sector) (*Region, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -213,11 +260,27 @@ func (obj Region) Alloc() (*Region, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Region)
-	// Copy fields
+	err = alloc.Init(arg_0)
+	return alloc, err
+}
 
-	alloc.Origin = obj.Origin
+func (obj *Region) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	return alloc, nil
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return fmt.Errorf("(Region) PyInit: parameter length mismatch")
+	}
+
+	in_0, err := gopygen.TypeConvIn(args[0], "*Sector")
+	if err != nil {
+		return err
+	}
+
+	return obj.Init(in_0.(*Sector))
 }
 
 func (obj *Region) PyGet_Origin() (py.Object, error) {
@@ -235,6 +298,7 @@ func (obj *Region) PySet_Origin(arg py.Object) error {
 
 var LocalDef = py.Class{
 	Name:    "Local",
+	Flags:   py.TPFLAGS_BASETYPE,
 	Pointer: (*Local)(nil),
 }
 
@@ -256,7 +320,7 @@ func RegisterLocal(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func (obj Local) Alloc() (*Local, error) {
+func NewLocal(arg_0 int, arg_1 int, arg_2 int, arg_3 *Region) (*Local, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -266,17 +330,42 @@ func (obj Local) Alloc() (*Local, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Local)
-	// Copy fields
+	err = alloc.Init(arg_0, arg_1, arg_2, arg_3)
+	return alloc, err
+}
 
-	alloc.X = obj.X
+func (obj *Local) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
 
-	alloc.Y = obj.Y
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 4 {
+		return fmt.Errorf("(Local) PyInit: parameter length mismatch")
+	}
 
-	alloc.Z = obj.Z
+	in_0, err := gopygen.TypeConvIn(args[0], "int")
+	if err != nil {
+		return err
+	}
 
-	alloc.Region = obj.Region
+	in_1, err := gopygen.TypeConvIn(args[1], "int")
+	if err != nil {
+		return err
+	}
 
-	return alloc, nil
+	in_2, err := gopygen.TypeConvIn(args[2], "int")
+	if err != nil {
+		return err
+	}
+
+	in_3, err := gopygen.TypeConvIn(args[3], "*Region")
+	if err != nil {
+		return err
+	}
+
+	return obj.Init(in_0.(int), in_1.(int), in_2.(int), in_3.(*Region))
 }
 
 func (obj *Local) PyGet_X() (py.Object, error) {
