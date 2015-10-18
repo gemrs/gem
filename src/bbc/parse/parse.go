@@ -76,6 +76,8 @@ func (l *Lexer) resolveReferencesTo(name string, typ ast.Node, n ast.Node) {
 		}
 	case *ast.Struct:
 		l.resolveReferencesTo(name, typ, n.Scope)
+	case *ast.BitStruct:
+		l.resolveReferencesTo(name, typ, n.Scope)
 	case *ast.DynamicLength:
 		l.resolveReferencesTo(name, typ, n.Field)
 	case *ast.ArrayType:
@@ -86,6 +88,7 @@ func (l *Lexer) resolveReferencesTo(name string, typ ast.Node, n ast.Node) {
 	case *ast.Frame:
 		l.resolveReferencesTo(name, typ, n.Object)
 	case *ast.IntegerType:
+	case *ast.BitsType:
 	case *ast.StringBaseType:
 	case *ast.ByteBaseType:
 	case *ast.StaticLength:

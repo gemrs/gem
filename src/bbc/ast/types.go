@@ -115,6 +115,7 @@ type IntegerType struct {
 }
 
 var integerRegexp = regexp.MustCompile("(u)?int(8|16|24|32|64)")
+
 func ParseIntegerType(typ string) (*IntegerType, error) {
 	if !integerRegexp.MatchString(typ) {
 		return nil, fmt.Errorf("unrecognized integer type: %v", typ)
@@ -127,7 +128,7 @@ func ParseIntegerType(typ string) (*IntegerType, error) {
 	}
 
 	return &IntegerType{
-		Signed: groups[0][1] != "u",
+		Signed:  groups[0][1] != "u",
 		Bitsize: bitsize,
 	}, nil
 }
@@ -166,4 +167,20 @@ func (a *ArrayType) ByteLength() (int, error) {
 	}
 
 	return baseLength * mulLength, nil
+}
+
+type BitsType struct {
+	Count int
+}
+
+func (b *BitsType) Identifier() string {
+	return fmt.Sprintf("bit[%v]", b.Count)
+}
+
+func (b *BitsType) ByteLength() (int, error) {
+	i := (b.Count / 8)
+	if (b.Count % 8) != 0 {
+		i++
+	}
+	return i, nil
 }

@@ -11,8 +11,9 @@
 /string/ { return tStringType }
 /byte/   { return tByteType }
 /struct/ { return tStruct }
+/bitstruct/ { return tBitStruct }
 /frame/  { return tFrame }
-
+/bit/    { return tBitsType }
 
 /Fixed/  { return tFrameFixed }
 /Var8/   { return tFrameVar8 }

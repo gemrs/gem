@@ -62,6 +62,26 @@ func (s Struct) ByteLength() (int, error) {
 	return s.Scope.ByteLength()
 }
 
+type BitStruct struct {
+	Name  string
+	Scope *Scope
+}
+
+func NewBitStruct(name string) *BitStruct {
+	return &BitStruct{
+		Name:  name,
+		Scope: NewScope(),
+	}
+}
+
+func (s BitStruct) Identifier() string {
+	return s.Name
+}
+
+func (s BitStruct) ByteLength() (int, error) {
+	return s.Scope.ByteLength()
+}
+
 type Field struct {
 	Name string
 	Type Node

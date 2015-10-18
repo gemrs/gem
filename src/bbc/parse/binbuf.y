@@ -24,9 +24,9 @@ import (
 %token <sval> tIdentifier
 %token <ival> tNumber
 
-%token tStruct tType tFrame
+%token tStruct tType tFrame tBitStruct
 %token tFrameFixed tFrameVar8 tFrameVar16
-%token <n> tStringType tByteType
+%token <n> tStringType tByteType tBitsType
 %token <n> tIntegerType
 %token <sval> tIntegerFlag
 
@@ -34,7 +34,7 @@ import (
 
 %type <size> frame_size
 %type <length> array_spec
-%type <n> type int_type string_type bytes_type
+%type <n> type int_type string_type bytes_type bits_type
 %type <n> field
 %type <n> field_list
 %type <n> scope
@@ -95,7 +95,11 @@ frame_size
 struct
 	: tIdentifier anon_struct
       {
-          $2.(*ast.Struct).Name = $1
+          if _, ok := $2.(*ast.BitStruct); ok {
+              $2.(*ast.BitStruct).Name = $1
+          } else {
+              $2.(*ast.Struct).Name = $1
+          }
           $$ = $2
       }
     ;
@@ -103,8 +107,14 @@ struct
 anon_struct
     : tStruct scope
       {
-
           $$ = &ast.Struct{
+	          Name: yylex.(*Lexer).NameAnonStruct(),
+              Scope: $2.(*ast.Scope),
+          }
+      }
+    | tBitStruct scope
+      {
+          $$ = &ast.BitStruct{
 	          Name: yylex.(*Lexer).NameAnonStruct(),
               Scope: $2.(*ast.Scope),
           }
@@ -160,6 +170,7 @@ reference
 
 type
     : int_type
+    | bits_type
     | string_type
     | bytes_type
     | anon_struct
@@ -181,6 +192,19 @@ bytes_type
 string_type
 	: tStringType
       { $$ = &ast.StringBaseType{} }
+	;
+
+bits_type
+	: tBitsType
+      { $$ = &ast.BitsType{Count: 1} }
+	| tBitsType array_spec
+      {
+          if _, ok := $2.(*ast.StaticLength); !ok {
+              yylex.(*Lexer).Error("bit fields require a constant length expression")
+          } else {
+              $$ = &ast.BitsType{ Count: $2.(*ast.StaticLength).Length }
+          }
+      }
 	;
 
 array_spec

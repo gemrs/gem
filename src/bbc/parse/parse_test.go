@@ -138,6 +138,40 @@ type AnotherFrame frame<101, Fixed> struct {
 
 	{
 		filename: "in_file",
+		source: `type SomeStruct bitstruct {
+    X bit
+    Y bit[3]
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.BitStruct{
+						Name: "SomeStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "X",
+									Type: &ast.BitsType{
+										Count: 1,
+									},
+								},
+								&ast.Field{
+									Name: "Y",
+									Type: &ast.BitsType{
+										Count: 3,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	{
+		filename: "in_file",
 		source: `type SomeStruct struct {
 	SomeInt int8
 	AnotherInt uint24
@@ -281,6 +315,52 @@ type SomeFrame frame<100, Fixed> SomeStruct`,
 														Signed:    false,
 														Bitsize:   24,
 														Modifiers: nil,
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	{
+		filename: "in_file",
+		source: `type OuterStruct struct {
+	SomeStruct bitstruct {
+		X bit[4]
+		Y bit[4]
+	}
+}`,
+		expected: &ast.File{
+			Name: "in_file",
+			Scope: &ast.Scope{
+				S: []ast.Node{
+					&ast.Struct{
+						Name: "OuterStruct",
+						Scope: &ast.Scope{
+							S: []ast.Node{
+								&ast.Field{
+									Name: "SomeStruct",
+									Type: &ast.BitStruct{
+										Name: "anonymous_in_file_0",
+										Scope: &ast.Scope{
+											S: []ast.Node{
+												&ast.Field{
+													Name: "X",
+													Type: &ast.BitsType{
+														Count: 4,
+													},
+												},
+												&ast.Field{
+													Name: "Y",
+													Type: &ast.BitsType{
+														Count: 4,
 													},
 												},
 											},
