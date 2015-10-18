@@ -2,6 +2,7 @@ package game
 
 import (
 	"gem/encoding"
+	"gem/event"
 	"gem/game/player"
 	"gem/game/position"
 	"gem/game/server"
@@ -48,6 +49,8 @@ func (client *GameClient) Init(conn *server.Connection, svc *GameService) error 
 		return err
 	}
 
+	PlayerRegionChangeEvent.Register(event.NewListener(client.RegionUpdate))
+
 	return nil
 }
 
@@ -82,11 +85,11 @@ func (client *GameClient) SetPosition(pos *position.Absolute) {
 	dx, dy, dz := client.region.SectorDelta(oldRegion)
 
 	if dx >= 1 || dy >= 1 || dz >= 1 {
-		PlayerSectorChangeEvent.NotifyObservers()
+		PlayerSectorChangeEvent.NotifyObservers(pos)
 	}
 
 	if dx >= 5 || dy >= 5 || dz >= 1 {
-		PlayerRegionChangeEvent.NotifyObservers()
+		PlayerRegionChangeEvent.NotifyObservers(pos)
 	}
 
 	client.Log().Debugf("Warping to %v", pos)

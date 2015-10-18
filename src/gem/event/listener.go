@@ -17,10 +17,11 @@ type Listener struct {
 	fn Callback
 }
 
-func (l *Listener) Init(fn Callback) error {
-	l.id = <-nextId
-	l.fn = fn
-	return nil
+func NewListener(fn Callback) *Listener {
+	return &Listener{
+		id: <-nextId,
+		fn: fn,
+	}
 }
 
 func (l *Listener) Id() int {

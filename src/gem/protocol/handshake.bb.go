@@ -6,6 +6,28 @@ import (
 	"io"
 )
 
+type InboundServiceSelect struct {
+	Service encoding.Int8
+}
+
+func (struc *InboundServiceSelect) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Service.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Service.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 type InboundGameHandshake struct {
 	NameHash encoding.Int8
 }
@@ -101,28 +123,6 @@ func (struc *OutboundUpdateHandshake) Decode(buf io.Reader, flags interface{}) (
 		if err != nil {
 			return err
 		}
-	}
-
-	return err
-}
-
-type InboundServiceSelect struct {
-	Service encoding.Int8
-}
-
-func (struc *InboundServiceSelect) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Service.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Service.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
 	}
 
 	return err
