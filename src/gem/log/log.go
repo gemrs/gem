@@ -10,8 +10,6 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type SysLog -type Module -excfunc "(Critical|Debug|Error|Fatal|Info|Notice|Warning)f" $GOFILE
-
 var Sys *SysLog
 
 type SysLog struct {

@@ -22,7 +22,7 @@ plugin_path = ["content/plugins"]
 
 # Create argparser
 parser = argparse.ArgumentParser(description=version_string)
-parser.add_argument('--console', action='store_true', help='launch the interactive console')
+parser.add_argument('--no-console', action='store_false', dest='no_console', help='disable the interactive console')
 parser.add_argument('--plugin-path', action='append', dest='plugin_path', help='append to the plugin search path')
 
 logger = gem.syslog.Module("pymain")
@@ -51,15 +51,15 @@ def main():
     except Exception as e:
         logger.Critical("Startup failed: {0}".format(e))
 
-    # enter interactive console if --console flag is set
-    if args.console:
-        interactive_console()
-
-    logger.Notice("Press Control-D to toggle the interactive console")
-    while True:
-        line = sys.stdin.readline()
-        if not line: # readline will return "" on EOF
-            interactive_console()
+    if args.no_console:
+        logger.Notice("Press Control-D to toggle the interactive console")
+        while True:
+            line = sys.stdin.readline()
+            if not line: # readline will return "" on EOF
+                interactive_console()
+    else:
+        while True:
+            pass
 
 def interactive_console():
     logger.Notice("Transferring control to interactive console")

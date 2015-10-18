@@ -16,10 +16,6 @@ import (
 // the underlying buffer's read pointer is not altered.
 type decodeFunc func(*GameClient) error
 
-const (
-	PlayerRegionUpdate = (1 << iota)
-)
-
 // GameClient is a client which serves players
 type GameClient struct {
 	py.BaseObject
@@ -31,7 +27,6 @@ type GameClient struct {
 	session *player.Session
 	profile *player.Profile
 	region  *position.Region
-	flags   uint32
 }
 
 // NewGameClient constructs a new GameClient
@@ -49,7 +44,11 @@ func (client *GameClient) Init(conn *server.Connection, svc *GameService) error 
 	client.session = session
 
 	client.region, err = position.NewRegion(nil)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (client *GameClient) Session() *player.Session {
@@ -81,9 +80,15 @@ func (client *GameClient) SetPosition(pos *position.Absolute) {
 	oldRegion := client.region
 	client.region = pos.RegionOf()
 	dx, dy, dz := client.region.SectorDelta(oldRegion)
-	if dx >= 5 || dy >= 5 || dz >= 1 {
-		client.flags |= PlayerRegionUpdate
+
+	if dx >= 1 || dy >= 1 || dz >= 1 {
+		PlayerSectorChangeEvent.NotifyObservers()
 	}
+
+	if dx >= 5 || dy >= 5 || dz >= 1 {
+		PlayerRegionChangeEvent.NotifyObservers()
+	}
+
 	client.Log().Debugf("Warping to %v", pos)
 }
 

@@ -12,7 +12,7 @@ class ServiceListeners(object):
     archive_server_started = False
     game_server_started = False
 
-    @event.callback(gem.event.Startup)
+    @event.callback(gem.Startup)
     def startup(self):
         try:
             self.archive_server = archive.Server()
@@ -34,7 +34,7 @@ class ServiceListeners(object):
         except Exception as e:
             raise Exception("Couldn't start game server: {0}".format(e))
 
-    @event.callback(gem.event.Shutdown)
+    @event.callback(gem.Shutdown)
     def shutdown(self):
         if self.archive_server_started == True:
             self.archive_server.Stop()

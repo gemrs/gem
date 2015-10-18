@@ -5,7 +5,6 @@ import (
 
 	"gem/auth"
 	"gem/encoding"
-	"gem/event"
 	"gem/protocol"
 )
 
@@ -94,8 +93,6 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 
 	client.profile = profile
 
-	event.Dispatcher.Raise(event.PlayerLoadProfile, client)
-
 	if responseCode != auth.AuthOkay {
 		client.Conn().Write <- &protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),
@@ -113,10 +110,13 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 	client.decode = svc.decodePacket
 	go svc.packetConsumer(client)
 
-	event.Dispatcher.Raise(event.PlayerLogin, client)
+	PlayerLoginEvent.NotifyObservers(client)
+
+	PlayerLoadProfileEvent.NotifyObservers(client)
+
 	go func() {
 		client.WaitForDisconnect()
-		event.Dispatcher.Raise(event.PlayerLogout, client)
+		PlayerLogoutEvent.NotifyObservers(client)
 	}()
 	return nil
 }

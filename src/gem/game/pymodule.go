@@ -28,4 +28,7 @@ func init() {
 			panic(err)
 		}
 	}
+
+	/* Register events */
+	createEventObjects(module)
 }

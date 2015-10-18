@@ -1,4 +1,5 @@
 import gem
+import gem.event
 import inspect
 
 # decorator soup
@@ -7,19 +8,35 @@ import inspect
 def listener(cls):
     """listener is a class decorator which adds event handling capabilities"""
     event_hooks = {}
+    event_handles = {}
 
     for name, method in cls.__dict__.iteritems():
         if hasattr(method, "event"):
             # do something with the method and class
             event_hooks[name] = method.event
 
-    orig_init = cls.__init__
+    orig_init = None
+    if hasattr(cls, "__init__"):
+        orig_init = cls.__init__
+
     def new_init(self, *args, **kwargs):
         for method, event in event_hooks.iteritems():
-            _swap(self, method, event)
+            _swap(self, event_handles, method, event)
         if orig_init:
             orig_init(self, *args, **kwargs)
     cls.__init__ = new_init
+
+    orig_del = None
+    if hasattr(cls, "__del__"):
+        orig_del = cls.__del__
+
+    def new_del(self):
+        for event, handles in event_handles.iteritems():
+            for handle in handles:
+                event.Unregister(handle)
+        if orig_del:
+            orig_del(self)
+    cls.__del__ = new_del
 
     return cls
 
@@ -33,13 +50,13 @@ def callback(event):
         return fn
     return _callback
 
-def _swap(obj, method, event):
+def _swap(obj, event_handles, method, event):
     """_swap replaces a method with an event decorated wrapper"""
     orig_func = getattr(obj, method)
-    wrapper = _create_wrapper(orig_func, event[0][0])
+    wrapper = _create_wrapper(event_handles, orig_func, event[0][0])
     setattr(obj, method, wrapper)
 
-def _create_wrapper(fn, event, event_passthrough=False):
+def _create_wrapper(event_handles, fn, event, event_passthrough=False):
     """_create_wrapper creates an event decorated wrapper function around a
     method, and registers it as an event callback
 
@@ -59,5 +76,7 @@ def _create_wrapper(fn, event, event_passthrough=False):
 
         return fn(*args, **kwargs)
 
-    gem.event.register_listener(event, _wrapper)
+    listener = gem.event.PyListener(_wrapper)
+    event.Register(listener)
+    event_handles.setdefault(event, []).append(listener)
     return _wrapper
