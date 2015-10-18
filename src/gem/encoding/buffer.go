@@ -163,3 +163,7 @@ func (b *Buffer) Seek(offset int64, whence int) (int64, error) {
 	b.i = int(abs)
 	return abs, nil
 }
+
+func (b *Buffer) Bytes() []byte {
+	return b.s
+}
