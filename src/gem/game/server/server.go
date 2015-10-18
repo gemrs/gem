@@ -8,6 +8,7 @@ import (
 	"gem/log"
 	"gem/protocol"
 	"gem/safe"
+	"gem/util/id"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
@@ -25,7 +26,7 @@ type Server struct {
 	laddr string
 	ln    net.Listener
 
-	nextIndex chan int
+	nextIndex <-chan int
 
 	m        sync.Mutex
 	clients  map[int]Client
@@ -66,20 +67,10 @@ func (s *Server) Start() (err error) {
 		return fmt.Errorf("couldn't start game server: %v", err)
 	}
 
-	s.nextIndex = make(chan int)
-	go s.generateNextIndex()
+	s.nextIndex = id.Generator()
 
 	s.t.Go(s.run)
 	return nil
-}
-
-// generateNextIndex puts the next incremental client intex onto the Server.nextIndex channel
-func (s *Server) generateNextIndex() {
-	index := 0
-	for {
-		s.nextIndex <- index
-		index++
-	}
 }
 
 // Stop signals that the listener thread should be stopped.
