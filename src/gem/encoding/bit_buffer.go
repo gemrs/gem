@@ -44,7 +44,7 @@ func (b *BitBuffer) WriteBit(v bool) error {
 	b.i--
 
 	if b.i < 0 {
-		b.emitByte()
+		b.Flush()
 	}
 	return nil
 }
@@ -52,13 +52,13 @@ func (b *BitBuffer) WriteBit(v bool) error {
 // Close flushes the current byte and invalidates the BitBuffer
 func (b *BitBuffer) Close() {
 	if b.i != 7 {
-		b.emitByte()
+		b.Flush()
 	}
 	b.writer = nil
 }
 
-// emitByte flushes the current byte and prepares a new one for writing
-func (b *BitBuffer) emitByte() error {
+// Flush flushes the current byte and prepares a new one for writing
+func (b *BitBuffer) Flush() error {
 	_, err := b.writer.Write([]byte{b.c})
 	b.c = 0
 	b.i = 7
