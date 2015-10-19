@@ -6,14 +6,14 @@ import (
 	"gem/protocol"
 )
 
-func (client *GameClient) PlayerInit() {
+func (client *Player) PlayerInit() {
 	client.Conn().Write <- &protocol.OutboundPlayerInit{
 		Membership: encoding.Int8(1),
 		Index:      encoding.Int16(client.Index()),
 	}
 }
 
-func (client *GameClient) RegionUpdate(_ *event.Event, _ ...interface{}) {
+func (client *Player) RegionUpdate(_ *event.Event, _ ...interface{}) {
 	sector := client.Position().Sector()
 	client.Conn().Write <- &protocol.OutboundRegionUpdate{
 		SectorX: encoding.Int16(sector.X),
@@ -23,7 +23,7 @@ func (client *GameClient) RegionUpdate(_ *event.Event, _ ...interface{}) {
 	client.flags |= protocol.MobFlagRegionUpdate
 }
 
-func (client *GameClient) PlayerUpdate(_ *event.Event, _ ...interface{}) {
+func (client *Player) PlayerUpdate(_ *event.Event, _ ...interface{}) {
 	updateBlock := protocol.PlayerUpdate{
 		UpdateFlags: client.flags,
 	}
@@ -48,6 +48,6 @@ func (client *GameClient) PlayerUpdate(_ *event.Event, _ ...interface{}) {
 	client.Conn().Write <- &updateBlock
 }
 
-func (client *GameClient) ClearUpdateFlags(_ *event.Event, _ ...interface{}) {
+func (client *Player) ClearUpdateFlags(_ *event.Event, _ ...interface{}) {
 	client.flags = 0
 }

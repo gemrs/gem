@@ -9,7 +9,7 @@ import (
 )
 
 // handshake performs the isaac key exchange
-func (svc *GameService) handshake(client *GameClient) error {
+func (svc *GameService) handshake(client *Player) error {
 	session := client.Session()
 
 	session.RandKey = make([]int32, 4)
@@ -32,7 +32,7 @@ func (svc *GameService) handshake(client *GameClient) error {
 }
 
 // decodeLoginBlock handles the unencrypted login block
-func (svc *GameService) decodeLoginBlock(client *GameClient) error {
+func (svc *GameService) decodeLoginBlock(client *Player) error {
 	session := client.Session()
 
 	loginBlock := protocol.InboundLoginBlock{}
@@ -55,7 +55,7 @@ func (svc *GameService) decodeLoginBlock(client *GameClient) error {
 }
 
 // decodeSecureBlock handles the secure login block and the login response (via doLogin)
-func (svc *GameService) decodeSecureBlock(client *GameClient) error {
+func (svc *GameService) decodeSecureBlock(client *Player) error {
 	session := client.Session()
 
 	rsaBlock := encoding.RSABlock{&protocol.InboundSecureLoginBlock{}}
@@ -88,7 +88,7 @@ func (svc *GameService) decodeSecureBlock(client *GameClient) error {
 }
 
 // doLogin authenticates the user, sends the login response, and sets up the client for standard packet processing
-func (svc *GameService) doLogin(client *GameClient, username, password string) error {
+func (svc *GameService) doLogin(client *Player, username, password string) error {
 	profile, responseCode := svc.auth.LookupProfile(username, password)
 
 	client.profile = profile

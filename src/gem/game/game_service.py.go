@@ -8,7 +8,6 @@ import (
 	"gem/runite"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -151,14 +150,14 @@ func (svc *GameService) Py_decodePacket(_args *py.Tuple, kwds *py.Dict) (py.Obje
 	// Convert parameters
 
 	args[0].Incref()
-	in_0, err := gopygen.TypeConvIn(args[0], "*GameClient")
+	in_0, err := gopygen.TypeConvIn(args[0], "*Player")
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the function call
 
-	res0 := svc.decodePacket(in_0.(*GameClient))
+	res0 := svc.decodePacket(in_0.(*Player))
 
 	// Remove local references
 
@@ -186,14 +185,14 @@ func (svc *GameService) Py_packetConsumer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	// Convert parameters
 
 	args[0].Incref()
-	in_0, err := gopygen.TypeConvIn(args[0], "*GameClient")
+	in_0, err := gopygen.TypeConvIn(args[0], "*Player")
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the function call
 
-	svc.packetConsumer(in_0.(*GameClient))
+	svc.packetConsumer(in_0.(*Player))
 
 	// Remove local references
 

@@ -8,7 +8,6 @@ import (
 	"gem/game/server"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -17,21 +16,21 @@ import (
 var _ = fmt.Sprintf("")
 var _ = gopygen.Dummy
 
-var GameClientDef = py.Class{
-	Name:    "GameClient",
+var PlayerDef = py.Class{
+	Name:    "Player",
 	Flags:   py.TPFLAGS_BASETYPE,
-	Pointer: (*GameClient)(nil),
+	Pointer: (*Player)(nil),
 }
 
 // Registers this type with a python module
-func RegisterGameClient(module *py.Module) error {
+func RegisterPlayer(module *py.Module) error {
 	var err error
 	var class *py.Type
-	if class, err = GameClientDef.Create(); err != nil {
+	if class, err = PlayerDef.Create(); err != nil {
 		return err
 	}
 
-	if err = module.AddObject("GameClient", class); err != nil {
+	if err = module.AddObject("Player", class); err != nil {
 		return err
 	}
 
@@ -41,21 +40,21 @@ func RegisterGameClient(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func NewGameClient(arg_0 *server.Connection, arg_1 *GameService) (*GameClient, error) {
+func NewPlayer(arg_0 *server.Connection, arg_1 *GameService) (*Player, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
 	// Allocate
-	alloc_, err := GameClientDef.Alloc(0)
+	alloc_, err := PlayerDef.Alloc(0)
 	if err != nil {
 		return nil, err
 	}
-	alloc := alloc_.(*GameClient)
+	alloc := alloc_.(*Player)
 	err = alloc.Init(arg_0, arg_1)
 	return alloc, err
 }
 
-func (obj *GameClient) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+func (obj *Player) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -63,7 +62,7 @@ func (obj *GameClient) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	_ = err
 	args := _args.Slice()
 	if len(args) != 2 {
-		return fmt.Errorf("(GameClient) PyInit: parameter length mismatch")
+		return fmt.Errorf("(Player) PyInit: parameter length mismatch")
 	}
 
 	args[0].Incref()
@@ -87,7 +86,7 @@ func (obj *GameClient) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	return err
 }
 
-func (client *GameClient) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -114,7 +113,7 @@ func (client *GameClient) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object,
 
 }
 
-func (client *GameClient) Py_Profile(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_Profile(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -141,7 +140,7 @@ func (client *GameClient) Py_Profile(_args *py.Tuple, kwds *py.Dict) (py.Object,
 
 }
 
-func (client *GameClient) Py_Conn(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_Conn(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -168,7 +167,7 @@ func (client *GameClient) Py_Conn(_args *py.Tuple, kwds *py.Dict) (py.Object, er
 
 }
 
-func (client *GameClient) Py_Decode(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_Decode(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -195,7 +194,7 @@ func (client *GameClient) Py_Decode(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 
 }
 
-func (client *GameClient) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -222,7 +221,7 @@ func (client *GameClient) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object
 
 }
 
-func (client *GameClient) Py_SetPosition(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_SetPosition(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -253,7 +252,7 @@ func (client *GameClient) Py_SetPosition(_args *py.Tuple, kwds *py.Dict) (py.Obj
 
 }
 
-func (client *GameClient) Py_Encode(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_Encode(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 

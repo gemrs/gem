@@ -11,15 +11,15 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type GameClient -excfield "^[a-z].*" $GOFILE
+//go:generate gopygen -type Player -excfield "^[a-z].*" $GOFILE
 
 // decodeFunc is used for parsing the read stream and dealing with the incoming data.
 // If io.EOF is returned, it is assumed that we didn't have enough data, and
 // the underlying buffer's read pointer is not altered.
-type decodeFunc func(*GameClient) error
+type decodeFunc func(*Player) error
 
 // GameClient is a client which serves players
-type GameClient struct {
+type Player struct {
 	py.BaseObject
 
 	*server.Connection
@@ -33,7 +33,7 @@ type GameClient struct {
 }
 
 // NewGameClient constructs a new GameClient
-func (client *GameClient) Init(conn *server.Connection, svc *GameService) error {
+func (client *Player) Init(conn *server.Connection, svc *GameService) error {
 	session, err := player.NewSession()
 	if err != nil {
 		return err
@@ -57,37 +57,37 @@ func (client *GameClient) Init(conn *server.Connection, svc *GameService) error 
 }
 
 func finishLogin(_ *event.Event, args ...interface{}) {
-	client := args[0].(*GameClient)
+	client := args[0].(*Player)
 	client.PlayerInit()
 	gem.TickEvent.Register(event.NewListener(client.PlayerUpdate))
 	gem.PostTickEvent.Register(event.NewListener(client.ClearUpdateFlags))
 }
 
-func (client *GameClient) Session() *player.Session {
+func (client *Player) Session() *player.Session {
 	return client.session
 }
 
-func (client *GameClient) Profile() *player.Profile {
+func (client *Player) Profile() *player.Profile {
 	return client.profile
 }
 
 // Conn returns the underlying Connection
-func (client *GameClient) Conn() *server.Connection {
+func (client *Player) Conn() *server.Connection {
 	return client.Connection
 }
 
 // Decode processes incoming packets and adds them to the read queue
-func (client *GameClient) Decode() error {
+func (client *Player) Decode() error {
 	return client.decode(client)
 }
 
 // Position returns the absolute position of the player
-func (client *GameClient) Position() *position.Absolute {
+func (client *Player) Position() *position.Absolute {
 	return client.Profile().Pos
 }
 
 // SetPosition warps the player to a given location
-func (client *GameClient) SetPosition(pos *position.Absolute) {
+func (client *Player) SetPosition(pos *position.Absolute) {
 	client.Profile().Pos = pos
 	oldRegion := client.region
 	client.region = pos.RegionOf()
@@ -105,6 +105,6 @@ func (client *GameClient) SetPosition(pos *position.Absolute) {
 }
 
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator
-func (client *GameClient) Encode(codable encoding.Encodable) error {
+func (client *Player) Encode(codable encoding.Encodable) error {
 	return codable.Encode(client.Conn().WriteBuffer, &client.Session().RandOut)
 }

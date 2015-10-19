@@ -10,7 +10,7 @@ type registerFunc func(*py.Module) error
 
 var moduleRegisterFuncs = []registerFunc{
 	RegisterGameService,
-	RegisterGameClient,
+	RegisterPlayer,
 	RegisterUpdateService,
 }
 

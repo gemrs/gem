@@ -47,7 +47,7 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log().Infof("new game client")
-	client, err := NewGameClient(conn, svc)
+	client, err := NewPlayer(conn, svc)
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.C
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
-func (svc *GameService) decodePacket(client *GameClient) error {
+func (svc *GameService) decodePacket(client *Player) error {
 	b := client.Conn().ReadBuffer
 	data, err := b.Peek(1)
 	if err != nil {
@@ -82,7 +82,7 @@ func (svc *GameService) decodePacket(client *GameClient) error {
 }
 
 // packetConsumer is the goroutine which picks packets from the readQueue and does something with them
-func (svc *GameService) packetConsumer(client *GameClient) {
+func (svc *GameService) packetConsumer(client *Player) {
 L:
 	for {
 		select {
