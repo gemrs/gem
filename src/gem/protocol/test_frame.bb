@@ -10,8 +10,4 @@ type TestFrame struct {
     Values16 int16[2]
     Struc1   EmbeddedStruct
     Struc2   EmbeddedStruct[2]
-    block    bitstruct {
-        X bit[2]
-        Y bit
-    }
 }
