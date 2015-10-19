@@ -54,6 +54,13 @@ func (client *GameClient) Init(conn *server.Connection, svc *GameService) error 
 	return nil
 }
 
+func finishLogin(_ *event.Event, args ...interface{}) {
+	client := args[0].(*GameClient)
+	client.PlayerInit()
+	gem.TickEvent.Register(event.NewListener(client.PlayerUpdate))
+	gem.PostTickEvent.Register(event.NewListener(client.ClearUpdateFlags))
+}
+
 func (client *GameClient) Session() *player.Session {
 	return client.session
 }

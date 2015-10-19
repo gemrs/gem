@@ -111,8 +111,8 @@ func (svc *GameService) doLogin(client *GameClient, username, password string) e
 	go svc.packetConsumer(client)
 
 	PlayerLoginEvent.NotifyObservers(client)
-
 	PlayerLoadProfileEvent.NotifyObservers(client)
+	PlayerFinishLoginEvent.NotifyObservers(client)
 
 	go func() {
 		client.WaitForDisconnect()

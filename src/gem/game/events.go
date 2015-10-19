@@ -10,6 +10,7 @@ var (
 	PlayerLoadProfileEvent  = createEvent("PlayerLoadProfile")
 	PlayerLoginEvent        = createEvent("PlayerLogin")
 	PlayerLogoutEvent       = createEvent("PlayerLogout")
+	PlayerFinishLoginEvent  = createEvent("PlayerFinishLogin")
 	PlayerSectorChangeEvent = createEvent("PlayerSectorChange")
 	PlayerRegionChangeEvent = createEvent("PlayerRegionChange")
 )
