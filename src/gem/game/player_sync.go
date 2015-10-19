@@ -19,4 +19,35 @@ func (client *GameClient) RegionUpdate(_ *event.Event, _ ...interface{}) {
 		SectorX: encoding.Int16(sector.X),
 		SectorY: encoding.Int16(sector.Y),
 	}
+
+	client.flags |= protocol.MobFlagRegionUpdate
+}
+
+func (client *GameClient) PlayerUpdate(_ *event.Event, _ ...interface{}) {
+	updateBlock := protocol.PlayerUpdate{
+		UpdateFlags: client.flags,
+	}
+
+	if (client.flags & protocol.MobFlagMovementUpdate) != 0 {
+		switch {
+		case (client.flags & protocol.MobFlagRegionUpdate) != 0:
+			updateBlock.OurMovementBlock.Warp = protocol.WarpMovement{
+				Location:         client.Position().LocalTo(client.region),
+				DiscardWalkQueue: true,
+			}
+
+		case (client.flags & protocol.MobFlagRunUpdate) != 0:
+			updateBlock.OurMovementBlock.Run = protocol.RunMovement{}
+
+		case (client.flags & protocol.MobFlagWalkUpdate) != 0:
+			updateBlock.OurMovementBlock.Walk = protocol.WalkMovement{}
+
+		}
+	}
+
+	client.Conn().Write <- &updateBlock
+}
+
+func (client *GameClient) ClearUpdateFlags(_ *event.Event, _ ...interface{}) {
+	client.flags = 0
 }

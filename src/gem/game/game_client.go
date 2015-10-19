@@ -1,6 +1,7 @@
 package game
 
 import (
+	"gem"
 	"gem/encoding"
 	"gem/event"
 	"gem/game/player"
@@ -28,6 +29,7 @@ type GameClient struct {
 	session *player.Session
 	profile *player.Profile
 	region  *position.Region
+	flags   int
 }
 
 // NewGameClient constructs a new GameClient
