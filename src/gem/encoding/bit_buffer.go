@@ -7,7 +7,7 @@ import (
 // BitBuffer provides bit-level access to a ByteWriter
 // Currently only write access is supported
 type BitBuffer struct {
-	writer io.ByteWriter
+	writer io.Writer
 
 	/* i is the index into c of the next bit
 	   i = 7 is the most significant bit */
@@ -16,7 +16,7 @@ type BitBuffer struct {
 }
 
 // NewBitBuffer creates a new BitBuffer which
-func NewBitBuffer(w io.ByteWriter) *BitBuffer {
+func NewBitBuffer(w io.Writer) *BitBuffer {
 	return &BitBuffer{
 		writer: w,
 		i:      7,
@@ -59,7 +59,7 @@ func (b *BitBuffer) Close() {
 
 // emitByte flushes the current byte and prepares a new one for writing
 func (b *BitBuffer) emitByte() error {
-	err := b.writer.WriteByte(b.c)
+	_, err := b.writer.Write([]byte{b.c})
 	b.c = 0
 	b.i = 7
 	return err
