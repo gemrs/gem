@@ -34,7 +34,7 @@ func (s *Session) Flags() entity.Flags {
 }
 
 func (s *Session) SetFlags(f entity.Flags) {
-	s.flags |= entity.MobFlagRegionUpdate
+	s.flags |= f
 }
 
 func (s *Session) ClearFlags() {

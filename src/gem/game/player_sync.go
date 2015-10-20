@@ -4,6 +4,7 @@ import (
 	"gem/encoding"
 	"gem/event"
 	"gem/game/entity"
+	"gem/game/player"
 	"gem/protocol"
 )
 
@@ -23,7 +24,6 @@ func (client *Player) RegionUpdate(_ *event.Event, _ ...interface{}) {
 
 	session := client.Session().(*Session)
 	session.SetFlags(entity.MobFlagRegionUpdate)
-	client.Log().Debugf("warp flags %v", client.Flags())
 }
 
 func (client *Player) AppearanceUpdate(_ *event.Event, _ ...interface{}) {
@@ -32,15 +32,12 @@ func (client *Player) AppearanceUpdate(_ *event.Event, _ ...interface{}) {
 }
 
 func (client *Player) PlayerUpdate(_ *event.Event, _ ...interface{}) {
-	client.Log().Debugf("doing update %v", client.Flags())
 	client.Conn().Write <- &protocol.PlayerUpdate{
-		OurPlayer: client,
+		OurPlayer: player.Snapshot(client),
 	}
 }
 
 func (client *Player) ClearUpdateFlags(_ *event.Event, _ ...interface{}) {
-	client.Log().Debugf("clearing flags %v", client.Flags())
-
 	session := client.Session().(*Session)
 	session.ClearFlags()
 }

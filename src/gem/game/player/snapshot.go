@@ -6,6 +6,70 @@ import (
 	"gem/log"
 )
 
+func Snapshot(player Player) Player {
+	srcProfile := player.Profile()
+	srcSession := player.Session()
+	snapshot := &PlayerSnapshot{
+		profile: &ProfileSnapshot{
+			username: srcProfile.Username(),
+			password: srcProfile.Password(),
+			rights:   srcProfile.Rights(),
+			pos:      srcProfile.Position(),
+		},
+	}
+
+	session := &SessionSnapshot{
+		flags:  srcSession.Flags(),
+		region: srcSession.Region(),
+	}
+	session.currentWalkDir, session.lastWalkDir = srcSession.WalkDirection()
+	snapshot.session = session
+
+	skills := &SkillsSnapshot{
+		combatLevel: srcProfile.Skills().CombatLevel(),
+	}
+	snapshot.profile.(*ProfileSnapshot).skills = skills
+
+	srcAppearance := srcProfile.Appearance()
+	appearance := &AppearanceSnapshot{
+		gender:   srcAppearance.Gender(),
+		headIcon: srcAppearance.HeadIcon(),
+		models: map[BodyPart]int{
+			Torso: srcAppearance.Model(Torso),
+			Arms:  srcAppearance.Model(Arms),
+			Legs:  srcAppearance.Model(Legs),
+			Head:  srcAppearance.Model(Head),
+			Hands: srcAppearance.Model(Hands),
+			Feet:  srcAppearance.Model(Feet),
+			Beard: srcAppearance.Model(Beard),
+		},
+		colors: map[BodyPart]int{
+			Torso: srcAppearance.Color(Torso),
+			Hair:  srcAppearance.Color(Hair),
+			Legs:  srcAppearance.Color(Legs),
+			Feet:  srcAppearance.Color(Feet),
+			Skin:  srcAppearance.Color(Skin),
+		},
+	}
+	snapshot.profile.(*ProfileSnapshot).appearance = appearance
+
+	srcAnimations := srcProfile.Animations()
+	animations := &AnimationsSnapshot{
+		anims: map[Anim]int{
+			AnimIdle:       srcAnimations.Animation(AnimIdle),
+			AnimSpotRotate: srcAnimations.Animation(AnimSpotRotate),
+			AnimWalk:       srcAnimations.Animation(AnimWalk),
+			AnimRotate180:  srcAnimations.Animation(AnimRotate180),
+			AnimRotateCCW:  srcAnimations.Animation(AnimRotateCCW),
+			AnimRotateCW:   srcAnimations.Animation(AnimRotateCW),
+			AnimRun:        srcAnimations.Animation(AnimRun),
+		},
+	}
+	snapshot.profile.(*ProfileSnapshot).animations = animations
+
+	return snapshot
+}
+
 type PlayerSnapshot struct {
 	profile Profile
 	session Session
@@ -44,6 +108,7 @@ func (p *PlayerSnapshot) SetPosition(*position.Absolute) {
 }
 
 type SessionSnapshot struct {
+	region         *position.Region
 	flags          entity.Flags
 	currentWalkDir int
 	lastWalkDir    int
@@ -55,6 +120,10 @@ func (s *SessionSnapshot) Flags() entity.Flags {
 
 func (s *SessionSnapshot) WalkDirection() (current int, last int) {
 	return s.currentWalkDir, s.lastWalkDir
+}
+
+func (s *SessionSnapshot) Region() *position.Region {
+	return s.region
 }
 
 type ProfileSnapshot struct {
@@ -108,19 +177,8 @@ type AppearanceSnapshot struct {
 	gender   int
 	headIcon int
 
-	torsoModel int
-	armsModel  int
-	legsModel  int
-	headModel  int
-	handsModel int
-	feetModel  int
-	beardModel int
-
-	hairColor  int
-	torsoColor int
-	legsColor  int
-	feetColor  int
-	skinColor  int
+	models map[BodyPart]int
+	colors map[BodyPart]int
 }
 
 func (a *AppearanceSnapshot) Gender() int {
@@ -132,67 +190,17 @@ func (a *AppearanceSnapshot) HeadIcon() int {
 }
 
 func (a *AppearanceSnapshot) Model(b BodyPart) int {
-	switch b {
-	case Torso:
-		return a.torsoModel
-	case Arms:
-		return a.armsModel
-	case Legs:
-		return a.legsModel
-	case Head:
-		return a.headModel
-	case Hands:
-		return a.handsModel
-	case Feet:
-		return a.feetModel
-	case Beard:
-		return a.beardModel
-	}
-	panic("not reached")
+	return a.models[b]
 }
 
 func (a *AppearanceSnapshot) Color(b BodyPart) int {
-	switch b {
-	case Hair:
-		return a.hairColor
-	case Torso:
-		return a.torsoColor
-	case Legs:
-		return a.legsColor
-	case Feet:
-		return a.feetColor
-	case Skin:
-		return a.skinColor
-	}
-	panic("not reached")
+	return a.colors[b]
 }
 
 type AnimationsSnapshot struct {
-	idle       int
-	spotRotate int
-	walk       int
-	rotate180  int
-	rotateCCW  int
-	rotateCW   int
-	run        int
+	anims map[Anim]int
 }
 
 func (a *AnimationsSnapshot) Animation(anim Anim) int {
-	switch anim {
-	case AnimIdle:
-		return a.idle
-	case AnimSpotRotate:
-		return a.spotRotate
-	case AnimWalk:
-		return a.walk
-	case AnimRotate180:
-		return a.rotate180
-	case AnimRotateCCW:
-		return a.rotateCCW
-	case AnimRotateCW:
-		return a.rotateCW
-	case AnimRun:
-		return a.run
-	}
-	panic("not reached")
+	return a.anims[anim]
 }
