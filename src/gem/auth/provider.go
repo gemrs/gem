@@ -41,7 +41,7 @@ const (
 
 // Provider is a provider of authorization.
 type Provider interface {
-	LookupProfile(name, password string) (*player.Profile, AuthResponse)
+	LookupProfile(name, password string) (player.Profile, AuthResponse)
 }
 
 // ProviderImpl is a base class to be extended in Python
@@ -53,7 +53,7 @@ func (p *ProviderImpl) Init() error {
 	return nil
 }
 
-func (p *ProviderImpl) LookupProfile(name, password string) (*player.Profile, AuthResponse) {
+func (p *ProviderImpl) LookupProfile(name, password string) (player.Profile, AuthResponse) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -69,5 +69,16 @@ func (p *ProviderImpl) LookupProfile(name, password string) (*player.Profile, Au
 	if err != nil {
 		return nil, AuthIncomplete
 	}
-	return profile.(*player.Profile), AuthResponse(response)
+
+	if AuthResponse(response) != AuthOkay {
+		return nil, AuthResponse(response)
+	}
+
+	var profileIface interface{}
+	profileIface = profile
+
+	if p, ok := profileIface.(player.Profile); ok {
+		return p, AuthResponse(response)
+	}
+	panic("invalid profile returned: not a player.Profile")
 }

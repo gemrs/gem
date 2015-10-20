@@ -6,10 +6,11 @@ import (
 
 	"gem/encoding"
 	"gem/game/entity"
+	"gem/game/player"
 )
 
 type PlayerUpdateBlock struct {
-	OurPlayer entity.Player
+	OurPlayer player.Player
 }
 
 func (struc *PlayerUpdateBlock) Encode(w io.Writer, flags interface{}) error {
@@ -87,8 +88,8 @@ func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer) erro
 	return nil
 }
 
-func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, player entity.Player) error {
-	flags := player.Flags() & ^entity.MobFlagMovementUpdate
+func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.Player) error {
+	flags := thisPlayer.Flags() & ^entity.MobFlagMovementUpdate
 	if flags == 0 {
 		return nil
 	}
@@ -111,38 +112,38 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, player entity.Play
 	/* Update appearance */
 	if (flags & entity.MobFlagIdentityUpdate) != 0 {
 		buf := encoding.NewBuffer()
-		appearance := player.Profile().Appearance
-		anims := player.Profile().Animations
+		appearance := thisPlayer.Profile().Appearance()
+		anims := thisPlayer.Profile().Animations()
 		appearanceBlock := OutboundPlayerAppearance{
-			Gender:   encoding.Int8(appearance.Gender),
-			HeadIcon: encoding.Int8(appearance.HeadIcon),
+			Gender:   encoding.Int8(appearance.Gender()),
+			HeadIcon: encoding.Int8(appearance.HeadIcon()),
 
 			HelmModel:       encoding.Int8(0),
 			CapeModel:       encoding.Int8(0),
 			AmuletModel:     encoding.Int8(0),
 			RightWieldModel: encoding.Int8(0),
-			TorsoModel:      encoding.Int16(256 + appearance.TorsoModel),
+			TorsoModel:      encoding.Int16(256 + appearance.Model(player.Torso)),
 			LeftWieldModel:  encoding.Int8(0),
-			ArmsModel:       encoding.Int16(256 + appearance.ArmsModel),
-			LegsModel:       encoding.Int16(256 + appearance.LegsModel),
-			HeadModel:       encoding.Int16(256 + appearance.HeadModel),
-			HandsModel:      encoding.Int16(256 + appearance.HandsModel),
-			FeetModel:       encoding.Int16(256 + appearance.FeetModel),
-			BeardModel:      encoding.Int16(256 + appearance.BeardModel),
+			ArmsModel:       encoding.Int16(256 + appearance.Model(player.Arms)),
+			LegsModel:       encoding.Int16(256 + appearance.Model(player.Legs)),
+			HeadModel:       encoding.Int16(256 + appearance.Model(player.Head)),
+			HandsModel:      encoding.Int16(256 + appearance.Model(player.Hands)),
+			FeetModel:       encoding.Int16(256 + appearance.Model(player.Feet)),
+			BeardModel:      encoding.Int16(256 + appearance.Model(player.Beard)),
 
-			HairColor:  encoding.Int8(appearance.HairColor),
-			TorsoColor: encoding.Int8(appearance.TorsoColor),
-			LegColor:   encoding.Int8(appearance.LegColor),
-			FeetColor:  encoding.Int8(appearance.FeetColor),
-			SkinColor:  encoding.Int8(appearance.SkinColor),
+			HairColor:  encoding.Int8(appearance.Color(player.Hair)),
+			TorsoColor: encoding.Int8(appearance.Color(player.Torso)),
+			LegColor:   encoding.Int8(appearance.Color(player.Legs)),
+			FeetColor:  encoding.Int8(appearance.Color(player.Feet)),
+			SkinColor:  encoding.Int8(appearance.Color(player.Skin)),
 
-			AnimIdle:       encoding.Int16(anims.AnimIdle),
-			AnimSpotRotate: encoding.Int16(anims.AnimSpotRotate),
-			AnimWalk:       encoding.Int16(anims.AnimWalk),
-			AnimRotate180:  encoding.Int16(anims.AnimRotate180),
-			AnimRotateCCW:  encoding.Int16(anims.AnimRotateCCW),
-			AnimRotateCW:   encoding.Int16(anims.AnimRotateCW),
-			AnimRun:        encoding.Int16(anims.AnimRun),
+			AnimIdle:       encoding.Int16(anims.Animation(player.AnimIdle)),
+			AnimSpotRotate: encoding.Int16(anims.Animation(player.AnimSpotRotate)),
+			AnimWalk:       encoding.Int16(anims.Animation(player.AnimWalk)),
+			AnimRotate180:  encoding.Int16(anims.Animation(player.AnimRotate180)),
+			AnimRotateCCW:  encoding.Int16(anims.Animation(player.AnimRotateCCW)),
+			AnimRotateCW:   encoding.Int16(anims.Animation(player.AnimRotateCW)),
+			AnimRun:        encoding.Int16(anims.Animation(player.AnimRun)),
 		}
 
 		err := appearanceBlock.Encode(buf, nil)

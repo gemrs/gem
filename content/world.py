@@ -9,8 +9,8 @@ class World(object):
 
     @event.callback(gem.game.PlayerLoadProfile)
     def load_profile(self, player):
-        player.SetPosition(player.Profile().Pos)
-        player.SetAppearance(player.Profile().Appearance)
+        player.SetPosition(player.Profile().Position())
+        player.SetAppearance(player.Profile().Appearance())
 
     @event.callback(gem.game.PlayerLogin)
     def register_player(self, player):

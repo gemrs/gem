@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"gem/encoding"
-	"gem/game/entity"
+	"gem/game/player"
 )
 
 var routingTable = map[string]Handler{}
@@ -14,7 +14,7 @@ func registerHandler(packetType interface{}, handler Handler) {
 	routingTable[typeString] = handler
 }
 
-func Dispatch(player entity.Player, packet encoding.Decodable) {
+func Dispatch(player player.Player, packet encoding.Decodable) {
 	typeString := reflect.TypeOf(packet).String()
 	if handler, ok := routingTable[typeString]; ok {
 		handler(player, packet)

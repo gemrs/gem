@@ -28,15 +28,13 @@ type Player struct {
 	service *GameService
 	decode  decodeFunc
 
-	session *player.Session
-	profile *player.Profile
-	region  *position.Region
-	flags   entity.Flags
+	session *Session
+	profile *Profile
 }
 
 // NewGameClient constructs a new GameClient
 func (client *Player) Init(conn *server.Connection, svc *GameService) error {
-	session, err := player.NewSession()
+	session, err := NewSession()
 	if err != nil {
 		return err
 	}
@@ -46,7 +44,7 @@ func (client *Player) Init(conn *server.Connection, svc *GameService) error {
 	client.decode = svc.handshake
 	client.session = session
 
-	client.region, err = position.NewRegion(nil)
+	client.session.region, err = position.NewRegion(nil)
 	if err != nil {
 		return err
 	}
@@ -64,11 +62,11 @@ func finishLogin(_ *event.Event, args ...interface{}) {
 	gem.PostTickEvent.Register(event.NewListener(client.ClearUpdateFlags))
 }
 
-func (client *Player) Session() *player.Session {
+func (client *Player) Session() player.Session {
 	return client.session
 }
 
-func (client *Player) Profile() *player.Profile {
+func (client *Player) Profile() player.Profile {
 	return client.profile
 }
 
@@ -84,15 +82,32 @@ func (client *Player) Decode() error {
 
 // Position returns the absolute position of the player
 func (client *Player) Position() *position.Absolute {
-	return client.Profile().Pos
+	return client.Profile().Position()
+}
+
+func (client *Player) WalkDirection() (current int, last int) {
+	return client.Session().WalkDirection()
+}
+
+// Flags returns the mob update flags for this player
+func (client *Player) Flags() entity.Flags {
+	return client.Session().Flags()
+}
+
+// Region returns the player's current surrounding region
+func (client *Player) Region() *position.Region {
+	return client.Session().Region()
 }
 
 // SetPosition warps the player to a given location
 func (client *Player) SetPosition(pos *position.Absolute) {
-	client.Profile().Pos = pos
-	oldRegion := client.region
-	client.region = pos.RegionOf()
-	dx, dy, dz := client.region.SectorDelta(oldRegion)
+	profile := client.Profile().(*Profile)
+	session := client.Session().(*Session)
+
+	profile.SetPosition(pos)
+	oldRegion := session.Region()
+	session.SetRegion(pos.RegionOf())
+	dx, dy, dz := session.Region().SectorDelta(oldRegion)
 
 	if dx >= 1 || dy >= 1 || dz >= 1 {
 		PlayerSectorChangeEvent.NotifyObservers(client, pos)
@@ -106,8 +121,9 @@ func (client *Player) SetPosition(pos *position.Absolute) {
 }
 
 // SetAppearance modifies the player's appearance
-func (client *Player) SetAppearance(a *player.Appearance) {
-	client.Profile().Appearance = a
+func (client *Player) SetAppearance(a player.Appearance) {
+	profile := client.Profile().(*Profile)
+	profile.SetAppearance(a)
 	client.AppearanceUpdated()
 }
 
@@ -116,24 +132,10 @@ func (client *Player) AppearanceUpdated() {
 	PlayerAppearanceUpdateEvent.NotifyObservers(client)
 }
 
-// Flags returns the mob update flags for this player
-func (client *Player) Flags() entity.Flags {
-	return client.flags
-}
-
-// Region returns the player's current surrounding region
-func (client *Player) Region() *position.Region {
-	return client.region
-}
-
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator
 func (client *Player) Encode(codable encoding.Encodable) error {
-	return codable.Encode(client.Conn().WriteBuffer, &client.Session().RandOut)
-}
-
-// WalkDirection returns the current and previous walking directions
-func (client *Player) WalkDirection() (current, last int) {
-	return 0, 0
+	session := client.Session().(*Session)
+	return codable.Encode(client.Conn().WriteBuffer, &session.RandOut)
 }
 
 // SendMessage puts a message to the player's chat window

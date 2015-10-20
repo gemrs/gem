@@ -64,7 +64,8 @@ func (svc *GameService) decodePacket(client *Player) error {
 
 	idByte := int(data[0])
 
-	rand := client.Session().RandIn.Rand()
+	session := client.Session().(*Session)
+	rand := session.RandIn.Rand()
 	realId := uint8(uint32(idByte) - rand)
 	packet, err := protocol.NewInboundPacket(int(realId))
 	if err != nil {

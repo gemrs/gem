@@ -132,6 +132,7 @@ func (svc *GameService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Object,
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -167,6 +168,7 @@ func (svc *GameService) Py_decodePacket(_args *py.Tuple, kwds *py.Dict) (py.Obje
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

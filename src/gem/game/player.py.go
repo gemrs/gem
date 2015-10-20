@@ -105,10 +105,11 @@ func (client *Player) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object, err
 
 	// Remove local references
 
-	out_0, err := gopygen.TypeConvOut(res0, "*player.Session")
+	out_0, err := gopygen.TypeConvOut(res0, "player.Session")
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -132,10 +133,11 @@ func (client *Player) Py_Profile(_args *py.Tuple, kwds *py.Dict) (py.Object, err
 
 	// Remove local references
 
-	out_0, err := gopygen.TypeConvOut(res0, "*player.Profile")
+	out_0, err := gopygen.TypeConvOut(res0, "player.Profile")
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -163,6 +165,7 @@ func (client *Player) Py_Conn(_args *py.Tuple, kwds *py.Dict) (py.Object, error)
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -190,6 +193,7 @@ func (client *Player) Py_Decode(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -217,6 +221,97 @@ func (client *Player) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object, er
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
+
+	return out_0, nil
+
+}
+
+func (client *Player) Py_WalkDirection(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_WalkDirection: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	res0, res1 := client.WalkDirection()
+
+	// Remove local references
+
+	out_0, err := gopygen.TypeConvOut(res0, "int")
+	if err != nil {
+		return nil, err
+	}
+	out_0.Incref()
+
+	out_1, err := gopygen.TypeConvOut(res1, "int")
+	if err != nil {
+		return nil, err
+	}
+	out_1.Incref()
+
+	return py.PackTuple(out_0, out_1)
+
+}
+
+func (client *Player) Py_Flags(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Flags: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	res0 := client.Flags()
+
+	// Remove local references
+
+	out_0, err := gopygen.TypeConvOut(res0, "entity.Flags")
+	if err != nil {
+		return nil, err
+	}
+	out_0.Incref()
+
+	return out_0, nil
+
+}
+
+func (client *Player) Py_Region(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Region: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	res0 := client.Region()
+
+	// Remove local references
+
+	out_0, err := gopygen.TypeConvOut(res0, "*position.Region")
+	if err != nil {
+		return nil, err
+	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -266,14 +361,14 @@ func (client *Player) Py_SetAppearance(_args *py.Tuple, kwds *py.Dict) (py.Objec
 	// Convert parameters
 
 	args[0].Incref()
-	in_0, err := gopygen.TypeConvIn(args[0], "*player.Appearance")
+	in_0, err := gopygen.TypeConvIn(args[0], "player.Appearance")
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the function call
 
-	client.SetAppearance(in_0.(*player.Appearance))
+	client.SetAppearance(in_0.(player.Appearance))
 
 	// Remove local references
 
@@ -307,60 +402,6 @@ func (client *Player) Py_AppearanceUpdated(_args *py.Tuple, kwds *py.Dict) (py.O
 
 }
 
-func (client *Player) Py_Flags(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 0 {
-		return nil, fmt.Errorf("Py_Flags: parameter length mismatch")
-	}
-	// Convert parameters
-
-	// Make the function call
-
-	res0 := client.Flags()
-
-	// Remove local references
-
-	out_0, err := gopygen.TypeConvOut(res0, "entity.Flags")
-	if err != nil {
-		return nil, err
-	}
-
-	return out_0, nil
-
-}
-
-func (client *Player) Py_Region(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 0 {
-		return nil, fmt.Errorf("Py_Region: parameter length mismatch")
-	}
-	// Convert parameters
-
-	// Make the function call
-
-	res0 := client.Region()
-
-	// Remove local references
-
-	out_0, err := gopygen.TypeConvOut(res0, "*position.Region")
-	if err != nil {
-		return nil, err
-	}
-
-	return out_0, nil
-
-}
-
 func (client *Player) Py_Encode(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -391,6 +432,7 @@ func (client *Player) Py_Encode(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

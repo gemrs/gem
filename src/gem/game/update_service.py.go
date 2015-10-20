@@ -115,6 +115,7 @@ func (svc *UpdateService) Py_NewClient(_args *py.Tuple, kwds *py.Dict) (py.Objec
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

@@ -1,9 +1,7 @@
 package entity
 
 import (
-	"gem/game/player"
 	"gem/game/position"
-	"gem/log"
 )
 
 type Flags int
@@ -27,12 +25,4 @@ type Mob interface {
 	Entity
 	Flags() Flags
 	WalkDirection() (current int, last int)
-}
-
-// Player is an Entity representing a player
-type Player interface {
-	Mob
-	Profile() *player.Profile
-	Session() *player.Session
-	Log() *log.Module
 }

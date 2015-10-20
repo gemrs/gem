@@ -21,12 +21,14 @@ func (client *Player) RegionUpdate(_ *event.Event, _ ...interface{}) {
 		SectorY: encoding.Int16(sector.Y),
 	}
 
-	client.flags |= entity.MobFlagRegionUpdate
+	session := client.Session().(*Session)
+	session.SetFlags(entity.MobFlagRegionUpdate)
 	client.Log().Debugf("warp flags %v", client.Flags())
 }
 
 func (client *Player) AppearanceUpdate(_ *event.Event, _ ...interface{}) {
-	client.flags |= entity.MobFlagIdentityUpdate
+	session := client.Session().(*Session)
+	session.SetFlags(entity.MobFlagIdentityUpdate)
 }
 
 func (client *Player) PlayerUpdate(_ *event.Event, _ ...interface{}) {
@@ -39,5 +41,6 @@ func (client *Player) PlayerUpdate(_ *event.Event, _ ...interface{}) {
 func (client *Player) ClearUpdateFlags(_ *event.Event, _ ...interface{}) {
 	client.Log().Debugf("clearing flags %v", client.Flags())
 
-	client.flags = 0
+	session := client.Session().(*Session)
+	session.ClearFlags()
 }

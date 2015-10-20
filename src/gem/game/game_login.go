@@ -10,7 +10,7 @@ import (
 
 // handshake performs the isaac key exchange
 func (svc *GameService) handshake(client *Player) error {
-	session := client.Session()
+	session := client.Session().(*Session)
 
 	session.RandKey = make([]int32, 4)
 	session.RandKey[2] = rand.Int31()
@@ -33,7 +33,7 @@ func (svc *GameService) handshake(client *Player) error {
 
 // decodeLoginBlock handles the unencrypted login block
 func (svc *GameService) decodeLoginBlock(client *Player) error {
-	session := client.Session()
+	session := client.Session().(*Session)
 
 	loginBlock := protocol.InboundLoginBlock{}
 	if err := loginBlock.Decode(client.Conn().ReadBuffer, nil); err != nil {
@@ -56,7 +56,7 @@ func (svc *GameService) decodeLoginBlock(client *Player) error {
 
 // decodeSecureBlock handles the secure login block and the login response (via doLogin)
 func (svc *GameService) decodeSecureBlock(client *Player) error {
-	session := client.Session()
+	session := client.Session().(*Session)
 
 	rsaBlock := encoding.RSABlock{&protocol.InboundSecureLoginBlock{}}
 	rsaArgs := encoding.RSADecodeArgs{
@@ -91,8 +91,6 @@ func (svc *GameService) decodeSecureBlock(client *Player) error {
 func (svc *GameService) doLogin(client *Player, username, password string) error {
 	profile, responseCode := svc.auth.LookupProfile(username, password)
 
-	client.profile = profile
-
 	if responseCode != auth.AuthOkay {
 		client.Conn().Write <- &protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),
@@ -101,10 +99,12 @@ func (svc *GameService) doLogin(client *Player, username, password string) error
 		return nil
 	}
 
+	client.profile = profile.(*Profile)
+
 	// Successful login, do all the stuff
 	client.Conn().Write <- &protocol.OutboundLoginResponse{
 		Response: encoding.Int8(responseCode),
-		Rights:   encoding.Int8(client.Profile().Rights),
+		Rights:   encoding.Int8(client.Profile().Rights()),
 		Flagged:  0,
 	}
 	client.decode = svc.decodePacket

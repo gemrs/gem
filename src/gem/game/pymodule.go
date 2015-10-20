@@ -12,6 +12,11 @@ var moduleRegisterFuncs = []registerFunc{
 	RegisterGameService,
 	RegisterPlayer,
 	RegisterUpdateService,
+	RegisterSession,
+	RegisterProfile,
+	RegisterSkills,
+	RegisterAppearance,
+	RegisterAnimations,
 }
 
 func init() {

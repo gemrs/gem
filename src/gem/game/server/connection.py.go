@@ -7,7 +7,6 @@ import (
 	"net"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
