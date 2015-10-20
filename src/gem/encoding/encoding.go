@@ -17,8 +17,4 @@ type Encodable interface {
 	Encode(buf io.Writer, flags_ interface{}) error
 }
 
-type Writer interface {
-	WriteEncodable(e Encodable)
-}
-
 var NilFlags int = 0

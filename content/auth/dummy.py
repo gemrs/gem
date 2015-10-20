@@ -15,4 +15,5 @@ class DummyProvider(gem.auth.ProviderImpl):
         profile.Username = username
         profile.Password = password
         profile.Pos = position.Absolute(3200, 3200, 0)
+        profile.Appearance = player.Appearance()
         return profile, gem.auth.AuthOkay

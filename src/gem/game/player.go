@@ -4,9 +4,11 @@ import (
 	"gem"
 	"gem/encoding"
 	"gem/event"
+	"gem/game/entity"
 	"gem/game/player"
 	"gem/game/position"
 	"gem/game/server"
+	"gem/protocol"
 
 	"github.com/qur/gopy/lib"
 )
@@ -29,7 +31,7 @@ type Player struct {
 	session *player.Session
 	profile *player.Profile
 	region  *position.Region
-	flags   int
+	flags   entity.Flags
 }
 
 // NewGameClient constructs a new GameClient
@@ -38,8 +40,6 @@ func (client *Player) Init(conn *server.Connection, svc *GameService) error {
 	if err != nil {
 		return err
 	}
-
-	session.SetTarget(conn)
 
 	client.Connection = conn
 	client.service = svc
@@ -52,6 +52,7 @@ func (client *Player) Init(conn *server.Connection, svc *GameService) error {
 	}
 
 	PlayerRegionChangeEvent.Register(event.NewListener(client.RegionUpdate))
+	PlayerAppearanceUpdateEvent.Register(event.NewListener(client.AppearanceUpdate))
 
 	return nil
 }
@@ -94,17 +95,50 @@ func (client *Player) SetPosition(pos *position.Absolute) {
 	dx, dy, dz := client.region.SectorDelta(oldRegion)
 
 	if dx >= 1 || dy >= 1 || dz >= 1 {
-		PlayerSectorChangeEvent.NotifyObservers(pos)
+		PlayerSectorChangeEvent.NotifyObservers(client, pos)
 	}
 
 	if dx >= 5 || dy >= 5 || dz >= 1 {
-		PlayerRegionChangeEvent.NotifyObservers(pos)
+		PlayerRegionChangeEvent.NotifyObservers(client, pos)
 	}
 
 	client.Log().Debugf("Warping to %v", pos)
 }
 
+// SetAppearance modifies the player's appearance
+func (client *Player) SetAppearance(a *player.Appearance) {
+	client.Profile().Appearance = a
+	client.AppearanceUpdated()
+}
+
+// AppearanceUpdated signals that the player's appearance should be re-synchronized
+func (client *Player) AppearanceUpdated() {
+	PlayerAppearanceUpdateEvent.NotifyObservers(client)
+}
+
+// Flags returns the mob update flags for this player
+func (client *Player) Flags() entity.Flags {
+	return client.flags
+}
+
+// Region returns the player's current surrounding region
+func (client *Player) Region() *position.Region {
+	return client.region
+}
+
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator
 func (client *Player) Encode(codable encoding.Encodable) error {
 	return codable.Encode(client.Conn().WriteBuffer, &client.Session().RandOut)
+}
+
+// WalkDirection returns the current and previous walking directions
+func (client *Player) WalkDirection() (current, last int) {
+	return 0, 0
+}
+
+// SendMessage puts a message to the player's chat window
+func (client *Player) SendMessage(message string) {
+	client.Conn().Write <- &protocol.OutboundChatMessage{
+		Message: encoding.JString(message),
+	}
 }

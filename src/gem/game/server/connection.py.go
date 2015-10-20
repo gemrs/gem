@@ -3,7 +3,6 @@ package server
 
 import (
 	"fmt"
-	"gem/encoding"
 	"gem/log"
 	"net"
 
@@ -235,37 +234,6 @@ func (conn *Connection) Py_SetIndex(_args *py.Tuple, kwds *py.Dict) (py.Object, 
 	// Make the function call
 
 	conn.SetIndex(in_0.(int))
-
-	// Remove local references
-
-	args[0].Decref()
-
-	py.None.Incref()
-	return py.None, nil
-
-}
-
-func (conn *Connection) Py_WriteEncodable(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 1 {
-		return nil, fmt.Errorf("Py_WriteEncodable: parameter length mismatch")
-	}
-	// Convert parameters
-
-	args[0].Incref()
-	in_0, err := gopygen.TypeConvIn(args[0], "encoding.Encodable")
-	if err != nil {
-		return nil, err
-	}
-
-	// Make the function call
-
-	conn.WriteEncodable(in_0.(encoding.Encodable))
 
 	// Remove local references
 

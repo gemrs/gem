@@ -18,14 +18,12 @@ const (
 
 // Client is a common interface to game/update clients
 type Client interface {
-	encoding.Writer
 	Conn() *Connection
 	Decode() error
 	Encode(encoding.Encodable) error
 	Disconnect()
 	Index() int
 	SetIndex(index int)
-	Log() *log.Module
 }
 
 //go:generate gopygen -type Connection -excfield ".*" $GOFILE
@@ -94,11 +92,6 @@ func (conn *Connection) Index() int {
 // Index sets the connection's unique index
 func (conn *Connection) SetIndex(index int) {
 	conn.index = index
-}
-
-// WriteEncodable implements encoding.Writer
-func (conn *Connection) WriteEncodable(e encoding.Encodable) {
-	conn.Write <- e
 }
 
 // decodeToReadQueue is the goroutine handling the read buffer

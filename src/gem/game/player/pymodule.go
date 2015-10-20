@@ -11,6 +11,9 @@ type registerFunc func(*py.Module) error
 var moduleRegisterFuncs = []registerFunc{
 	RegisterSession,
 	RegisterProfile,
+	RegisterSkills,
+	RegisterAppearance,
+	RegisterAnimations,
 }
 
 func init() {

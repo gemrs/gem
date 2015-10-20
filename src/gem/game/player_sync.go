@@ -3,6 +3,7 @@ package game
 import (
 	"gem/encoding"
 	"gem/event"
+	"gem/game/entity"
 	"gem/protocol"
 )
 
@@ -20,34 +21,23 @@ func (client *Player) RegionUpdate(_ *event.Event, _ ...interface{}) {
 		SectorY: encoding.Int16(sector.Y),
 	}
 
-	client.flags |= protocol.MobFlagRegionUpdate
+	client.flags |= entity.MobFlagRegionUpdate
+	client.Log().Debugf("warp flags %v", client.Flags())
+}
+
+func (client *Player) AppearanceUpdate(_ *event.Event, _ ...interface{}) {
+	client.flags |= entity.MobFlagIdentityUpdate
 }
 
 func (client *Player) PlayerUpdate(_ *event.Event, _ ...interface{}) {
-	updateBlock := protocol.PlayerUpdate{
-		UpdateFlags: client.flags,
+	client.Log().Debugf("doing update %v", client.Flags())
+	client.Conn().Write <- &protocol.PlayerUpdate{
+		OurPlayer: client,
 	}
-
-	if (client.flags & protocol.MobFlagMovementUpdate) != 0 {
-		switch {
-		case (client.flags & protocol.MobFlagRegionUpdate) != 0:
-			updateBlock.OurMovementBlock.Warp = protocol.WarpMovement{
-				Location:         client.Position().LocalTo(client.region),
-				DiscardWalkQueue: true,
-			}
-
-		case (client.flags & protocol.MobFlagRunUpdate) != 0:
-			updateBlock.OurMovementBlock.Run = protocol.RunMovement{}
-
-		case (client.flags & protocol.MobFlagWalkUpdate) != 0:
-			updateBlock.OurMovementBlock.Walk = protocol.WalkMovement{}
-
-		}
-	}
-
-	client.Conn().Write <- &updateBlock
 }
 
 func (client *Player) ClearUpdateFlags(_ *event.Event, _ ...interface{}) {
+	client.Log().Debugf("clearing flags %v", client.Flags())
+
 	client.flags = 0
 }

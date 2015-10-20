@@ -10,3 +10,5 @@ package protocol
 
 /* generate client -> server packets */
 //go:generate bbc inbound_packets.bb inbound_packets.bb.go
+
+//go:generate bbc player_appearance_update.bb player_appearance_update.bb.go

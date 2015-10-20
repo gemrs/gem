@@ -6,7 +6,6 @@ import (
 	"gem/game/position"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -34,6 +33,39 @@ func RegisterProfile(module *py.Module) error {
 	}
 
 	return nil
+}
+
+// Alloc allocates an object for use in python land.
+// Copies the member fields from this object to the newly allocated object
+// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
+func NewProfile() (*Profile, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	// Allocate
+	alloc_, err := ProfileDef.Alloc(0)
+	if err != nil {
+		return nil, err
+	}
+	alloc := alloc_.(*Profile)
+	err = alloc.Init()
+	return alloc, err
+}
+
+func (obj *Profile) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return fmt.Errorf("(Profile) PyInit: parameter length mismatch")
+	}
+
+	err = obj.Init()
+
+	return err
 }
 
 func (obj *Profile) PyGet_Username() (py.Object, error) {
@@ -140,6 +172,172 @@ func (obj *Profile) PySet_Pos(arg py.Object) error {
 	var tmp interface{}
 	tmp = &obj.Pos
 	obj.Pos = val.(*position.Absolute)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
+	return nil
+}
+
+func (obj *Profile) PyGet_Skills() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.Skills, "*Skills")
+}
+
+func (obj *Profile) PySet_Skills(arg py.Object) error {
+	arg.Incref()
+	val, err := gopygen.TypeConvIn(arg, "*Skills")
+	if err != nil {
+		return err
+	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Skills
+	obj.Skills = val.(*Skills)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
+	return nil
+}
+
+func (obj *Profile) PyGet_Appearance() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.Appearance, "*Appearance")
+}
+
+func (obj *Profile) PySet_Appearance(arg py.Object) error {
+	arg.Incref()
+	val, err := gopygen.TypeConvIn(arg, "*Appearance")
+	if err != nil {
+		return err
+	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Appearance
+	obj.Appearance = val.(*Appearance)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
+	return nil
+}
+
+func (obj *Profile) PyGet_Animations() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.Animations, "*Animations")
+}
+
+func (obj *Profile) PySet_Animations(arg py.Object) error {
+	arg.Incref()
+	val, err := gopygen.TypeConvIn(arg, "*Animations")
+	if err != nil {
+		return err
+	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.Animations
+	obj.Animations = val.(*Animations)
+
+	if oldObj, ok := tmp.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		oldObj.Decref()
+	}
+	return nil
+}
+
+var SkillsDef = py.Class{
+	Name:    "Skills",
+	Flags:   py.TPFLAGS_BASETYPE,
+	Pointer: (*Skills)(nil),
+}
+
+// Registers this type with a python module
+func RegisterSkills(module *py.Module) error {
+	var err error
+	var class *py.Type
+	if class, err = SkillsDef.Create(); err != nil {
+		return err
+	}
+
+	if err = module.AddObject("Skills", class); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Alloc allocates an object for use in python land.
+// Copies the member fields from this object to the newly allocated object
+// Usage: obj := GoObject{X:1, Y: 2}.Alloc()
+func NewSkills() (*Skills, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	// Allocate
+	alloc_, err := SkillsDef.Alloc(0)
+	if err != nil {
+		return nil, err
+	}
+	alloc := alloc_.(*Skills)
+	err = alloc.Init()
+	return alloc, err
+}
+
+func (obj *Skills) PyInit(_args *py.Tuple, kwds *py.Dict) error {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return fmt.Errorf("(Skills) PyInit: parameter length mismatch")
+	}
+
+	err = obj.Init()
+
+	return err
+}
+
+func (obj *Skills) PyGet_CombatLevel() (py.Object, error) {
+	return gopygen.TypeConvOut(obj.CombatLevel, "int")
+}
+
+func (obj *Skills) PySet_CombatLevel(arg py.Object) error {
+	arg.Incref()
+	val, err := gopygen.TypeConvIn(arg, "int")
+	if err != nil {
+		return err
+	}
+
+	if _, ok := val.(py.Object); ok {
+		// If we're not converting it from a python object, we should refcount it properly
+		val.(py.Object).Incref()
+	}
+	arg.Decref()
+
+	var tmp interface{}
+	tmp = &obj.CombatLevel
+	obj.CombatLevel = val.(int)
 
 	if oldObj, ok := tmp.(py.Object); ok {
 		// If we're not converting it from a python object, we should refcount it properly
