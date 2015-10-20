@@ -33,6 +33,7 @@ func (s *Session) Flags() entity.Flags {
 	return s.flags
 }
 
+// SetFlags ORs the given flags with the player's current update flags
 func (s *Session) SetFlags(f entity.Flags) {
 	s.flags |= f
 }

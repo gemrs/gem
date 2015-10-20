@@ -6,6 +6,9 @@ import (
 	"gem/log"
 )
 
+// Snapshot clones a player to a static, read-only implementation of the player interfaces
+// A snapshot is generally performed every tick, so that when the update packet is being built
+// every player is syncing with the same state, and so that the state doesn't change during synchronization
 func Snapshot(player Player) Player {
 	srcProfile := player.Profile()
 	srcSession := player.Session()

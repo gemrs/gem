@@ -55,6 +55,7 @@ func (client *Player) Init(conn *server.Connection, svc *GameService) error {
 	return nil
 }
 
+// finishLogin calls PlayerInit and registers tick event callbacks for various things
 func finishLogin(_ *event.Event, args ...interface{}) {
 	client := args[0].(*Player)
 	client.PlayerInit()
@@ -62,10 +63,12 @@ func finishLogin(_ *event.Event, args ...interface{}) {
 	gem.PostTickEvent.Register(event.NewListener(client.ClearUpdateFlags))
 }
 
+// Session returns the player's session
 func (client *Player) Session() player.Session {
 	return client.session
 }
 
+// Profile returns the player's profile
 func (client *Player) Profile() player.Profile {
 	return client.profile
 }
@@ -85,6 +88,7 @@ func (client *Player) Position() *position.Absolute {
 	return client.Profile().Position()
 }
 
+// WalkDirection returns the player's current and (in the case of running) last walking direction
 func (client *Player) WalkDirection() (current int, last int) {
 	return client.Session().WalkDirection()
 }
