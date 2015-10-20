@@ -3,6 +3,7 @@ import readline
 import exceptions
 
 import gem
+import gem.event
 
 logger = gem.syslog.Module(__name__)
 
@@ -12,5 +13,5 @@ def cleanup(event):
     console.resetbuffer()
 
 def interact():
-    gem.event.register_listener(gem.event.Shutdown, cleanup)
+    gem.Shutdown.Register(gem.event.PyListener(cleanup))
     console.interact("")
