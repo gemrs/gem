@@ -3,7 +3,6 @@ package encoding
 import (
 	"bytes"
 	"io"
-	"math/big"
 
 	"gem/crypto"
 )
@@ -37,13 +36,7 @@ func (rsa *RSABlock) Decode(buf io.Reader, flags interface{}) error {
 		return io.EOF
 	}
 
-	ciphertext := new(big.Int)
-	ciphertext.SetBytes(data)
-
-	// Decrypt into msg
-	msg := new(big.Int).Exp(ciphertext, key.D, key.N)
-
-	// Decode into
-	msgBuf := bytes.NewBuffer(msg.Bytes())
+	// Decrypt into buffer
+	msgBuf := bytes.NewBuffer(key.Decrypt(data))
 	return rsa.Codable.Decode(msgBuf, nil)
 }

@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"io/ioutil"
+	"math/big"
 	"os"
 )
 
@@ -14,6 +15,24 @@ var ErrInvalidKey = errors.New("invalid private key")
 
 type Keypair struct {
 	*rsa.PrivateKey
+}
+
+func (key Keypair) Decrypt(ciphertext []byte) []byte {
+	dataInt := new(big.Int)
+	dataInt.SetBytes(ciphertext)
+
+	msg := new(big.Int).Exp(dataInt, key.D, key.N)
+
+	return msg.Bytes()
+}
+
+func (key Keypair) Encrypt(plaintext []byte) []byte {
+	dataInt := new(big.Int)
+	dataInt.SetBytes(plaintext)
+
+	msg := new(big.Int).Exp(dataInt, big.NewInt(int64(key.E)), key.N)
+
+	return msg.Bytes()
 }
 
 func GeneratePrivateKey(bits int) (*Keypair, error) {
