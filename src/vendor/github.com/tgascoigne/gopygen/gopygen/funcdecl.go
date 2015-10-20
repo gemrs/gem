@@ -53,6 +53,7 @@ func ({{$recv}}) Py_{{.Name}}(_args *py.Tuple, kwds *py.Dict) (py.Object, error)
 	if err != nil {
 		return nil, err
 	}
+    out_{{$i}}.Incref()
     {{end}}
     {{if eq $num_results 1}}
 	return out_0, nil

@@ -6,7 +6,6 @@ import (
 	"gem/log"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -183,6 +182,7 @@ func (l *PyListener) Py_Id(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

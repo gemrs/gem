@@ -647,6 +647,7 @@ func (pos *Absolute) Py_String(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -674,6 +675,7 @@ func (pos *Absolute) Py_Sector(_args *py.Tuple, kwds *py.Dict) (py.Object, error
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -701,6 +703,7 @@ func (pos *Absolute) Py_RegionOf(_args *py.Tuple, kwds *py.Dict) (py.Object, err
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -736,6 +739,7 @@ func (pos *Absolute) Py_LocalTo(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -802,16 +806,19 @@ func (region *Region) Py_SectorDelta(_args *py.Tuple, kwds *py.Dict) (py.Object,
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	out_1, err := gopygen.TypeConvOut(res1, "int")
 	if err != nil {
 		return nil, err
 	}
+	out_1.Incref()
 
 	out_2, err := gopygen.TypeConvOut(res2, "int")
 	if err != nil {
 		return nil, err
 	}
+	out_2.Incref()
 
 	return py.PackTuple(out_0, out_1, out_2)
 
@@ -839,6 +846,7 @@ func (local *Local) Py_Absolute(_args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

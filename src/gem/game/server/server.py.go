@@ -195,6 +195,7 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -222,6 +223,7 @@ func (s *Server) Py_Stop(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

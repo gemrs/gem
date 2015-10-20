@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -102,15 +101,17 @@ func (p *ProviderImpl) Py_LookupProfile(_args *py.Tuple, kwds *py.Dict) (py.Obje
 
 	args[1].Decref()
 
-	out_0, err := gopygen.TypeConvOut(res0, "*player.Profile")
+	out_0, err := gopygen.TypeConvOut(res0, "player.Profile")
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	out_1, err := gopygen.TypeConvOut(res1, "AuthResponse")
 	if err != nil {
 		return nil, err
 	}
+	out_1.Incref()
 
 	return py.PackTuple(out_0, out_1)
 

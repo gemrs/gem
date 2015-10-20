@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -130,6 +129,34 @@ func (obj *Event) PySet_observers(arg py.Object) error {
 		oldObj.Decref()
 	}
 	return nil
+}
+
+func (e *Event) Py_Key(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_Key: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	res0 := e.Key()
+
+	// Remove local references
+
+	out_0, err := gopygen.TypeConvOut(res0, "string")
+	if err != nil {
+		return nil, err
+	}
+	out_0.Incref()
+
+	return out_0, nil
+
 }
 
 func (e *Event) Py_Register(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

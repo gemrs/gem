@@ -6,7 +6,6 @@ import (
 	"gem/runite/format/rt3"
 
 	"github.com/qur/gopy/lib"
-
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -102,6 +101,7 @@ func (r *Context) Py_Unpack(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

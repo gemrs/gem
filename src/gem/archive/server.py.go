@@ -7,9 +7,9 @@ import (
 	"gem/runite/format/rt3"
 	"net"
 
-	"github.com/qur/gopy/lib"
 	"gopkg.in/tomb.v2"
 
+	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -189,6 +189,7 @@ func (s *Server) Py_Start(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -216,6 +217,7 @@ func (s *Server) Py_Stop(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 

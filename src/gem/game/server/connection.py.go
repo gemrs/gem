@@ -107,6 +107,7 @@ func (c *Connection) Py_Log(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -157,6 +158,7 @@ func (conn *Connection) Py_IsDisconnecting(_args *py.Tuple, kwds *py.Dict) (py.O
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -207,6 +209,7 @@ func (conn *Connection) Py_Index(_args *py.Tuple, kwds *py.Dict) (py.Object, err
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -265,6 +268,7 @@ func (conn *Connection) Py_flushWriteBuffer(_args *py.Tuple, kwds *py.Dict) (py.
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
@@ -292,6 +296,7 @@ func (conn *Connection) Py_fillReadBuffer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	if err != nil {
 		return nil, err
 	}
+	out_0.Incref()
 
 	return out_0, nil
 
