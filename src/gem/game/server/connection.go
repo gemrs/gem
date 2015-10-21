@@ -6,7 +6,7 @@ import (
 
 	"gem/encoding"
 	"gem/log"
-	"gem/safe"
+	"gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 )

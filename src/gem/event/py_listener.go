@@ -2,7 +2,7 @@ package event
 
 import (
 	"gem/log"
-	"gem/safe"
+	"gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"

@@ -7,7 +7,7 @@ import (
 
 	"gem/log"
 	"gem/protocol"
-	"gem/safe"
+	"gem/util/safe"
 	"gem/util/id"
 
 	"github.com/qur/gopy/lib"
