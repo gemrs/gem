@@ -7,7 +7,7 @@ import (
 )
 
 // recover captures panics in the game client handler and prints a stack trace
-func Recover(log *log.Module) {
+func Recover(log log.Logger) {
 	if err := recover(); err != nil {
 		stack := make([]byte, 1024*10)
 		runtime.Stack(stack, true)

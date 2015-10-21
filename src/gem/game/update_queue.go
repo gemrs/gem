@@ -9,7 +9,7 @@ import (
 type queueItem struct {
 	request protocol.InboundUpdateRequest
 	client  *UpdateClient
-	log     *log.Module
+	log     log.Logger
 }
 
 // A updateQueue is a three-level priority queue, used for prioritising update requests

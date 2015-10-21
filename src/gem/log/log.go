@@ -82,7 +82,7 @@ func (log *SysLog) Module(module string) *Module {
 	return logModule
 }
 
-func (log *Module) SubModule(prefix string) (out *Module) {
+func (log *Module) SubModule(prefix string) (out Logger) {
 	logModule, err := NewModule()
 	if err != nil {
 		panic(err)

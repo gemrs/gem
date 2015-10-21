@@ -38,7 +38,7 @@ type Connection struct {
 	Write          chan encoding.Encodable
 	DisconnectChan chan bool
 
-	log   *log.Module
+	log   log.Logger
 	index int
 	conn  net.Conn
 }
@@ -56,7 +56,7 @@ func (c *Connection) Init(conn net.Conn, parentLogger *log.Module) error {
 }
 
 func (c *Connection) Log() *log.Module {
-	return c.log
+	return c.log.(*log.Module)
 }
 
 // WaitForDisconnect blocks until the connection has been closed
