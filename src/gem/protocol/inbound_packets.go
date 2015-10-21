@@ -13,6 +13,8 @@ var inboundTypes map[int]encoding.Codable
 
 var definitions = []encoding.PacketHeader{
 	InboundPingDefinition,
+	InboundPlayerWalkDefinition,
+	InboundPlayerWalkMapDefinition,
 }
 
 func init() {
@@ -28,7 +30,7 @@ func NewInboundPacket(id int) (encoding.Codable, error) {
 	if !ok {
 		return new(UnknownPacket), nil
 	}
-	typ := reflect.TypeOf(typePtr)
+	typ := reflect.TypeOf(typePtr).Elem()
 	value := reflect.New(typ)
-	return reflect.Indirect(value).Interface().(encoding.Codable), nil
+	return value.Interface().(encoding.Codable), nil
 }

@@ -69,6 +69,10 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) error {
 	var err error
 	rand := flags.(uint32)
 
+	if p.Object == nil {
+		panic("no destination object in packet decode")
+	}
+
 	/* decode the packet number */
 	var shiftedNumber Int8
 	err = shiftedNumber.Decode(buf, IntNilFlag)
@@ -92,14 +96,19 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) error {
 		if err != nil {
 			return err
 		}
+		p.Size = FrameSize(size8)
 	case SzVar16:
 		var size16 Int16
 		err = size16.Decode(buf, IntNilFlag)
 		if err != nil {
 			return err
 		}
+		p.Size = FrameSize(size16)
 	}
 
 	/* decode the payload */
-	return p.Object.Decode(buf, nil)
+	return p.Object.Decode(buf, &PacketHeader{
+		Number: p.Number,
+		Size:   p.Size,
+	})
 }
