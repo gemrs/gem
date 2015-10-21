@@ -17,7 +17,8 @@ func pythonInit() {
 		}
 	}()
 
-	_ = py.InitAndLock()
+	lock := py.InitAndLock()
+	defer lock.Unlock()
 
 	SetTypeConvFuncs()
 
@@ -29,7 +30,9 @@ func pythonInit() {
 	} else if err = globals.SetItemString("__builtins__", builtins); err != nil {
 		panic(err)
 	}
+}
 
+func InstallSignalHandler() {
 	/* Make sure we catch SIGTERM and clean up python gracefully */
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

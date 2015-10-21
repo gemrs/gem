@@ -2,6 +2,7 @@ package log
 
 type Logger interface {
 	SubModule(prefix string) (out Logger)
+	Critical(message string)
 	Debug(message string)
 	Error(message string)
 	Fatal(message string)

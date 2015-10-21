@@ -9,7 +9,6 @@ import (
 	_ "gem/archive"
 	_ "gem/auth"
 	_ "gem/event"
-	_ "gem/event"
 	_ "gem/game"
 	_ "gem/game/player"
 	_ "gem/game/position"
@@ -20,6 +19,7 @@ import (
 )
 
 func main() {
+	python.InstallSignalHandler()
 	python.LinkModules()
 	py.Main(os.Args)
 	py.Finalize()
