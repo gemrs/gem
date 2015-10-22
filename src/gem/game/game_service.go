@@ -16,11 +16,7 @@ import (
 
 //go:generate gopygen -type GameService -excfield "^[a-z].*" $GOFILE
 
-type GameServiceIface interface {
-	GetRunite() *runite.Context
-}
-
-// gameService represents the internal state of the game
+// GameService represents the internal state of the game
 type GameService struct {
 	py.BaseObject
 
