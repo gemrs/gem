@@ -69,3 +69,7 @@ func (e *Event) Py_NotifyObservers(argsTuple *py.Tuple) (py.Object, error) {
 	py.None.Incref()
 	return py.None, nil
 }
+
+func (e *Event) PyRepr() string {
+	return e.Key()
+}

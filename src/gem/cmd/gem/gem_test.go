@@ -1,3 +1,5 @@
+// +build test_python
+
 package main
 
 import (
@@ -13,6 +15,6 @@ func TestPython(t *testing.T) {
 		t.Fatal("Couldn't locate py.test")
 	}
 	run([]string{
-		pyTest, "../../../../content/",
-	})
+		pyTest, "-s", "../../../../content/",
+	}, true)
 }

@@ -4,10 +4,10 @@ import Queue
 import gem.event
 
 events = [
-    gem.event.TestEvent1,
-    gem.event.TestEvent2,
-    gem.event.TestEvent3,
-    gem.event.TestEvent4,
+    gem.event.Event("TestEvent1"),
+    gem.event.Event("TestEvent2"),
+    gem.event.Event("TestEvent3"),
+    gem.event.Event("TestEvent4"),
 ]
 
 def new_dispatch_test_case(register_events, raise_events, listen_events):
@@ -58,17 +58,26 @@ def test_event_dispatch():
 
     for tc_id, tc in enumerate(dispatch_test_cases):
         print "Launching test case {0}".format(tc_id)
-        gem.event.clear()
+        q.queue.clear()
+        listeners = {}
 
-        for ev in tc['register_events']:
-            gem.event.register_listener(ev, callback)
+        for event in tc['register_events']:
+            listener = gem.event.PyListener(callback)
+            event.Register(listener)
+            listeners.setdefault(event, []).append(listener)
 
-        for ev in tc['raise_events']:
-            gem.event.raise_event(ev)
+        for event in tc['raise_events']:
+            event.NotifyObservers()
 
-        for ev in tc['listen_events']:
-            event = q.get()
-            assert event == ev
+        for event in tc['listen_events']:
+            raised_event = q.get()
+            assert raised_event == event
+
+        for event, listeners in listeners.iteritems():
+            for l in listeners:
+                event.Unregister(l)
+            event.NotifyObservers()
+            assert q.empty()
 
 def new_args_test_case(register_events, raise_events, listen_events, arg1, arg2):
     return {
@@ -106,7 +115,7 @@ args_test_cases = [
     ),
 ]
 
-def test_event_dispatch():
+def test_event_args():
     q = Queue.Queue()
 
     def callback(event, arg1, arg2):
@@ -116,19 +125,28 @@ def test_event_dispatch():
 
     for tc_id, tc in enumerate(args_test_cases):
         print "Launching test case {0}".format(tc_id)
-        gem.event.clear()
+        q.queue.clear()
+        listeners = {}
 
-        for ev in tc['register_events']:
-            gem.event.register_listener(ev, callback)
+        for event in tc['register_events']:
+            listener = gem.event.PyListener(callback)
+            event.Register(listener)
+            listeners.setdefault(event, []).append(listener)
 
-        for ev in tc['raise_events']:
-            gem.event.raise_event(ev, tc['arg1'], tc['arg2'])
+        for event in tc['raise_events']:
+            event.NotifyObservers(tc['arg1'], tc['arg2'])
 
-        for ev in tc['listen_events']:
-            event = q.get()
-            assert event == ev
+        for event in tc['listen_events']:
+            raised_event = q.get()
+            assert raised_event == event
             assert q.get() == tc['arg1']
             assert q.get() == tc['arg2']
+
+        for event, listeners in listeners.iteritems():
+            for l in listeners:
+                event.Unregister(l)
+            event.NotifyObservers(tc['arg1'], tc['arg2'])
+            assert q.empty()
 
 def test_event_dispatch_object():
     q = Queue.Queue()
@@ -141,18 +159,28 @@ def test_event_dispatch_object():
 
     obj = CBClass()
 
+
     for tc_id, tc in enumerate(args_test_cases):
         print "Launching test case {0}".format(tc_id)
-        gem.event.clear()
+        q.queue.clear()
+        listeners = {}
 
-        for ev in tc['register_events']:
-            gem.event.register_listener(ev, obj.callback)
+        for event in tc['register_events']:
+            listener = gem.event.PyListener(obj.callback)
+            event.Register(listener)
+            listeners.setdefault(event, []).append(listener)
 
-        for ev in tc['raise_events']:
-            gem.event.raise_event(ev, tc['arg1'], tc['arg2'])
+        for event in tc['raise_events']:
+            event.NotifyObservers(tc['arg1'], tc['arg2'])
 
-        for ev in tc['listen_events']:
-            event = q.get()
-            assert event == ev
+        for event in tc['listen_events']:
+            raised_event = q.get()
+            assert raised_event == event
             assert q.get() == tc['arg1']
             assert q.get() == tc['arg2']
+
+        for event, listeners in listeners.iteritems():
+            for l in listeners:
+                event.Unregister(l)
+            event.NotifyObservers()
+            assert q.empty()

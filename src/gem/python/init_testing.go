@@ -1,4 +1,8 @@
-// +build !test_python
+// For some reason, go test doesn't like InitAndLock(),
+// I guess it's doing something funky.
+// For this reason, an alternate init() is provided which calls just Initialize()
+
+// +build test_python
 
 package python
 
@@ -19,7 +23,7 @@ func pythonInit() {
 		}
 	}()
 
-	_ = py.InitAndLock()
+	py.Initialize()
 
 	SetTypeConvFuncs()
 
