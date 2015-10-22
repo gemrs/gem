@@ -5,6 +5,7 @@ import (
 
 	"gem/auth"
 	"gem/encoding"
+	game_event "gem/game/event"
 	"gem/protocol"
 )
 
@@ -110,13 +111,13 @@ func (svc *GameService) doLogin(client *Player, username, password string) error
 	client.decode = svc.decodePacket
 	go svc.packetConsumer(client)
 
-	PlayerLoginEvent.NotifyObservers(client)
-	PlayerLoadProfileEvent.NotifyObservers(client)
-	PlayerFinishLoginEvent.NotifyObservers(client)
+	game_event.PlayerLogin.NotifyObservers(client)
+	game_event.PlayerLoadProfile.NotifyObservers(client)
+	game_event.PlayerFinishLogin.NotifyObservers(client)
 
 	go func() {
 		client.WaitForDisconnect()
-		PlayerLogoutEvent.NotifyObservers(client)
+		game_event.PlayerLogout.NotifyObservers(client)
 	}()
 	return nil
 }

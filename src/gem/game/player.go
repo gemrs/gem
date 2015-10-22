@@ -5,6 +5,7 @@ import (
 	engine_event "gem/engine/event"
 	"gem/event"
 	"gem/game/entity"
+	game_event "gem/game/event"
 	"gem/game/player"
 	"gem/game/position"
 	"gem/game/server"
@@ -49,8 +50,8 @@ func (client *Player) Init(conn *server.Connection, svc *GameService) error {
 		return err
 	}
 
-	PlayerRegionChangeEvent.Register(event.NewListener(client.RegionUpdate))
-	PlayerAppearanceUpdateEvent.Register(event.NewListener(client.AppearanceUpdate))
+	game_event.PlayerRegionChange.Register(event.NewListener(client.RegionUpdate))
+	game_event.PlayerAppearanceUpdate.Register(event.NewListener(client.AppearanceUpdate))
 
 	return nil
 }
@@ -114,11 +115,11 @@ func (client *Player) SetPosition(pos *position.Absolute) {
 	dx, dy, dz := session.Region().SectorDelta(oldRegion)
 
 	if dx >= 1 || dy >= 1 || dz >= 1 {
-		PlayerSectorChangeEvent.NotifyObservers(client, pos)
+		game_event.PlayerSectorChange.NotifyObservers(client, pos)
 	}
 
 	if dx >= 5 || dy >= 5 || dz >= 1 {
-		PlayerRegionChangeEvent.NotifyObservers(client, pos)
+		game_event.PlayerRegionChange.NotifyObservers(client, pos)
 	}
 
 	client.Log().Debugf("Warping to %v", pos)
@@ -133,7 +134,7 @@ func (client *Player) SetAppearance(a player.Appearance) {
 
 // AppearanceUpdated signals that the player's appearance should be re-synchronized
 func (client *Player) AppearanceUpdated() {
-	PlayerAppearanceUpdateEvent.NotifyObservers(client)
+	game_event.PlayerAppearanceUpdate.NotifyObservers(client)
 }
 
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator

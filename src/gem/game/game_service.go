@@ -6,6 +6,7 @@ import (
 	"gem/auth"
 	"gem/crypto"
 	"gem/event"
+	game_event "gem/game/event"
 	"gem/game/packet"
 	"gem/game/server"
 	"gem/protocol"
@@ -37,7 +38,7 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 	svc.key = key
 	svc.auth = auth
 
-	PlayerFinishLoginEvent.Register(event.NewListener(finishLogin))
+	game_event.PlayerFinishLogin.Register(event.NewListener(finishLogin))
 	return nil
 }
 

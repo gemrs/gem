@@ -12,6 +12,7 @@ import (
 	_ "gem/engine/event"
 	_ "gem/event"
 	_ "gem/game"
+	_ "gem/game/event"
 	_ "gem/game/player"
 	_ "gem/game/position"
 	_ "gem/game/server"
