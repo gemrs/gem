@@ -33,7 +33,6 @@ func pythonInit() {
 	} else if err = globals.SetItemString("__builtins__", builtins); err != nil {
 		panic(err)
 	}
-
 }
 
 func pythonExit() {

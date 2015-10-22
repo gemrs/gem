@@ -1,3 +1,5 @@
+// +build test_python
+
 package log_test
 
 import (
@@ -8,11 +10,12 @@ import (
 
 	_ "gem"
 	"gem/log"
+	"gem/python"
 	_ "gem/python"
 )
 
 func TestLogger(t *testing.T) {
-	fmt.Printf("starting\n")
+	python.LinkModules()
 
 	var stdoutBuf bytes.Buffer
 
@@ -34,11 +37,7 @@ func TestLogger(t *testing.T) {
 		return true
 	}
 
-	fmt.Printf("ok\n")
-
 	logger := log.Sys.Module("TestLogger1")
-
-	fmt.Printf("ok2\n")
 
 	i := 0
 
@@ -59,10 +58,12 @@ func TestLogger(t *testing.T) {
 	checkLogString([]string{"ERROR", "TestLogger1", message})
 	i++
 
+	/* Can't test fatal - calls os.Exit(1)
 	message = fmt.Sprintf("TEST_%v", i)
 	logger.Fatalf(message)
 	checkLogString([]string{"FATAL", "TestLogger1", message})
 	i++
+	*/
 
 	message = fmt.Sprintf("TEST_%v", i)
 	logger.Infof(message)
@@ -78,4 +79,12 @@ func TestLogger(t *testing.T) {
 	logger.Warningf(message)
 	checkLogString([]string{"WARNING", "TestLogger1", message})
 	i++
+
+	subLogger := logger.SubModule("TestLogger2")
+
+	message = fmt.Sprintf("TEST_%v", i)
+	subLogger.Noticef(message)
+	checkLogString([]string{"NOTICE", "TestLogger1", "TestLogger2", message})
+	i++
+
 }

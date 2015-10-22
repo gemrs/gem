@@ -70,10 +70,8 @@ func (log *SysLog) Module(module string) *Module {
 	if logModule, ok := log.modules[module]; ok {
 		return logModule
 	}
-	fmt.Println("ah3")
 
 	logModule, err := NewModule()
-	fmt.Print("agh")
 	logModule.logger = logging.MustGetLogger(module)
 	if err != nil {
 		panic(err)
