@@ -9,8 +9,6 @@ package python
 import (
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/qur/gopy/lib"
 )
@@ -36,15 +34,6 @@ func pythonInit() {
 		panic(err)
 	}
 
-	/* Make sure we catch SIGTERM and clean up python gracefully */
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, syscall.SIGTERM)
-	go func() {
-		<-c
-		pythonExit()
-		os.Exit(0)
-	}()
 }
 
 func pythonExit() {
