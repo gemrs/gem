@@ -10,8 +10,9 @@ import auth
 import world
 
 import gem
-import gem.runite
 import gem.auth
+import gem.engine
+import gem.runite
 
 from plugin_loader import PluginLoader
 from service_listeners import ServiceListeners
@@ -43,7 +44,7 @@ def main():
         listeners = ServiceListeners()
 
         # start the engine
-        engine = gem.Engine()
+        engine = gem.engine.Engine()
         engine.Start()
         signal_handler.setup_exit_handler(engine.Stop)
 

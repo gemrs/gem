@@ -1,6 +1,7 @@
 import gem
 import gem.runite
 import gem.archive as archive
+import gem.engine.event
 import gem.game as game
 import gem.game.server as server
 
@@ -12,7 +13,7 @@ class ServiceListeners(object):
     archive_server_started = False
     game_server_started = False
 
-    @event.callback(gem.Startup)
+    @event.callback(gem.engine.event.Startup)
     def startup(self):
         try:
             self.archive_server = archive.Server()
@@ -34,7 +35,7 @@ class ServiceListeners(object):
         except Exception as e:
             raise Exception("Couldn't start game server: {0}".format(e))
 
-    @event.callback(gem.Shutdown)
+    @event.callback(gem.engine.event.Shutdown)
     def shutdown(self):
         if self.archive_server_started == True:
             self.archive_server.Stop()

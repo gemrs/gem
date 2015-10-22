@@ -1,17 +1,18 @@
-package gem
+package event
 
 import (
 	"github.com/qur/gopy/lib"
 
 	"gem/event"
+	"gem/python"
 )
 
 var (
-	StartupEvent  = createEvent("Startup")
-	ShutdownEvent = createEvent("Shutdown")
-	PreTickEvent  = createEvent("PreTick")
-	TickEvent     = createEvent("Tick")
-	PostTickEvent = createEvent("PostTick")
+	Startup  = createEvent("Startup")
+	Shutdown = createEvent("Shutdown")
+	PreTick  = createEvent("PreTick")
+	Tick     = createEvent("Tick")
+	PostTick = createEvent("PostTick")
 )
 
 var events = []*event.Event{}
@@ -25,6 +26,17 @@ func createEvent(key string) *event.Event {
 	events = append(events, event)
 
 	return event
+}
+
+func init() {
+	/* Create package */
+	var err error
+	var module *py.Module
+	if module, err = python.InitModule("gem.engine.event", []py.Method{}); err != nil {
+		panic(err)
+	}
+
+	createEventObjects(module)
 }
 
 func createEventObjects(module *py.Module) {

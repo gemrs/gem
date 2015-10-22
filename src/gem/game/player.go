@@ -1,8 +1,8 @@
 package game
 
 import (
-	"gem"
 	"gem/encoding"
+	engine_event "gem/engine/event"
 	"gem/event"
 	"gem/game/entity"
 	"gem/game/player"
@@ -59,8 +59,8 @@ func (client *Player) Init(conn *server.Connection, svc *GameService) error {
 func finishLogin(_ *event.Event, args ...interface{}) {
 	client := args[0].(*Player)
 	client.PlayerInit()
-	gem.TickEvent.Register(event.NewListener(client.PlayerUpdate))
-	gem.PostTickEvent.Register(event.NewListener(client.ClearUpdateFlags))
+	engine_event.Tick.Register(event.NewListener(client.PlayerUpdate))
+	engine_event.PostTick.Register(event.NewListener(client.ClearUpdateFlags))
 }
 
 // Session returns the player's session

@@ -3,6 +3,7 @@ package gem
 import (
 	"time"
 
+	engine_event "gem/engine/event"
 	"gem/log"
 	"gem/task"
 
@@ -28,7 +29,7 @@ func (e *Engine) Init() error {
 func (e *Engine) Start() {
 	logger = log.New("engine")
 	logger.Info("Starting engine")
-	StartupEvent.NotifyObservers()
+	engine_event.Startup.NotifyObservers()
 
 	e.t.Go(e.run)
 }
@@ -39,7 +40,7 @@ func (e *Engine) Join() bool {
 }
 
 func (e *Engine) Stop() {
-	ShutdownEvent.NotifyObservers()
+	engine_event.Shutdown.NotifyObservers()
 	e.t.Kill(nil)
 	e.t.Wait()
 }
@@ -47,17 +48,17 @@ func (e *Engine) Stop() {
 func (e *Engine) run() error {
 	// Start the engine ticking...
 	preTask := task.NewTask(func(*task.Task) bool {
-		PreTickEvent.NotifyObservers()
+		engine_event.PreTick.NotifyObservers()
 		return true
 	}, task.PreTick, 1, nil)
 
 	duringTask := task.NewTask(func(*task.Task) bool {
-		TickEvent.NotifyObservers()
+		engine_event.Tick.NotifyObservers()
 		return true
 	}, task.Tick, 1, nil)
 
 	postTask := task.NewTask(func(*task.Task) bool {
-		PostTickEvent.NotifyObservers()
+		engine_event.PostTick.NotifyObservers()
 		return true
 	}, task.PostTick, 1, nil)
 
