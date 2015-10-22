@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/qur/gopy/lib"
@@ -22,7 +23,14 @@ import (
 )
 
 func main() {
+	run(os.Args)
+}
+
+// This is split into its own function to allow test to invoke the python interpreter
+func run(args []string) {
+	fmt.Printf("launching with %v\n", args)
 	python.LinkModules()
-	py.Main(os.Args)
+	args = append([]string{"gem"}, args...)
+	py.Main(args)
 	py.Finalize()
 }
