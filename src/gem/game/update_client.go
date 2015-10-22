@@ -3,7 +3,7 @@ package game
 import (
 	"gem/encoding"
 	"gem/game/server"
-	"gem/protocol"
+	update_protocol "gem/protocol/update"
 )
 
 // UpdateClient is a client which serves update requests
@@ -27,7 +27,7 @@ func (client *UpdateClient) Conn() *server.Connection {
 
 // Decode processes incoming requests and adds them to the request queue
 func (client *UpdateClient) Decode() error {
-	var request protocol.InboundUpdateRequest
+	var request update_protocol.InboundUpdateRequest
 	if err := request.Decode(client.Conn().ReadBuffer, nil); err != nil {
 		return err
 	}

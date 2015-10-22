@@ -4,6 +4,7 @@ import (
 	"gem/encoding"
 	"gem/game/server"
 	"gem/protocol"
+	update_protocol "gem/protocol/update"
 	"gem/runite"
 
 	"github.com/qur/gopy/lib"
@@ -63,7 +64,7 @@ func (svc *UpdateService) processQueue() {
 			}
 			chunk := data[wrote : wrote+chunkSize]
 
-			client.Conn().Write <- &protocol.OutboundUpdateResponse{
+			client.Conn().Write <- &update_protocol.OutboundUpdateResponse{
 				Index: request.Index,
 				File:  request.File,
 				Size:  encoding.Int16(len(data)),

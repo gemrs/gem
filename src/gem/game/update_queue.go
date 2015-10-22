@@ -2,12 +2,12 @@ package game
 
 import (
 	"gem/log"
-	"gem/protocol"
+	update_protocol "gem/protocol/update"
 )
 
 // An queueItem is something we manage in a priority queue.
 type queueItem struct {
-	request protocol.InboundUpdateRequest
+	request update_protocol.InboundUpdateRequest
 	client  *UpdateClient
 	log     log.Logger
 }
