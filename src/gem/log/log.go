@@ -112,7 +112,7 @@ func (log *Module) Debug(message string) {
 
 func (log *Module) Error(message string) {
 	if log.parent != nil {
-		log.parent.Critical(fmt.Sprintf("[%v] %v", log.prefix, message))
+		log.parent.Error(fmt.Sprintf("[%v] %v", log.prefix, message))
 		return
 	}
 	log.logger.Error(message)

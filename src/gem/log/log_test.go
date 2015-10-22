@@ -83,8 +83,40 @@ func TestLogger(t *testing.T) {
 	subLogger := logger.SubModule("TestLogger2")
 
 	message = fmt.Sprintf("TEST_%v", i)
+	subLogger.Criticalf(message)
+	checkLogString([]string{"CRITICAL", "TestLogger1", message})
+	i++
+
+	message = fmt.Sprintf("TEST_%v", i)
+	subLogger.Debugf(message)
+	checkLogString([]string{"DEBUG", "TestLogger1", message})
+	i++
+
+	message = fmt.Sprintf("TEST_%v", i)
+	subLogger.Errorf(message)
+	checkLogString([]string{"ERROR", "TestLogger1", message})
+	i++
+
+	/* Can't test fatal - calls os.Exit(1)
+	message = fmt.Sprintf("TEST_%v", i)
+	subLogger.Fatalf(message)
+	checkLogString([]string{"FATAL", "TestLogger1", message})
+	i++
+	*/
+
+	message = fmt.Sprintf("TEST_%v", i)
+	subLogger.Infof(message)
+	checkLogString([]string{"INFO", "TestLogger1", message})
+	i++
+
+	message = fmt.Sprintf("TEST_%v", i)
 	subLogger.Noticef(message)
-	checkLogString([]string{"NOTICE", "TestLogger1", "TestLogger2", message})
+	checkLogString([]string{"NOTICE", "TestLogger1", message})
+	i++
+
+	message = fmt.Sprintf("TEST_%v", i)
+	subLogger.Warningf(message)
+	checkLogString([]string{"WARNING", "TestLogger1", message})
 	i++
 
 }
