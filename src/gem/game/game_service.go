@@ -9,7 +9,7 @@ import (
 	game_event "gem/game/event"
 	"gem/game/packet"
 	"gem/game/server"
-	"gem/protocol"
+	game_protocol "gem/protocol/game"
 	"gem/runite"
 
 	"github.com/qur/gopy/lib"
@@ -64,7 +64,7 @@ func (svc *GameService) decodePacket(client *Player) error {
 	session := client.Session().(*Session)
 	rand := session.RandIn.Rand()
 	realId := uint8(uint32(idByte) - rand)
-	packet, err := protocol.NewInboundPacket(int(realId))
+	packet, err := game_protocol.NewInboundPacket(int(realId))
 	if err != nil {
 		return fmt.Errorf("%v: packet %v", err, realId)
 	}
@@ -87,7 +87,7 @@ L:
 		case <-client.Conn().DisconnectChan:
 			break L
 		case pkt := <-client.Conn().Read:
-			if _, ok := pkt.(*protocol.UnknownPacket); ok {
+			if _, ok := pkt.(*game_protocol.UnknownPacket); ok {
 				/* unknown packet; dump to the log */
 				client.Log().Debugf("Got unknown packet: %v", pkt)
 				continue

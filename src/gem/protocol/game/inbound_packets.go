@@ -1,4 +1,4 @@
-package protocol
+package game
 
 import (
 	"errors"

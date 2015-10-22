@@ -6,21 +6,21 @@ import (
 	"gem/encoding"
 	"gem/game/player"
 	"gem/game/position"
-	"gem/protocol"
+	game_protocol "gem/protocol/game"
 )
 
 func init() {
-	registerHandler((*protocol.InboundPlayerWalk)(nil), player_walk)
-	registerHandler((*protocol.InboundPlayerWalkMap)(nil), player_walk)
+	registerHandler((*game_protocol.InboundPlayerWalk)(nil), player_walk)
+	registerHandler((*game_protocol.InboundPlayerWalkMap)(nil), player_walk)
 }
 
 func player_walk(player player.Player, packet encoding.Decodable) {
-	var walkPacket *protocol.InboundPlayerWalkBlock
+	var walkPacket *game_protocol.InboundPlayerWalkBlock
 	switch p := packet.(type) {
-	case *protocol.InboundPlayerWalk:
-		walkPacket = (*protocol.InboundPlayerWalkBlock)(p)
-	case *protocol.InboundPlayerWalkMap:
-		walkPacket = (*protocol.InboundPlayerWalkBlock)(p)
+	case *game_protocol.InboundPlayerWalk:
+		walkPacket = (*game_protocol.InboundPlayerWalkBlock)(p)
+	case *game_protocol.InboundPlayerWalkMap:
+		walkPacket = (*game_protocol.InboundPlayerWalkBlock)(p)
 	default:
 		panic(fmt.Sprintf("got invalid walk packet: %T", p))
 	}

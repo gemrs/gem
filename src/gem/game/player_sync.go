@@ -5,12 +5,12 @@ import (
 	"gem/event"
 	"gem/game/entity"
 	"gem/game/player"
-	"gem/protocol"
+	game_protocol "gem/protocol/game"
 )
 
 // PlayerInit is called once the player has finished the low level login sequence
 func (client *Player) PlayerInit() {
-	client.Conn().Write <- &protocol.OutboundPlayerInit{
+	client.Conn().Write <- &game_protocol.OutboundPlayerInit{
 		Membership: encoding.Int8(1),
 		Index:      encoding.Int16(client.Index()),
 	}
@@ -20,7 +20,7 @@ func (client *Player) PlayerInit() {
 // It sends the region update packet and sets the correct update flags
 func (client *Player) RegionUpdate(_ *event.Event, _ ...interface{}) {
 	sector := client.Position().Sector()
-	client.Conn().Write <- &protocol.OutboundRegionUpdate{
+	client.Conn().Write <- &game_protocol.OutboundRegionUpdate{
 		SectorX: encoding.Int16(sector.X),
 		SectorY: encoding.Int16(sector.Y),
 	}
@@ -38,7 +38,7 @@ func (client *Player) AppearanceUpdate(_ *event.Event, _ ...interface{}) {
 
 // PlayerUpdate snapshots the player in their current state and syncs the client
 func (client *Player) PlayerUpdate(_ *event.Event, _ ...interface{}) {
-	client.Conn().Write <- &protocol.PlayerUpdate{
+	client.Conn().Write <- &game_protocol.PlayerUpdate{
 		OurPlayer: player.Snapshot(client),
 	}
 }

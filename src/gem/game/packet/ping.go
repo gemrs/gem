@@ -3,11 +3,11 @@ package packet
 import (
 	"gem/encoding"
 	"gem/game/player"
-	"gem/protocol"
+	game_protocol "gem/protocol/game"
 )
 
 func init() {
-	registerHandler((*protocol.InboundPing)(nil), ping)
+	registerHandler((*game_protocol.InboundPing)(nil), ping)
 }
 
 func ping(player player.Player, packet encoding.Decodable) {

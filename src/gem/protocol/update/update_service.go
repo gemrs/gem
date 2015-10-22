@@ -6,6 +6,8 @@ import (
 	"gem/runite"
 )
 
+//go:generate bbc update_service.bb update_service.bb.go
+
 func (req *InboundUpdateRequest) String() string {
 	return fmt.Sprintf("Cache %v, File %v, Priority %v", req.Index, req.File, req.Priority)
 }

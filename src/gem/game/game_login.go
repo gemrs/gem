@@ -7,6 +7,7 @@ import (
 	"gem/encoding"
 	game_event "gem/game/event"
 	"gem/protocol"
+	game_protocol "gem/protocol/game"
 )
 
 // handshake performs the isaac key exchange
@@ -36,7 +37,7 @@ func (svc *GameService) handshake(client *Player) error {
 func (svc *GameService) decodeLoginBlock(client *Player) error {
 	session := client.Session().(*Session)
 
-	loginBlock := protocol.InboundLoginBlock{}
+	loginBlock := game_protocol.InboundLoginBlock{}
 	if err := loginBlock.Decode(client.Conn().ReadBuffer, nil); err != nil {
 		return err
 	}
@@ -59,7 +60,7 @@ func (svc *GameService) decodeLoginBlock(client *Player) error {
 func (svc *GameService) decodeSecureBlock(client *Player) error {
 	session := client.Session().(*Session)
 
-	rsaBlock := encoding.RSABlock{&protocol.InboundSecureLoginBlock{}}
+	rsaBlock := encoding.RSABlock{&game_protocol.InboundSecureLoginBlock{}}
 	rsaArgs := encoding.RSADecodeArgs{
 		Key:       svc.key,
 		BlockSize: session.SecureBlockSize,
@@ -67,7 +68,7 @@ func (svc *GameService) decodeSecureBlock(client *Player) error {
 	if err := rsaBlock.Decode(client.Conn().ReadBuffer, rsaArgs); err != nil {
 		return err
 	}
-	secureBlock := rsaBlock.Codable.(*protocol.InboundSecureLoginBlock)
+	secureBlock := rsaBlock.Codable.(*game_protocol.InboundSecureLoginBlock)
 
 	// Seed the RNGs
 	inSeed := make([]uint32, 4)
@@ -93,7 +94,7 @@ func (svc *GameService) doLogin(client *Player, username, password string) error
 	profile, responseCode := svc.auth.LookupProfile(username, password)
 
 	if responseCode != auth.AuthOkay {
-		client.Conn().Write <- &protocol.OutboundLoginResponseUnsuccessful{
+		client.Conn().Write <- &game_protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),
 		}
 		client.Disconnect()
@@ -103,7 +104,7 @@ func (svc *GameService) doLogin(client *Player, username, password string) error
 	client.profile = profile.(*Profile)
 
 	// Successful login, do all the stuff
-	client.Conn().Write <- &protocol.OutboundLoginResponse{
+	client.Conn().Write <- &game_protocol.OutboundLoginResponse{
 		Response: encoding.Int8(responseCode),
 		Rights:   encoding.Int8(client.Profile().Rights()),
 		Flagged:  0,

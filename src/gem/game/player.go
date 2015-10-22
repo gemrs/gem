@@ -9,7 +9,7 @@ import (
 	"gem/game/player"
 	"gem/game/position"
 	"gem/game/server"
-	"gem/protocol"
+	game_protocol "gem/protocol/game"
 
 	"github.com/qur/gopy/lib"
 )
@@ -145,7 +145,7 @@ func (client *Player) Encode(codable encoding.Encodable) error {
 
 // SendMessage puts a message to the player's chat window
 func (client *Player) SendMessage(message string) {
-	client.Conn().Write <- &protocol.OutboundChatMessage{
+	client.Conn().Write <- &game_protocol.OutboundChatMessage{
 		Message: encoding.JString(message),
 	}
 }
