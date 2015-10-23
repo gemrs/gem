@@ -2,7 +2,8 @@ language: go
 go:
   - 1.5
 install:
+  - export GOPATH=${TRAVIS_BUILD_DIR}/src
   - go build gem/...
   - go build bbc/...
 env:
-  - GOPATH=${TRAVIS_BUILD_DIR}/src GO15VENDOREXPERIMENT=1
+  - GO15VENDOREXPERIMENT=1
