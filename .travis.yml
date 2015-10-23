@@ -2,7 +2,7 @@ language: go
 go:
   - 1.5
 install:
-  - export GOPATH=${TRAVIS_BUILD_DIR}/src
+  - export GOPATH=${TRAVIS_BUILD_DIR}
   - go build gem/...
   - go build bbc/...
 env:
