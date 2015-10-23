@@ -2,7 +2,18 @@ language: go
 go:
   - 1.5
 install:
-  - go build github.com/sinusoids/gem/gem/cmd/...
-  - go build github.com/sinusoids/gem/bbc/...
+  - go build ./gem/cmd/...
+  - go build ./bbc/...
+  - pip install --user pytest -q
+  - pip install --user codecov -q
+  - go get github.com/wadey/gocovmerge
+  - go get github.com/go-playground/overalls
+script:
+  - go test -tags test_python -coverpkg=./gem/... -covermode=count -coverprofile=python.coverprofile ./gem/cmd/gem
+  - overalls -project=gem -covermode=count -debug -ignore=".git,vendor"
+  - overalls -project=bbc -covermode=count -debug -ignore=".git,vendor"
+  - gocovmerge src/gem/overalls.coverprofile src/bbc/overalls.coverprofile python.coverprofile gem_log.coverprofile > coverage.profile
+after_success:
+  - codecov
 env:
   - GO15VENDOREXPERIMENT=1
