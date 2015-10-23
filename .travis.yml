@@ -12,7 +12,7 @@ script:
   - go test -tags test_python -coverpkg=./gem/... -covermode=count -coverprofile=python.coverprofile ./gem/cmd/gem
   - overalls -project=github.com/sinusoids/gem/gem -covermode=count -debug -ignore=".git,vendor"
   - overalls -project=github.com/sinusoids/gem/bbc -covermode=count -debug -ignore=".git,vendor"
-  - gocovmerge src/gem/overalls.coverprofile src/bbc/overalls.coverprofile python.coverprofile gem_log.coverprofile > coverage.profile
+  - gocovmerge gem/overalls.coverprofile bbc/overalls.coverprofile python.coverprofile gem_log.coverprofile > coverage.profile
 after_success:
   - codecov
 env:
