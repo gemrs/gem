@@ -1,9 +1,9 @@
 package player
 
 import (
-	"gem/game/entity"
-	"gem/game/position"
-	"gem/log"
+	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/sinusoids/gem/gem/log"
 )
 
 // Snapshot clones a player to a static, read-only implementation of the player interfaces

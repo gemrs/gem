@@ -3,8 +3,8 @@ package archive
 
 import (
 	"fmt"
-	"gem/runite"
-	"gem/runite/format/rt3"
+	"github.com/sinusoids/gem/gem/runite"
+	"github.com/sinusoids/gem/gem/runite/format/rt3"
 	"net"
 
 	"gopkg.in/tomb.v2"

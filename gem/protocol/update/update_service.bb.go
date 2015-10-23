@@ -2,7 +2,7 @@
 package update
 
 import (
-	"gem/encoding"
+	"github.com/sinusoids/gem/gem/encoding"
 	"io"
 )
 

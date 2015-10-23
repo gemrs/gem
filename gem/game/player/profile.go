@@ -1,7 +1,7 @@
 package player
 
 import (
-	"gem/game/position"
+	"github.com/sinusoids/gem/gem/game/position"
 )
 
 type Rights int

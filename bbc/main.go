@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"bbc/compile"
+	"github.com/sinusoids/gem/bbc/compile"
 
 	"golang.org/x/tools/imports"
 )

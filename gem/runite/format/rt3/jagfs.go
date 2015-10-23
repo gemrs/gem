@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 
-	"gem/encoding"
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 var (

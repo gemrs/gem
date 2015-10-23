@@ -3,9 +3,9 @@ package game
 
 import (
 	"fmt"
-	"gem/auth"
-	"gem/game/server"
-	"gem/runite"
+	"github.com/sinusoids/gem/gem/auth"
+	"github.com/sinusoids/gem/gem/game/server"
+	"github.com/sinusoids/gem/gem/runite"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"

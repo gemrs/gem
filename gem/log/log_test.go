@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	_ "gem"
-	"gem/log"
-	"gem/python"
-	_ "gem/python"
+	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/python"
+	_ "github.com/sinusoids/gem/gem/python"
 )
 
 func TestLogger(t *testing.T) {

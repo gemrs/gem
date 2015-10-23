@@ -3,8 +3,8 @@ package gem
 import (
 	"github.com/qur/gopy/lib"
 
-	"gem/log"
-	"gem/python"
+	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/python"
 )
 
 type registerFunc func(*py.Module) error

@@ -5,8 +5,8 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"gem/game/player"
-	"gem/game/position"
+	"github.com/sinusoids/gem/gem/game/player"
+	"github.com/sinusoids/gem/gem/game/position"
 )
 
 //go:generate gopygen -type Profile -type Skills $GOFILE

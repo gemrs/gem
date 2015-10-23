@@ -3,8 +3,8 @@ package event
 import (
 	"github.com/qur/gopy/lib"
 
-	"gem/event"
-	"gem/python"
+	"github.com/sinusoids/gem/gem/event"
+	"github.com/sinusoids/gem/gem/python"
 )
 
 var (

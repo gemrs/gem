@@ -3,14 +3,14 @@ package game
 import (
 	"fmt"
 
-	"gem/auth"
-	"gem/crypto"
-	"gem/event"
-	game_event "gem/game/event"
-	"gem/game/packet"
-	"gem/game/server"
-	game_protocol "gem/protocol/game"
-	"gem/runite"
+	"github.com/sinusoids/gem/gem/auth"
+	"github.com/sinusoids/gem/gem/crypto"
+	"github.com/sinusoids/gem/gem/event"
+	game_event "github.com/sinusoids/gem/gem/game/event"
+	"github.com/sinusoids/gem/gem/game/packet"
+	"github.com/sinusoids/gem/gem/game/server"
+	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
+	"github.com/sinusoids/gem/gem/runite"
 
 	"github.com/qur/gopy/lib"
 )

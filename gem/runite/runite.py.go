@@ -3,7 +3,7 @@ package runite
 
 import (
 	"fmt"
-	"gem/runite/format/rt3"
+	"github.com/sinusoids/gem/gem/runite/format/rt3"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"

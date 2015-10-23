@@ -1,8 +1,8 @@
 package event
 
 import (
-	"gem/log"
-	"gem/util/safe"
+	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"

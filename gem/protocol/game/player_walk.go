@@ -4,7 +4,7 @@ package game
 import (
 	"io"
 
-	"gem/encoding"
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 type Waypoint struct {

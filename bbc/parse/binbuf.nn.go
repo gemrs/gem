@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"bbc/ast"
+	"github.com/sinusoids/gem/bbc/ast"
 )
 import (
 	"bufio"

@@ -3,7 +3,7 @@ package archive
 import (
 	"github.com/qur/gopy/lib"
 
-	"gem/python"
+	"github.com/sinusoids/gem/gem/python"
 )
 
 type registerFunc func(*py.Module) error

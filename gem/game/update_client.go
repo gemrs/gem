@@ -1,9 +1,9 @@
 package game
 
 import (
-	"gem/encoding"
-	"gem/game/server"
-	update_protocol "gem/protocol/update"
+	"github.com/sinusoids/gem/gem/encoding"
+	"github.com/sinusoids/gem/gem/game/server"
+	update_protocol "github.com/sinusoids/gem/gem/protocol/update"
 )
 
 // UpdateClient is a client which serves update requests

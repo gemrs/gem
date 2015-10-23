@@ -3,7 +3,7 @@ package server
 
 import (
 	"fmt"
-	"gem/log"
+	"github.com/sinusoids/gem/gem/log"
 	"net"
 
 	"github.com/qur/gopy/lib"

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"bbc/ast"
+	"github.com/sinusoids/gem/bbc/ast"
 )
 
 type testCase struct {

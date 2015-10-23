@@ -1,8 +1,8 @@
 package game
 
 import (
-	"gem/log"
-	update_protocol "gem/protocol/update"
+	"github.com/sinusoids/gem/gem/log"
+	update_protocol "github.com/sinusoids/gem/gem/protocol/update"
 )
 
 // An queueItem is something we manage in a priority queue.

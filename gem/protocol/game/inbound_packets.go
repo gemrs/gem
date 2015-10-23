@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"gem/encoding"
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 var ErrUnknownPacket = errors.New("unknown packet")

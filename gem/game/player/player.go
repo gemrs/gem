@@ -1,8 +1,8 @@
 package player
 
 import (
-	"gem/game/entity"
-	"gem/log"
+	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/log"
 )
 
 // Player is an Entity representing a player

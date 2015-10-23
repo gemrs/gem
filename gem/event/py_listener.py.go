@@ -3,7 +3,7 @@ package event
 
 import (
 	"fmt"
-	"gem/log"
+	"github.com/sinusoids/gem/gem/log"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"

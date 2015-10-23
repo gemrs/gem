@@ -1,8 +1,8 @@
 package player
 
 import (
-	"gem/game/entity"
-	"gem/game/position"
+	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/position"
 )
 
 type Session interface {

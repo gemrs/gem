@@ -2,7 +2,7 @@
 package rt3
 
 import (
-	"gem/encoding"
+	"github.com/sinusoids/gem/gem/encoding"
 	"io"
 )
 

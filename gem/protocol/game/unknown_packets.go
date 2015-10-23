@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"gem/encoding"
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 // UnknownPacket is a Codable which we can use to handle unknown packets gracefully

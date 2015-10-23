@@ -4,8 +4,8 @@ import (
 	"github.com/gtank/isaac"
 	"github.com/qur/gopy/lib"
 
-	"gem/game/entity"
-	"gem/game/position"
+	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/position"
 )
 
 //go:generate gopygen -type Session $GOFILE

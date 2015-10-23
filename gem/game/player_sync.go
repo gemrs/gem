@@ -1,11 +1,11 @@
 package game
 
 import (
-	"gem/encoding"
-	"gem/event"
-	"gem/game/entity"
-	"gem/game/player"
-	game_protocol "gem/protocol/game"
+	"github.com/sinusoids/gem/gem/encoding"
+	"github.com/sinusoids/gem/gem/event"
+	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/player"
+	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
 
 // PlayerInit is called once the player has finished the low level login sequence

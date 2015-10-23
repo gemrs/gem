@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"gem/crypto"
+	"github.com/sinusoids/gem/gem/crypto"
 )
 
 var bits = flag.Int("bits", 512, "bitsize of the generated key")

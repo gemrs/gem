@@ -1,15 +1,15 @@
 package game
 
 import (
-	"gem/encoding"
-	engine_event "gem/engine/event"
-	"gem/event"
-	"gem/game/entity"
-	game_event "gem/game/event"
-	"gem/game/player"
-	"gem/game/position"
-	"gem/game/server"
-	game_protocol "gem/protocol/game"
+	"github.com/sinusoids/gem/gem/encoding"
+	engine_event "github.com/sinusoids/gem/gem/engine/event"
+	"github.com/sinusoids/gem/gem/event"
+	"github.com/sinusoids/gem/gem/game/entity"
+	game_event "github.com/sinusoids/gem/gem/game/event"
+	"github.com/sinusoids/gem/gem/game/player"
+	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/sinusoids/gem/gem/game/server"
+	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 
 	"github.com/qur/gopy/lib"
 )

@@ -3,7 +3,7 @@ package game
 
 import (
 	"fmt"
-	"gem/game/player"
+	"github.com/sinusoids/gem/gem/game/player"
 
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"

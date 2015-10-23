@@ -1,7 +1,7 @@
 package event
 
 import (
-	"gem/util/id"
+	"github.com/sinusoids/gem/gem/util/id"
 )
 
 var nextId <-chan int

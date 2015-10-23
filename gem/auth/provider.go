@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"gem/game/player"
+	"github.com/sinusoids/gem/gem/game/player"
 )
 
 //go:generate gopygen -type ProviderImpl $GOFILE

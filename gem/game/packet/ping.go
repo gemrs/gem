@@ -1,9 +1,9 @@
 package packet
 
 import (
-	"gem/encoding"
-	"gem/game/player"
-	game_protocol "gem/protocol/game"
+	"github.com/sinusoids/gem/gem/encoding"
+	"github.com/sinusoids/gem/gem/game/player"
+	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
 
 func init() {

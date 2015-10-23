@@ -3,8 +3,8 @@ package game
 
 import (
 	"fmt"
-	"gem/game/entity"
-	"gem/game/position"
+	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/position"
 
 	"github.com/gtank/isaac"
 	"github.com/qur/gopy/lib"

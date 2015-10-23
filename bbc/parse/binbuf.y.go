@@ -5,7 +5,7 @@ import __yyfmt__ "fmt"
 
 //line binbuf.y:2
 import (
-	"bbc/ast"
+	"github.com/sinusoids/gem/bbc/ast"
 )
 
 //line binbuf.y:10
