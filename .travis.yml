@@ -10,8 +10,8 @@ install:
   - go get github.com/go-playground/overalls
 script:
   - go test -tags test_python -coverpkg=./gem/... -covermode=count -coverprofile=python.coverprofile ./gem/cmd/gem
-  - overalls -project=gem -covermode=count -debug -ignore=".git,vendor"
-  - overalls -project=bbc -covermode=count -debug -ignore=".git,vendor"
+  - overalls -project=github.com/sinusoids/gem/gem -covermode=count -debug -ignore=".git,vendor"
+  - overalls -project=github.com/sinusoids/gem/bbc -covermode=count -debug -ignore=".git,vendor"
   - gocovmerge src/gem/overalls.coverprofile src/bbc/overalls.coverprofile python.coverprofile gem_log.coverprofile > coverage.profile
 after_success:
   - codecov
