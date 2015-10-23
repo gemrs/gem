@@ -1,4 +1,4 @@
-# ![Opal](https://raw.githubusercontent.com/sinusoids/gem/master/gem.png) Gem 1.0
+# ![Opal](https://raw.githubusercontent.com/sinusoids/gem/master/gem.png) Gem v1.0: Opal
 
 The Gielinor Emulator is a reimplementation of an old, discontinued MMO server.
 
