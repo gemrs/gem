@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	_ "gem"
+	_ "github.com/sinusoids/gem/gem"
 	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/python"
 	_ "github.com/sinusoids/gem/gem/python"
