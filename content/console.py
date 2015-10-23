@@ -1,6 +1,7 @@
 import code
 import readline
 import exceptions
+import rlcompleter
 
 import gem
 import gem.event
@@ -13,5 +14,6 @@ def cleanup(event):
     console.resetbuffer()
 
 def interact():
-    gem.Shutdown.Register(gem.event.PyListener(cleanup))
+    readline.parse_and_bind("tab: complete")
+    gem.engine.event.Shutdown.Register(gem.event.PyListener(cleanup))
     console.interact("")
