@@ -4,3 +4,6 @@ go:
 install:
   - go build gem/...
   - go build bbc/...
+env:
+  - GOPATH=${TRAVIS_BUILD_DIR}/src
+  - GO15VENDOREXPERIMENT=1
