@@ -1,6 +1,21 @@
 #!/bin/bash
-go test -tags test_python -coverpkg=./gem/... -covermode=count -coverprofile=python.coverprofile ./gem/cmd/gem
-go test -tags test_python -covermode=count -coverprofile=gem_log.coverprofile ./gem/log
-overalls -project=github.com/sinusoids/gem/gem -covermode=count -debug -ignore=".git,vendor"
-overalls -project=github.com/sinusoids/gem/bbc -covermode=count -debug -ignore=".git,vendor"
-gocovmerge gem/overalls.coverprofile bbc/overalls.coverprofile python.coverprofile gem_log.coverprofile > coverage.profile
+
+test_package() {
+    root_pkg=$(go list $1)
+    root_profile=$2
+    all_profiles=""
+    for pkg in `go list ${root_pkg}/...`; do
+        profile_path=$(echo $pkg | sed 's/\//_/g')
+        profile_path+=".profile"
+        go test -coverpkg=${root_pkg}/... -covermode=count -coverprofile=${profile_path} ${pkg}
+        [[ -f ${profile_path} ]] && all_profiles+=" ${profile_path}"
+    done
+
+    gocovmerge $all_profiles > $root_profile
+#    rm -f $all_profiles # Remove the old profiles to avoid confusion
+}
+
+test_package ./gem gem.profile
+test_package ./bbc bbc.profile
+gocovmerge gem.profile bbc.profile > coverage.profile
+#rm gem.profile bbc.profile # Remove the old profiles to avoid confusion
