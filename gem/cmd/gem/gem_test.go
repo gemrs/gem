@@ -1,11 +1,16 @@
-// +build !test_python
-
 package main
 
 import (
 	"testing"
+
+	"github.com/qur/gopy/lib"
 )
 
+// Launch py.test tests
 func TestPython(t *testing.T) {
-	// Dummy test, so that tools which don't know about build tags don't get confused
+	_ = py.NewLock()
+
+	run([]string{
+		"-c", "import pytest; pytest.main(\"-s ../../../content/\")",
+	}, true)
 }

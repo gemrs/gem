@@ -15,6 +15,9 @@ var moduleRegisterFuncs = []registerFunc{
 }
 
 func init() {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
 	/* Create package */
 	var err error
 	var module *py.Module

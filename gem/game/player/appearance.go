@@ -12,6 +12,7 @@ const (
 	Beard
 	Hair
 	Skin
+	BodyPartMax
 )
 
 type Anim int
@@ -24,6 +25,7 @@ const (
 	AnimRotateCCW
 	AnimRotateCW
 	AnimRun
+	AnimMax
 )
 
 type Appearance interface {

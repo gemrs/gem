@@ -23,7 +23,9 @@ import (
 )
 
 func main() {
+	py.NewLock()
 	run(os.Args[1:], false)
+	py.Finalize()
 }
 
 // This is split into its own function to allow test to invoke the python interpreter
@@ -34,5 +36,4 @@ func run(args []string, testing bool) {
 	python.LinkModules()
 	args = append([]string{"gem"}, args...)
 	py.Main(args)
-	py.Finalize()
 }

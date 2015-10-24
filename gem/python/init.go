@@ -1,5 +1,3 @@
-// +build !test_python
-
 package python
 
 import (
@@ -19,7 +17,8 @@ func pythonInit() {
 		}
 	}()
 
-	_ = py.InitAndLock()
+	lock := py.InitAndLock()
+	defer lock.Unlock()
 
 	SetTypeConvFuncs()
 

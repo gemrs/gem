@@ -74,7 +74,7 @@ func (a *Appearance) Model(b player.BodyPart) int {
 	case player.Beard:
 		return a.beardModel
 	}
-	panic("not reached")
+	return -1
 }
 
 func (a *Appearance) Color(b player.BodyPart) int {
@@ -90,7 +90,7 @@ func (a *Appearance) Color(b player.BodyPart) int {
 	case player.Skin:
 		return a.skinColor
 	}
-	panic("not reached")
+	return -1
 }
 
 type Animations struct {

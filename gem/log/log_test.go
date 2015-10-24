@@ -1,5 +1,3 @@
-// +build test_python
-
 package log_test
 
 import (
