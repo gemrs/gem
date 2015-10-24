@@ -61,11 +61,11 @@ func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer) erro
 		localPos := player.Position().LocalTo(player.Region())
 
 		buf.Write(2, 3) // update type 3 = warp to location
-		buf.Write(2, uint32(localPos.Z))
+		buf.Write(2, uint32(localPos.Z()))
 		buf.WriteBit(true) // discard walk queue? not sure when/if we need this
 		buf.WriteBit(otherUpdateFlags != 0)
-		buf.Write(7, uint32(localPos.Y))
-		buf.Write(7, uint32(localPos.X))
+		buf.Write(7, uint32(localPos.Y()))
+		buf.Write(7, uint32(localPos.X()))
 
 	case (flags & entity.MobFlagRunUpdate) != 0:
 		current, last := player.WalkDirection()

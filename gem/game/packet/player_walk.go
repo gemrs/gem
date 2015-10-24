@@ -25,7 +25,7 @@ func player_walk(player player.Player, packet encoding.Decodable) {
 		panic(fmt.Sprintf("got invalid walk packet: %T", p))
 	}
 
-	height := player.Position().Z
+	height := player.Position().Z()
 	origin, err := position.NewAbsolute(int(walkPacket.OriginX), int(walkPacket.OriginY), height)
 	if err != nil {
 		panic(err)
@@ -34,7 +34,7 @@ func player_walk(player player.Player, packet encoding.Decodable) {
 	waypoints := make([]*position.Absolute, len(walkPacket.Waypoints))
 	player.Log().Debugf("Origin %v", origin)
 	for i, wp := range walkPacket.Waypoints {
-		waypoints[i], err = position.NewAbsolute(int(wp.X)+origin.X, int(wp.Y)+origin.Y, height)
+		waypoints[i], err = position.NewAbsolute(int(wp.X)+origin.X(), int(wp.Y)+origin.Y(), height)
 		if err != nil {
 			panic(err)
 		}

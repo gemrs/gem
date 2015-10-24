@@ -21,8 +21,8 @@ func (client *Player) PlayerInit() {
 func (client *Player) RegionUpdate(_ *event.Event, _ ...interface{}) {
 	sector := client.Position().Sector()
 	client.Conn().Write <- &game_protocol.OutboundRegionUpdate{
-		SectorX: encoding.Int16(sector.X),
-		SectorY: encoding.Int16(sector.Y),
+		SectorX: encoding.Int16(sector.X()),
+		SectorY: encoding.Int16(sector.Y()),
 	}
 
 	session := client.Session().(*Session)
