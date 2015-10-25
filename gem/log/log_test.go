@@ -6,14 +6,14 @@ import (
 	"strings"
 	"testing"
 
-	_ "github.com/sinusoids/gem/gem"
+	"github.com/qur/gopy/lib"
+
 	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/gem/python"
-	_ "github.com/sinusoids/gem/gem/python"
+	_ "github.com/sinusoids/gem/gem/python/api"
 )
 
 func TestLogger(t *testing.T) {
-	python.LinkModules()
+	_ = py.NewLock()
 
 	var stdoutBuf bytes.Buffer
 

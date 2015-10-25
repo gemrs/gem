@@ -3,7 +3,7 @@ package task
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/python"
+	"github.com/sinusoids/gem/gem/python/modules"
 )
 
 type registerFunc func(*py.Module) error
@@ -20,7 +20,7 @@ func init() {
 	methods := []py.Method{
 		{"submit", Py_Submit, "submit a task to the scheduler"},
 	}
-	if module, err = python.InitModule("gem.task", methods); err != nil {
+	if module, err = modules.Init("gem.task", methods); err != nil {
 		panic(err)
 	}
 

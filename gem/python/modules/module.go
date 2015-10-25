@@ -1,15 +1,18 @@
-package python
+package modules
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/qur/gopy/lib"
+
+	// Importing this ensures PyInitialize has been called before we setup the api
+	_ "github.com/sinusoids/gem/gem/python/init"
 )
 
 var gemModules = map[string]*py.Module{}
 
-func InitModule(name string, methods []py.Method) (*py.Module, error) {
+func Init(name string, methods []py.Method) (*py.Module, error) {
 	module, err := py.InitModule(name, methods)
 	if err != nil {
 		return module, err
@@ -18,10 +21,10 @@ func InitModule(name string, methods []py.Method) (*py.Module, error) {
 	return module, err
 }
 
-// LinkModules ensures that all modules are inserted as objects into their parent packages
+// Link ensures that all modules are inserted as objects into their parent packages
 // Since we're initing modules in an indeterminite order, we do the linking step as a second pass,
 // performed after all modules have been initialized
-func LinkModules() {
+func Link() {
 	for module, object := range gemModules {
 		idx := strings.LastIndex(module, ".")
 		if idx == -1 {

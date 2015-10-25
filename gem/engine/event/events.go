@@ -4,7 +4,7 @@ import (
 	"github.com/qur/gopy/lib"
 
 	"github.com/sinusoids/gem/gem/event"
-	"github.com/sinusoids/gem/gem/python"
+	"github.com/sinusoids/gem/gem/python/modules"
 )
 
 var (
@@ -35,7 +35,7 @@ func init() {
 	/* Create package */
 	var err error
 	var module *py.Module
-	if module, err = python.InitModule("gem.engine.event", []py.Method{}); err != nil {
+	if module, err = modules.Init("gem.engine.event", []py.Method{}); err != nil {
 		panic(err)
 	}
 

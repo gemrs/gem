@@ -3,7 +3,7 @@ package game
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/python"
+	"github.com/sinusoids/gem/gem/python/modules"
 )
 
 type registerFunc func(*py.Module) error
@@ -26,7 +26,7 @@ func init() {
 	/* Create package */
 	var err error
 	var module *py.Module
-	if module, err = python.InitModule("gem.game", []py.Method{}); err != nil {
+	if module, err = modules.Init("gem.game", []py.Method{}); err != nil {
 		panic(err)
 	}
 

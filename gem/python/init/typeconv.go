@@ -1,8 +1,10 @@
-package python
+package init
 
 import (
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
+
+	"github.com/sinusoids/gem/gem/python"
 )
 
 func SetTypeConvFuncs() {
@@ -31,7 +33,7 @@ func TypeConvOut(value interface{}, typ string) (py.Object, error) {
 	if typ == "error" {
 		if value != nil {
 			err := value.(error)
-			Raise(err)
+			python.Raise(err)
 			return nil, nil
 		} else {
 			return py.None, nil
