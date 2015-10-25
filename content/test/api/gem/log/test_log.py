@@ -10,7 +10,7 @@ def test_log_api():
     syslog.EndRedirect()
 
     module_log = syslog.Module("test_module")
-    log_funcs = ["Critical", "Debug", "Error", "Fatal", "Info", "Notice", "Warning"]
+    log_funcs = ["Critical", "Debug", "Error", "Info", "Notice", "Warning"]
 
     for fn in log_funcs:
         assert hasattr(module_log, fn)
