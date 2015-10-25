@@ -8,7 +8,7 @@ import (
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 
-	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/position"
 )
 

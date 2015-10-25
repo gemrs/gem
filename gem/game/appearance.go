@@ -3,7 +3,7 @@ package game
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/game/player"
+	"github.com/sinusoids/gem/gem/game/interface/player"
 )
 
 //go:generate gopygen -type Appearance -type Animations $GOFILE

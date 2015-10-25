@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/position"
 )
 

@@ -3,8 +3,8 @@ package game
 import (
 	"github.com/sinusoids/gem/gem/encoding"
 	"github.com/sinusoids/gem/gem/event"
-	"github.com/sinusoids/gem/gem/game/entity"
-	"github.com/sinusoids/gem/gem/game/player"
+	"github.com/sinusoids/gem/gem/game/interface/entity"
+	"github.com/sinusoids/gem/gem/game/interface/player"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
 

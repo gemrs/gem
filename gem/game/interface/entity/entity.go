@@ -21,7 +21,7 @@ type Entity interface {
 	Region() *position.Region
 }
 
-type Mob interface {
+type Movable interface {
 	Entity
 	Flags() Flags
 	WalkDirection() (current int, last int)

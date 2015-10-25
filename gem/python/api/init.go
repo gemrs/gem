@@ -10,7 +10,6 @@ import (
 	_ "github.com/sinusoids/gem/gem/event"
 	_ "github.com/sinusoids/gem/gem/game"
 	_ "github.com/sinusoids/gem/gem/game/event"
-	_ "github.com/sinusoids/gem/gem/game/player"
 	_ "github.com/sinusoids/gem/gem/game/position"
 	_ "github.com/sinusoids/gem/gem/game/server"
 	_ "github.com/sinusoids/gem/gem/runite"

@@ -6,7 +6,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/game/player"
+	"github.com/sinusoids/gem/gem/game/interface/player"
 	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
 	"github.com/tgascoigne/gopygen/gopygen"
