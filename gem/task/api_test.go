@@ -1,4 +1,4 @@
-package log_test
+package task_test
 
 import (
 	"testing"
@@ -8,8 +8,8 @@ import (
 	"github.com/sinusoids/gem/gem/python/test"
 )
 
-func TestLogAPI(t *testing.T) {
+func TestTaskAPI(t *testing.T) {
 	_ = py.NewLock()
 
-	test.PythonTest("test/api/gem/log/", t)
+	test.PythonTest("test/api/gem/task/", t)
 }

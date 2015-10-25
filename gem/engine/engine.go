@@ -34,15 +34,17 @@ func (e *Engine) Start() {
 	e.t.Go(e.run)
 }
 
-func (e *Engine) Join() bool {
+func (e *Engine) Join() {
+	lock := py.NewLock()
+	defer lock.Unlock()
+	lock.UnblockThreads()
+
 	e.t.Wait()
-	return true
 }
 
 func (e *Engine) Stop() {
 	engine_event.Shutdown.NotifyObservers()
 	e.t.Kill(nil)
-	e.t.Wait()
 }
 
 func (e *Engine) run() error {

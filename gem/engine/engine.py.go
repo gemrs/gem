@@ -4,10 +4,9 @@ package gem
 import (
 	"fmt"
 
-	"gopkg.in/tomb.v2"
-
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
+	"gopkg.in/tomb.v2"
 )
 
 // Sometimes we might generate code which doesn't use some of the above imports
@@ -134,17 +133,12 @@ func (e *Engine) Py_Join(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 
 	// Make the function call
 
-	res0 := e.Join()
+	e.Join()
 
 	// Remove local references
 
-	out_0, err := gopygen.TypeConvOut(res0, "bool")
-	if err != nil {
-		return nil, err
-	}
-	out_0.Incref()
-
-	return out_0, nil
+	py.None.Incref()
+	return py.None, nil
 
 }
 

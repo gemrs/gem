@@ -51,12 +51,12 @@ func PythonTask(callback py.Object, when TaskHook, interval Cycles, user py.Obje
 
 		argsTuple, err := py.BuildValue("sO", string(when), user)
 		if err != nil {
-			panic(err)
+			panic(err.Error())
 		}
 
 		reschedule, err := callback.Base().CallObject(argsTuple.(*py.Tuple))
 		if err != nil {
-			panic(err)
+			panic(err.Error())
 		}
 
 		return reschedule.(*py.Bool).Bool()
