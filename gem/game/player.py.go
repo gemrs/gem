@@ -3,12 +3,12 @@ package game
 
 import (
 	"fmt"
+
+	"github.com/qur/gopy/lib"
 	"github.com/sinusoids/gem/gem/encoding"
 	"github.com/sinusoids/gem/gem/game/player"
 	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
-
-	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
@@ -41,7 +41,7 @@ func RegisterPlayer(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func NewPlayer(arg_0 *server.Connection, arg_1 *GameService) (*Player, error) {
+func NewPlayer(arg_0 *server.Connection) (*Player, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -51,7 +51,7 @@ func NewPlayer(arg_0 *server.Connection, arg_1 *GameService) (*Player, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*Player)
-	err = alloc.Init(arg_0, arg_1)
+	err = alloc.Init(arg_0)
 	return alloc, err
 }
 
@@ -62,7 +62,7 @@ func (obj *Player) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 2 {
+	if len(args) != 1 {
 		return fmt.Errorf("(Player) PyInit: parameter length mismatch")
 	}
 
@@ -72,19 +72,42 @@ func (obj *Player) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 		return err
 	}
 
-	args[1].Incref()
-	in_1, err := gopygen.TypeConvIn(args[1], "*GameService")
-	if err != nil {
-		return err
-	}
-
-	err = obj.Init(in_0.(*server.Connection), in_1.(*GameService))
+	err = obj.Init(in_0.(*server.Connection))
 
 	args[0].Decref()
 
-	args[1].Decref()
-
 	return err
+}
+
+func (client *Player) Py_SetDecodeFunc(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Py_SetDecodeFunc: parameter length mismatch")
+	}
+	// Convert parameters
+
+	args[0].Incref()
+	in_0, err := gopygen.TypeConvIn(args[0], "decodeFunc")
+	if err != nil {
+		return nil, err
+	}
+
+	// Make the function call
+
+	client.SetDecodeFunc(in_0.(decodeFunc))
+
+	// Remove local references
+
+	args[0].Decref()
+
+	py.None.Incref()
+	return py.None, nil
+
 }
 
 func (client *Player) Py_Session(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {

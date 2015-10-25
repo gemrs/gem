@@ -3,11 +3,11 @@ package game
 
 import (
 	"fmt"
+
+	"github.com/qur/gopy/lib"
 	"github.com/sinusoids/gem/gem/auth"
 	"github.com/sinusoids/gem/gem/game/server"
 	"github.com/sinusoids/gem/gem/runite"
-
-	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 

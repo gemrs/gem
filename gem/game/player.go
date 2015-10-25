@@ -26,23 +26,20 @@ type Player struct {
 	py.BaseObject
 
 	*server.Connection
-	service *GameService
-	decode  decodeFunc
+	decode decodeFunc
 
 	session *Session
 	profile *Profile
 }
 
 // NewGameClient constructs a new GameClient
-func (client *Player) Init(conn *server.Connection, svc *GameService) error {
+func (client *Player) Init(conn *server.Connection) error {
 	session, err := NewSession()
 	if err != nil {
 		return err
 	}
 
 	client.Connection = conn
-	client.service = svc
-	client.decode = svc.handshake
 	client.session = session
 
 	client.session.region, err = position.NewRegion(nil)
@@ -62,6 +59,10 @@ func finishLogin(_ *event.Event, args ...interface{}) {
 	client.PlayerInit()
 	engine_event.Tick.Register(event.NewListener(client.PlayerUpdate))
 	engine_event.PostTick.Register(event.NewListener(client.ClearUpdateFlags))
+}
+
+func (client *Player) SetDecodeFunc(d decodeFunc) {
+	client.decode = d
 }
 
 // Session returns the player's session

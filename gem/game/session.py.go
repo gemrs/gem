@@ -3,12 +3,13 @@ package game
 
 import (
 	"fmt"
-	"github.com/sinusoids/gem/gem/game/entity"
-	"github.com/sinusoids/gem/gem/game/position"
 
 	"github.com/gtank/isaac"
 	"github.com/qur/gopy/lib"
 	"github.com/tgascoigne/gopygen/gopygen"
+
+	"github.com/sinusoids/gem/gem/game/entity"
+	"github.com/sinusoids/gem/gem/game/position"
 )
 
 // Sometimes we might generate code which doesn't use some of the above imports

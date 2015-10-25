@@ -44,10 +44,11 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log().Infof("new game client")
-	client, err := NewPlayer(conn, svc)
+	client, err := NewPlayer(conn)
 	if err != nil {
 		panic(err)
 	}
+	client.SetDecodeFunc(svc.handshake)
 	return client
 }
 
