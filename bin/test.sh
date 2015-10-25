@@ -12,10 +12,10 @@ test_package() {
     done
 
     gocovmerge $all_profiles > $root_profile
-#    rm -f $all_profiles # Remove the old profiles to avoid confusion
+    rm -f $all_profiles # Remove the old profiles to avoid confusion
 }
 
 test_package ./gem gem.profile
 test_package ./bbc bbc.profile
 gocovmerge gem.profile bbc.profile > coverage.profile
-#rm gem.profile bbc.profile # Remove the old profiles to avoid confusion
+rm gem.profile bbc.profile # Remove the old profiles to avoid confusion
