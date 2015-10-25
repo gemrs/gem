@@ -120,7 +120,7 @@ func (log *Module) Error(message string) {
 
 func (log *Module) Fatal(message string) {
 	if log.parent != nil {
-		log.parent.Critical(fmt.Sprintf("[%v] %v", log.prefix, message))
+		log.parent.Fatal(fmt.Sprintf("[%v] %v", log.prefix, message))
 		return
 	}
 	log.logger.Fatal(message)
