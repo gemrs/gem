@@ -1,9 +1,14 @@
 package test
 
+// #include <python2.7/Python.h>
+// #cgo LDFLAGS: -lpython2.7
+import "C"
+
 import (
 	"fmt"
 	"os"
 	"testing"
+	"unsafe"
 
 	"github.com/qur/gopy/lib"
 
@@ -20,6 +25,14 @@ func PythonTest(testDir string, t *testing.T) {
 
 	pyLaunchTest := fmt.Sprintf(`import pytest; test_result = pytest.main("-s %v/%v")`, pythonDir, testDir)
 
+	argv := make([]*C.char, len(os.Args))
+
+	for i, arg := range os.Args {
+		argv[i] = C.CString(arg)
+		defer C.free(unsafe.Pointer(argv[i]))
+	}
+
+	C.PySys_SetArgv(C.int(len(argv)), &argv[0])
 	if main, err := py.NewDict(); err != nil {
 		t.Fatal(err)
 	} else if g, err := py.GetBuiltins(); err != nil {
