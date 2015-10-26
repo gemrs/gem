@@ -6,6 +6,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 	"github.com/sinusoids/gem/gem/auth"
+	"github.com/sinusoids/gem/gem/game/interface/player"
 	"github.com/sinusoids/gem/gem/game/server"
 	"github.com/sinusoids/gem/gem/runite"
 	"github.com/tgascoigne/gopygen/gopygen"
@@ -151,14 +152,14 @@ func (svc *GameService) Py_decodePacket(_args *py.Tuple, kwds *py.Dict) (py.Obje
 	// Convert parameters
 
 	args[0].Incref()
-	in_0, err := gopygen.TypeConvIn(args[0], "*Player")
+	in_0, err := gopygen.TypeConvIn(args[0], "player.Player")
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the function call
 
-	res0 := svc.decodePacket(in_0.(*Player))
+	res0 := svc.decodePacket(in_0.(player.Player))
 
 	// Remove local references
 
@@ -187,14 +188,14 @@ func (svc *GameService) Py_packetConsumer(_args *py.Tuple, kwds *py.Dict) (py.Ob
 	// Convert parameters
 
 	args[0].Incref()
-	in_0, err := gopygen.TypeConvIn(args[0], "*Player")
+	in_0, err := gopygen.TypeConvIn(args[0], "player.Player")
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the function call
 
-	svc.packetConsumer(in_0.(*Player))
+	svc.packetConsumer(in_0.(player.Player))
 
 	// Remove local references
 

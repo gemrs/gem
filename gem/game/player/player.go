@@ -1,8 +1,7 @@
-package game
+package player
 
 import (
 	"github.com/sinusoids/gem/gem/encoding"
-	engine_event "github.com/sinusoids/gem/gem/engine/event"
 	"github.com/sinusoids/gem/gem/event"
 	game_event "github.com/sinusoids/gem/gem/game/event"
 	"github.com/sinusoids/gem/gem/game/interface/entity"
@@ -14,19 +13,14 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type Player -excfield "^[a-z].*" $GOFILE
-
-// decodeFunc is used for parsing the read stream and dealing with the incoming data.
-// If io.EOF is returned, it is assumed that we didn't have enough data, and
-// the underlying buffer's read pointer is not altered.
-type decodeFunc func(*Player) error
+//go:generate gopygen -type Player -excfield "^[a-z].*" -excfunc "SetDecodeFunc" $GOFILE
 
 // GameClient is a client which serves players
 type Player struct {
 	py.BaseObject
 
 	*server.Connection
-	decode decodeFunc
+	decode player.DecodeFunc
 
 	session *Session
 	profile *Profile
@@ -53,15 +47,7 @@ func (client *Player) Init(conn *server.Connection) error {
 	return nil
 }
 
-// finishLogin calls PlayerInit and registers tick event callbacks for various things
-func finishLogin(_ *event.Event, args ...interface{}) {
-	client := args[0].(*Player)
-	client.PlayerInit()
-	engine_event.Tick.Register(event.NewListener(client.PlayerUpdate))
-	engine_event.PostTick.Register(event.NewListener(client.ClearUpdateFlags))
-}
-
-func (client *Player) SetDecodeFunc(d decodeFunc) {
+func (client *Player) SetDecodeFunc(d player.DecodeFunc) {
 	client.decode = d
 }
 
@@ -73,6 +59,11 @@ func (client *Player) Session() player.Session {
 // Profile returns the player's profile
 func (client *Player) Profile() player.Profile {
 	return client.profile
+}
+
+// SetProfile sets the player's profile
+func (client *Player) SetProfile(profile player.Profile) {
+	client.profile = profile.(*Profile)
 }
 
 // Conn returns the underlying Connection
@@ -141,7 +132,7 @@ func (client *Player) AppearanceUpdated() {
 // Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator
 func (client *Player) Encode(codable encoding.Encodable) error {
 	session := client.Session().(*Session)
-	return codable.Encode(client.Conn().WriteBuffer, &session.RandOut)
+	return codable.Encode(client.Conn().WriteBuffer, session.ISAACOut())
 }
 
 // SendMessage puts a message to the player's chat window

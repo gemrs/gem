@@ -1,6 +1,8 @@
-package game
+package player
 
 import (
+	"math/rand"
+
 	"github.com/gtank/isaac"
 	"github.com/qur/gopy/lib"
 
@@ -13,11 +15,11 @@ import (
 type Session struct {
 	py.BaseObject
 
-	RandIn  isaac.ISAAC
-	RandOut isaac.ISAAC
-	RandKey []int32
+	randIn        isaac.ISAAC
+	randOut       isaac.ISAAC
+	serverRandKey []uint32
 
-	SecureBlockSize int
+	secureBlockSize int
 
 	region         *position.Region
 	flags          entity.Flags
@@ -26,6 +28,9 @@ type Session struct {
 }
 
 func (s *Session) Init() error {
+	s.serverRandKey = []uint32{
+		uint32(rand.Int31()), uint32(rand.Int31()),
+	}
 	return nil
 }
 
@@ -52,4 +57,29 @@ func (s *Session) SetRegion(r *position.Region) {
 
 func (s *Session) WalkDirection() (current int, last int) {
 	return s.currentWalkDir, s.lastWalkDir
+}
+
+func (s *Session) ServerISAACSeed() []uint32 {
+	return s.serverRandKey
+}
+
+func (s *Session) ISAACIn() *isaac.ISAAC {
+	return &s.randIn
+}
+
+func (s *Session) ISAACOut() *isaac.ISAAC {
+	return &s.randOut
+}
+
+func (s *Session) InitISAAC(inSeed, outSeed []uint32) {
+	s.randIn.SeedArray(inSeed)
+	s.randOut.SeedArray(outSeed)
+}
+
+func (s *Session) SecureBlockSize() int {
+	return s.secureBlockSize
+}
+
+func (s *Session) SetSecureBlockSize(size int) {
+	s.secureBlockSize = size
 }

@@ -1,8 +1,11 @@
 package player
 
 import (
+	"github.com/gtank/isaac"
+
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/sinusoids/gem/gem/game/server"
 	"github.com/sinusoids/gem/gem/log"
 )
 
@@ -78,6 +81,14 @@ type PlayerSnapshot struct {
 	session Session
 }
 
+func (p *PlayerSnapshot) FinishInit() {
+	panic("not implemented")
+}
+
+func (p *PlayerSnapshot) SetProfile(_ Profile) {
+	panic("not implemented")
+}
+
 func (p *PlayerSnapshot) Profile() Profile {
 	return p.profile
 }
@@ -87,6 +98,10 @@ func (p *PlayerSnapshot) Session() Session {
 }
 
 func (p *PlayerSnapshot) Log() *log.Module {
+	panic("not implemented")
+}
+
+func (p *PlayerSnapshot) SetDecodeFunc(d DecodeFunc) {
 	panic("not implemented")
 }
 
@@ -110,6 +125,10 @@ func (p *PlayerSnapshot) SetPosition(*position.Absolute) {
 	panic("not implemented")
 }
 
+func (p *PlayerSnapshot) Conn() *server.Connection {
+	panic("not implemented")
+}
+
 type SessionSnapshot struct {
 	region         *position.Region
 	flags          entity.Flags
@@ -127,6 +146,30 @@ func (s *SessionSnapshot) WalkDirection() (current int, last int) {
 
 func (s *SessionSnapshot) Region() *position.Region {
 	return s.region
+}
+
+func (s *SessionSnapshot) ServerISAACSeed() []uint32 {
+	panic("not implemented")
+}
+
+func (s *SessionSnapshot) ISAACIn() *isaac.ISAAC {
+	panic("not implemented")
+}
+
+func (s *SessionSnapshot) ISAACOut() *isaac.ISAAC {
+	panic("not implemented")
+}
+
+func (s *SessionSnapshot) InitISAAC(inSeed, outSeed []uint32) {
+	panic("not implemented")
+}
+
+func (s *SessionSnapshot) SecureBlockSize() int {
+	panic("not implemented")
+}
+
+func (s *SessionSnapshot) SetSecureBlockSize(_ int) {
+	panic("not implemented")
 }
 
 type ProfileSnapshot struct {

@@ -1,22 +1,19 @@
 package game
 
 import (
-	"math/rand"
-
 	"github.com/sinusoids/gem/gem/auth"
 	"github.com/sinusoids/gem/gem/encoding"
 	game_event "github.com/sinusoids/gem/gem/game/event"
+	"github.com/sinusoids/gem/gem/game/interface/player"
 	"github.com/sinusoids/gem/gem/protocol"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
 
 // handshake performs the isaac key exchange
-func (svc *GameService) handshake(client *Player) error {
-	session := client.Session().(*Session)
+func (svc *GameService) handshake(client player.Player) error {
+	session := client.Session().(player.Session)
 
-	session.RandKey = make([]int32, 4)
-	session.RandKey[2] = rand.Int31()
-	session.RandKey[3] = rand.Int31()
+	serverSeed := session.ServerISAACSeed()
 
 	handshake := protocol.InboundGameHandshake{}
 	if err := handshake.Decode(client.Conn().ReadBuffer, nil); err != nil {
@@ -25,17 +22,17 @@ func (svc *GameService) handshake(client *Player) error {
 
 	client.Conn().Write <- &protocol.OutboundGameHandshake{
 		ServerISAACSeed: [2]encoding.Int32{
-			encoding.Int32(session.RandKey[2]), encoding.Int32(session.RandKey[3]),
+			encoding.Int32(serverSeed[0]), encoding.Int32(serverSeed[1]),
 		},
 	}
 
-	client.decode = svc.decodeLoginBlock
+	client.SetDecodeFunc(svc.decodeLoginBlock)
 	return nil
 }
 
 // decodeLoginBlock handles the unencrypted login block
-func (svc *GameService) decodeLoginBlock(client *Player) error {
-	session := client.Session().(*Session)
+func (svc *GameService) decodeLoginBlock(client player.Player) error {
+	session := client.Session().(player.Session)
 
 	loginBlock := game_protocol.InboundLoginBlock{}
 	if err := loginBlock.Decode(client.Conn().ReadBuffer, nil); err != nil {
@@ -45,25 +42,25 @@ func (svc *GameService) decodeLoginBlock(client *Player) error {
 	expectedSecureBlockSize := int(loginBlock.LoginLen) - ((9 * 4) + 1 + 1 + 1 + 2)
 	if expectedSecureBlockSize != int(loginBlock.SecureBlockSize) {
 		client.Log().Errorf("Secure block size mismatch: got %v expected %v", loginBlock.SecureBlockSize, expectedSecureBlockSize)
-		client.Disconnect()
+		client.Conn().Disconnect()
 	}
 
-	session.SecureBlockSize = int(loginBlock.SecureBlockSize)
+	session.SetSecureBlockSize(int(loginBlock.SecureBlockSize))
 
 	client.Log().Debugf("Login block: %#v", loginBlock)
 
-	client.decode = svc.decodeSecureBlock
+	client.SetDecodeFunc(svc.decodeSecureBlock)
 	return nil
 }
 
 // decodeSecureBlock handles the secure login block and the login response (via doLogin)
-func (svc *GameService) decodeSecureBlock(client *Player) error {
-	session := client.Session().(*Session)
+func (svc *GameService) decodeSecureBlock(client player.Player) error {
+	session := client.Session().(player.Session)
 
 	rsaBlock := encoding.RSABlock{&game_protocol.InboundSecureLoginBlock{}}
 	rsaArgs := encoding.RSADecodeArgs{
 		Key:       svc.key,
-		BlockSize: session.SecureBlockSize,
+		BlockSize: session.SecureBlockSize(),
 	}
 	if err := rsaBlock.Decode(client.Conn().ReadBuffer, rsaArgs); err != nil {
 		return err
@@ -77,8 +74,7 @@ func (svc *GameService) decodeSecureBlock(client *Player) error {
 		inSeed[i] = uint32(secureBlock.ISAACSeed[i])
 		outSeed[i] = uint32(secureBlock.ISAACSeed[i]) + 50
 	}
-	session.RandIn.SeedArray(inSeed)
-	session.RandOut.SeedArray(outSeed)
+	session.InitISAAC(inSeed, outSeed)
 
 	client.Log().Debugf("Secure login block: %#v", secureBlock)
 
@@ -90,18 +86,18 @@ func (svc *GameService) decodeSecureBlock(client *Player) error {
 }
 
 // doLogin authenticates the user, sends the login response, and sets up the client for standard packet processing
-func (svc *GameService) doLogin(client *Player, username, password string) error {
+func (svc *GameService) doLogin(client player.Player, username, password string) error {
 	profile, responseCode := svc.auth.LookupProfile(username, password)
 
 	if responseCode != auth.AuthOkay {
 		client.Conn().Write <- &game_protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Int8(responseCode),
 		}
-		client.Disconnect()
+		client.Conn().Disconnect()
 		return nil
 	}
 
-	client.profile = profile.(*Profile)
+	client.SetProfile(profile.(player.Profile))
 
 	// Successful login, do all the stuff
 	client.Conn().Write <- &game_protocol.OutboundLoginResponse{
@@ -109,7 +105,7 @@ func (svc *GameService) doLogin(client *Player, username, password string) error
 		Rights:   encoding.Int8(client.Profile().Rights()),
 		Flagged:  0,
 	}
-	client.decode = svc.decodePacket
+	client.SetDecodeFunc(svc.decodePacket)
 	go svc.packetConsumer(client)
 
 	game_event.PlayerLogin.NotifyObservers(client)
@@ -117,7 +113,7 @@ func (svc *GameService) doLogin(client *Player, username, password string) error
 	game_event.PlayerFinishLogin.NotifyObservers(client)
 
 	go func() {
-		client.WaitForDisconnect()
+		client.Conn().WaitForDisconnect()
 		game_event.PlayerLogout.NotifyObservers(client)
 	}()
 	return nil

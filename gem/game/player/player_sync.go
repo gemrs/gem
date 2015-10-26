@@ -1,19 +1,22 @@
-package game
+package player
 
 import (
 	"github.com/sinusoids/gem/gem/encoding"
+	engine_event "github.com/sinusoids/gem/gem/engine/event"
 	"github.com/sinusoids/gem/gem/event"
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/interface/player"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
 
-// PlayerInit is called once the player has finished the low level login sequence
-func (client *Player) PlayerInit() {
+// FinishInit is called once the player has finished the low level login sequence
+func (client *Player) FinishInit() {
 	client.Conn().Write <- &game_protocol.OutboundPlayerInit{
 		Membership: encoding.Int8(1),
 		Index:      encoding.Int16(client.Index()),
 	}
+	engine_event.Tick.Register(event.NewListener(client.PlayerUpdate))
+	engine_event.PostTick.Register(event.NewListener(client.ClearUpdateFlags))
 }
 
 // RegionUpdate is called when the player enters a new region

@@ -7,7 +7,9 @@ import (
 	"github.com/sinusoids/gem/gem/crypto"
 	"github.com/sinusoids/gem/gem/event"
 	game_event "github.com/sinusoids/gem/gem/game/event"
+	"github.com/sinusoids/gem/gem/game/interface/player"
 	"github.com/sinusoids/gem/gem/game/packet"
+	playerimpl "github.com/sinusoids/gem/gem/game/player"
 	"github.com/sinusoids/gem/gem/game/server"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 	"github.com/sinusoids/gem/gem/runite"
@@ -42,9 +44,15 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 	return nil
 }
 
+// finishLogin calls PlayerInit and registers tick event callbacks for various things
+func finishLogin(_ *event.Event, args ...interface{}) {
+	client := args[0].(player.Player)
+	client.FinishInit()
+}
+
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log().Infof("new game client")
-	client, err := NewPlayer(conn)
+	client, err := playerimpl.NewPlayer(conn)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +61,7 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.C
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
-func (svc *GameService) decodePacket(client *Player) error {
+func (svc *GameService) decodePacket(client player.Player) error {
 	b := client.Conn().ReadBuffer
 	data, err := b.Peek(1)
 	if err != nil {
@@ -62,8 +70,8 @@ func (svc *GameService) decodePacket(client *Player) error {
 
 	idByte := int(data[0])
 
-	session := client.Session().(*Session)
-	rand := session.RandIn.Rand()
+	session := client.Session().(player.Session)
+	rand := session.ISAACIn().Rand()
 	realId := uint8(uint32(idByte) - rand)
 	packet, err := game_protocol.NewInboundPacket(int(realId))
 	if err != nil {
@@ -74,14 +82,14 @@ func (svc *GameService) decodePacket(client *Player) error {
 		return err
 	}
 
-	if !client.IsDisconnecting() {
+	if !client.Conn().IsDisconnecting() {
 		client.Conn().Read <- packet
 	}
 	return nil
 }
 
 // packetConsumer is the goroutine which picks packets from the readQueue and does something with them
-func (svc *GameService) packetConsumer(client *Player) {
+func (svc *GameService) packetConsumer(client player.Player) {
 L:
 	for {
 		select {
