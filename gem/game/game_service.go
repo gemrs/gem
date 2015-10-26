@@ -7,6 +7,7 @@ import (
 	"github.com/sinusoids/gem/gem/crypto"
 	"github.com/sinusoids/gem/gem/event"
 	game_event "github.com/sinusoids/gem/gem/game/event"
+	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/interface/player"
 	"github.com/sinusoids/gem/gem/game/packet"
 	playerimpl "github.com/sinusoids/gem/gem/game/player"
@@ -41,6 +42,9 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 	svc.auth = auth
 
 	game_event.PlayerFinishLogin.Register(event.NewListener(finishLogin))
+	game_event.EntityRegionChange.Register(event.NewListener(svc.EntityUpdate))
+	game_event.EntitySectorChange.Register(event.NewListener(svc.EntityUpdate))
+	game_event.PlayerAppearanceUpdate.Register(event.NewListener(svc.PlayerUpdate))
 	return nil
 }
 
@@ -58,6 +62,34 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.C
 	}
 	client.SetDecodeFunc(svc.handshake)
 	return client
+}
+
+func (svc *GameService) EntityUpdate(ev *event.Event, _args ...interface{}) {
+	if len(_args) < 1 {
+		panic("invalid args length")
+	}
+
+	args := _args[0].(map[string]interface{})
+	entity := args["entity"].(entity.Entity)
+	switch ev {
+	case game_event.EntityRegionChange:
+		entity.RegionChange()
+	case game_event.EntitySectorChange:
+		entity.SectorChange()
+	}
+}
+
+func (svc *GameService) PlayerUpdate(ev *event.Event, _args ...interface{}) {
+	if len(_args) < 1 {
+		panic("invalid args length")
+	}
+
+	args := _args[0].(map[string]interface{})
+	player := args["entity"].(player.Player)
+	switch ev {
+	case game_event.PlayerAppearanceUpdate:
+		player.AppearanceChange()
+	}
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator

@@ -11,6 +11,20 @@ func comparePlayers(p1, p2 Player) bool {
 		return false
 	}
 
+	if p1.Flags() != p2.Flags() {
+		return false
+	}
+
+	if !p1.Region().Compare(p2.Region()) {
+		return false
+	}
+
+	d1, d2 := p1.WalkDirection()
+	d3, d4 := p2.WalkDirection()
+	if d1 != d3 || d2 != d4 {
+		return false
+	}
+
 	return true
 }
 
@@ -47,19 +61,6 @@ func compareProfile(p1, p2 Profile) bool {
 }
 
 func compareSession(p1, p2 Session) bool {
-	if p1.Flags() != p2.Flags() {
-		return false
-	}
-
-	if !p1.Region().Compare(p2.Region()) {
-		return false
-	}
-
-	d1, d2 := p1.WalkDirection()
-	d3, d4 := p2.WalkDirection()
-	if d1 != d3 || d2 != d4 {
-		return false
-	}
 	return true
 }
 

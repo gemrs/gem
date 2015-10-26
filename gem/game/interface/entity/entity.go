@@ -15,14 +15,27 @@ const (
 	MobFlagMovementUpdate Flags = (MobFlagRegionUpdate | MobFlagWalkUpdate | MobFlagRunUpdate)
 )
 
+type EntityType int
+
+const (
+	PlayerType EntityType = iota
+)
+
 // An Entity is a 'thing' within the world, with a position, and an index.
 type Entity interface {
 	position.Positionable
 	Region() *position.Region
+	EntityType() EntityType
+	RegionChange()
+	SectorChange()
 }
 
 type Movable interface {
 	Entity
 	Flags() Flags
+	SetFlags(Flags)
+	ClearFlags()
 	WalkDirection() (current int, last int)
+	SetNextStep(*position.Absolute)
+	AppearanceChange()
 }

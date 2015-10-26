@@ -14,22 +14,18 @@ import (
 // every player is syncing with the same state, and so that the state doesn't change during synchronization
 func Snapshot(player Player) Player {
 	srcProfile := player.Profile()
-	srcSession := player.Session()
+	_ = player.Session()
 	snapshot := &PlayerSnapshot{
+		flags:  player.Flags(),
+		region: player.Region(),
 		profile: &ProfileSnapshot{
 			username: srcProfile.Username(),
 			password: srcProfile.Password(),
 			rights:   srcProfile.Rights(),
 			pos:      srcProfile.Position(),
 		},
+		session: &SessionSnapshot{},
 	}
-
-	session := &SessionSnapshot{
-		flags:  srcSession.Flags(),
-		region: srcSession.Region(),
-	}
-	session.currentWalkDir, session.lastWalkDir = srcSession.WalkDirection()
-	snapshot.session = session
 
 	skills := &SkillsSnapshot{
 		combatLevel: srcProfile.Skills().CombatLevel(),
@@ -77,8 +73,16 @@ func Snapshot(player Player) Player {
 }
 
 type PlayerSnapshot struct {
-	profile Profile
-	session Session
+	profile        Profile
+	session        Session
+	flags          entity.Flags
+	currentWalkDir int
+	lastWalkDir    int
+	region         *position.Region
+}
+
+func (p *PlayerSnapshot) SetNextStep(*position.Absolute) {
+	panic("not implemented")
 }
 
 func (p *PlayerSnapshot) FinishInit() {
@@ -106,15 +110,23 @@ func (p *PlayerSnapshot) SetDecodeFunc(d DecodeFunc) {
 }
 
 func (p *PlayerSnapshot) Flags() entity.Flags {
-	return p.Session().Flags()
+	return p.flags
+}
+
+func (p *PlayerSnapshot) SetFlags(f entity.Flags) {
+	panic("not implemented")
+}
+
+func (p *PlayerSnapshot) ClearFlags() {
+	panic("not implemented")
 }
 
 func (p *PlayerSnapshot) WalkDirection() (current int, last int) {
-	return p.Session().WalkDirection()
+	return p.currentWalkDir, p.lastWalkDir
 }
 
 func (p *PlayerSnapshot) Region() *position.Region {
-	return p.Session().Region()
+	return p.region
 }
 
 func (p *PlayerSnapshot) Position() *position.Absolute {
@@ -125,27 +137,32 @@ func (p *PlayerSnapshot) SetPosition(*position.Absolute) {
 	panic("not implemented")
 }
 
+func (p *PlayerSnapshot) Warp(*position.Absolute) {
+	panic("not implemented")
+}
+
 func (p *PlayerSnapshot) Conn() *server.Connection {
 	panic("not implemented")
 }
 
+func (p *PlayerSnapshot) SectorChange() {
+	panic("not implemented")
+}
+
+func (p *PlayerSnapshot) RegionChange() {
+	panic("not implemented")
+}
+
+func (p *PlayerSnapshot) AppearanceChange() {
+	panic("not implemented")
+}
+
+// EntityType identifies what kind of entity this entity is
+func (p *PlayerSnapshot) EntityType() entity.EntityType {
+	return entity.PlayerType
+}
+
 type SessionSnapshot struct {
-	region         *position.Region
-	flags          entity.Flags
-	currentWalkDir int
-	lastWalkDir    int
-}
-
-func (s *SessionSnapshot) Flags() entity.Flags {
-	return s.flags
-}
-
-func (s *SessionSnapshot) WalkDirection() (current int, last int) {
-	return s.currentWalkDir, s.lastWalkDir
-}
-
-func (s *SessionSnapshot) Region() *position.Region {
-	return s.region
 }
 
 func (s *SessionSnapshot) ServerISAACSeed() []uint32 {
@@ -199,12 +216,20 @@ func (p *ProfileSnapshot) Position() *position.Absolute {
 	return p.pos
 }
 
+func (p *ProfileSnapshot) SetPosition(*position.Absolute) {
+	panic("not implemented")
+}
+
 func (p *ProfileSnapshot) Skills() Skills {
 	return p.skills
 }
 
 func (p *ProfileSnapshot) Appearance() Appearance {
 	return p.appearance
+}
+
+func (p *ProfileSnapshot) SetAppearance(Appearance) {
+	panic("not implemented")
 }
 
 func (p *ProfileSnapshot) Animations() Animations {

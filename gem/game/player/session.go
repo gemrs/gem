@@ -5,9 +5,6 @@ import (
 
 	"github.com/gtank/isaac"
 	"github.com/qur/gopy/lib"
-
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/position"
 )
 
 //go:generate gopygen -type Session $GOFILE
@@ -20,11 +17,6 @@ type Session struct {
 	serverRandKey []uint32
 
 	secureBlockSize int
-
-	region         *position.Region
-	flags          entity.Flags
-	currentWalkDir int
-	lastWalkDir    int
 }
 
 func (s *Session) Init() error {
@@ -32,31 +24,6 @@ func (s *Session) Init() error {
 		uint32(rand.Int31()), uint32(rand.Int31()),
 	}
 	return nil
-}
-
-func (s *Session) Flags() entity.Flags {
-	return s.flags
-}
-
-// SetFlags ORs the given flags with the player's current update flags
-func (s *Session) SetFlags(f entity.Flags) {
-	s.flags |= f
-}
-
-func (s *Session) ClearFlags() {
-	s.flags = 0
-}
-
-func (s *Session) Region() *position.Region {
-	return s.region
-}
-
-func (s *Session) SetRegion(r *position.Region) {
-	s.region = r
-}
-
-func (s *Session) WalkDirection() (current int, last int) {
-	return s.currentWalkDir, s.lastWalkDir
 }
 
 func (s *Session) ServerISAACSeed() []uint32 {

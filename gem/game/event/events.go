@@ -12,8 +12,8 @@ var (
 	PlayerLogin            = createEvent("PlayerLogin")
 	PlayerLogout           = createEvent("PlayerLogout")
 	PlayerFinishLogin      = createEvent("PlayerFinishLogin")
-	PlayerSectorChange     = createEvent("PlayerSectorChange")
-	PlayerRegionChange     = createEvent("PlayerRegionChange")
+	EntitySectorChange     = createEvent("EntitySectorChange")
+	EntityRegionChange     = createEvent("EntityRegionChange")
 	PlayerAppearanceUpdate = createEvent("PlayerAppearanceUpdate")
 )
 

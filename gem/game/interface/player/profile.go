@@ -17,8 +17,10 @@ type Profile interface {
 	Password() string
 	Rights() Rights
 	Position() *position.Absolute
+	SetPosition(*position.Absolute)
 	Skills() Skills
 	Appearance() Appearance
+	SetAppearance(Appearance)
 	Animations() Animations
 }
 

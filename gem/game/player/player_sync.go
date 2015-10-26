@@ -19,35 +19,37 @@ func (client *Player) FinishInit() {
 	engine_event.PostTick.Register(event.NewListener(client.ClearUpdateFlags))
 }
 
+func (client *Player) SectorChange() {}
+
 // RegionUpdate is called when the player enters a new region
 // It sends the region update packet and sets the correct update flags
-func (client *Player) RegionUpdate(_ *event.Event, _ ...interface{}) {
+func (client *Player) RegionChange() {
 	sector := client.Position().Sector()
 	client.Conn().Write <- &game_protocol.OutboundRegionUpdate{
 		SectorX: encoding.Int16(sector.X()),
 		SectorY: encoding.Int16(sector.Y()),
 	}
 
-	session := client.Session().(*Session)
-	session.SetFlags(entity.MobFlagRegionUpdate)
+	client.SetFlags(entity.MobFlagRegionUpdate)
 }
 
 // AppearanceUpdate is called when the player's appearance changes
 // It ensures the player's appearance is synced at next update
-func (client *Player) AppearanceUpdate(_ *event.Event, _ ...interface{}) {
-	session := client.Session().(*Session)
-	session.SetFlags(entity.MobFlagIdentityUpdate)
+func (client *Player) AppearanceChange() {
+	client.SetFlags(entity.MobFlagIdentityUpdate)
 }
 
 // PlayerUpdate snapshots the player in their current state and syncs the client
+// Also re-syncs the current session with the player's profile
 func (client *Player) PlayerUpdate(_ *event.Event, _ ...interface{}) {
 	client.Conn().Write <- &game_protocol.PlayerUpdate{
 		OurPlayer: player.Snapshot(client),
 	}
+
+	client.Profile().SetPosition(client.Position())
 }
 
 // ClearUpdate is called on post-tick, and clears the player's update flags
 func (client *Player) ClearUpdateFlags(_ *event.Event, _ ...interface{}) {
-	session := client.Session().(*Session)
-	session.ClearFlags()
+	client.ClearFlags()
 }
