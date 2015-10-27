@@ -141,7 +141,11 @@ func (c *context) goType(typ ast.Node) string {
 	case *ast.DeclReference:
 		return c.goType(typ.Object)
 	case *ast.IntegerType:
-		return fmt.Sprintf("encoding.Int%v", typ.Bitsize)
+		if typ.Signed {
+			return fmt.Sprintf("encoding.Int%v", typ.Bitsize)
+		} else {
+			return fmt.Sprintf("encoding.Uint%v", typ.Bitsize)
+		}
 	case *ast.Struct:
 		return typ.Name
 	case *ast.StringBaseType:

@@ -55,24 +55,20 @@ func (f IntegerFlag) apply(value uint64) uint64 {
 	return value
 }
 
-type Int8 uint8
+type Int8 int8
 
 func (i *Int8) Encode(buf io.Writer, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	value := flags.apply(uint64(*i))
-	_, err := buf.Write([]byte{byte(value)})
-	return err
+	unsigned := Uint8(uint8(*i))
+	return unsigned.Encode(buf, flags_)
 }
 
 func (i *Int8) Decode(buf io.Reader, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	b := make([]byte, 1)
-	_, err := buf.Read(b)
+	var unsigned Uint8
+	err := unsigned.Decode(buf, flags_)
 	if err != nil {
 		return err
 	}
-
-	*i = Int8(flags.reverse().apply(uint64(b[0])))
+	*i = Int8(unsigned)
 	return nil
 }
 
@@ -80,31 +76,20 @@ func (i *Int8) Value() interface{} {
 	return *i
 }
 
-type Int16 uint16
+type Int16 int16
 
 func (i *Int16) Encode(buf io.Writer, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	value := flags.apply(uint64(*i))
-	endian := flags.endian()
-
-	data := make([]byte, 2)
-	endian.PutUint16(data, uint16(value))
-	_, err := buf.Write(data)
-	return err
+	unsigned := Uint16(uint16(*i))
+	return unsigned.Encode(buf, flags_)
 }
 
 func (i *Int16) Decode(buf io.Reader, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	endian := flags.endian()
-
-	data := make([]byte, 2)
-	_, err := buf.Read(data)
+	var unsigned Uint16
+	err := unsigned.Decode(buf, flags_)
 	if err != nil {
 		return err
 	}
-
-	value64 := uint64(endian.Uint16(data))
-	*i = Int16(flags.reverse().apply(value64))
+	*i = Int16(unsigned)
 	return nil
 }
 
@@ -115,25 +100,17 @@ func (i *Int16) Value() interface{} {
 type Int24 uint32
 
 func (i *Int24) Encode(buf io.Writer, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	value := flags.apply(uint64(*i))
-
-	data := []byte{byte(value >> 16), byte(value >> 8), byte(value)}
-	_, err := buf.Write(data)
-	return err
+	unsigned := Uint24(uint32(*i))
+	return unsigned.Encode(buf, flags_)
 }
 
 func (i *Int24) Decode(buf io.Reader, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-
-	data := make([]byte, 3)
-	_, err := buf.Read(data)
+	var unsigned Uint24
+	err := unsigned.Decode(buf, flags_)
 	if err != nil {
 		return err
 	}
-
-	value64 := uint64(data[0])<<16 | uint64(data[1])<<8 | uint64(data[2])
-	*i = Int24(flags.reverse().apply(value64))
+	*i = Int24(unsigned)
 	return nil
 }
 
@@ -144,28 +121,17 @@ func (i *Int24) Value() interface{} {
 type Int32 uint32
 
 func (i *Int32) Encode(buf io.Writer, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	value := flags.apply(uint64(*i))
-	endian := flags.endian()
-
-	data := make([]byte, 4)
-	endian.PutUint32(data, uint32(value))
-	_, err := buf.Write(data)
-	return err
+	unsigned := Uint32(uint32(*i))
+	return unsigned.Encode(buf, flags_)
 }
 
 func (i *Int32) Decode(buf io.Reader, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	endian := flags.endian()
-
-	data := make([]byte, 4)
-	_, err := buf.Read(data)
+	var unsigned Uint32
+	err := unsigned.Decode(buf, flags_)
 	if err != nil {
 		return err
 	}
-
-	value64 := uint64(endian.Uint32(data))
-	*i = Int32(flags.reverse().apply(value64))
+	*i = Int32(unsigned)
 	return nil
 }
 
@@ -176,28 +142,17 @@ func (i *Int32) Value() interface{} {
 type Int64 uint64
 
 func (i *Int64) Encode(buf io.Writer, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	value := flags.apply(uint64(*i))
-	endian := flags.endian()
-
-	data := make([]byte, 8)
-	endian.PutUint64(data, uint64(value))
-	_, err := buf.Write(data)
-	return err
+	unsigned := Uint64(uint64(*i))
+	return unsigned.Encode(buf, flags_)
 }
 
 func (i *Int64) Decode(buf io.Reader, flags_ interface{}) error {
-	flags := flags_.(IntegerFlag)
-	endian := flags.endian()
-
-	data := make([]byte, 8)
-	_, err := buf.Read(data)
+	var unsigned Uint64
+	err := unsigned.Decode(buf, flags_)
 	if err != nil {
 		return err
 	}
-
-	value64 := uint64(endian.Uint64(data))
-	*i = Int64(flags.reverse().apply(value64))
+	*i = Int64(unsigned)
 	return nil
 }
 

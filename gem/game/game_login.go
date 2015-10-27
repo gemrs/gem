@@ -21,8 +21,8 @@ func (svc *GameService) handshake(client player.Player) error {
 	}
 
 	client.Conn().Write <- &protocol.OutboundGameHandshake{
-		ServerISAACSeed: [2]encoding.Int32{
-			encoding.Int32(serverSeed[0]), encoding.Int32(serverSeed[1]),
+		ServerISAACSeed: [2]encoding.Uint32{
+			encoding.Uint32(serverSeed[0]), encoding.Uint32(serverSeed[1]),
 		},
 	}
 
@@ -91,7 +91,7 @@ func (svc *GameService) doLogin(client player.Player, username, password string)
 
 	if responseCode != auth.AuthOkay {
 		client.Conn().Write <- &game_protocol.OutboundLoginResponseUnsuccessful{
-			Response: encoding.Int8(responseCode),
+			Response: encoding.Uint8(responseCode),
 		}
 		client.Conn().Disconnect()
 		return nil
@@ -101,8 +101,8 @@ func (svc *GameService) doLogin(client player.Player, username, password string)
 
 	// Successful login, do all the stuff
 	client.Conn().Write <- &game_protocol.OutboundLoginResponse{
-		Response: encoding.Int8(responseCode),
-		Rights:   encoding.Int8(client.Profile().Rights()),
+		Response: encoding.Uint8(responseCode),
+		Rights:   encoding.Uint8(client.Profile().Rights()),
 		Flagged:  0,
 	}
 	client.SetDecodeFunc(svc.decodePacket)

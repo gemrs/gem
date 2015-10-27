@@ -10,7 +10,7 @@ type InboundServiceSelect struct {
    use for it
 */
 type InboundGameHandshake struct {
-    NameHash int8
+    NameHash uint8
 }
 
 /* Next, the server sends it's response.
@@ -21,12 +21,12 @@ type InboundGameHandshake struct {
 type OutboundGameHandshake struct {
     ignored         uint8[8]
     loginRequest    uint8 /* always 0 */
-    ServerISAACSeed int32[2]
+    ServerISAACSeed uint32[2]
 }
 
 /* If ServiceSelect.Service is 15, the server sends 8 bytes, which is ignored by the client
    From here, the client begins making it's UpdateRequest's (see update_service.bb)
 */
 type OutboundUpdateHandshake struct {
-    ignored int8[8]
+    ignored uint8[8]
 }

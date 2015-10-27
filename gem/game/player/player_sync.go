@@ -12,8 +12,8 @@ import (
 // FinishInit is called once the player has finished the low level login sequence
 func (client *Player) FinishInit() {
 	client.Conn().Write <- &game_protocol.OutboundPlayerInit{
-		Membership: encoding.Int8(1),
-		Index:      encoding.Int16(client.Index()),
+		Membership: encoding.Uint8(1),
+		Index:      encoding.Uint16(client.Index()),
 	}
 
 	engine_event.PreTick.Register(event.NewListener(client.PreTick))
@@ -28,8 +28,8 @@ func (client *Player) SectorChange() {}
 func (client *Player) RegionChange() {
 	sector := client.Position().Sector()
 	client.Conn().Write <- &game_protocol.OutboundRegionUpdate{
-		SectorX: encoding.Int16(sector.X()),
-		SectorY: encoding.Int16(sector.Y()),
+		SectorX: encoding.Uint16(sector.X()),
+		SectorY: encoding.Uint16(sector.Y()),
 	}
 
 	client.SetFlags(entity.MobFlagRegionUpdate)

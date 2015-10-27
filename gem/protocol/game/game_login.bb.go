@@ -2,18 +2,19 @@
 package game
 
 import (
-	"github.com/sinusoids/gem/gem/encoding"
 	"io"
+
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 type InboundLoginBlock struct {
-	LoginType       encoding.Int8
-	LoginLen        encoding.Int8
-	Magic           encoding.Int8
-	Revision        encoding.Int16
-	MemType         encoding.Int8
-	ArchiveCRCs     [9]encoding.Int32
-	SecureBlockSize encoding.Int8
+	LoginType       encoding.Uint8
+	LoginLen        encoding.Uint8
+	Magic           encoding.Uint8
+	Revision        encoding.Uint16
+	MemType         encoding.Uint8
+	ArchiveCRCs     [9]encoding.Uint32
+	SecureBlockSize encoding.Uint8
 }
 
 func (struc *InboundLoginBlock) Encode(buf io.Writer, flags interface{}) (err error) {
@@ -99,9 +100,9 @@ func (struc *InboundLoginBlock) Decode(buf io.Reader, flags interface{}) (err er
 }
 
 type InboundSecureLoginBlock struct {
-	Magic     encoding.Int8
-	ISAACSeed [4]encoding.Int32
-	ClientUID encoding.Int32
+	Magic     encoding.Uint8
+	ISAACSeed [4]encoding.Uint32
+	ClientUID encoding.Uint32
 	Username  encoding.JString
 	Password  encoding.JString
 }
@@ -169,9 +170,9 @@ func (struc *InboundSecureLoginBlock) Decode(buf io.Reader, flags interface{}) (
 }
 
 type OutboundLoginResponse struct {
-	Response encoding.Int8
-	Rights   encoding.Int8
-	Flagged  encoding.Int8
+	Response encoding.Uint8
+	Rights   encoding.Uint8
+	Flagged  encoding.Uint8
 }
 
 func (struc *OutboundLoginResponse) Encode(buf io.Writer, flags interface{}) (err error) {
@@ -213,7 +214,7 @@ func (struc *OutboundLoginResponse) Decode(buf io.Reader, flags interface{}) (er
 }
 
 type OutboundLoginResponseUnsuccessful struct {
-	Response encoding.Int8
+	Response encoding.Uint8
 }
 
 func (struc *OutboundLoginResponseUnsuccessful) Encode(buf io.Writer, flags interface{}) (err error) {

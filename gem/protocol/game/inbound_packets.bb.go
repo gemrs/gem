@@ -2,8 +2,9 @@
 package game
 
 import (
-	"github.com/sinusoids/gem/gem/encoding"
 	"io"
+
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 type anonymous_inbound_packets_bb_0 struct {

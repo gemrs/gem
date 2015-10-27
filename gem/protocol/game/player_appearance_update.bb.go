@@ -2,40 +2,41 @@
 package game
 
 import (
-	"github.com/sinusoids/gem/gem/encoding"
 	"io"
+
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 type OutboundPlayerAppearance struct {
-	Gender          encoding.Int8
-	HeadIcon        encoding.Int8
-	HelmModel       encoding.Int8
-	CapeModel       encoding.Int8
-	AmuletModel     encoding.Int8
-	RightWieldModel encoding.Int8
-	TorsoModel      encoding.Int16
-	LeftWieldModel  encoding.Int8
-	ArmsModel       encoding.Int16
-	LegsModel       encoding.Int16
-	HeadModel       encoding.Int16
-	HandsModel      encoding.Int16
-	FeetModel       encoding.Int16
-	BeardModel      encoding.Int16
-	HairColor       encoding.Int8
-	TorsoColor      encoding.Int8
-	LegColor        encoding.Int8
-	FeetColor       encoding.Int8
-	SkinColor       encoding.Int8
-	AnimIdle        encoding.Int16
-	AnimSpotRotate  encoding.Int16
-	AnimWalk        encoding.Int16
-	AnimRotate180   encoding.Int16
-	AnimRotateCCW   encoding.Int16
-	AnimRotateCW    encoding.Int16
-	AnimRun         encoding.Int16
-	NameHash        encoding.Int64
-	CombatLevel     encoding.Int8
-	SkillLevel      encoding.Int16
+	Gender          encoding.Uint8
+	HeadIcon        encoding.Uint8
+	HelmModel       encoding.Uint8
+	CapeModel       encoding.Uint8
+	AmuletModel     encoding.Uint8
+	RightWieldModel encoding.Uint8
+	TorsoModel      encoding.Uint16
+	LeftWieldModel  encoding.Uint8
+	ArmsModel       encoding.Uint16
+	LegsModel       encoding.Uint16
+	HeadModel       encoding.Uint16
+	HandsModel      encoding.Uint16
+	FeetModel       encoding.Uint16
+	BeardModel      encoding.Uint16
+	HairColor       encoding.Uint8
+	TorsoColor      encoding.Uint8
+	LegColor        encoding.Uint8
+	FeetColor       encoding.Uint8
+	SkinColor       encoding.Uint8
+	AnimIdle        encoding.Uint16
+	AnimSpotRotate  encoding.Uint16
+	AnimWalk        encoding.Uint16
+	AnimRotate180   encoding.Uint16
+	AnimRotateCCW   encoding.Uint16
+	AnimRotateCW    encoding.Uint16
+	AnimRun         encoding.Uint16
+	NameHash        encoding.Uint64
+	CombatLevel     encoding.Uint8
+	SkillLevel      encoding.Uint16
 }
 
 func (struc *OutboundPlayerAppearance) Encode(buf io.Writer, flags interface{}) (err error) {

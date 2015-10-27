@@ -2,12 +2,13 @@
 package protocol
 
 import (
-	"github.com/sinusoids/gem/gem/encoding"
 	"io"
+
+	"github.com/sinusoids/gem/gem/encoding"
 )
 
 type InboundServiceSelect struct {
-	Service encoding.Int8
+	Service encoding.Uint8
 }
 
 func (struc *InboundServiceSelect) Encode(buf io.Writer, flags interface{}) (err error) {
@@ -29,7 +30,7 @@ func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) (err
 }
 
 type InboundGameHandshake struct {
-	NameHash encoding.Int8
+	NameHash encoding.Uint8
 }
 
 func (struc *InboundGameHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
@@ -51,9 +52,9 @@ func (struc *InboundGameHandshake) Decode(buf io.Reader, flags interface{}) (err
 }
 
 type OutboundGameHandshake struct {
-	ignored         [8]encoding.Int8
-	loginRequest    encoding.Int8
-	ServerISAACSeed [2]encoding.Int32
+	ignored         [8]encoding.Uint8
+	loginRequest    encoding.Uint8
+	ServerISAACSeed [2]encoding.Uint32
 }
 
 func (struc *OutboundGameHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
@@ -103,7 +104,7 @@ func (struc *OutboundGameHandshake) Decode(buf io.Reader, flags interface{}) (er
 }
 
 type OutboundUpdateHandshake struct {
-	ignored [8]encoding.Int8
+	ignored [8]encoding.Uint8
 }
 
 func (struc *OutboundUpdateHandshake) Encode(buf io.Writer, flags interface{}) (err error) {

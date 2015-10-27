@@ -1,7 +1,7 @@
 /* Loads the region centered at a given sector */
 type OutboundRegionUpdate frame<73, Fixed> struct {
-    SectorX int16<IntOffset128>
-    SectorY int16
+    SectorX uint16<IntOffset128>
+    SectorY uint16
 }
 
 /* Puts a message into the client's chat window.
@@ -12,6 +12,6 @@ type OutboundChatMessage frame<253, Var8> struct {
 
 /* Tells the client about it's player on login */
 type OutboundPlayerInit frame<249, Fixed> struct {
-    Membership int8<IntOffset128>
-    Index      int16<IntOffset128>
+    Membership uint8<IntOffset128>
+    Index      uint16<IntOffset128>
 }

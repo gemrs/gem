@@ -99,13 +99,13 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.
 
 	if flags >= 256 {
 		flags |= 64
-		flagsEnc := encoding.Int16(flags)
+		flagsEnc := encoding.Uint16(flags)
 		err := flagsEnc.Encode(w, encoding.IntLittleEndian)
 		if err != nil {
 			return err
 		}
 	} else {
-		flagsEnc := encoding.Int8(flags)
+		flagsEnc := encoding.Uint8(flags)
 		err := flagsEnc.Encode(w, encoding.IntNilFlag)
 		if err != nil {
 			return err
@@ -118,35 +118,35 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.
 		appearance := thisPlayer.Profile().Appearance()
 		anims := thisPlayer.Profile().Animations()
 		appearanceBlock := OutboundPlayerAppearance{
-			Gender:   encoding.Int8(appearance.Gender()),
-			HeadIcon: encoding.Int8(appearance.HeadIcon()),
+			Gender:   encoding.Uint8(appearance.Gender()),
+			HeadIcon: encoding.Uint8(appearance.HeadIcon()),
 
-			HelmModel:       encoding.Int8(0),
-			CapeModel:       encoding.Int8(0),
-			AmuletModel:     encoding.Int8(0),
-			RightWieldModel: encoding.Int8(0),
-			TorsoModel:      encoding.Int16(256 + appearance.Model(player.Torso)),
-			LeftWieldModel:  encoding.Int8(0),
-			ArmsModel:       encoding.Int16(256 + appearance.Model(player.Arms)),
-			LegsModel:       encoding.Int16(256 + appearance.Model(player.Legs)),
-			HeadModel:       encoding.Int16(256 + appearance.Model(player.Head)),
-			HandsModel:      encoding.Int16(256 + appearance.Model(player.Hands)),
-			FeetModel:       encoding.Int16(256 + appearance.Model(player.Feet)),
-			BeardModel:      encoding.Int16(256 + appearance.Model(player.Beard)),
+			HelmModel:       encoding.Uint8(0),
+			CapeModel:       encoding.Uint8(0),
+			AmuletModel:     encoding.Uint8(0),
+			RightWieldModel: encoding.Uint8(0),
+			TorsoModel:      encoding.Uint16(256 + appearance.Model(player.Torso)),
+			LeftWieldModel:  encoding.Uint8(0),
+			ArmsModel:       encoding.Uint16(256 + appearance.Model(player.Arms)),
+			LegsModel:       encoding.Uint16(256 + appearance.Model(player.Legs)),
+			HeadModel:       encoding.Uint16(256 + appearance.Model(player.Head)),
+			HandsModel:      encoding.Uint16(256 + appearance.Model(player.Hands)),
+			FeetModel:       encoding.Uint16(256 + appearance.Model(player.Feet)),
+			BeardModel:      encoding.Uint16(256 + appearance.Model(player.Beard)),
 
-			HairColor:  encoding.Int8(appearance.Color(player.Hair)),
-			TorsoColor: encoding.Int8(appearance.Color(player.Torso)),
-			LegColor:   encoding.Int8(appearance.Color(player.Legs)),
-			FeetColor:  encoding.Int8(appearance.Color(player.Feet)),
-			SkinColor:  encoding.Int8(appearance.Color(player.Skin)),
+			HairColor:  encoding.Uint8(appearance.Color(player.Hair)),
+			TorsoColor: encoding.Uint8(appearance.Color(player.Torso)),
+			LegColor:   encoding.Uint8(appearance.Color(player.Legs)),
+			FeetColor:  encoding.Uint8(appearance.Color(player.Feet)),
+			SkinColor:  encoding.Uint8(appearance.Color(player.Skin)),
 
-			AnimIdle:       encoding.Int16(anims.Animation(player.AnimIdle)),
-			AnimSpotRotate: encoding.Int16(anims.Animation(player.AnimSpotRotate)),
-			AnimWalk:       encoding.Int16(anims.Animation(player.AnimWalk)),
-			AnimRotate180:  encoding.Int16(anims.Animation(player.AnimRotate180)),
-			AnimRotateCCW:  encoding.Int16(anims.Animation(player.AnimRotateCCW)),
-			AnimRotateCW:   encoding.Int16(anims.Animation(player.AnimRotateCW)),
-			AnimRun:        encoding.Int16(anims.Animation(player.AnimRun)),
+			AnimIdle:       encoding.Uint16(anims.Animation(player.AnimIdle)),
+			AnimSpotRotate: encoding.Uint16(anims.Animation(player.AnimSpotRotate)),
+			AnimWalk:       encoding.Uint16(anims.Animation(player.AnimWalk)),
+			AnimRotate180:  encoding.Uint16(anims.Animation(player.AnimRotate180)),
+			AnimRotateCCW:  encoding.Uint16(anims.Animation(player.AnimRotateCCW)),
+			AnimRotateCW:   encoding.Uint16(anims.Animation(player.AnimRotateCW)),
+			AnimRun:        encoding.Uint16(anims.Animation(player.AnimRun)),
 		}
 
 		err := appearanceBlock.Encode(buf, nil)
@@ -155,7 +155,7 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.
 		}
 
 		block := buf.Bytes()
-		blockSize := encoding.Int8(len(block))
+		blockSize := encoding.Uint8(len(block))
 		err = blockSize.Encode(w, encoding.IntNegate)
 		if err != nil {
 			return err
