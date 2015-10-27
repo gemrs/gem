@@ -32,7 +32,6 @@ func player_walk(player player.Player, packet encoding.Decodable) {
 	}
 
 	waypoints := make([]*position.Absolute, len(walkPacket.Waypoints))
-	player.Log().Debugf("Origin %v", origin)
 
 	wpq := player.WaypointQueue()
 	wpq.Clear()
@@ -40,13 +39,11 @@ func player_walk(player player.Player, packet encoding.Decodable) {
 	for i, wp := range walkPacket.Waypoints {
 		x1, y1 := int(wp.X), int(wp.Y)
 		x2, y2 := int(origin.X()), int(origin.Y())
-		player.Log().Debugf("x1 %v y1 %v x2 %v y2 %v", x1, y1, x2, y2)
 		waypoints[i], err = position.NewAbsolute(int(x1+x2), int(y1+y2), height)
 		if err != nil {
 			panic(err)
 		}
 
 		wpq.Push(waypoints[i])
-		player.Log().Debugf("Waypoint %v %v", i, waypoints[i])
 	}
 }

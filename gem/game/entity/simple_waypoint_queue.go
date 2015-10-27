@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"fmt"
-
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/position"
 )
@@ -56,15 +54,12 @@ func (q *SimpleWaypointQueue) Clear() {
 
 // Push appends a point to the waypoint queue
 func (q *SimpleWaypointQueue) Push(point *position.Absolute) {
-	fmt.Printf("pushing point %v\n", point)
-
 	q.points = append(q.points, point)
 }
 
 // Tick advances the waypoint queue, and returns the next position of the mob
 func (q *SimpleWaypointQueue) Tick(mob entity.Movable) {
 	if len(q.points) == 0 {
-		fmt.Printf("no points\n")
 		// Nothing to do
 		return
 	}
@@ -79,7 +74,6 @@ func (q *SimpleWaypointQueue) Tick(mob entity.Movable) {
 	}
 
 	next := current.NextInterpolatedPoint(nextWaypoint)
-	fmt.Printf("interp from %v to %v\n", current, nextWaypoint)
 
 	dx, dy, _ := current.Delta(next)
 

@@ -11,5 +11,5 @@ func init() {
 }
 
 func ping(player player.Player, packet encoding.Decodable) {
-	player.Log().Debugf("Pinged!")
+	//	player.Log().Debugf("Pinged!")
 }
