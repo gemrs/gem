@@ -37,7 +37,9 @@ func (client *Player) Init(conn *server.Connection) error {
 	client.Connection = conn
 	client.session = session
 
-	client.GenericMob, err = entityimpl.NewGenericMob()
+	wpq := entityimpl.NewSimpleWaypointQueue()
+
+	client.GenericMob, err = entityimpl.NewGenericMob(wpq)
 	if err != nil {
 		return err
 	}
@@ -102,12 +104,17 @@ func (client *Player) SendMessage(message string) {
 	}
 }
 
-// SetPosition warps the mob to a given location
-func (client *Player) Warp(pos *position.Absolute) {
-	oldRegion := client.Region()
-	client.SetPosition(pos)
+func (client *Player) SetNextStep(next *position.Absolute) {
+	client.SetPosition(next)
+	client.GenericMob.SetNextStep(next)
+}
 
-	dx, dy, dz := client.Region().SectorDelta(oldRegion)
+// SetPosition warps the mob to a given location
+func (client *Player) SetPosition(pos *position.Absolute) {
+	oldRegion := client.Region()
+	client.GenericMob.SetPosition(pos)
+
+	dx, dy, dz := client.GenericMob.Region().SectorDelta(oldRegion)
 
 	eventArgs := map[string]interface{}{
 		"entity":   client,

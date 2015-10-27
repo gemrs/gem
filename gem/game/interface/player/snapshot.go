@@ -15,6 +15,8 @@ import (
 func Snapshot(player Player) Player {
 	srcProfile := player.Profile()
 	_ = player.Session()
+	srcWpq := player.WaypointQueue()
+
 	snapshot := &PlayerSnapshot{
 		flags:  player.Flags(),
 		region: player.Region(),
@@ -25,6 +27,12 @@ func Snapshot(player Player) Player {
 			pos:      srcProfile.Position(),
 		},
 		session: &SessionSnapshot{},
+	}
+
+	currentDirection, lastDirection := srcWpq.WalkDirection()
+	snapshot.waypointQueue = &WaypointQueueSnapshot{
+		currentDirection: currentDirection,
+		lastDirection:    lastDirection,
 	}
 
 	skills := &SkillsSnapshot{
@@ -73,12 +81,11 @@ func Snapshot(player Player) Player {
 }
 
 type PlayerSnapshot struct {
-	profile        Profile
-	session        Session
-	flags          entity.Flags
-	currentWalkDir int
-	lastWalkDir    int
-	region         *position.Region
+	profile       Profile
+	session       Session
+	flags         entity.Flags
+	region        *position.Region
+	waypointQueue entity.WaypointQueue
 }
 
 func (p *PlayerSnapshot) SetNextStep(*position.Absolute) {
@@ -121,10 +128,6 @@ func (p *PlayerSnapshot) ClearFlags() {
 	panic("not implemented")
 }
 
-func (p *PlayerSnapshot) WalkDirection() (current int, last int) {
-	return p.currentWalkDir, p.lastWalkDir
-}
-
 func (p *PlayerSnapshot) Region() *position.Region {
 	return p.region
 }
@@ -155,6 +158,10 @@ func (p *PlayerSnapshot) RegionChange() {
 
 func (p *PlayerSnapshot) AppearanceChange() {
 	panic("not implemented")
+}
+
+func (p *PlayerSnapshot) WaypointQueue() entity.WaypointQueue {
+	return p.waypointQueue
 }
 
 // EntityType identifies what kind of entity this entity is
@@ -274,4 +281,28 @@ type AnimationsSnapshot struct {
 
 func (a *AnimationsSnapshot) Animation(anim Anim) int {
 	return a.anims[anim]
+}
+
+type WaypointQueueSnapshot struct {
+	lastDirection, currentDirection int
+}
+
+func (q *WaypointQueueSnapshot) Empty() bool {
+	panic("not implemented")
+}
+
+func (q *WaypointQueueSnapshot) Clear() {
+	panic("not implemented")
+}
+
+func (q *WaypointQueueSnapshot) Push(point *position.Absolute) {
+	panic("not implemented")
+}
+
+func (q *WaypointQueueSnapshot) Tick(mob entity.Movable) {
+	panic("not implemented")
+}
+
+func (q *WaypointQueueSnapshot) WalkDirection() (current int, last int) {
+	return q.currentDirection, q.lastDirection
 }

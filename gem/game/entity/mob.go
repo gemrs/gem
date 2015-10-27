@@ -12,32 +12,35 @@ import (
 type GenericMob struct {
 	py.BaseObject
 
-	position *position.Absolute
-	region   *position.Region
-	flags    entity.Flags
+	waypointQueue entity.WaypointQueue
+	position      *position.Absolute
+	region        *position.Region
+	flags         entity.Flags
 }
 
-func (mob *GenericMob) Init() error {
+func (mob *GenericMob) Init(wpq entity.WaypointQueue) error {
 	var err error
 	mob.region, err = position.NewRegion(nil)
 	if err != nil {
 		return err
 	}
+
+	mob.waypointQueue = wpq
 	return nil
 }
 
-func (mob *GenericMob) SetNextStep(pos *position.Absolute) {
-
+func (mob *GenericMob) SetNextStep(next *position.Absolute) {
+	if (mob.flags & entity.MobFlagWalkUpdate) != 0 { // Called twice in one cycle - mob is running
+		mob.flags &= ^entity.MobFlagWalkUpdate
+		mob.flags |= entity.MobFlagRunUpdate
+	} else {
+		mob.flags |= entity.MobFlagWalkUpdate
+	}
 }
 
 // Position returns the absolute position of the mob
 func (mob *GenericMob) Position() *position.Absolute {
 	return mob.position
-}
-
-// WalkDirection returns the mob's current and (in the case of running) last walking direction
-func (mob *GenericMob) WalkDirection() (current int, last int) {
-	return 0, 0
 }
 
 // Flags returns the mob update flags for this mob
@@ -62,5 +65,33 @@ func (mob *GenericMob) Region() *position.Region {
 // SetPosition warps the mob to a given location
 func (mob *GenericMob) SetPosition(pos *position.Absolute) {
 	mob.position = pos
-	mob.region = pos.RegionOf()
+
+	newRegion := pos.RegionOf()
+	dx, dy, dz := newRegion.SectorDelta(mob.Region())
+	if dx >= 5 || dy >= 5 || dz >= 1 {
+		mob.region = newRegion
+	}
+}
+
+// AppearanceUpdate is called when the player's appearance changes
+// It ensures the player's appearance is synced at next update
+func (mob *GenericMob) AppearanceChange() {
+	mob.SetFlags(entity.MobFlagIdentityUpdate)
+}
+
+func (mob *GenericMob) WaypointQueue() entity.WaypointQueue {
+	return mob.waypointQueue
+}
+
+// EntityType identifies what kind of entity this entity is
+func (mob *GenericMob) EntityType() entity.EntityType {
+	return entity.IncompleteType
+}
+
+func (mob *GenericMob) SectorChange() {
+	panic("not implemented")
+}
+
+func (mob *GenericMob) RegionChange() {
+	panic("not implemented")
 }

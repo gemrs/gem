@@ -39,7 +39,7 @@ func RegisterGenericMob(module *py.Module) error {
 // Alloc allocates an object for use in python land.
 // Copies the member fields from this object to the newly allocated object
 // Usage: obj := GoObject{X:1, Y: 2}.Alloc()
-func NewGenericMob() (*GenericMob, error) {
+func NewGenericMob(arg_0 entity.WaypointQueue) (*GenericMob, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -49,7 +49,7 @@ func NewGenericMob() (*GenericMob, error) {
 		return nil, err
 	}
 	alloc := alloc_.(*GenericMob)
-	err = alloc.Init()
+	err = alloc.Init(arg_0)
 	return alloc, err
 }
 
@@ -60,11 +60,19 @@ func (obj *GenericMob) PyInit(_args *py.Tuple, kwds *py.Dict) error {
 	var err error
 	_ = err
 	args := _args.Slice()
-	if len(args) != 0 {
+	if len(args) != 1 {
 		return fmt.Errorf("(GenericMob) PyInit: parameter length mismatch")
 	}
 
-	err = obj.Init()
+	args[0].Incref()
+	in_0, err := gopygen.TypeConvIn(args[0], "entity.WaypointQueue")
+	if err != nil {
+		return err
+	}
+
+	err = obj.Init(in_0.(entity.WaypointQueue))
+
+	args[0].Decref()
 
 	return err
 }
@@ -125,40 +133,6 @@ func (mob *GenericMob) Py_Position(_args *py.Tuple, kwds *py.Dict) (py.Object, e
 	out_0.Incref()
 
 	return out_0, nil
-
-}
-
-func (mob *GenericMob) Py_WalkDirection(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	var err error
-	_ = err
-	args := _args.Slice()
-	if len(args) != 0 {
-		return nil, fmt.Errorf("Py_WalkDirection: parameter length mismatch")
-	}
-	// Convert parameters
-
-	// Make the function call
-
-	res0, res1 := mob.WalkDirection()
-
-	// Remove local references
-
-	out_0, err := gopygen.TypeConvOut(res0, "int")
-	if err != nil {
-		return nil, err
-	}
-	out_0.Incref()
-
-	out_1, err := gopygen.TypeConvOut(res1, "int")
-	if err != nil {
-		return nil, err
-	}
-	out_1.Incref()
-
-	return py.PackTuple(out_0, out_1)
 
 }
 
@@ -297,6 +271,131 @@ func (mob *GenericMob) Py_SetPosition(_args *py.Tuple, kwds *py.Dict) (py.Object
 	// Remove local references
 
 	args[0].Decref()
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (mob *GenericMob) Py_AppearanceChange(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_AppearanceChange: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	mob.AppearanceChange()
+
+	// Remove local references
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (mob *GenericMob) Py_WaypointQueue(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_WaypointQueue: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	res0 := mob.WaypointQueue()
+
+	// Remove local references
+
+	out_0, err := gopygen.TypeConvOut(res0, "entity.WaypointQueue")
+	if err != nil {
+		return nil, err
+	}
+	out_0.Incref()
+
+	return out_0, nil
+
+}
+
+func (mob *GenericMob) Py_EntityType(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_EntityType: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	res0 := mob.EntityType()
+
+	// Remove local references
+
+	out_0, err := gopygen.TypeConvOut(res0, "entity.EntityType")
+	if err != nil {
+		return nil, err
+	}
+	out_0.Incref()
+
+	return out_0, nil
+
+}
+
+func (mob *GenericMob) Py_SectorChange(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_SectorChange: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	mob.SectorChange()
+
+	// Remove local references
+
+	py.None.Incref()
+	return py.None, nil
+
+}
+
+func (mob *GenericMob) Py_RegionChange(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	lock := py.NewLock()
+	defer lock.Unlock()
+
+	var err error
+	_ = err
+	args := _args.Slice()
+	if len(args) != 0 {
+		return nil, fmt.Errorf("Py_RegionChange: parameter length mismatch")
+	}
+	// Convert parameters
+
+	// Make the function call
+
+	mob.RegionChange()
+
+	// Remove local references
 
 	py.None.Incref()
 	return py.None, nil

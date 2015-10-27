@@ -2,7 +2,6 @@ package player
 
 import (
 	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
 	"github.com/sinusoids/gem/gem/log"
 )
@@ -22,5 +21,4 @@ type Player interface {
 	SetDecodeFunc(d DecodeFunc)
 	Conn() *server.Connection
 	FinishInit()
-	Warp(*position.Absolute)
 }

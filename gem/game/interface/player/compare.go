@@ -1,5 +1,9 @@
 package player
 
+import (
+	"github.com/sinusoids/gem/gem/game/interface/entity"
+)
+
 // comparePlayers performs a deep comparison between two Players
 // only used for testing
 func comparePlayers(p1, p2 Player) bool {
@@ -11,6 +15,10 @@ func comparePlayers(p1, p2 Player) bool {
 		return false
 	}
 
+	if !compareWaypointQueue(p1.WaypointQueue(), p2.WaypointQueue()) {
+		return false
+	}
+
 	if p1.Flags() != p2.Flags() {
 		return false
 	}
@@ -19,12 +27,15 @@ func comparePlayers(p1, p2 Player) bool {
 		return false
 	}
 
-	d1, d2 := p1.WalkDirection()
-	d3, d4 := p2.WalkDirection()
+	return true
+}
+
+func compareWaypointQueue(q1, q2 entity.WaypointQueue) bool {
+	d1, d2 := q1.WalkDirection()
+	d3, d4 := q1.WalkDirection()
 	if d1 != d3 || d2 != d4 {
 		return false
 	}
-
 	return true
 }
 

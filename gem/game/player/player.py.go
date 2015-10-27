@@ -343,7 +343,7 @@ func (client *Player) Py_SendMessage(_args *py.Tuple, kwds *py.Dict) (py.Object,
 
 }
 
-func (client *Player) Py_Warp(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (client *Player) Py_SetPosition(_args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
@@ -351,7 +351,7 @@ func (client *Player) Py_Warp(_args *py.Tuple, kwds *py.Dict) (py.Object, error)
 	_ = err
 	args := _args.Slice()
 	if len(args) != 1 {
-		return nil, fmt.Errorf("Py_Warp: parameter length mismatch")
+		return nil, fmt.Errorf("Py_SetPosition: parameter length mismatch")
 	}
 	// Convert parameters
 
@@ -363,7 +363,7 @@ func (client *Player) Py_Warp(_args *py.Tuple, kwds *py.Dict) (py.Object, error)
 
 	// Make the function call
 
-	client.Warp(in_0.(*position.Absolute))
+	client.SetPosition(in_0.(*position.Absolute))
 
 	// Remove local references
 

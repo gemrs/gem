@@ -18,7 +18,8 @@ const (
 type EntityType int
 
 const (
-	PlayerType EntityType = iota
+	IncompleteType EntityType = iota
+	PlayerType
 )
 
 // An Entity is a 'thing' within the world, with a position, and an index.
@@ -35,7 +36,7 @@ type Movable interface {
 	Flags() Flags
 	SetFlags(Flags)
 	ClearFlags()
-	WalkDirection() (current int, last int)
 	SetNextStep(*position.Absolute)
 	AppearanceChange()
+	WaypointQueue() WaypointQueue
 }

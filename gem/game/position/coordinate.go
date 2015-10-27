@@ -40,6 +40,34 @@ func (pos *Absolute) Compare(other *Absolute) bool {
 		pos.z == other.z
 }
 
+func (pos *Absolute) Delta(target *Absolute) (x, y, z int) {
+	return pos.X() - target.X(), pos.Y() - target.Y(), pos.Z() - target.Z()
+}
+
+// NextInterpolatedStep returns the one tile closer to the given point
+// used by the waypoint queue to calculate the player's position along a path
+func (pos *Absolute) NextInterpolatedPoint(target *Absolute) *Absolute {
+	interp := func(a, b int) int {
+		if a == b {
+			return a
+		} else if a > b {
+			a--
+			return a
+		} else if a < b {
+			a++
+			return a
+		}
+		return 0
+	}
+
+	abs, err := NewAbsolute(interp(pos.X(), target.X()), interp(pos.Y(), target.Y()), pos.Z())
+	if err != nil {
+		panic(err)
+	}
+
+	return abs
+}
+
 func (pos *Absolute) X() int {
 	return pos.x
 }

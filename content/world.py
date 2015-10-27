@@ -9,7 +9,7 @@ class World(object):
 
     @event.callback(gem.game.event.PlayerLoadProfile)
     def load_profile(self, player):
-        player.Warp(player.Profile().Position())
+        player.SetPosition(player.Profile().Position())
         player.SetAppearance(player.Profile().Appearance())
 
     @event.callback(gem.game.event.PlayerLogin)

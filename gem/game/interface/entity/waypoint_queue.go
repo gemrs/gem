@@ -8,5 +8,6 @@ type WaypointQueue interface {
 	Empty() bool
 	Clear()
 	Push(point *position.Absolute)
-	Tick(entity position.Positionable) *position.Absolute
+	Tick(mob Movable)
+	WalkDirection() (current int, last int)
 }

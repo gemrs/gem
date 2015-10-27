@@ -2,6 +2,7 @@
 package game
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/sinusoids/gem/gem/encoding"
@@ -68,7 +69,7 @@ func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer) erro
 		buf.Write(7, uint32(localPos.X()))
 
 	case (flags & entity.MobFlagRunUpdate) != 0:
-		current, last := player.WalkDirection()
+		current, last := player.WaypointQueue().WalkDirection()
 
 		buf.Write(2, 2) // update type 2 = running
 		buf.Write(3, uint32(last))
@@ -76,7 +77,9 @@ func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer) erro
 		buf.WriteBit(otherUpdateFlags != 0)
 
 	case (flags & entity.MobFlagWalkUpdate) != 0:
-		current, _ := player.WalkDirection()
+		current, _ := player.WaypointQueue().WalkDirection()
+
+		fmt.Printf("current dir %v\n", current)
 
 		buf.Write(2, 1) // update type 1 = walking
 		buf.Write(3, uint32(current))
