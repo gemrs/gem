@@ -19,6 +19,8 @@ func TestSnapshot(t *testing.T) {
 	}
 
 	dummyPlayer := &PlayerSnapshot{
+		flags:  entity.MobFlagWalkUpdate,
+		region: dummyPos.RegionOf(),
 		profile: &ProfileSnapshot{
 			username: "a player",
 			password: "hunter2",
@@ -38,11 +40,10 @@ func TestSnapshot(t *testing.T) {
 				anims: map[Anim]int{},
 			},
 		},
-		session: &SessionSnapshot{
-			region:         dummyPos.RegionOf(),
-			flags:          entity.MobFlagWalkUpdate,
-			currentWalkDir: 1,
-			lastWalkDir:    2,
+		session: &SessionSnapshot{},
+		waypointQueue: &WaypointQueueSnapshot{
+			currentDirection: 1,
+			lastDirection:    2,
 		},
 	}
 
