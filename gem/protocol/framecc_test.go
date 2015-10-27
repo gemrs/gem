@@ -13,7 +13,7 @@ import (
 
 var testFrame = TestFrame{
 	Message:  "test string",
-	Values8:  [...]encoding.Int8{20, 88, 100, 255},
+	Values8:  [...]encoding.Uint8{20, 88, 100, 255},
 	Values16: [...]encoding.Int16{2000, 30000},
 	Struc1: EmbeddedStruct{
 		A: 60000,

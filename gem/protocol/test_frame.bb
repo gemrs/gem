@@ -6,7 +6,7 @@ type EmbeddedStruct struct {
 
 type TestFrame struct {
     Message  string[16]
-    Values8  int8<IntNegate>[4]
+    Values8  uint8<IntNegate>[4]
     Values16 int16[2]
     Struc1   EmbeddedStruct
     Struc2   EmbeddedStruct[2]

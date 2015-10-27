@@ -7,9 +7,53 @@ import (
 	"github.com/sinusoids/gem/gem/encoding"
 )
 
+type EmbeddedStruct struct {
+	A encoding.Int32
+	B encoding.Int32
+	C encoding.Int32
+}
+
+func (struc *EmbeddedStruct) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.A.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	err = struc.B.Encode(buf, encoding.IntegerFlag(encoding.IntPDPEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.C.Encode(buf, encoding.IntegerFlag(encoding.IntRPDPEndian|encoding.IntInverse128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *EmbeddedStruct) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.A.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	err = struc.B.Decode(buf, encoding.IntegerFlag(encoding.IntPDPEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.C.Decode(buf, encoding.IntegerFlag(encoding.IntRPDPEndian|encoding.IntInverse128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 type TestFrame struct {
 	Message  encoding.JString
-	Values8  [4]encoding.Int8
+	Values8  [4]encoding.Uint8
 	Values16 [2]encoding.Int16
 	Struc1   EmbeddedStruct
 	Struc2   [2]EmbeddedStruct
@@ -80,50 +124,6 @@ func (struc *TestFrame) Decode(buf io.Reader, flags interface{}) (err error) {
 		if err != nil {
 			return err
 		}
-	}
-
-	return err
-}
-
-type EmbeddedStruct struct {
-	A encoding.Int32
-	B encoding.Int32
-	C encoding.Int32
-}
-
-func (struc *EmbeddedStruct) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.A.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
-	if err != nil {
-		return err
-	}
-
-	err = struc.B.Encode(buf, encoding.IntegerFlag(encoding.IntPDPEndian|encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.C.Encode(buf, encoding.IntegerFlag(encoding.IntRPDPEndian|encoding.IntInverse128))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *EmbeddedStruct) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.A.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
-	if err != nil {
-		return err
-	}
-
-	err = struc.B.Decode(buf, encoding.IntegerFlag(encoding.IntPDPEndian|encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.C.Decode(buf, encoding.IntegerFlag(encoding.IntRPDPEndian|encoding.IntInverse128))
-	if err != nil {
-		return err
 	}
 
 	return err
