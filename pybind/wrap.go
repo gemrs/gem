@@ -9,13 +9,30 @@ import (
 type Constructor func(*py.Type, *py.Tuple, *py.Dict) (py.Object, error)
 type Wrapper func(*py.Tuple, *py.Dict) (py.Object, error)
 
-func Define(name string, ptr interface{}, init interface{}) *py.Class {
-	return &py.Class{
+func Define(name string, ptr interface{}) *py.Class {
+	class := &py.Class{
 		Name:    name,
 		Flags:   py.TPFLAGS_BASETYPE,
 		Pointer: ptr,
-		New:     WrapConstructor(init),
 	}
+
+	if initFn := getInit(ptr); initFn != nil {
+		class.New = WrapConstructor(initFn)
+	}
+
+	return class
+}
+
+func getInit(ptr interface{}) interface{} {
+	typ := reflect.TypeOf(ptr)
+	initMethod, ok := typ.MethodByName("Init")
+	if ok {
+		initFn := initMethod.Func.Interface()
+
+		return initFn.(interface{})
+	}
+
+	return nil
 }
 
 func GenerateRegisterFunc(def *py.Class) func(*py.Module) error {
@@ -24,7 +41,12 @@ func GenerateRegisterFunc(def *py.Class) func(*py.Module) error {
 	}
 }
 
-func GenerateConstructor(def *py.Class, init interface{}) interface{} {
+func GenerateConstructor(def *py.Class) interface{} {
+	init := getInit(def.Pointer)
+	if init == nil {
+		panic("can't generate constructor: no Init method")
+	}
+
 	initType := reflect.TypeOf(init)
 	initVal := reflect.ValueOf(init)
 	constructedType := reflect.TypeOf(def.Pointer)

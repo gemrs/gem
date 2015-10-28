@@ -99,7 +99,7 @@ type Cat struct {
 	Cheeseburgers int
 }
 
-func InitCat(c *Cat, name string) {
+func (c *Cat) Init(name string) {
 	fmt.Println("calling init")
 	c.Name = name
 	c.Cheeseburgers = 0
@@ -125,6 +125,6 @@ func (c *Cat) Py_give_cheeseburger(args *py.Tuple, kwds *py.Dict) (py.Object, er
 	return fn(args, kwds)
 }
 
-var CatDef = pybind.Define("cat", (*Cat)(nil), InitCat)
+var CatDef = pybind.Define("cat", (*Cat)(nil))
 var RegisterCat = pybind.GenerateRegisterFunc(CatDef)
-var NewCat = pybind.GenerateConstructor(CatDef, InitCat).(func(string) *Cat)
+var NewCat = pybind.GenerateConstructor(CatDef).(func(string) *Cat)
