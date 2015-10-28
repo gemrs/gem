@@ -7,6 +7,22 @@ import (
 	"github.com/tgascoigne/gopygen/gopygen"
 )
 
+func InTypes(fnType reflect.Type) []reflect.Type {
+	var types []reflect.Type
+	for i := 0; i < fnType.NumIn(); i++ {
+		types = append(types, fnType.In(i))
+	}
+	return types
+}
+
+func OutTypes(fnType reflect.Type) []reflect.Type {
+	var types []reflect.Type
+	for i := 0; i < fnType.NumOut(); i++ {
+		types = append(types, fnType.Out(i))
+	}
+	return types
+}
+
 func ConvertIn(types []reflect.Type, args *py.Tuple) ([]reflect.Value, error) {
 	convertedArgs := []reflect.Value{}
 	argsSlice := args.Slice()

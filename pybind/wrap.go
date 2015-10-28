@@ -9,8 +9,8 @@ import (
 type Constructor func(*py.Type, *py.Tuple, *py.Dict) (py.Object, error)
 type Wrapper func(*py.Tuple, *py.Dict) (py.Object, error)
 
-func Define(name string, ptr interface{}, init interface{}) py.Class {
-	return py.Class{
+func Define(name string, ptr interface{}, init interface{}) *py.Class {
+	return &py.Class{
 		Name:    name,
 		Flags:   py.TPFLAGS_BASETYPE,
 		Pointer: ptr,
@@ -18,13 +18,49 @@ func Define(name string, ptr interface{}, init interface{}) py.Class {
 	}
 }
 
-func GenerateRegisterFunc(def py.Class) func(*py.Module) error {
+func GenerateRegisterFunc(def *py.Class) func(*py.Module) error {
 	return func(module *py.Module) error {
 		return Register(def, module)
 	}
 }
 
-func Register(def py.Class, module *py.Module) error {
+func GenerateConstructor(def *py.Class, init interface{}) interface{} {
+	initType := reflect.TypeOf(init)
+	initVal := reflect.ValueOf(init)
+	constructedType := reflect.TypeOf(def.Pointer)
+
+	// [1:] to remove the first arg of Init, which should be the Alloc()ated object
+	inTypes := InTypes(initType)[1:]
+	// return types of the constructor are the object + whatever init returns
+	outTypes := OutTypes(initType)
+	outTypes = append([]reflect.Type{constructedType}, outTypes...)
+
+	constructorType := reflect.FuncOf(inTypes, outTypes, false)
+
+	genericNew := func(args []reflect.Value) (results []reflect.Value) {
+		lock := py.NewLock()
+		defer lock.Unlock()
+
+		pyObj, err := def.Alloc(0)
+		if err != nil {
+			// We assume that a failure to allocate a python object is unrecoverable
+			panic(err)
+		}
+
+		// prepend the constructed object
+		args = append([]reflect.Value{reflect.ValueOf(pyObj)}, args...)
+		results = initVal.Call(args)
+
+		// prepend the constructed object
+		results = append([]reflect.Value{reflect.ValueOf(pyObj)}, results...)
+		return results
+	}
+
+	constructorFn := reflect.MakeFunc(constructorType, genericNew)
+	return constructorFn.Interface()
+}
+
+func Register(def *py.Class, module *py.Module) error {
 	var err error
 	var class *py.Type
 	if class, err = def.Create(); err != nil {
@@ -70,10 +106,7 @@ func Wrap(fn interface{}) Wrapper {
 	val := reflect.ValueOf(fn)
 	typ := reflect.TypeOf(fn)
 
-	var inTypes []reflect.Type
-	for i := 0; i < typ.NumIn(); i++ {
-		inTypes = append(inTypes, typ.In(i))
-	}
+	inTypes := InTypes(typ)
 
 	return func(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 		lock := py.NewLock()
