@@ -2,7 +2,7 @@ package event
 
 import (
 	"github.com/qur/gopy/lib"
-	"github.com/sinusoids/gem/gem/python"
+	"github.com/sinusoids/gem/pybind"
 )
 
 type Event struct {
@@ -45,7 +45,7 @@ func (e *Event) Py_NotifyObservers(argsTuple *py.Tuple) (py.Object, error) {
 	if argsTuple.Size() > 1 {
 		for _, a := range argsTuple.Slice() {
 			a.Incref()
-			argIn, err := python.TypeConvIn(a, "")
+			argIn, err := pybind.TypeConvIn(a, "")
 			if err != nil {
 				py.None.Incref()
 				return py.None, nil

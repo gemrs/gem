@@ -2,8 +2,8 @@ package event
 
 import (
 	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/gem/python"
 	"github.com/sinusoids/gem/gem/util/safe"
+	"github.com/sinusoids/gem/pybind"
 
 	"github.com/qur/gopy/lib"
 )
@@ -38,7 +38,7 @@ func (l *PyListener) Notify(e *Event, args ...interface{}) {
 
 	argsOut := []py.Object{}
 	for _, a := range argsIn {
-		converted, err := python.TypeConvOut(a, "")
+		converted, err := pybind.TypeConvOut(a, "")
 		if err != nil {
 			panic(err)
 		}

@@ -4,8 +4,6 @@ import (
 	"reflect"
 
 	"github.com/qur/gopy/lib"
-
-	"github.com/sinusoids/gem/gem/python"
 )
 
 func InTypes(fnType reflect.Type) []reflect.Type {
@@ -31,7 +29,7 @@ func ConvertIn(types []reflect.Type, args *py.Tuple) ([]reflect.Value, error) {
 	for i, arg := range argsSlice {
 		arg.Incref()
 		defer arg.Decref()
-		convertedArg, err := python.TypeConvIn(arg, types[i].String())
+		convertedArg, err := TypeConvIn(arg, types[i].String())
 		if err != nil {
 			return nil, err
 		}
@@ -46,7 +44,7 @@ func ConvertOut(values []reflect.Value) ([]py.Object, error) {
 	convertedOuts := []py.Object{}
 
 	for _, ret := range values {
-		convertedOut, err := python.TypeConvOut(ret.Interface(), ret.Type().String())
+		convertedOut, err := TypeConvOut(ret.Interface(), ret.Type().String())
 		if err != nil {
 			return nil, err
 		}
