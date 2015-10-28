@@ -20,6 +20,7 @@ test_package() {
 
 test_package ./gem gem.profile
 test_package ./bbc bbc.profile
-gocovmerge gem.profile bbc.profile > coverage.profile
+test_package ./pybind pybind.profile
+gocovmerge gem.profile bbc.profile pybind.profile > coverage.profile
 rm gem.profile bbc.profile # Remove the old profiles to avoid confusion
 exit $RETURN_CODE
