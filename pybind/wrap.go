@@ -9,6 +9,35 @@ import (
 type Constructor func(*py.Type, *py.Tuple, *py.Dict) (py.Object, error)
 type Wrapper func(*py.Tuple, *py.Dict) (py.Object, error)
 
+func Define(name string, ptr interface{}, init interface{}) py.Class {
+	return py.Class{
+		Name:    name,
+		Flags:   py.TPFLAGS_BASETYPE,
+		Pointer: ptr,
+		New:     WrapConstructor(init),
+	}
+}
+
+func GenerateRegisterFunc(def py.Class) func(*py.Module) error {
+	return func(module *py.Module) error {
+		return Register(def, module)
+	}
+}
+
+func Register(def py.Class, module *py.Module) error {
+	var err error
+	var class *py.Type
+	if class, err = def.Create(); err != nil {
+		return err
+	}
+
+	if err = module.AddObject(def.Name, class); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func WrapConstructor(fn interface{}) Constructor {
 	wrapper := Wrap(fn)
 	return func(pyType *py.Type, pyArgs *py.Tuple, pyKwds *py.Dict) (py.Object, error) {
@@ -34,30 +63,6 @@ func WrapConstructor(fn interface{}) Constructor {
 		}
 
 		return pyObj, nil
-
-		/*		val := reflect.ValueOf(fn)
-				typ := reflect.TypeOf(fn)
-
-				var obj interface{}
-				args, err := convertIn(typ, pyArgs)
-				if err != nil {
-					return nil, err
-				}
-
-				out := val.Call(args)
-				obj = out[0].Interface()
-				if errIf := out[1].Interface(); errIf != nil {
-					return nil, errIf.(error)
-				}
-
-				fmt.Println("created obj, setting base")
-
-				if base, ok := obj.(*BaseObject); ok {
-					base.SetBase(pyobj)
-				}
-				fmt.Println("set base, returning obj")
-				return obj.(py.Object), nil
-		*/
 	}
 }
 

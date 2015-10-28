@@ -53,6 +53,37 @@ type Cat struct {
 	Cheeseburgers int
 }
 
+func InitCat(c *Cat, name string) error {
+	c.Name = name
+	c.Cheeseburgers = 0
+	return nil
+}
+
+func (c *Cat) Rename(name string) {
+	c.Name = name
+}
+
+func (c *Cat) GiveCheeseburger() {
+	c.Cheeseburgers++
+}
+
+func (c *Cat) Py_rename(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	fmt.Println("calling rename")
+
+	fn := pybind.Wrap(c.Rename)
+	return fn(args, kwds)
+}
+
+func (c *Cat) Py_give_cheeseburger(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	fmt.Println("calling burgers")
+
+	fn := pybind.Wrap(c.GiveCheeseburger)
+	return fn(args, kwds)
+}
+
+var CatDef = pybind.Define("cat", (*Cat)(nil), InitCat)
+var RegisterCat = pybind.GenerateRegisterFunc(CatDef)
+
 func NewCat(name string) (*Cat, error) {
 	args := pybind.ReflectValues(name)
 	argsObjs, err := pybind.ConvertOut(args)
@@ -71,53 +102,4 @@ func NewCat(name string) (*Cat, error) {
 	}
 
 	return cat.(*Cat), nil
-}
-
-func InitCat(c *Cat, name string) error {
-	c.Name = name
-	c.Cheeseburgers = 0
-	return nil
-}
-
-func (c *Cat) Rename(name string) {
-	c.Name = name
-}
-
-func (c *Cat) GiveCheeseburger() {
-	c.Cheeseburgers++
-}
-
-var CatDef = py.Class{
-	Name:    "cat",
-	Flags:   py.TPFLAGS_BASETYPE,
-	Pointer: (*Cat)(nil),
-	New:     pybind.WrapConstructor(InitCat),
-}
-
-func RegisterCat(module *py.Module) error {
-	var err error
-	var class *py.Type
-	if class, err = CatDef.Create(); err != nil {
-		return err
-	}
-
-	if err = module.AddObject(CatDef.Name, class); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c *Cat) Py_rename(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	fmt.Println("calling rename")
-
-	fn := pybind.Wrap(c.Rename)
-	return fn(args, kwds)
-}
-
-func (c *Cat) Py_give_cheeseburger(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	fmt.Println("calling burgers")
-
-	fn := pybind.Wrap(c.GiveCheeseburger)
-	return fn(args, kwds)
 }
