@@ -24,6 +24,10 @@ func OutTypes(fnType reflect.Type) []reflect.Type {
 
 func ConvertIn(types []reflect.Type, args *py.Tuple) ([]reflect.Value, error) {
 	convertedArgs := []reflect.Value{}
+	if args == nil {
+		return convertedArgs, nil
+	}
+
 	argsSlice := args.Slice()
 
 	for i, arg := range argsSlice {

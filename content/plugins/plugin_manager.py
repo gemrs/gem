@@ -3,20 +3,20 @@ from yapsy.PluginManager import PluginManager
 
 import gem
 
-logger = gem.syslog.Module(__name__)
+logger = gem.syslog.module(__name__)
 
 class GemLogHandler(logging.Handler):
     def emit(self, record):
         if record.levelno == logging.CRITICAL:
-            logger.Critical(record.getMessage())
+            logger.critical(record.getMessage())
         elif record.levelno == logging.ERROR:
-            logger.Error(record.getMessage())
+            logger.error(record.getMessage())
         elif record.levelno == logging.WARNING:
-            logger.Warning(record.getMessage())
+            logger.warning(record.getMessage())
         elif record.levelno == logging.INFO:
-            logger.Info(record.getMessage())
+            logger.info(record.getMessage())
         elif record.levelno == logging.DEBUG:
-            logger.Debug(record.getMessage())
+            logger.debug(record.getMessage())
 
 logging.getLogger("yapsy").addHandler(GemLogHandler())
 
@@ -30,6 +30,6 @@ class GemPluginManager(PluginManager):
         for plugin_info in self.getAllPlugins():
             plugin = self.getPluginByName(plugin_info.name)
             if plugin is not None:
-                plugin.plugin_object.logger = gem.syslog.Module(plugin_info.name)
-            logger.Debug("Loading plugin {0}".format(plugin_info.name))
+                plugin.plugin_object.logger = gem.syslog.module(plugin_info.name)
+            logger.debug("Loading plugin {0}".format(plugin_info.name))
             self.activatePluginByName(plugin_info.name)

@@ -72,6 +72,12 @@ func (client *Player) SetProfile(profile player.Profile) {
 	client.profile = profile.(*Profile)
 }
 
+// Appearance returns the player's appearance
+func (client *Player) Appearance() player.Appearance {
+	profile := client.Profile().(*Profile)
+	return profile.Appearance()
+}
+
 // SetAppearance modifies the player's appearance
 func (client *Player) SetAppearance(a player.Appearance) {
 	profile := client.Profile().(*Profile)

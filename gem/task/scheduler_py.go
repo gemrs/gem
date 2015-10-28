@@ -4,7 +4,7 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-func Py_Submit(args *py.Tuple) (py.Object, error) {
+func Py_submit(args *py.Tuple) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 

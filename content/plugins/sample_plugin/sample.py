@@ -8,7 +8,7 @@ class SampleTask(task.Task):
         self.count = count
 
     def execute(self):
-        logger.Info("Tock.. {0}".format(self.count))
+        logger.info("Tock.. {0}".format(self.count))
         self.count -= 1
         return self.count > 0
 
@@ -18,11 +18,11 @@ class SamplePlugin(plugins.GemPlugin):
     def startup(self, event):
         global logger
         logger = self.logger
-        self.logger.Info("Startup hook")
+        self.logger.info("Startup hook")
         self.sample_task.submit()
 
     def shutdown(self, event):
-        self.logger.Info("Shutdown hook")
+        self.logger.info("Shutdown hook")
 
     def tick(self, event):
-        self.logger.Info("Tick")
+        self.logger.info("Tick")

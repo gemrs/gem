@@ -13,17 +13,17 @@ var ConnectionDef = pybind.Define("Connection", (*Connection)(nil))
 var RegisterConnection = pybind.GenerateRegisterFunc(ConnectionDef)
 var NewConnection = pybind.GenerateConstructor(ConnectionDef).(func(net.Conn, *log.Module) *Connection)
 
-func (c *Connection) Py_Log(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (c *Connection) PyGet_log() (py.Object, error) {
 	fn := pybind.Wrap(c.Log)
-	return fn(args, kwds)
+	return fn(nil, nil)
 }
 
-func (c *Connection) Py_Disconnect(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (c *Connection) Py_disconnect(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	fn := pybind.Wrap(c.Disconnect)
 	return fn(args, kwds)
 }
 
-func (c *Connection) Py_Index(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (c *Connection) PyGet_index() (py.Object, error) {
 	fn := pybind.Wrap(c.Index)
-	return fn(args, kwds)
+	return fn(nil, nil)
 }

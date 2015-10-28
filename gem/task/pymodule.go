@@ -18,7 +18,7 @@ func init() {
 	var err error
 	var module *py.Module
 	methods := []py.Method{
-		{"submit", Py_Submit, "submit a task to the scheduler"},
+		{"submit", Py_submit, "submit a task to the scheduler"},
 	}
 	if module, err = modules.Init("gem.task", methods); err != nil {
 		panic(err)

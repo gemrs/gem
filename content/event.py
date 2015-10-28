@@ -33,7 +33,7 @@ def listener(cls):
     def new_del(self):
         for event, handles in event_handles.iteritems():
             for handle in handles:
-                event.Unregister(handle)
+                event.unregister(handle)
         if orig_del:
             orig_del(self)
     cls.__del__ = new_del
@@ -77,6 +77,6 @@ def _create_wrapper(event_handles, fn, event, event_passthrough=False):
         return fn(*args, **kwargs)
 
     listener = gem.event.PyListener(_wrapper)
-    event.Register(listener)
+    event.register(listener)
     event_handles.setdefault(event, []).append(listener)
     return _wrapper

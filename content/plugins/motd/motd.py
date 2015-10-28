@@ -10,9 +10,9 @@ class MOTD(plugins.GemPlugin):
 
     @event.callback(gem.game.event.PlayerLogin)
     def player_login(self, player):
-        profile = player.Profile
-        player.SendMessage("Welcome to Gielinor")
-        player.SendMessage("There are currently {0} players online".format(world.player_count()))
+        profile = player.profile
+        player.send_message("Welcome to Gielinor")
+        player.send_message("There are currently {0} players online".format(world.player_count()))
 
     @event.callback(gem.game.event.PlayerLogout)
     def player_logout(self, player):

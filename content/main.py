@@ -26,15 +26,15 @@ parser = argparse.ArgumentParser(description=version_string)
 parser.add_argument('--no-console', action='store_false', dest='no_console', help='disable the interactive console')
 parser.add_argument('--plugin-path', action='append', dest='plugin_path', help='append to the plugin search path')
 
-logger = gem.syslog.Module("pymain")
+logger = gem.syslog.module("pymain")
 args = parser.parse_args()
 
 def main():
-    logger.Notice("Starting {0}".format(version_string))
+    logger.notice("Starting {0}".format(version_string))
 
     try:
         gem.runite.context = gem.runite.Context()
-        gem.runite.context.Unpack(config.game_data['data_file'], config.game_data['index_files'])
+        gem.runite.context.unpack(config.game_data['data_file'], config.game_data['index_files'])
 
         plugin_loader = PluginLoader(plugin_path)
         plugin_loader.load()
@@ -45,15 +45,15 @@ def main():
 
         # start the engine
         engine = gem.engine.Engine()
-        engine.Start()
-        signal_handler.setup_exit_handler(engine.Stop)
+        engine.start()
+        signal_handler.setup_exit_handler(engine.stop)
 
-        logger.Info("Finished engine initialization")
+        logger.info("Finished engine initialization")
     except Exception as e:
-        logger.Critical("Startup failed: {0}".format(e))
+        logger.critical("Startup failed: {0}".format(e))
 
     if args.no_console:
-        logger.Notice("Press Control-D to toggle the interactive console")
+        logger.notice("Press Control-D to toggle the interactive console")
         while True:
             line = sys.stdin.readline()
             if not line: # readline will return "" on EOF
@@ -63,11 +63,11 @@ def main():
             pass
 
 def interactive_console():
-    logger.Notice("Transferring control to interactive console")
-    gem.syslog.BeginRedirect()
+    logger.notice("Transferring control to interactive console")
+    gem.syslog.begin_redirect()
     console.interact()
-    gem.syslog.EndRedirect()
-    logger.Info("Exited interactive console")
+    gem.syslog.end_redirect()
+    logger.info("Exited interactive console")
 
 if __name__ == "__main__":
     main()

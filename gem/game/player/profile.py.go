@@ -14,24 +14,34 @@ var SkillsDef = pybind.Define("Skills", (*Skills)(nil))
 var RegisterSkills = pybind.GenerateRegisterFunc(SkillsDef)
 var NewSkills = pybind.GenerateConstructor(SkillsDef).(func() *Skills)
 
-func (p *Profile) Py_Position(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (p *Profile) PyGet_position() (py.Object, error) {
 	fn := pybind.Wrap(p.Position)
-	return fn(args, kwds)
+	return fn(nil, nil)
 }
 
-func (p *Profile) Py_SetPosition(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (p *Profile) PySet_position(value py.Object) error {
 	fn := pybind.Wrap(p.SetPosition)
-	return fn(args, kwds)
+	args, err := py.PackTuple(value)
+	if err != nil {
+		return err
+	}
+	_, err = fn(args, nil)
+	return err
 }
 
-func (p *Profile) Py_Appearance(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (p *Profile) PyGet_appearance() (py.Object, error) {
 	fn := pybind.Wrap(p.Appearance)
-	return fn(args, kwds)
+	return fn(nil, nil)
 }
 
-func (p *Profile) Py_SetAppearance(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+func (p *Profile) PySet_appearance(value py.Object) error {
 	fn := pybind.Wrap(p.SetAppearance)
-	return fn(args, kwds)
+	args, err := py.PackTuple(value)
+	if err != nil {
+		return err
+	}
+	_, err = fn(args, nil)
+	return err
 }
 
 func (p *Profile) PyStr() string {
