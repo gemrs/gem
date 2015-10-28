@@ -13,10 +13,7 @@ func TestSnapshot(t *testing.T) {
 	lock := py.NewLock()
 	defer lock.Unlock()
 
-	dummyPos, err := position.NewAbsolute(3500, 3500, 1)
-	if err != nil {
-		panic(err)
-	}
+	dummyPos := position.NewAbsolute(3500, 3500, 1)
 
 	dummyPlayer := &PlayerSnapshot{
 		flags:  entity.MobFlagWalkUpdate,
