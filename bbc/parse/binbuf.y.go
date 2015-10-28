@@ -489,7 +489,7 @@ yydefault:
 
 	yyp -= yyR2[yyn]
 	// yyp is now the index of $0. Perform the default action. Iff the
-	// reduced production is , $1 is possibly out of range.
+	// reduced production is ε, $1 is possibly out of range.
 	if yyp+1 >= len(yyS) {
 		nyys := make([]yySymType, len(yyS)*2)
 		copy(nyys, yyS)
