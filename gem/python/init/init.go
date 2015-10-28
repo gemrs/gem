@@ -20,8 +20,6 @@ func pythonInit() {
 	lock := py.InitAndLock()
 	defer lock.Unlock()
 
-	SetTypeConvFuncs()
-
 	/* Create our globals */
 	if globals, err := py.NewDict(); err != nil {
 		panic(err)

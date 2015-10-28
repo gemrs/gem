@@ -7,7 +7,6 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type Session $GOFILE
 // Session is the set of non-persistant properties of a player
 type Session struct {
 	py.BaseObject
@@ -19,11 +18,10 @@ type Session struct {
 	secureBlockSize int
 }
 
-func (s *Session) Init() error {
+func (s *Session) Init() {
 	s.serverRandKey = []uint32{
 		uint32(rand.Int31()), uint32(rand.Int31()),
 	}
-	return nil
 }
 
 func (s *Session) ServerISAACSeed() []uint32 {

@@ -9,8 +9,6 @@ import (
 	"github.com/sinusoids/gem/gem/game/position"
 )
 
-//go:generate gopygen -type Profile -type Skills $GOFILE
-
 // Profile represents the saved state of a user
 type Profile struct {
 	py.BaseObject
@@ -25,26 +23,13 @@ type Profile struct {
 	animations *Animations
 }
 
-func (p *Profile) Init(username, password string) (err error) {
+func (p *Profile) Init(username, password string) {
 	p.username = username
 	p.password = password
 
-	p.skills, err = NewSkills()
-	if err != nil {
-		return err
-	}
-
-	p.appearance, err = NewAppearance()
-	if err != nil {
-		return err
-	}
-
-	p.animations, err = NewAnimations()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	p.skills = NewSkills()
+	p.appearance = NewAppearance()
+	p.animations = NewAnimations()
 }
 
 func (p *Profile) Username() string {
@@ -93,9 +78,7 @@ type Skills struct {
 	combatLevel int
 }
 
-func (s *Skills) Init() error {
-	return nil
-}
+func (s *Skills) Init() {}
 
 func (s *Skills) CombatLevel() int {
 	return s.combatLevel

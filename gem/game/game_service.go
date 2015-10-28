@@ -18,8 +18,6 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type GameService -excfield "^[a-z].*" $GOFILE
-
 // GameService represents the internal state of the game
 type GameService struct {
 	py.BaseObject
@@ -56,10 +54,7 @@ func finishLogin(_ *event.Event, args ...interface{}) {
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log().Infof("new game client")
-	client, err := playerimpl.NewPlayer(conn)
-	if err != nil {
-		panic(err)
-	}
+	client := playerimpl.NewPlayer(conn)
 	client.SetDecodeFunc(svc.handshake)
 	return client
 }

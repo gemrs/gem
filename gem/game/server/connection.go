@@ -26,7 +26,6 @@ type Client interface {
 	SetIndex(index int)
 }
 
-//go:generate gopygen -type Connection -excfield ".*" $GOFILE
 // Connection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
 type Connection struct {
@@ -43,7 +42,7 @@ type Connection struct {
 	conn  net.Conn
 }
 
-func (c *Connection) Init(conn net.Conn, parentLogger *log.Module) error {
+func (c *Connection) Init(conn net.Conn, parentLogger *log.Module) {
 	c.ReadBuffer = encoding.NewBuffer()
 	c.WriteBuffer = encoding.NewBuffer()
 	c.Read = make(chan encoding.Decodable, 16)
@@ -52,7 +51,6 @@ func (c *Connection) Init(conn net.Conn, parentLogger *log.Module) error {
 
 	c.log = parentLogger.SubModule(conn.RemoteAddr().String())
 	c.conn = conn
-	return nil
 }
 
 func (c *Connection) Log() *log.Module {

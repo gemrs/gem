@@ -13,8 +13,6 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type Player -excfield "^[a-z].*" -excfunc "SetDecodeFunc" $GOFILE
-
 // GameClient is a client which serves players
 type Player struct {
 	py.BaseObject
@@ -28,23 +26,15 @@ type Player struct {
 }
 
 // NewGameClient constructs a new GameClient
-func (client *Player) Init(conn *server.Connection) error {
-	session, err := NewSession()
-	if err != nil {
-		return err
-	}
+func (client *Player) Init(conn *server.Connection) {
+	session := NewSession()
 
 	client.Connection = conn
 	client.session = session
 
 	wpq := entityimpl.NewSimpleWaypointQueue()
 
-	client.GenericMob, err = entityimpl.NewGenericMob(wpq)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	client.GenericMob = entityimpl.NewGenericMob(wpq)
 }
 
 func (client *Player) SetDecodeFunc(d player.DecodeFunc) {

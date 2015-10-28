@@ -2,10 +2,8 @@ package event
 
 import (
 	"github.com/qur/gopy/lib"
-	"github.com/tgascoigne/gopygen/gopygen"
+	"github.com/sinusoids/gem/gem/python"
 )
-
-//go:generate gopygen -type Event -excfunc "NotifyObservers" $GOFILE
 
 type Event struct {
 	py.BaseObject
@@ -14,10 +12,9 @@ type Event struct {
 	observers map[int]Observer
 }
 
-func (e *Event) Init(key string) error {
+func (e *Event) Init(key string) {
 	e.key = key
 	e.observers = make(map[int]Observer)
-	return nil
 }
 
 func (e *Event) Key() string {
@@ -39,7 +36,7 @@ func (e *Event) NotifyObservers(args ...interface{}) {
 }
 
 // Py_NotifyObservers is a manual python wrapper of NotifyObservers, because
-// gopygen doesn't support ellipsis args
+// pybind doesn't support ellipsis args
 func (e *Event) Py_NotifyObservers(argsTuple *py.Tuple) (py.Object, error) {
 	lock := py.NewLock()
 	defer lock.Unlock()
@@ -48,7 +45,7 @@ func (e *Event) Py_NotifyObservers(argsTuple *py.Tuple) (py.Object, error) {
 	if argsTuple.Size() > 1 {
 		for _, a := range argsTuple.Slice() {
 			a.Incref()
-			argIn, err := gopygen.TypeConvIn(a, "")
+			argIn, err := python.TypeConvIn(a, "")
 			if err != nil {
 				py.None.Incref()
 				return py.None, nil

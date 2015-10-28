@@ -18,9 +18,7 @@ type SysLog struct {
 	modules        map[string]*Module
 }
 
-func (s *SysLog) Init() error {
-	return nil
-}
+func (s *SysLog) Init() {}
 
 type Module struct {
 	py.BaseObject
@@ -29,9 +27,7 @@ type Module struct {
 	prefix string
 }
 
-func (m *Module) Init() error {
-	return nil
-}
+func (m *Module) Init() {}
 
 var format = logging.MustStringFormatter("%{color}[%{level:-8s}] %{module:-10s}%{color:reset}: %{message}")
 
@@ -42,7 +38,7 @@ func New(module string) *Module {
 func InitSysLog() error {
 	var err error
 	SetBackend(os.Stdout)
-	Sys, err = NewSysLog()
+	Sys = NewSysLog()
 	return err
 }
 
@@ -71,11 +67,8 @@ func (log *SysLog) Module(module string) *Module {
 		return logModule
 	}
 
-	logModule, err := NewModule()
+	logModule := NewModule()
 	logModule.logger = logging.MustGetLogger(module)
-	if err != nil {
-		panic(err)
-	}
 
 	log.modules[module] = logModule
 
@@ -83,10 +76,7 @@ func (log *SysLog) Module(module string) *Module {
 }
 
 func (log *Module) SubModule(prefix string) (out Logger) {
-	logModule, err := NewModule()
-	if err != nil {
-		panic(err)
-	}
+	logModule := NewModule()
 
 	logModule.parent = log
 	logModule.prefix = prefix

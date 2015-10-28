@@ -7,8 +7,8 @@ import (
 
 	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/protocol"
-	"github.com/sinusoids/gem/gem/util/safe"
 	"github.com/sinusoids/gem/gem/util/id"
+	"github.com/sinusoids/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
@@ -16,8 +16,6 @@ import (
 
 var logInit sync.Once
 var logger *log.Module
-
-//go:generate gopygen -type Server -excfunc "^[a-z].+" -excfield "^[a-z].+" $GOFILE
 
 // Server is the listener object and its associated state
 type Server struct {
@@ -40,10 +38,9 @@ type Service interface {
 	NewClient(conn *Connection, service int) Client
 }
 
-func (s *Server) Init(laddr string) error {
+func (s *Server) Init(laddr string) {
 	s.laddr = laddr
 	s.clients = make(map[int]Client)
-	return nil
 }
 
 // SetService registers a service with it's selector id (see protocol.InboundServiceSelect)
@@ -139,10 +136,7 @@ func (s *Server) run() error {
 // buffers data into readBuffer and flushes data from writeBuffer.
 // if the disconnect channel is signalled, breaks the main loop and closes the connection
 func (s *Server) handle(netConn net.Conn) {
-	conn, err := NewConnection(netConn, logger)
-	if err != nil {
-		panic(err)
-	}
+	conn := NewConnection(netConn, logger)
 	client, err := s.handshake(conn)
 	if err == nil && client != nil {
 		s.registerClient(client)

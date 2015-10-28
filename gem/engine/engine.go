@@ -13,7 +13,6 @@ import (
 
 var logger *log.Module
 
-//go:generate gopygen -type Engine -excfunc "^[a-z].+" $GOFILE
 type Engine struct {
 	py.BaseObject
 
@@ -22,9 +21,7 @@ type Engine struct {
 
 var EngineTick = 600 * time.Millisecond
 
-func (e *Engine) Init() error {
-	return nil
-}
+func (e *Engine) Init() {}
 
 func (e *Engine) Start() {
 	logger = log.New("engine")

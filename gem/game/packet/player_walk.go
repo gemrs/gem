@@ -26,10 +26,7 @@ func player_walk(player player.Player, packet encoding.Decodable) {
 	}
 
 	height := player.Position().Z()
-	origin, err := position.NewAbsolute(int(walkPacket.OriginX), int(walkPacket.OriginY), height)
-	if err != nil {
-		panic(err)
-	}
+	origin := position.NewAbsolute(int(walkPacket.OriginX), int(walkPacket.OriginY), height)
 
 	waypoints := make([]*position.Absolute, len(walkPacket.Waypoints))
 
@@ -39,10 +36,7 @@ func player_walk(player player.Player, packet encoding.Decodable) {
 	for i, wp := range walkPacket.Waypoints {
 		x1, y1 := int(wp.X), int(wp.Y)
 		x2, y2 := int(origin.X()), int(origin.Y())
-		waypoints[i], err = position.NewAbsolute(int(x1+x2), int(y1+y2), height)
-		if err != nil {
-			panic(err)
-		}
+		waypoints[i] = position.NewAbsolute(int(x1+x2), int(y1+y2), height)
 
 		wpq.Push(waypoints[i])
 	}

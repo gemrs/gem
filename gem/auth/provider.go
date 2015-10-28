@@ -8,8 +8,6 @@ import (
 	"github.com/sinusoids/gem/gem/game/interface/player"
 )
 
-//go:generate gopygen -type ProviderImpl $GOFILE
-
 //go:generate stringer -type=AuthResponse
 type AuthResponse int
 
@@ -49,9 +47,7 @@ type ProviderImpl struct {
 	py.BaseObject
 }
 
-func (p *ProviderImpl) Init() error {
-	return nil
-}
+func (p *ProviderImpl) Init() {}
 
 func (p *ProviderImpl) LookupProfile(name, password string) (player.Profile, AuthResponse) {
 	lock := py.NewLock()

@@ -10,8 +10,6 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type UpdateService -excfield "^[a-z].*" $GOFILE
-
 // updateService represents the internal state of the update servuce
 type UpdateService struct {
 	py.BaseObject
@@ -21,12 +19,11 @@ type UpdateService struct {
 	notify chan int
 }
 
-func (svc *UpdateService) Init(runite *runite.Context) error {
+func (svc *UpdateService) Init(runite *runite.Context) {
 	svc.runite = runite
 	svc.queue = newUpdateQueue()
 	svc.notify = make(chan int, 16)
 	go svc.processQueue()
-	return nil
 }
 
 func (svc *UpdateService) NewClient(conn *server.Connection, service int) server.Client {

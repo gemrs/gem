@@ -2,13 +2,11 @@ package event
 
 import (
 	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/python"
 	"github.com/sinusoids/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
-	"github.com/tgascoigne/gopygen/gopygen"
 )
-
-//go:generate gopygen -type PyListener -excfunc "Notify" $GOFILE
 
 type PyListener struct {
 	py.BaseObject
@@ -18,12 +16,11 @@ type PyListener struct {
 	logger *log.Module
 }
 
-func (l *PyListener) Init(fn py.Object) error {
+func (l *PyListener) Init(fn py.Object) {
 	l.id = <-nextId
 	fn.Incref()
 	l.fn = fn
 	l.logger = log.New("python_listener")
-	return nil
 }
 
 func (l *PyListener) Id() int {
@@ -41,7 +38,7 @@ func (l *PyListener) Notify(e *Event, args ...interface{}) {
 
 	argsOut := []py.Object{}
 	for _, a := range argsIn {
-		converted, err := gopygen.TypeConvOut(a, "")
+		converted, err := python.TypeConvOut(a, "")
 		if err != nil {
 			panic(err)
 		}

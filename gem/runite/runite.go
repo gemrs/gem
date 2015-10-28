@@ -9,12 +9,13 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type Context $GOFILE
 type Context struct {
 	py.BaseObject
 
 	FS *rt3.JagFS
 }
+
+func (c *Context) Init() {}
 
 func (r *Context) Unpack(dataFile string, indexFiles []string) error {
 	var err error

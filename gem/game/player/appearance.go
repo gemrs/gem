@@ -6,8 +6,6 @@ import (
 	"github.com/sinusoids/gem/gem/game/interface/player"
 )
 
-//go:generate gopygen -type Appearance -type Animations $GOFILE
-
 type Appearance struct {
 	py.BaseObject
 
@@ -29,7 +27,7 @@ type Appearance struct {
 	skinColor  int
 }
 
-func (a *Appearance) Init() error {
+func (a *Appearance) Init() {
 	a.gender = 0
 	a.headIcon = 0
 
@@ -46,7 +44,6 @@ func (a *Appearance) Init() error {
 	a.legsColor = 9
 	a.feetColor = 5
 	a.skinColor = 0
-	return nil
 }
 
 func (a *Appearance) Gender() int {
@@ -105,7 +102,7 @@ type Animations struct {
 	run        int
 }
 
-func (a *Animations) Init() error {
+func (a *Animations) Init() {
 	a.idle = 0x328
 	a.spotRotate = 0x337
 	a.walk = 0x333
@@ -113,7 +110,6 @@ func (a *Animations) Init() error {
 	a.rotateCCW = 0x335
 	a.rotateCW = 0x336
 	a.run = 0x338
-	return nil
 }
 
 func (a *Animations) Animation(anim player.Anim) int {

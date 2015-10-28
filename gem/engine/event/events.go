@@ -18,11 +18,7 @@ var (
 var events = []*event.Event{}
 
 func createEvent(key string) *event.Event {
-	event, err := event.NewEvent(key)
-	if err != nil {
-		panic(err)
-	}
-
+	event := event.NewEvent(key)
 	events = append(events, event)
 
 	return event

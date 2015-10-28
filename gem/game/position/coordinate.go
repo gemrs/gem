@@ -12,8 +12,6 @@ const (
 	RegionSize int = 13
 )
 
-//go:generate gopygen -type Absolute -type Sector -type Region -type Local -excfield ".*" $GOFILE
-
 // Positionable is an object which has an absolute position in the world
 type Positionable interface {
 	Position() *Absolute
@@ -27,11 +25,10 @@ type Absolute struct {
 	x, y, z int
 }
 
-func (pos *Absolute) Init(x, y, z int) error {
+func (pos *Absolute) Init(x, y, z int) {
 	pos.x = x
 	pos.y = y
 	pos.z = z
-	return nil
 }
 
 func (pos *Absolute) Compare(other *Absolute) bool {
@@ -60,10 +57,7 @@ func (pos *Absolute) NextInterpolatedPoint(target *Absolute) *Absolute {
 		return 0
 	}
 
-	abs, err := NewAbsolute(interp(pos.X(), target.X()), interp(pos.Y(), target.Y()), pos.Z())
-	if err != nil {
-		panic(err)
-	}
+	abs := NewAbsolute(interp(pos.X(), target.X()), interp(pos.Y(), target.Y()), pos.Z())
 
 	return abs
 }
@@ -86,38 +80,29 @@ func (pos *Absolute) String() string {
 
 // Sector calculates the sector which contains an Absolute
 func (pos *Absolute) Sector() *Sector {
-	sector, err := NewSector(
+	sector := NewSector(
 		pos.x/AreaSize,
 		pos.y/AreaSize,
 		pos.z,
 	)
-	if err != nil {
-		panic(err)
-	}
 	return sector
 }
 
 // RegionOf returns a Region centered on this position
 func (pos *Absolute) RegionOf() *Region {
-	region, err := NewRegion(nil)
-	if err != nil {
-		panic(err)
-	}
+	region := NewRegion(nil)
 	region.Rebase(pos)
 	return region
 }
 
 // LocalTo calculates the local coordinates of an Absolute relative to a region
 func (pos *Absolute) LocalTo(region *Region) *Local {
-	local, err := NewLocal(
+	local := NewLocal(
 		pos.x-(AreaSize*region.origin.x),
 		pos.y-(AreaSize*region.origin.y),
 		pos.z,
 		region,
 	)
-	if err != nil {
-		panic(err)
-	}
 	return local
 }
 
@@ -128,11 +113,10 @@ type Sector struct {
 	x, y, z int
 }
 
-func (s *Sector) Init(x, y, z int) error {
+func (s *Sector) Init(x, y, z int) {
 	s.x = x
 	s.y = y
 	s.z = z
-	return nil
 }
 
 func (s *Sector) X() int {
@@ -162,16 +146,12 @@ type Region struct {
 	origin *Sector
 }
 
-func (region *Region) Init(origin *Sector) error {
+func (region *Region) Init(origin *Sector) {
 	if origin == nil {
-		sector, err := NewSector(0, 0, 0)
-		if err != nil {
-			return err
-		}
+		sector := NewSector(0, 0, 0)
 		origin = sector
 	}
 	region.origin = origin
-	return nil
 }
 
 func (region *Region) Compare(other *Region) bool {
@@ -184,15 +164,11 @@ func (region *Region) Origin() *Sector {
 
 // Rebase adjusts the region such that it's new center is the sector containing the given Absolute
 func (region *Region) Rebase(absolute *Absolute) {
-	var err error
-	region.origin, err = NewSector(
+	region.origin = NewSector(
 		absolute.Sector().x-((RegionSize-1)/2),
 		absolute.Sector().y-((RegionSize-1)/2),
 		absolute.Sector().z,
 	)
-	if err != nil {
-		panic(err)
-	}
 }
 
 // SectorDelta calculates the delta between two regions in terms of sectors
@@ -213,12 +189,11 @@ type Local struct {
 	region *Region
 }
 
-func (local *Local) Init(x, y, z int, region *Region) error {
+func (local *Local) Init(x, y, z int, region *Region) {
 	local.x = x
 	local.y = y
 	local.z = z
 	local.region = region
-	return nil
 }
 
 func (local *Local) X() int {
@@ -246,13 +221,10 @@ func (local *Local) Region() *Region {
 
 // Absolute converts a local coordinate into an absolute coordinate
 func (local *Local) Absolute() *Absolute {
-	abs, err := NewAbsolute(
+	abs := NewAbsolute(
 		local.x+(AreaSize*local.Region().origin.x),
 		local.y+(AreaSize*local.Region().origin.y),
 		local.z,
 	)
-	if err != nil {
-		panic(err)
-	}
 	return abs
 }

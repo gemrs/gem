@@ -7,8 +7,6 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-//go:generate gopygen -type GenericMob -excfield "^[a-z].*" $GOFILE
-
 type GenericMob struct {
 	py.BaseObject
 
@@ -18,15 +16,10 @@ type GenericMob struct {
 	flags         entity.Flags
 }
 
-func (mob *GenericMob) Init(wpq entity.WaypointQueue) error {
-	var err error
-	mob.region, err = position.NewRegion(nil)
-	if err != nil {
-		return err
-	}
+func (mob *GenericMob) Init(wpq entity.WaypointQueue) {
+	mob.region = position.NewRegion(nil)
 
 	mob.waypointQueue = wpq
-	return nil
 }
 
 func (mob *GenericMob) SetNextStep(next *position.Absolute) {

@@ -38,7 +38,6 @@ Vagrant.configure(2) do |config|
     echo 'export GO15VENDOREXPERIMENT=1' >> /home/vagrant/.profile
     echo 'source $HOME/.profile' >> /home/vagrant/.bashrc
     # Would be nice if gb could handle this, but it doesn't seem to build binaries from vendored packages
-    su - vagrant -c 'go get github.com/tgascoigne/gopygen'
     su - vagrant -c 'go get github.com/blynn/nex'
   SHELL
 end
