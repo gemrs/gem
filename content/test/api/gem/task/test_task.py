@@ -19,5 +19,5 @@ def test_task_api():
     scheduler = gem.task.submit(task, gem.task.Tick, 2, "tick")
     scheduler = gem.task.submit(task, gem.task.PostTick, 2, "post")
 
-    engine.Join()
+    engine.join()
     assert len(task_stack) == 0
