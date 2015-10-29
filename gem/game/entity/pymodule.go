@@ -19,7 +19,7 @@ func init() {
 	/* Create package */
 	var err error
 	var module *py.Module
-	if module, err = modules.Init("gem.entity", []py.Method{}); err != nil {
+	if module, err = modules.Init("gem.game.entity", []py.Method{}); err != nil {
 		panic(err)
 	}
 
