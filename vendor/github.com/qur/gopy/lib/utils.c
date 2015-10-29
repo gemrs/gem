@@ -143,6 +143,9 @@ typedef struct {
 } PyGoMethod;
 
 static PyObject *method_get(PyGoMethod *self, PyObject *obj, PyObject *type) {
+    if (!obj) {
+        Py_RETURN_NONE;
+    }
     PyObject *cap = PyCapsule_New(self->func, NULL, NULL);
     PyObject *o = PyTuple_Pack(2, obj, cap);
     PyObject *ret = PyCFunction_New(&self->meth, o);

@@ -1,7 +1,5 @@
 package: gem
 import:
-  - package: github.com/qur/gopy
-    ref:     028c5288397ff885306051a27d42231d633c2b77
   - package: gopkg.in/tomb.v2
     ref:     14b3d72120e8d10ea6e6b7f87f7175734b1faab8
   - package: github.com/op/go-logging
@@ -14,3 +12,5 @@ import:
     ref:     13be4dfe75fd7b383cf1c753873f118a97c4aeb4
 # managed outside glide
 #  - package: github.com/gtank/isaac
+#  - package: github.com/qur/gopy
+#    ref:     028c5288397ff885306051a27d42231d633c2b77
