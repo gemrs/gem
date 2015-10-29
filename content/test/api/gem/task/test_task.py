@@ -6,13 +6,13 @@ import gem.engine
 def test_task_api():
     # For tasks to tick, we need the engine
     engine = gem.engine.Engine()
-    engine.Start()
+    engine.start()
 
     task_stack = ["pre", "tick", "post"]
     def task(task, userdata):
         assert task_stack.pop(0) == userdata
         if len(task_stack) == 0:
-            engine.Stop()
+            engine.stop()
         return False
 
     scheduler = gem.task.submit(task, gem.task.PreTick, 2, "pre")

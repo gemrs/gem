@@ -63,11 +63,11 @@ def test_event_dispatch():
 
         for event in tc['register_events']:
             listener = gem.event.PyListener(callback)
-            event.Register(listener)
+            event.register(listener)
             listeners.setdefault(event, []).append(listener)
 
         for event in tc['raise_events']:
-            event.NotifyObservers()
+            event.notify_observers()
 
         for event in tc['listen_events']:
             raised_event = q.get()
@@ -75,8 +75,8 @@ def test_event_dispatch():
 
         for event, listeners in listeners.iteritems():
             for l in listeners:
-                event.Unregister(l)
-            event.NotifyObservers()
+                event.unregister(l)
+            event.notify_observers()
             assert q.empty()
 
 def new_args_test_case(register_events, raise_events, listen_events, arg1, arg2):
@@ -130,11 +130,11 @@ def test_event_args():
 
         for event in tc['register_events']:
             listener = gem.event.PyListener(callback)
-            event.Register(listener)
+            event.register(listener)
             listeners.setdefault(event, []).append(listener)
 
         for event in tc['raise_events']:
-            event.NotifyObservers(tc['arg1'], tc['arg2'])
+            event.notify_observers(tc['arg1'], tc['arg2'])
 
         for event in tc['listen_events']:
             raised_event = q.get()
@@ -144,8 +144,8 @@ def test_event_args():
 
         for event, listeners in listeners.iteritems():
             for l in listeners:
-                event.Unregister(l)
-            event.NotifyObservers(tc['arg1'], tc['arg2'])
+                event.unregister(l)
+            event.notify_observers(tc['arg1'], tc['arg2'])
             assert q.empty()
 
 def test_event_dispatch_object():
@@ -167,11 +167,11 @@ def test_event_dispatch_object():
 
         for event in tc['register_events']:
             listener = gem.event.PyListener(obj.callback)
-            event.Register(listener)
+            event.register(listener)
             listeners.setdefault(event, []).append(listener)
 
         for event in tc['raise_events']:
-            event.NotifyObservers(tc['arg1'], tc['arg2'])
+            event.notify_observers(tc['arg1'], tc['arg2'])
 
         for event in tc['listen_events']:
             raised_event = q.get()
@@ -181,6 +181,6 @@ def test_event_dispatch_object():
 
         for event, listeners in listeners.iteritems():
             for l in listeners:
-                event.Unregister(l)
-            event.NotifyObservers()
+                event.unregister(l)
+            event.notify_observers()
             assert q.empty()
