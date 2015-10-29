@@ -1,15 +1,17 @@
-package gem
+package log
 
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/python/modules"
 )
 
 type registerFunc func(*py.Module) error
 
-var moduleRegisterFuncs = []registerFunc{}
+var moduleRegisterFuncs = []registerFunc{
+	RegisterSysLog,
+	RegisterModule,
+}
 
 func init() {
 	lock := py.NewLock()
@@ -18,7 +20,7 @@ func init() {
 	/* Create package */
 	var err error
 	var module *py.Module
-	if module, err = modules.Init("gem", []py.Method{}); err != nil {
+	if module, err = modules.Init("gem.log", []py.Method{}); err != nil {
 		panic(err)
 	}
 
@@ -27,11 +29,5 @@ func init() {
 		if err = registerFunc(module); err != nil {
 			panic(err)
 		}
-	}
-
-	/* Create our logger object */
-	log.InitSysLog()
-	if err := module.AddObject("syslog", log.Sys); err != nil {
-		panic(err)
 	}
 }
