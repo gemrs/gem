@@ -92,8 +92,32 @@ func Register(def *py.Class, module *py.Module) error {
 	if err = module.AddObject(def.Name, class); err != nil {
 		return err
 	}
+	addToAll(module, def.Name)
 
 	return nil
+}
+
+func addToAll(module *py.Module, name string) {
+	var all *py.List
+	dict := module.Dict()
+	if obj, _ := dict.GetItemString("__all__"); obj != nil {
+		all = obj.(*py.List)
+	} else {
+		var err error
+		all, err = py.NewList(0)
+		if err != nil {
+			panic(err)
+		}
+		dict.SetItemString("__all__", all)
+	}
+	all.Incref()
+	defer all.Decref()
+
+	nameObj, err := py.NewString(name)
+	if err != nil {
+		panic(err)
+	}
+	all.Append(nameObj)
 }
 
 func WrapConstructor(fn interface{}) Constructor {
