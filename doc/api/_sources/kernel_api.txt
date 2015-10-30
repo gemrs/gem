@@ -5,6 +5,5 @@ Packages
 --------
 
 .. toctree::
-   :glob:
 
-   gem.*
+   gem
