@@ -48,8 +48,6 @@ func (svc *GameService) decodeLoginBlock(client player.Player) error {
 
 	session.SetSecureBlockSize(int(loginBlock.SecureBlockSize))
 
-	client.Log().Debugf("Login block: %#v", loginBlock)
-
 	client.SetDecodeFunc(svc.decodeSecureBlock)
 	return nil
 }
@@ -76,8 +74,6 @@ func (svc *GameService) decodeSecureBlock(client player.Player) error {
 		outSeed[i] = uint32(secureBlock.ISAACSeed[i]) + 50
 	}
 	session.InitISAAC(inSeed, outSeed)
-
-	client.Log().Debugf("Secure login block: %#v", secureBlock)
 
 	username := string(secureBlock.Username)
 	password := string(secureBlock.Password)
