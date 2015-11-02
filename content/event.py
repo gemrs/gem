@@ -1,6 +1,5 @@
 import gem
 import gem.event
-import inspect
 
 # decorator soup
 
@@ -50,31 +49,25 @@ def callback(event):
         return fn
     return _callback
 
-def _swap(obj, event_handles, method, event):
+def _swap(self, event_handles, method, event):
     """_swap replaces a method with an event decorated wrapper"""
-    orig_func = getattr(obj, method)
-    wrapper = _create_wrapper(event_handles, orig_func, event[0][0])
-    setattr(obj, method, wrapper)
+    orig_func = getattr(self, method)
 
-def _create_wrapper(event_handles, fn, event, event_passthrough=False):
+    wrapper = _create_wrapper(self, event_handles, orig_func, event[0][0])
+    setattr(self, method, wrapper)
+
+def _create_wrapper(self, event_handles, fn, event, event_passthrough=False):
     """_create_wrapper creates an event decorated wrapper function around a
     method, and registers it as an event callback
 
     Keyword arguments:
     event_passthrough -- whether the wrapped function expects the event id as its first parameter"""
-    args = inspect.getargspec(fn).args
-    is_method = bool(args and args[0] == 'self')
 
-    def _wrapper(self, *args, **kwargs):
+    def _wrapper(event, *args, **kwargs):
         if event_passthrough == False:
-            # remove the first arg (ignoring self if method)
-            if is_method:
-                event_idx = 1
-            else:
-                event_idx = 0
-            args = (v for i, v in enumerate(args) if i != event_idx)
+            return fn(*args, **kwargs)
 
-        return fn(*args, **kwargs)
+        return fn(event, *args, **kwargs)
 
     listener = gem.event.PyListener(_wrapper)
     event.register(listener)
