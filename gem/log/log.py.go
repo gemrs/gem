@@ -49,11 +49,6 @@ func (log *Module) Py_error(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	return fn(args, kwds)
 }
 
-func (log *Module) Py_fatal(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	fn := pybind.Wrap(log.Fatal)
-	return fn(args, kwds)
-}
-
 func (log *Module) Py_info(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	fn := pybind.Wrap(log.Info)
 	return fn(args, kwds)
