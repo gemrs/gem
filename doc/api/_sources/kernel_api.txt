@@ -1,9 +1,0 @@
-Gem Kernel API
-===============
-
-Packages
---------
-
-.. toctree::
-
-   gem

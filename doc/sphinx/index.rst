@@ -7,7 +7,7 @@ Contents:
    :maxdepth: 2
 
    introduction
-   gem
+   api/gem/module_gem
 
 
 Indices and tables
