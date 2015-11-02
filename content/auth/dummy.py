@@ -7,7 +7,7 @@ import gem.game.position
 logger = gem.syslog.module(__name__)
 
 class DummyProvider(gem.auth.ProviderImpl):
-    def LookupProfile(self, username, password):
+    def lookup_profile(self, username, password):
         if username == "x" and password == "x":
             logger.info("invalid login credentials")
             return gem.game.player.profile, gem.auth.AuthInvalidCredentials

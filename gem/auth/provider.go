@@ -53,7 +53,7 @@ func (p *ProviderImpl) LookupProfile(name, password string) (player.Profile, Aut
 	lock := py.NewLock()
 	defer lock.Unlock()
 
-	obj, err := p.CallMethod("LookupProfile", "(ss)", name, password)
+	obj, err := p.CallMethod("lookup_profile", "(ss)", name, password)
 	if err != nil {
 		panic(fmt.Sprintf("cannot call LookupProfile: %v", err))
 	}
