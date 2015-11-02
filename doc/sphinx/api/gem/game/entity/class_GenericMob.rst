@@ -6,3 +6,13 @@ GenericMob
 .. py:class:: GenericMob
 
    Represents a movable entity
+
+   .. rubric:: Attributes
+
+   .. py:attribute:: position
+
+      The mob's current position
+
+   .. py:attribute:: visible_region
+
+      The mob's current visible region

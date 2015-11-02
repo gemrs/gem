@@ -1,11 +1,11 @@
 package event
 
 import (
+	"github.com/qur/gopy/lib"
+
 	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/util/safe"
 	"github.com/sinusoids/gem/pybind"
-
-	"github.com/qur/gopy/lib"
 )
 
 type PyListener struct {

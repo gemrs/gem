@@ -34,6 +34,11 @@ func (p *Profile) PyGet_appearance() (py.Object, error) {
 	return fn(nil, nil)
 }
 
+func (p *Profile) PyGet_skills() (py.Object, error) {
+	fn := pybind.Wrap(p.Skills)
+	return fn(nil, nil)
+}
+
 func (p *Profile) PySet_appearance(value py.Object) error {
 	fn := pybind.Wrap(p.SetAppearance)
 	args, err := py.PackTuple(value)

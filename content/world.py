@@ -8,9 +8,9 @@ class World(object):
     players = {}
 
     @event.callback(gem.game.event.PlayerLoadProfile)
-    def load_profile(self, player):
-        player.warp(player.profile.position)
-        player.appearance = player.profile.appearance
+    def load_profile(self, player, profile):
+        player.warp(profile.position)
+        player.appearance = profile.appearance
 
     @event.callback(gem.game.event.PlayerLogin)
     def register_player(self, player):

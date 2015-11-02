@@ -11,13 +11,8 @@ var PlayerDef = pybind.Define("Player", (*Player)(nil))
 var RegisterPlayer = pybind.GenerateRegisterFunc(PlayerDef)
 var NewPlayer = pybind.GenerateConstructor(PlayerDef).(func(*server.Connection) *Player)
 
-func (client *Player) PyGet_session() (py.Object, error) {
-	fn := pybind.Wrap(client.Session)
-	return fn(nil, nil)
-}
-
-func (client *Player) PyGet_profile() (py.Object, error) {
-	fn := pybind.Wrap(client.Profile)
+func (client *Player) PyGet_username() (py.Object, error) {
+	fn := pybind.Wrap(client.Profile().Username)
 	return fn(nil, nil)
 }
 
@@ -29,6 +24,11 @@ func (client *Player) Py_send_message(args *py.Tuple, kwds *py.Dict) (py.Object,
 func (client *Player) Py_warp(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	fn := pybind.Wrap(client.SetPosition)
 	return fn(args, kwds)
+}
+
+func (client *Player) PyGet_skills() (py.Object, error) {
+	fn := pybind.Wrap(client.Profile().Skills)
+	return fn(nil, nil)
 }
 
 func (client *Player) PyGet_appearance() (py.Object, error) {
