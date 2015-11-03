@@ -1,6 +1,7 @@
 package player
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/qur/gopy/lib"
@@ -11,15 +12,15 @@ import (
 
 // Profile represents the saved state of a user
 type Profile struct {
-	py.BaseObject `json:"-"`
+	py.BaseObject
 
-	username string             `json:"username"`
-	password string             `json:"password"`
-	rights   player.Rights      `json:"rights"`
-	position *position.Absolute `json:"position"`
+	username string
+	password string
+	rights   player.Rights
+	position *position.Absolute
 
-	skills     *Skills     `json:"skills"`
-	appearance *Appearance `json:"appearance"`
+	skills     *Skills
+	appearance *Appearance
 }
 
 func (p *Profile) Init(username, password string) {
@@ -34,12 +35,24 @@ func (p *Profile) Username() string {
 	return p.username
 }
 
+func (p *Profile) setUsername(username string) {
+	p.username = username
+}
+
 func (p *Profile) Password() string {
 	return p.password
 }
 
+func (p *Profile) setPassword(password string) {
+	p.password = password
+}
+
 func (p *Profile) Rights() player.Rights {
 	return p.rights
+}
+
+func (p *Profile) setRights(rights player.Rights) {
+	p.rights = rights
 }
 
 func (p *Profile) Position() *position.Absolute {
@@ -66,6 +79,21 @@ func (p *Profile) String() string {
 	return fmt.Sprintf("Username: %v", p.username)
 }
 
+func (p *Profile) MarshalJSON() ([]byte, error) {
+	return json.Marshal(jsonObjForProfile(p))
+}
+
+func (p *Profile) UnmarshalJSON(objJSON []byte) error {
+	var deserialized jsonProfile
+	err := json.Unmarshal(objJSON, &deserialized)
+	if err != nil {
+		return err
+	}
+
+	jsonObjToProfile(p, deserialized)
+	return nil
+}
+
 type Skills struct {
 	py.BaseObject
 
@@ -76,4 +104,8 @@ func (s *Skills) Init() {}
 
 func (s *Skills) CombatLevel() int {
 	return s.combatLevel
+}
+
+func (s *Skills) setCombatLevel(combatLevel int) {
+	s.combatLevel = combatLevel
 }

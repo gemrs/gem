@@ -50,8 +50,16 @@ func (a *Appearance) Gender() int {
 	return a.gender
 }
 
+func (a *Appearance) setGender(gender int) {
+	a.gender = gender
+}
+
 func (a *Appearance) HeadIcon() int {
 	return a.headIcon
+}
+
+func (a *Appearance) setHeadIcon(headIcon int) {
+	a.headIcon = headIcon
 }
 
 func (a *Appearance) Model(b player.BodyPart) int {
@@ -74,6 +82,25 @@ func (a *Appearance) Model(b player.BodyPart) int {
 	return -1
 }
 
+func (a *Appearance) setModel(b player.BodyPart, model int) {
+	switch b {
+	case player.Torso:
+		a.torsoModel = model
+	case player.Arms:
+		a.armsModel = model
+	case player.Legs:
+		a.legsModel = model
+	case player.Head:
+		a.headModel = model
+	case player.Hands:
+		a.handsModel = model
+	case player.Feet:
+		a.feetModel = model
+	case player.Beard:
+		a.beardModel = model
+	}
+}
+
 func (a *Appearance) Color(b player.BodyPart) int {
 	switch b {
 	case player.Hair:
@@ -88,6 +115,21 @@ func (a *Appearance) Color(b player.BodyPart) int {
 		return a.skinColor
 	}
 	return -1
+}
+
+func (a *Appearance) setColor(b player.BodyPart, color int) {
+	switch b {
+	case player.Hair:
+		a.hairColor = color
+	case player.Torso:
+		a.torsoColor = color
+	case player.Legs:
+		a.legsColor = color
+	case player.Feet:
+		a.feetColor = color
+	case player.Skin:
+		a.skinColor = color
+	}
 }
 
 type Animations struct {

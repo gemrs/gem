@@ -1,6 +1,8 @@
 package player
 
 import (
+	"encoding/json"
+
 	"github.com/qur/gopy/lib"
 
 	"github.com/sinusoids/gem/pybind"
@@ -43,6 +45,27 @@ func (p *Profile) PySet_appearance(value py.Object) error {
 	}
 	_, err = fn(args, nil)
 	return err
+}
+
+func (p *Profile) Py_serialize(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	fn := pybind.Wrap(func() string {
+		obj, err := json.Marshal(p)
+		if err != nil {
+			panic(err)
+		}
+		return string(obj)
+	})
+	return fn(args, nil)
+}
+
+func (p *Profile) Py_deserialize(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	fn := pybind.Wrap(func(obj string) {
+		err := p.UnmarshalJSON([]byte(obj))
+		if err != nil {
+			panic(err)
+		}
+	})
+	return fn(args, nil)
 }
 
 func (p *Profile) PyStr() string {
