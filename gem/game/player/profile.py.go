@@ -10,10 +10,6 @@ var ProfileDef = pybind.Define("Profile", (*Profile)(nil))
 var RegisterProfile = pybind.GenerateRegisterFunc(ProfileDef)
 var NewProfile = pybind.GenerateConstructor(ProfileDef).(func(string, string) *Profile)
 
-var SkillsDef = pybind.Define("Skills", (*Skills)(nil))
-var RegisterSkills = pybind.GenerateRegisterFunc(SkillsDef)
-var NewSkills = pybind.GenerateConstructor(SkillsDef).(func() *Skills)
-
 func (p *Profile) PyGet_position() (py.Object, error) {
 	fn := pybind.Wrap(p.Position)
 	return fn(nil, nil)
@@ -51,4 +47,13 @@ func (p *Profile) PySet_appearance(value py.Object) error {
 
 func (p *Profile) PyStr() string {
 	return p.String()
+}
+
+var SkillsDef = pybind.Define("Skills", (*Skills)(nil))
+var RegisterSkills = pybind.GenerateRegisterFunc(SkillsDef)
+var NewSkills = pybind.GenerateConstructor(SkillsDef).(func() *Skills)
+
+func (s *Skills) PyGet_combat_level() (py.Object, error) {
+	fn := pybind.Wrap(s.CombatLevel)
+	return fn(nil, nil)
 }
