@@ -21,4 +21,5 @@ type Player interface {
 	SetDecodeFunc(d DecodeFunc)
 	Conn() *server.Connection
 	FinishInit()
+	LoadProfile()
 }

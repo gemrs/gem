@@ -169,6 +169,10 @@ func (p *PlayerSnapshot) EntityType() entity.EntityType {
 	return entity.PlayerType
 }
 
+func (p *PlayerSnapshot) LoadProfile() {
+	panic("not implemented")
+}
+
 type SessionSnapshot struct {
 	animations Animations
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/sinusoids/gem/gem/encoding"
 	game_event "github.com/sinusoids/gem/gem/game/event"
 	"github.com/sinusoids/gem/gem/game/interface/player"
-	playerimpl "github.com/sinusoids/gem/gem/game/player"
 	"github.com/sinusoids/gem/gem/protocol"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
@@ -106,7 +105,7 @@ func (svc *GameService) doLogin(client player.Player, username, password string)
 	go svc.packetConsumer(client)
 
 	game_event.PlayerLogin.NotifyObservers(client)
-	game_event.PlayerLoadProfile.NotifyObservers(client, client.Profile().(*playerimpl.Profile))
+	client.LoadProfile()
 	game_event.PlayerFinishLogin.NotifyObservers(client)
 
 	go func() {

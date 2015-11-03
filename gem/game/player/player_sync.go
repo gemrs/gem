@@ -4,10 +4,19 @@ import (
 	"github.com/sinusoids/gem/gem/encoding"
 	engine_event "github.com/sinusoids/gem/gem/engine/event"
 	"github.com/sinusoids/gem/gem/event"
+	game_event "github.com/sinusoids/gem/gem/game/event"
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/interface/player"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
+
+func (client *Player) LoadProfile() {
+	profile := client.Profile().(*Profile)
+	client.SetPosition(profile.Position())
+	client.SetAppearance(profile.Appearance())
+
+	game_event.PlayerLoadProfile.NotifyObservers(client, client.Profile().(*Profile))
+}
 
 // FinishInit is called once the player has finished the low level login sequence
 func (client *Player) FinishInit() {
