@@ -5,6 +5,8 @@ import (
 
 	"github.com/gtank/isaac"
 	"github.com/qur/gopy/lib"
+
+	"github.com/sinusoids/gem/gem/game/interface/player"
 )
 
 // Session is the set of non-persistant properties of a player
@@ -16,12 +18,15 @@ type Session struct {
 	serverRandKey []uint32
 
 	secureBlockSize int
+
+	animations *Animations
 }
 
 func (s *Session) Init() {
 	s.serverRandKey = []uint32{
 		uint32(rand.Int31()), uint32(rand.Int31()),
 	}
+	s.animations = NewAnimations()
 }
 
 func (s *Session) ServerISAACSeed() []uint32 {
@@ -47,4 +52,8 @@ func (s *Session) SecureBlockSize() int {
 
 func (s *Session) SetSecureBlockSize(size int) {
 	s.secureBlockSize = size
+}
+
+func (s *Session) Animations() player.Animations {
+	return s.animations
 }

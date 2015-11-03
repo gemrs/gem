@@ -14,7 +14,7 @@ import (
 // every player is syncing with the same state, and so that the state doesn't change during synchronization
 func Snapshot(player Player) Player {
 	srcProfile := player.Profile()
-	_ = player.Session()
+	srcSession := player.Session()
 	srcWpq := player.WaypointQueue()
 
 	snapshot := &PlayerSnapshot{
@@ -63,7 +63,7 @@ func Snapshot(player Player) Player {
 	}
 	snapshot.profile.(*ProfileSnapshot).appearance = appearance
 
-	srcAnimations := srcProfile.Animations()
+	srcAnimations := srcSession.Animations()
 	animations := &AnimationsSnapshot{
 		anims: map[Anim]int{
 			AnimIdle:       srcAnimations.Animation(AnimIdle),
@@ -75,7 +75,7 @@ func Snapshot(player Player) Player {
 			AnimRun:        srcAnimations.Animation(AnimRun),
 		},
 	}
-	snapshot.profile.(*ProfileSnapshot).animations = animations
+	snapshot.session.(*SessionSnapshot).animations = animations
 
 	return snapshot
 }
@@ -170,6 +170,7 @@ func (p *PlayerSnapshot) EntityType() entity.EntityType {
 }
 
 type SessionSnapshot struct {
+	animations Animations
 }
 
 func (s *SessionSnapshot) ServerISAACSeed() []uint32 {
@@ -196,6 +197,10 @@ func (s *SessionSnapshot) SetSecureBlockSize(_ int) {
 	panic("not implemented")
 }
 
+func (s *SessionSnapshot) Animations() Animations {
+	return s.animations
+}
+
 type ProfileSnapshot struct {
 	username string
 	password string
@@ -204,7 +209,6 @@ type ProfileSnapshot struct {
 
 	skills     Skills
 	appearance Appearance
-	animations Animations
 }
 
 func (p *ProfileSnapshot) Username() string {
@@ -237,10 +241,6 @@ func (p *ProfileSnapshot) Appearance() Appearance {
 
 func (p *ProfileSnapshot) SetAppearance(Appearance) {
 	panic("not implemented")
-}
-
-func (p *ProfileSnapshot) Animations() Animations {
-	return p.animations
 }
 
 type SkillsSnapshot struct {

@@ -21,7 +21,6 @@ type Profile interface {
 	Skills() Skills
 	Appearance() Appearance
 	SetAppearance(Appearance)
-	Animations() Animations
 }
 
 type Skills interface {

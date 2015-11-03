@@ -64,14 +64,14 @@ func compareProfile(p1, p2 Profile) bool {
 		return false
 	}
 
-	if !compareAnimations(p1.Animations(), p2.Animations()) {
-		return false
-	}
-
 	return true
 }
 
 func compareSession(p1, p2 Session) bool {
+	if !compareAnimations(p1.Animations(), p2.Animations()) {
+		return false
+	}
+
 	return true
 }
 

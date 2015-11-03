@@ -11,16 +11,15 @@ import (
 
 // Profile represents the saved state of a user
 type Profile struct {
-	py.BaseObject
+	py.BaseObject `json:"-"`
 
-	username string
-	password string
-	rights   player.Rights
-	position *position.Absolute
+	username string             `json:"username"`
+	password string             `json:"password"`
+	rights   player.Rights      `json:"rights"`
+	position *position.Absolute `json:"position"`
 
-	skills     *Skills
-	appearance *Appearance
-	animations *Animations
+	skills     *Skills     `json:"skills"`
+	appearance *Appearance `json:"appearance"`
 }
 
 func (p *Profile) Init(username, password string) {
@@ -29,7 +28,6 @@ func (p *Profile) Init(username, password string) {
 
 	p.skills = NewSkills()
 	p.appearance = NewAppearance()
-	p.animations = NewAnimations()
 }
 
 func (p *Profile) Username() string {
@@ -62,10 +60,6 @@ func (p *Profile) Appearance() player.Appearance {
 
 func (p *Profile) SetAppearance(appearance player.Appearance) {
 	p.appearance = appearance.(*Appearance)
-}
-
-func (p *Profile) Animations() player.Animations {
-	return p.animations
 }
 
 func (p *Profile) String() string {

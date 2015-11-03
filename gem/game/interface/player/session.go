@@ -11,4 +11,5 @@ type Session interface {
 	InitISAAC(inSeed, outSeed []uint32)
 	SecureBlockSize() int
 	SetSecureBlockSize(s int)
+	Animations() Animations
 }
