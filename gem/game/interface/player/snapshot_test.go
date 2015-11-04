@@ -34,10 +34,8 @@ func TestSnapshot(t *testing.T) {
 				colors:   map[BodyPart]int{},
 			},
 		},
-		session: &SessionSnapshot{
-			animations: &AnimationsSnapshot{
-				anims: map[Anim]int{},
-			},
+		animations: &AnimationsSnapshot{
+			anims: map[Anim]int{},
 		},
 		waypointQueue: &WaypointQueueSnapshot{
 			currentDirection: 1,

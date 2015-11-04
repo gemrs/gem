@@ -113,7 +113,7 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.
 	if (flags & entity.MobFlagIdentityUpdate) != 0 {
 		buf := encoding.NewBuffer()
 		appearance := thisPlayer.Profile().Appearance()
-		anims := thisPlayer.Session().Animations()
+		anims := thisPlayer.Animations()
 		appearanceBlock := OutboundPlayerAppearance{
 			Gender:   encoding.Uint8(appearance.Gender()),
 			HeadIcon: encoding.Uint8(appearance.HeadIcon()),

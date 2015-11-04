@@ -14,7 +14,6 @@ import (
 // every player is syncing with the same state, and so that the state doesn't change during synchronization
 func Snapshot(player Player) Player {
 	srcProfile := player.Profile()
-	srcSession := player.Session()
 	srcWpq := player.WaypointQueue()
 
 	snapshot := &PlayerSnapshot{
@@ -26,7 +25,6 @@ func Snapshot(player Player) Player {
 			rights:   srcProfile.Rights(),
 			pos:      srcProfile.Position(),
 		},
-		session: &SessionSnapshot{},
 	}
 
 	currentDirection, lastDirection := srcWpq.WalkDirection()
@@ -63,7 +61,7 @@ func Snapshot(player Player) Player {
 	}
 	snapshot.profile.(*ProfileSnapshot).appearance = appearance
 
-	srcAnimations := srcSession.Animations()
+	srcAnimations := player.Animations()
 	animations := &AnimationsSnapshot{
 		anims: map[Anim]int{
 			AnimIdle:       srcAnimations.Animation(AnimIdle),
@@ -75,14 +73,14 @@ func Snapshot(player Player) Player {
 			AnimRun:        srcAnimations.Animation(AnimRun),
 		},
 	}
-	snapshot.session.(*SessionSnapshot).animations = animations
+	snapshot.animations = animations
 
 	return snapshot
 }
 
 type PlayerSnapshot struct {
+	animations    Animations
 	profile       Profile
-	session       Session
 	flags         entity.Flags
 	region        *position.Region
 	waypointQueue entity.WaypointQueue
@@ -102,10 +100,6 @@ func (p *PlayerSnapshot) SetProfile(_ Profile) {
 
 func (p *PlayerSnapshot) Profile() Profile {
 	return p.profile
-}
-
-func (p *PlayerSnapshot) Session() Session {
-	return p.session
 }
 
 func (p *PlayerSnapshot) Log() *log.Module {
@@ -173,36 +167,32 @@ func (p *PlayerSnapshot) LoadProfile() {
 	panic("not implemented")
 }
 
-type SessionSnapshot struct {
-	animations Animations
-}
-
-func (s *SessionSnapshot) ServerISAACSeed() []uint32 {
+func (p *PlayerSnapshot) ServerISAACSeed() []uint32 {
 	panic("not implemented")
 }
 
-func (s *SessionSnapshot) ISAACIn() *isaac.ISAAC {
+func (p *PlayerSnapshot) ISAACIn() *isaac.ISAAC {
 	panic("not implemented")
 }
 
-func (s *SessionSnapshot) ISAACOut() *isaac.ISAAC {
+func (p *PlayerSnapshot) ISAACOut() *isaac.ISAAC {
 	panic("not implemented")
 }
 
-func (s *SessionSnapshot) InitISAAC(inSeed, outSeed []uint32) {
+func (p *PlayerSnapshot) InitISAAC(inSeed, outSeed []uint32) {
 	panic("not implemented")
 }
 
-func (s *SessionSnapshot) SecureBlockSize() int {
+func (p *PlayerSnapshot) SecureBlockSize() int {
 	panic("not implemented")
 }
 
-func (s *SessionSnapshot) SetSecureBlockSize(_ int) {
+func (p *PlayerSnapshot) SetSecureBlockSize(_ int) {
 	panic("not implemented")
 }
 
-func (s *SessionSnapshot) Animations() Animations {
-	return s.animations
+func (p *PlayerSnapshot) Animations() Animations {
+	return p.animations
 }
 
 type ProfileSnapshot struct {

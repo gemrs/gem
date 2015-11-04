@@ -1,6 +1,11 @@
 package player
 
 import (
+	"math/rand"
+
+	"github.com/gtank/isaac"
+	"github.com/qur/gopy/lib"
+
 	"github.com/sinusoids/gem/gem/encoding"
 	entityimpl "github.com/sinusoids/gem/gem/game/entity"
 	game_event "github.com/sinusoids/gem/gem/game/event"
@@ -9,8 +14,6 @@ import (
 	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
-
-	"github.com/qur/gopy/lib"
 )
 
 // GameClient is a client which serves players
@@ -21,20 +24,26 @@ type Player struct {
 	*entityimpl.GenericMob
 	decode player.DecodeFunc
 
-	session *Session
-	profile *Profile
+	randIn          isaac.ISAAC
+	randOut         isaac.ISAAC
+	serverRandKey   []uint32
+	secureBlockSize int
+
+	animations *Animations
+	profile    *Profile
 }
 
 // NewGameClient constructs a new GameClient
 func (client *Player) Init(conn *server.Connection) {
-	session := NewSession()
-
 	client.Connection = conn
-	client.session = session
+	client.serverRandKey = []uint32{
+		uint32(rand.Int31()), uint32(rand.Int31()),
+	}
 
 	wpq := entityimpl.NewSimpleWaypointQueue()
-
 	client.GenericMob = entityimpl.NewGenericMob(wpq)
+
+	client.animations = NewAnimations()
 }
 
 func (client *Player) SetDecodeFunc(d player.DecodeFunc) {
@@ -46,10 +55,9 @@ func (client *Player) Conn() *server.Connection {
 	return client.Connection
 }
 
-// Encode writes encoding.Encodables to the client's buffer using the session's outbound rand generator
+// Encode writes encoding.Encodables to the client's buffer using the outbound rand generator
 func (client *Player) Encode(codable encoding.Encodable) error {
-	session := client.Session().(*Session)
-	return codable.Encode(client.Conn().WriteBuffer, session.ISAACOut())
+	return codable.Encode(client.Conn().WriteBuffer, client.ISAACOut())
 }
 
 // Decode processes incoming packets and adds them to the read queue
@@ -57,9 +65,33 @@ func (client *Player) Decode() error {
 	return client.decode(client)
 }
 
-// Session returns the player's session
-func (client *Player) Session() player.Session {
-	return client.session
+func (client *Player) ServerISAACSeed() []uint32 {
+	return client.serverRandKey
+}
+
+func (client *Player) ISAACIn() *isaac.ISAAC {
+	return &client.randIn
+}
+
+func (client *Player) ISAACOut() *isaac.ISAAC {
+	return &client.randOut
+}
+
+func (client *Player) InitISAAC(inSeed, outSeed []uint32) {
+	client.randIn.SeedArray(inSeed)
+	client.randOut.SeedArray(outSeed)
+}
+
+func (client *Player) SecureBlockSize() int {
+	return client.secureBlockSize
+}
+
+func (client *Player) SetSecureBlockSize(size int) {
+	client.secureBlockSize = size
+}
+
+func (client *Player) Animations() player.Animations {
+	return client.animations
 }
 
 // Profile returns the player's profile

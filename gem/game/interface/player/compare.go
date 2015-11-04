@@ -11,7 +11,7 @@ func comparePlayers(p1, p2 Player) bool {
 		return false
 	}
 
-	if !compareSession(p1.Session(), p2.Session()) {
+	if !compareAnimations(p1.Animations(), p2.Animations()) {
 		return false
 	}
 
@@ -61,14 +61,6 @@ func compareProfile(p1, p2 Profile) bool {
 	}
 
 	if !compareAppearance(p1.Appearance(), p2.Appearance()) {
-		return false
-	}
-
-	return true
-}
-
-func compareSession(p1, p2 Session) bool {
-	if !compareAnimations(p1.Animations(), p2.Animations()) {
 		return false
 	}
 

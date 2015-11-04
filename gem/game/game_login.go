@@ -11,9 +11,7 @@ import (
 
 // handshake performs the isaac key exchange
 func (svc *GameService) handshake(client player.Player) error {
-	session := client.Session().(player.Session)
-
-	serverSeed := session.ServerISAACSeed()
+	serverSeed := client.ServerISAACSeed()
 
 	handshake := protocol.InboundGameHandshake{}
 	if err := handshake.Decode(client.Conn().ReadBuffer, nil); err != nil {
@@ -32,8 +30,6 @@ func (svc *GameService) handshake(client player.Player) error {
 
 // decodeLoginBlock handles the unencrypted login block
 func (svc *GameService) decodeLoginBlock(client player.Player) error {
-	session := client.Session().(player.Session)
-
 	loginBlock := game_protocol.InboundLoginBlock{}
 	if err := loginBlock.Decode(client.Conn().ReadBuffer, nil); err != nil {
 		return err
@@ -45,7 +41,7 @@ func (svc *GameService) decodeLoginBlock(client player.Player) error {
 		client.Conn().Disconnect()
 	}
 
-	session.SetSecureBlockSize(int(loginBlock.SecureBlockSize))
+	client.SetSecureBlockSize(int(loginBlock.SecureBlockSize))
 
 	client.SetDecodeFunc(svc.decodeSecureBlock)
 	return nil
@@ -53,12 +49,10 @@ func (svc *GameService) decodeLoginBlock(client player.Player) error {
 
 // decodeSecureBlock handles the secure login block and the login response (via doLogin)
 func (svc *GameService) decodeSecureBlock(client player.Player) error {
-	session := client.Session().(player.Session)
-
 	rsaBlock := encoding.RSABlock{&game_protocol.InboundSecureLoginBlock{}}
 	rsaArgs := encoding.RSADecodeArgs{
 		Key:       svc.key,
-		BlockSize: session.SecureBlockSize(),
+		BlockSize: client.SecureBlockSize(),
 	}
 	if err := rsaBlock.Decode(client.Conn().ReadBuffer, rsaArgs); err != nil {
 		return err
@@ -72,7 +66,7 @@ func (svc *GameService) decodeSecureBlock(client player.Player) error {
 		inSeed[i] = uint32(secureBlock.ISAACSeed[i])
 		outSeed[i] = uint32(secureBlock.ISAACSeed[i]) + 50
 	}
-	session.InitISAAC(inSeed, outSeed)
+	client.InitISAAC(inSeed, outSeed)
 
 	username := string(secureBlock.Username)
 	password := string(secureBlock.Password)

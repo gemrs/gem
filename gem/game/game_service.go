@@ -97,8 +97,7 @@ func (svc *GameService) decodePacket(client player.Player) error {
 
 	idByte := int(data[0])
 
-	session := client.Session().(player.Session)
-	rand := session.ISAACIn().Rand()
+	rand := client.ISAACIn().Rand()
 	realId := uint8(uint32(idByte) - rand)
 	packet, err := game_protocol.NewInboundPacket(int(realId))
 	if err != nil {

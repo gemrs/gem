@@ -10,11 +10,9 @@ type registerFunc func(*py.Module) error
 
 var moduleRegisterFuncs = []registerFunc{
 	RegisterPlayer,
-	RegisterSession,
 	RegisterProfile,
 	RegisterSkills,
 	RegisterAppearance,
-	RegisterAnimations,
 }
 
 func init() {

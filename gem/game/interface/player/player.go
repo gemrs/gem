@@ -1,6 +1,8 @@
 package player
 
 import (
+	"github.com/gtank/isaac"
+
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/server"
 	"github.com/sinusoids/gem/gem/log"
@@ -15,11 +17,19 @@ type DecodeFunc func(Player) error
 type Player interface {
 	entity.Movable
 	Profile() Profile
+	Animations() Animations
 	SetProfile(p Profile)
-	Session() Session
 	Log() *log.Module
-	SetDecodeFunc(d DecodeFunc)
-	Conn() *server.Connection
 	FinishInit()
 	LoadProfile()
+
+	SetDecodeFunc(d DecodeFunc)
+	Conn() *server.Connection
+
+	InitISAAC(inSeed, outSeed []uint32)
+	ISAACIn() *isaac.ISAAC
+	ISAACOut() *isaac.ISAAC
+	ServerISAACSeed() []uint32
+	SecureBlockSize() int
+	SetSecureBlockSize(s int)
 }
