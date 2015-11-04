@@ -6,6 +6,7 @@ import (
 	engine_event "github.com/sinusoids/gem/gem/engine/event"
 	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/task"
+	"github.com/sinusoids/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
@@ -72,9 +73,13 @@ func (e *Engine) run() error {
 			break
 		}
 
-		task.Scheduler.Tick(task.PreTick)
-		task.Scheduler.Tick(task.Tick)
-		task.Scheduler.Tick(task.PostTick)
+		func() {
+			defer safe.Recover(logger)
+
+			task.Scheduler.Tick(task.PreTick)
+			task.Scheduler.Tick(task.Tick)
+			task.Scheduler.Tick(task.PostTick)
+		}()
 	}
 	return nil
 }

@@ -2,6 +2,9 @@ package task
 
 import (
 	"github.com/qur/gopy/lib"
+
+	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/util/safe"
 )
 
 type TaskCallback func(*Task) bool
@@ -14,6 +17,7 @@ type Task struct {
 	Interval Cycles
 	User     interface{}
 	counter  Cycles
+	logger   log.Logger
 }
 
 func NewTask(callback TaskCallback, when TaskHook, interval Cycles, user interface{}) *Task {
@@ -27,6 +31,8 @@ func NewTask(callback TaskCallback, when TaskHook, interval Cycles, user interfa
 }
 
 func (task *Task) Tick() bool {
+	defer safe.Recover(task.logger)
+
 	task.counter = task.counter - 1
 	if task.counter == 0 {
 		reschedule := task.Callback(task)

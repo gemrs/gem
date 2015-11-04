@@ -13,14 +13,13 @@ type PyListener struct {
 
 	id     int
 	fn     py.Object
-	logger *log.Module
+	logger log.Logger
 }
 
 func (l *PyListener) Init(fn py.Object) {
 	l.id = <-nextId
 	fn.Incref()
 	l.fn = fn
-	l.logger = log.New("python_listener")
 }
 
 func (l *PyListener) Id() int {
@@ -52,4 +51,8 @@ func (l *PyListener) Notify(e *Event, args ...interface{}) {
 		// Suspect this is because python has cleaned up by the time the runtime evals the error
 		panic(err.Error())
 	}
+}
+
+func (l *PyListener) setLogger(logger log.Logger) {
+	l.logger = logger
 }
