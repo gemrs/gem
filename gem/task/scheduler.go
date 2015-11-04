@@ -2,13 +2,16 @@ package task
 
 import (
 	"container/list"
+	"sync"
 
 	"github.com/sinusoids/gem/gem/log"
 )
 
 type _Scheduler struct {
-	tasks  map[TaskHook]*list.List
-	logger log.Logger
+	tasks map[TaskHook]*list.List
+
+	loggerOnce sync.Once
+	logger     log.Logger
 }
 
 var Scheduler _Scheduler
@@ -23,11 +26,13 @@ func NewScheduler() _Scheduler {
 	for _, hook := range taskHookConstants {
 		s.tasks[hook] = list.New()
 	}
-	s.logger = log.New("scheduler")
 	return s
 }
 
 func (scheduler *_Scheduler) Submit(task *Task) {
+	scheduler.loggerOnce.Do(func() {
+		scheduler.logger = log.New("scheduler")
+	})
 	task.logger = scheduler.logger.SubModule("task")
 	scheduler.tasks[task.When].PushBack(task)
 }

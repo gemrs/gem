@@ -53,19 +53,27 @@ func (c *Connection) Init(conn net.Conn, parentLogger *log.Module) {
 	c.conn = conn
 }
 
+func (c *Connection) Expired() chan bool {
+	return c.DisconnectChan
+}
+
+func (c *Connection) Expire() {
+	close(c.DisconnectChan)
+}
+
 func (c *Connection) Log() *log.Module {
 	return c.log.(*log.Module)
 }
 
 // WaitForDisconnect blocks until the connection has been closed
 func (conn *Connection) WaitForDisconnect() {
-	<-conn.DisconnectChan
+	<-conn.Expired()
 }
 
 // IsDisconnecting checks whether the client should be disconnecting or not
 func (conn *Connection) IsDisconnecting() bool {
 	select {
-	case <-conn.DisconnectChan:
+	case <-conn.Expired():
 		// client is disconnecting. discard
 		return true
 	default:
@@ -76,9 +84,9 @@ func (conn *Connection) IsDisconnecting() bool {
 // disconnect signals to the connection loop that this connection should be, or has been closed
 func (conn *Connection) Disconnect() {
 	select {
-	case <-conn.DisconnectChan:
+	case <-conn.Expired():
 	default:
-		close(conn.DisconnectChan)
+		conn.Expire()
 	}
 }
 

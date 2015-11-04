@@ -14,6 +14,7 @@ import (
 	"github.com/sinusoids/gem/gem/game/server"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 	"github.com/sinusoids/gem/gem/runite"
+	"github.com/sinusoids/gem/gem/util/expire"
 
 	"github.com/qur/gopy/lib"
 )
@@ -21,6 +22,7 @@ import (
 // GameService represents the internal state of the game
 type GameService struct {
 	py.BaseObject
+	expire.NonExpirable
 
 	runite *runite.Context
 	key    *crypto.Keypair
@@ -38,18 +40,26 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 	svc.runite = runite
 	svc.key = key
 	svc.auth = auth
+	svc.NonExpirable = expire.NewNonExpirable()
 
-	game_event.PlayerFinishLogin.Register(event.NewListener(finishLogin))
-	game_event.EntityRegionChange.Register(event.NewListener(svc.EntityUpdate))
-	game_event.EntitySectorChange.Register(event.NewListener(svc.EntityUpdate))
-	game_event.PlayerAppearanceUpdate.Register(event.NewListener(svc.PlayerUpdate))
+	game_event.PlayerFinishLogin.Register(event.NewListener(svc, playerFinishLogin))
+	game_event.PlayerLogout.Register(event.NewListener(svc, playerCleanup))
+	game_event.EntityRegionChange.Register(event.NewListener(svc, svc.EntityUpdate))
+	game_event.EntitySectorChange.Register(event.NewListener(svc, svc.EntityUpdate))
+	game_event.PlayerAppearanceUpdate.Register(event.NewListener(svc, svc.PlayerUpdate))
 	return nil
 }
 
-// finishLogin calls PlayerInit and registers tick event callbacks for various things
-func finishLogin(_ *event.Event, args ...interface{}) {
+// playerFinishLogin calls player.FinishInit on the PlayerFinishLogin event
+func playerFinishLogin(_ *event.Event, args ...interface{}) {
 	client := args[0].(player.Player)
 	client.FinishInit()
+}
+
+// playerCleanup calls player.Cleanup on the PlayerLogout event
+func playerCleanup(_ *event.Event, args ...interface{}) {
+	client := args[0].(player.Player)
+	client.Cleanup()
 }
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {

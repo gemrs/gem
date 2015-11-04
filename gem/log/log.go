@@ -35,11 +35,9 @@ func New(module string) *Module {
 	return Sys.Module(module)
 }
 
-func InitSysLog() error {
-	var err error
+func InitSysLog() {
 	SetBackend(os.Stdout)
 	Sys = NewSysLog()
-	return err
 }
 
 func SetBackend(out io.Writer) {

@@ -94,6 +94,10 @@ func (p *PlayerSnapshot) FinishInit() {
 	panic("not implemented")
 }
 
+func (p *PlayerSnapshot) Cleanup() {
+	panic("not implemented")
+}
+
 func (p *PlayerSnapshot) SetProfile(_ Profile) {
 	panic("not implemented")
 }

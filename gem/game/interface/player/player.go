@@ -22,6 +22,7 @@ type Player interface {
 	Log() *log.Module
 	FinishInit()
 	LoadProfile()
+	Cleanup()
 
 	SetDecodeFunc(d DecodeFunc)
 	Conn() *server.Connection

@@ -25,9 +25,14 @@ func (client *Player) FinishInit() {
 		Index:      encoding.Uint16(client.Index()),
 	}
 
-	engine_event.PreTick.Register(event.NewListener(client.PreTick))
-	engine_event.Tick.Register(event.NewListener(client.Tick))
-	engine_event.PostTick.Register(event.NewListener(client.PostTick))
+	engine_event.PreTick.Register(event.NewListener(client, client.PreTick))
+	engine_event.Tick.Register(event.NewListener(client, client.Tick))
+	engine_event.PostTick.Register(event.NewListener(client, client.PostTick))
+}
+
+// Cleanup is called when the player logs out
+func (client *Player) Cleanup() {
+
 }
 
 func (client *Player) SectorChange() {}
