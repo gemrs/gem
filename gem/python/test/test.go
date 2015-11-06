@@ -44,6 +44,6 @@ func PythonTest(testDir string, t *testing.T) {
 	} else if a, err := main.GetItemString("test_result"); err != nil {
 		t.Fatal(err)
 	} else if b, ok := a.(*py.Int); !ok || b.Int() != 0 {
-		t.Errorf("pytest returned non-zero exit code: %v", b.Int())
+		t.Error("pytest returned non-zero exit code: %v", b.Int())
 	}
 }

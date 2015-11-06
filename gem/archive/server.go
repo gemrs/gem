@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/gem/runite"
 	"github.com/sinusoids/gem/gem/runite/format/rt3"
 
@@ -15,8 +15,7 @@ import (
 	tomb "gopkg.in/tomb.v2"
 )
 
-var logInit sync.Once
-var logger *log.Module
+var logger = log.New("archive", log.NilContext)
 var requestRegexp = regexp.MustCompile("JAGGRAB /([a-z]+)[0-9\\-]+")
 
 type Server struct {
@@ -41,17 +40,13 @@ func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	}
 	s.archives = rt3.NewArchiveFS(index)
 
-	logInit.Do(func() {
-		logger = log.New("archive")
-	})
-
 	logger.Info("Starting archive server...")
 	s.ln, err = net.Listen("tcp", s.laddr)
 	if err != nil {
 		return fmt.Errorf("couldn't start archive server: %v", err)
 	}
 
-	logger.Infof("Found %v archives", s.archives.FileCount())
+	logger.Info("Found %v archives", s.archives.FileCount())
 
 	s.t.Go(s.run)
 	return nil
@@ -67,7 +62,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) run() error {
-	logger.Noticef("Listening on %v", s.laddr)
+	logger.Info("Listening on %v", s.laddr)
 
 	// Accept in a seperate goroutine
 	accept := make(chan net.Conn, 16)
@@ -76,7 +71,7 @@ func (s *Server) run() error {
 			conn, err := s.ln.Accept()
 			if err != nil {
 				if s.t.Alive() {
-					logger.Errorf("error accepting client: %v", err)
+					logger.Error("error accepting client: %v", err)
 				}
 			}
 			accept <- conn
@@ -105,7 +100,7 @@ func (s *Server) run() error {
 	// Wait for existing connections to close
 	wg.Wait()
 
-	logger.Noticef("Shut down")
+	logger.Info("Shut down")
 	return nil
 }
 
@@ -122,18 +117,18 @@ Outer:
 
 		matches := requestRegexp.FindStringSubmatch(request)
 		if matches == nil {
-			logger.Errorf("invalid request: %v", request)
+			logger.Error("invalid request: %v", request)
 			break
 		}
 
 		if b, err := io.ReadByte(); err != nil || b != '\n' {
-			logger.Errorf("missing newline in request: %v", request)
+			logger.Error("missing newline in request: %v", request)
 			break
 		}
 
 		archive, err := s.archives.ResolveArchive(matches[1])
 		if err != nil {
-			logger.Errorf("couldn't locate archive %v: %v", matches[1], err)
+			logger.Error("couldn't locate archive %v: %v", matches[1], err)
 			break
 		}
 

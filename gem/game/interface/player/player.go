@@ -5,7 +5,7 @@ import (
 
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 )
 
 // DecodeFunc is used for parsing the read stream and dealing with the incoming data.
@@ -19,7 +19,7 @@ type Player interface {
 	Profile() Profile
 	Animations() Animations
 	SetProfile(p Profile)
-	Log() *log.Module
+	Log() log.Log
 	FinishInit()
 	LoadProfile()
 	Cleanup()

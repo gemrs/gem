@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 )
 
 type Observable interface {
@@ -14,5 +14,5 @@ type Observable interface {
 type Observer interface {
 	Id() int
 	Notify(*Event, ...interface{})
-	setLogger(log.Logger)
+	setLogger(log.Log)
 }

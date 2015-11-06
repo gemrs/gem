@@ -122,31 +122,31 @@ func (log *Module) Info(message string) {
 	log.logger.Info(message)
 }
 
-func (log *Module) Notice(message string) {
+func (log *Module) Info(message string) {
 	if log.parent != nil {
-		log.parent.Notice(fmt.Sprintf("[%v] %v", log.prefix, message))
+		log.parent.Info(fmt.Sprintf("[%v] %v", log.prefix, message))
 		return
 	}
-	log.logger.Notice(message)
+	log.logger.Info(message)
 }
 
-func (log *Module) Warning(message string) {
+func (log *Module) Error(message string) {
 	if log.parent != nil {
-		log.parent.Warning(fmt.Sprintf("[%v] %v", log.prefix, message))
+		log.parent.Error(fmt.Sprintf("[%v] %v", log.prefix, message))
 		return
 	}
-	log.logger.Warning(message)
+	log.logger.Error(message)
 }
 
-func (log *Module) Criticalf(format string, a ...interface{}) {
+func (log *Module) Error(format string, a ...interface{}) {
 	log.Critical(fmt.Sprintf(format, a...))
 }
 
-func (log *Module) Debugf(format string, a ...interface{}) {
+func (log *Module) Debug(format string, a ...interface{}) {
 	log.Debug(fmt.Sprintf(format, a...))
 }
 
-func (log *Module) Errorf(format string, a ...interface{}) {
+func (log *Module) Error(format string, a ...interface{}) {
 	log.Error(fmt.Sprintf(format, a...))
 }
 
@@ -154,14 +154,14 @@ func (log *Module) Fatalf(format string, a ...interface{}) {
 	log.Fatal(fmt.Sprintf(format, a...))
 }
 
-func (log *Module) Infof(format string, a ...interface{}) {
+func (log *Module) Info(format string, a ...interface{}) {
 	log.Info(fmt.Sprintf(format, a...))
 }
 
-func (log *Module) Noticef(format string, a ...interface{}) {
-	log.Notice(fmt.Sprintf(format, a...))
+func (log *Module) Info(format string, a ...interface{}) {
+	log.Info(fmt.Sprintf(format, a...))
 }
 
-func (log *Module) Warningf(format string, a ...interface{}) {
-	log.Warning(fmt.Sprintf(format, a...))
+func (log *Module) Error(format string, a ...interface{}) {
+	log.Error(fmt.Sprintf(format, a...))
 }

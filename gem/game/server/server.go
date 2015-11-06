@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/gem/protocol"
 	"github.com/sinusoids/gem/gem/util/id"
 	"github.com/sinusoids/gem/gem/util/safe"
@@ -14,8 +14,7 @@ import (
 	tomb "gopkg.in/tomb.v2"
 )
 
-var logInit sync.Once
-var logger *log.Module
+var logger = log.New("server", log.NilContext)
 
 // Server is the listener object and its associated state
 type Server struct {
@@ -53,10 +52,6 @@ func (s *Server) SetService(selector int, service Service) {
 
 // Start creates the tcp listener and starts the connection handler in a goroutine
 func (s *Server) Start() (err error) {
-	logInit.Do(func() {
-		logger = log.New("game")
-	})
-
 	logger.Info("Starting game server...")
 
 	s.ln, err = net.Listen("tcp", s.laddr)
@@ -85,7 +80,7 @@ func (s *Server) Stop() error {
 // run is the main tcp handler thread. listens for new connections and starts a new goroutine
 // for each connection to handle i/o
 func (s *Server) run() error {
-	logger.Noticef("Listening on %v", s.laddr)
+	logger.Info("Listening on %v", s.laddr)
 
 	// Accept in a seperate goroutine
 	accept := make(chan net.Conn, 16)
@@ -94,7 +89,7 @@ func (s *Server) run() error {
 			conn, err := s.ln.Accept()
 			if err != nil {
 				if s.t.Alive() {
-					logger.Errorf("error accepting client: %v", err)
+					logger.Error("error accepting client: %v", err)
 				}
 			}
 			accept <- conn
@@ -128,7 +123,7 @@ func (s *Server) run() error {
 	s.m.Unlock()
 	wg.Wait()
 
-	logger.Noticef("Shut down")
+	logger.Info("Shut down")
 	return nil
 }
 
@@ -193,7 +188,7 @@ func (s *Server) handshake(conn *Connection) (Client, error) {
 	service, ok := s.services[selector]
 	if !ok {
 		err := fmt.Errorf("invalid service requested: %v", serviceSelect)
-		conn.Log().Errorf("%v", err)
+		conn.Log().Error("%v", err)
 		conn.Disconnect()
 		return nil, err
 	}

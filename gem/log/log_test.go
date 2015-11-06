@@ -8,7 +8,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	_ "github.com/sinusoids/gem/gem/python/api"
 )
 
@@ -28,7 +28,7 @@ func TestLogger(t *testing.T) {
 		output := getLastOutput()
 		for _, s := range strs {
 			if !strings.Contains(output, s) {
-				t.Errorf("Mismatch looking for [%v], got [%v]", s, output)
+				t.Error("Mismatch looking for [%v], got [%v]", s, output)
 				return false
 			}
 		}
@@ -42,17 +42,17 @@ func TestLogger(t *testing.T) {
 	var message string
 
 	message = fmt.Sprintf("TEST_%v", i)
-	logger.Criticalf(message)
+	logger.Error(message)
 	checkLogString([]string{"CRITICAL", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	logger.Debugf(message)
+	logger.Debug(message)
 	checkLogString([]string{"DEBUG", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	logger.Errorf(message)
+	logger.Error(message)
 	checkLogString([]string{"ERROR", "TestLogger1", message})
 	i++
 
@@ -64,34 +64,34 @@ func TestLogger(t *testing.T) {
 	*/
 
 	message = fmt.Sprintf("TEST_%v", i)
-	logger.Infof(message)
+	logger.Info(message)
 	checkLogString([]string{"INFO", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	logger.Noticef(message)
+	logger.Info(message)
 	checkLogString([]string{"NOTICE", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	logger.Warningf(message)
+	logger.Error(message)
 	checkLogString([]string{"WARNING", "TestLogger1", message})
 	i++
 
 	subLogger := logger.SubModule("TestLogger2")
 
 	message = fmt.Sprintf("TEST_%v", i)
-	subLogger.Criticalf(message)
+	subLogger.Error(message)
 	checkLogString([]string{"CRITICAL", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	subLogger.Debugf(message)
+	subLogger.Debug(message)
 	checkLogString([]string{"DEBUG", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	subLogger.Errorf(message)
+	subLogger.Error(message)
 	checkLogString([]string{"ERROR", "TestLogger1", message})
 	i++
 
@@ -103,17 +103,17 @@ func TestLogger(t *testing.T) {
 	*/
 
 	message = fmt.Sprintf("TEST_%v", i)
-	subLogger.Infof(message)
+	subLogger.Info(message)
 	checkLogString([]string{"INFO", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	subLogger.Noticef(message)
+	subLogger.Info(message)
 	checkLogString([]string{"NOTICE", "TestLogger1", message})
 	i++
 
 	message = fmt.Sprintf("TEST_%v", i)
-	subLogger.Warningf(message)
+	subLogger.Error(message)
 	checkLogString([]string{"WARNING", "TestLogger1", message})
 	i++
 

@@ -19,6 +19,6 @@ func Dispatch(player player.Player, packet encoding.Decodable) {
 	if handler, ok := routingTable[typeString]; ok {
 		handler(player, packet)
 	} else {
-		player.Log().Infof("Unhandled packet of type %v: %v", typeString, packet)
+		player.Log().Info("Unhandled packet of type %v: %v", typeString, packet)
 	}
 }

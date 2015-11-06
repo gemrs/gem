@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/sinusoids/gem/gem/encoding"
 	"github.com/sinusoids/gem/gem/game/server"
+	"github.com/sinusoids/gem/gem/log2"
 	update_protocol "github.com/sinusoids/gem/gem/protocol/update"
 )
 
@@ -35,7 +36,7 @@ func (client *UpdateClient) Decode() error {
 	client.service.queue.Push(&queueItem{
 		request: request,
 		client:  client,
-		log:     client.Log().SubModule(request.String()),
+		log:     client.Log().Child("request", log.MapContext{"request": request.String()}),
 	})
 	return nil
 }

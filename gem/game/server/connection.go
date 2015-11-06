@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
@@ -37,19 +37,19 @@ type Connection struct {
 	Write          chan encoding.Encodable
 	DisconnectChan chan bool
 
-	log   log.Logger
+	log   log.Log
 	index int
 	conn  net.Conn
 }
 
-func (c *Connection) Init(conn net.Conn, parentLogger *log.Module) {
+func (c *Connection) Init(conn net.Conn, parentLogger log.Log) {
 	c.ReadBuffer = encoding.NewBuffer()
 	c.WriteBuffer = encoding.NewBuffer()
 	c.Read = make(chan encoding.Decodable, 16)
 	c.Write = make(chan encoding.Encodable, 16)
 	c.DisconnectChan = make(chan bool)
 
-	c.log = parentLogger.SubModule(conn.RemoteAddr().String())
+	c.log = parentLogger.Child("connection", log.MapContext{"addr": conn.RemoteAddr().String()})
 	c.conn = conn
 }
 
@@ -61,8 +61,8 @@ func (c *Connection) Expire() {
 	close(c.DisconnectChan)
 }
 
-func (c *Connection) Log() *log.Module {
-	return c.log.(*log.Module)
+func (c *Connection) Log() log.Log {
+	return c.log.(log.Log)
 }
 
 // WaitForDisconnect blocks until the connection has been closed
@@ -109,7 +109,7 @@ func decodeToReadQueue(client Client) {
 	for {
 		err := conn.fillReadBuffer()
 		if err != nil {
-			conn.Log().Debugf("read error: %v", err)
+			conn.Log().Debug("read error: %v", err)
 			conn.Disconnect()
 			break
 		}
@@ -128,7 +128,7 @@ func decodeToReadQueue(client Client) {
 		}
 
 		if err != nil && err != io.EOF {
-			conn.Log().Criticalf("decode returned non EOF error: %v", err)
+			conn.Log().Error("decode returned non EOF error: %v", err)
 		}
 
 		if canTrim {
@@ -165,7 +165,7 @@ L:
 			}
 
 			if err != nil {
-				conn.Log().Debugf("write error: %v", err)
+				conn.Log().Debug("write error: %v", err)
 				conn.Disconnect()
 				break L
 			}

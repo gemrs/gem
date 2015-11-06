@@ -3,7 +3,7 @@ package event
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 )
 
 type Event struct {
@@ -23,7 +23,7 @@ func (e *Event) Key() string {
 }
 
 func (e *Event) Register(o Observer) {
-	o.setLogger(log.New(e.key))
+	o.setLogger(log.New(e.key, log.NilContext))
 	e.observers[o.Id()] = o
 }
 

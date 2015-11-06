@@ -37,7 +37,7 @@ func (svc *GameService) decodeLoginBlock(client player.Player) error {
 
 	expectedSecureBlockSize := int(loginBlock.LoginLen) - ((9 * 4) + 1 + 1 + 1 + 2)
 	if expectedSecureBlockSize != int(loginBlock.SecureBlockSize) {
-		client.Log().Errorf("Secure block size mismatch: got %v expected %v", loginBlock.SecureBlockSize, expectedSecureBlockSize)
+		client.Log().Error("Secure block size mismatch: got %v expected %v", loginBlock.SecureBlockSize, expectedSecureBlockSize)
 		client.Conn().Disconnect()
 	}
 

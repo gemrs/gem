@@ -51,17 +51,17 @@ func TestRoundTrip(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte{})
 
 	if err := testFrame.Encode(buffer, 0); err != nil {
-		t.Errorf("%v", err)
+		t.Error("%v", err)
 	}
 
 	buffer = bytes.NewBuffer(buffer.Bytes())
 
 	var frame TestFrame
 	if err := frame.Decode(buffer, 0); err != nil {
-		t.Errorf("%v", err)
+		t.Error("%v", err)
 	}
 
 	if !reflect.DeepEqual(frame, testFrame) {
-		t.Errorf("Decoded data mismatch: \n%#v\n%#v", testFrame, frame)
+		t.Error("Decoded data mismatch: \n%#v\n%#v", testFrame, frame)
 	}
 }

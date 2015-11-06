@@ -3,7 +3,7 @@ package event
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/gem/util/safe"
 	"github.com/sinusoids/gem/pybind"
 )
@@ -13,7 +13,7 @@ type PyListener struct {
 
 	id     int
 	fn     py.Object
-	logger log.Logger
+	logger log.Log
 }
 
 func (l *PyListener) Init(fn py.Object) {
@@ -53,6 +53,6 @@ func (l *PyListener) Notify(e *Event, args ...interface{}) {
 	}
 }
 
-func (l *PyListener) setLogger(logger log.Logger) {
+func (l *PyListener) setLogger(logger log.Log) {
 	l.logger = logger
 }

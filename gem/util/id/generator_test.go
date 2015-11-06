@@ -9,7 +9,7 @@ func TestGenerator(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		x := <-generator
 		if x != i {
-			t.Errorf("Generated ID mismatch")
+			t.Error("Generated ID mismatch")
 		}
 	}
 }

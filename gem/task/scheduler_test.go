@@ -47,7 +47,7 @@ func TestSchedule(t *testing.T) {
 	}
 
 	if count > 0 {
-		t.Errorf("Didn't schedule all tasks")
+		t.Error("Didn't schedule all tasks")
 	}
 }
 
@@ -94,6 +94,6 @@ func TestReschedule(t *testing.T) {
 	}
 
 	if newCount > 0 {
-		t.Errorf("Didn't schedule all tasks")
+		t.Error("Didn't schedule all tasks")
 	}
 }

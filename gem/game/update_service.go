@@ -27,7 +27,7 @@ func (svc *UpdateService) Init(runite *runite.Context) {
 }
 
 func (svc *UpdateService) NewClient(conn *server.Connection, service int) server.Client {
-	conn.Log().Infof("new update client")
+	conn.Log().Info("new update client")
 	conn.Write <- new(protocol.OutboundUpdateHandshake)
 	return NewUpdateClient(conn, svc)
 }
@@ -47,7 +47,7 @@ func (svc *UpdateService) processQueue() {
 
 		data, err := request.Resolve(svc.runite)
 		if err != nil {
-			log.Errorf(err.Error())
+			log.Error(err.Error())
 			client.Disconnect()
 			continue
 		}

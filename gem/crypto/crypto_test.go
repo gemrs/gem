@@ -17,7 +17,7 @@ func TestRoundTrip(t *testing.T) {
 	decrypted := string(key.Decrypt(encrypted))
 
 	if decrypted != text {
-		t.Errorf("roundtrip text mismatched")
+		t.Error("roundtrip text mismatched")
 	}
 }
 
@@ -52,6 +52,6 @@ func TestLoadStore(t *testing.T) {
 	decrypted := string(key.Decrypt(encrypted))
 
 	if decrypted != text {
-		t.Errorf("roundtrip text mismatched with stored/retrieved key")
+		t.Error("roundtrip text mismatched with stored/retrieved key")
 	}
 }

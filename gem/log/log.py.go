@@ -55,11 +55,11 @@ func (log *Module) Py_info(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 }
 
 func (log *Module) Py_notice(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	fn := pybind.Wrap(log.Notice)
+	fn := pybind.Wrap(log.Info)
 	return fn(args, kwds)
 }
 
 func (log *Module) Py_warning(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	fn := pybind.Wrap(log.Warning)
+	fn := pybind.Wrap(log.Error)
 	return fn(args, kwds)
 }

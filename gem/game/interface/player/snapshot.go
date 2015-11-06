@@ -6,7 +6,7 @@ import (
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 )
 
 // Snapshot clones a player to a static, read-only implementation of the player interfaces
@@ -106,7 +106,7 @@ func (p *PlayerSnapshot) Profile() Profile {
 	return p.profile
 }
 
-func (p *PlayerSnapshot) Log() *log.Module {
+func (p *PlayerSnapshot) Log() log.Log {
 	panic("not implemented")
 }
 

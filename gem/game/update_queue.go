@@ -1,7 +1,7 @@
 package game
 
 import (
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	update_protocol "github.com/sinusoids/gem/gem/protocol/update"
 )
 
@@ -9,7 +9,7 @@ import (
 type queueItem struct {
 	request update_protocol.InboundUpdateRequest
 	client  *UpdateClient
-	log     log.Logger
+	log     log.Log
 }
 
 // A updateQueue is a three-level priority queue, used for prioritising update requests

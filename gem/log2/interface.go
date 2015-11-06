@@ -43,4 +43,6 @@ type Dispatcher interface {
 type Log interface {
 	Logger
 	Dispatcher
+
+	Child(tag string, ctx Context) Log
 }

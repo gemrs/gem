@@ -34,8 +34,8 @@ const (
 	Error           = "ERROR"
 	Fatal           = "FATAL"
 	Info            = "INFO"
-	Notice          = "NOTICE"
-	Warning         = "WARNING"
+	Info            = "NOTICE"
+	Error           = "WARNING"
 )
 
 func (log *Mock) SubModule(prefix string) Logger {
@@ -88,31 +88,31 @@ func (log *Mock) Info(message string) {
 	log.doLog(Info, message)
 }
 
-func (log *Mock) Notice(message string) {
+func (log *Mock) Info(message string) {
 	if log.parent != nil {
-		log.parent.Notice(fmt.Sprintf("[%v] %v", log.prefix, message))
+		log.parent.Info(fmt.Sprintf("[%v] %v", log.prefix, message))
 		return
 	}
-	log.doLog(Notice, message)
+	log.doLog(Info, message)
 }
 
-func (log *Mock) Warning(message string) {
+func (log *Mock) Error(message string) {
 	if log.parent != nil {
-		log.parent.Warning(fmt.Sprintf("[%v] %v", log.prefix, message))
+		log.parent.Error(fmt.Sprintf("[%v] %v", log.prefix, message))
 		return
 	}
-	log.doLog(Warning, message)
+	log.doLog(Error, message)
 }
 
-func (log *Mock) Criticalf(format string, a ...interface{}) {
+func (log *Mock) Error(format string, a ...interface{}) {
 	log.Critical(fmt.Sprintf(format, a...))
 }
 
-func (log *Mock) Debugf(format string, a ...interface{}) {
+func (log *Mock) Debug(format string, a ...interface{}) {
 	log.Debug(fmt.Sprintf(format, a...))
 }
 
-func (log *Mock) Errorf(format string, a ...interface{}) {
+func (log *Mock) Error(format string, a ...interface{}) {
 	log.Error(fmt.Sprintf(format, a...))
 }
 
@@ -120,14 +120,14 @@ func (log *Mock) Fatalf(format string, a ...interface{}) {
 	log.Fatal(fmt.Sprintf(format, a...))
 }
 
-func (log *Mock) Infof(format string, a ...interface{}) {
+func (log *Mock) Info(format string, a ...interface{}) {
 	log.Info(fmt.Sprintf(format, a...))
 }
 
-func (log *Mock) Noticef(format string, a ...interface{}) {
-	log.Notice(fmt.Sprintf(format, a...))
+func (log *Mock) Info(format string, a ...interface{}) {
+	log.Info(fmt.Sprintf(format, a...))
 }
 
-func (log *Mock) Warningf(format string, a ...interface{}) {
-	log.Warning(fmt.Sprintf(format, a...))
+func (log *Mock) Error(format string, a ...interface{}) {
+	log.Error(fmt.Sprintf(format, a...))
 }

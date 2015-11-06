@@ -4,7 +4,7 @@ import (
 	"time"
 
 	engine_event "github.com/sinusoids/gem/gem/engine/event"
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/gem/task"
 	"github.com/sinusoids/gem/gem/util/safe"
 
@@ -12,7 +12,7 @@ import (
 	tomb "gopkg.in/tomb.v2"
 )
 
-var logger *log.Module
+var logger = log.New("engine", log.NilContext)
 
 type Engine struct {
 	py.BaseObject
@@ -25,7 +25,6 @@ var EngineTick = 600 * time.Millisecond
 func (e *Engine) Init() {}
 
 func (e *Engine) Start() {
-	logger = log.New("engine")
 	logger.Info("Starting engine")
 	engine_event.Startup.NotifyObservers()
 

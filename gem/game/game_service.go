@@ -63,7 +63,7 @@ func playerCleanup(_ *event.Event, args ...interface{}) {
 }
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
-	conn.Log().Infof("new game client")
+	conn.Log().Info("new game client")
 	client := playerimpl.NewPlayer(conn)
 	client.SetDecodeFunc(svc.handshake)
 	return client
@@ -134,7 +134,7 @@ L:
 		case pkt := <-client.Conn().Read:
 			if _, ok := pkt.(*game_protocol.UnknownPacket); ok {
 				/* unknown packet; dump to the log */
-				client.Log().Debugf("Got unknown packet: %v", pkt)
+				client.Log().Debug("Got unknown packet: %v", pkt)
 				continue
 			}
 			packet.Dispatch(client, pkt)

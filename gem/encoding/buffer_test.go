@@ -21,18 +21,18 @@ func TestTry(t *testing.T) {
 				return err
 			}
 			if x != data[i] {
-				t.Errorf("data read mismatch: got %v expected %v", x, data[i])
+				t.Error("data read mismatch: got %v expected %v", x, data[i])
 			}
 		}
 		return nil
 	})
 
 	if err != nil {
-		t.Errorf("try returned error: %v", err)
+		t.Error("try returned error: %v", err)
 	}
 
 	if buffer.i != (pos + 4) {
-		t.Errorf("position mismatch after reading 4 bytes successfully: got %v expected %v", buffer.i, (pos + 4))
+		t.Error("position mismatch after reading 4 bytes successfully: got %v expected %v", buffer.i, (pos + 4))
 	}
 
 	// Test that Try resets our position on error
@@ -44,18 +44,18 @@ func TestTry(t *testing.T) {
 				return err
 			}
 			if (i+pos) < len(data) && x != data[i+pos] {
-				t.Errorf("data read mismatch: got %v expected %v", x, data[i+pos])
+				t.Error("data read mismatch: got %v expected %v", x, data[i+pos])
 			}
 		}
 		return nil
 	})
 
 	if err != io.EOF {
-		t.Errorf("try didn't return EOF: %v", err)
+		t.Error("try didn't return EOF: %v", err)
 	}
 
 	if buffer.i != pos {
-		t.Errorf("position mismatch after reading past EOF: got %v expected %v", buffer.i, pos)
+		t.Error("position mismatch after reading past EOF: got %v expected %v", buffer.i, pos)
 	}
 
 }
@@ -71,10 +71,10 @@ func TestCopySemantics(t *testing.T) {
 	for _, d := range data {
 		b, err := buffer.ReadByte()
 		if err != nil {
-			t.Errorf("ReadByte returned error: %v", err)
+			t.Error("ReadByte returned error: %v", err)
 		}
 		if b != d {
-			t.Errorf("original slice was modified")
+			t.Error("original slice was modified")
 		}
 	}
 }
@@ -84,12 +84,12 @@ func TestCopySemanticsOnPeek(t *testing.T) {
 
 	copied, err := buffer.Peek(2)
 	if err != nil {
-		t.Errorf("Peek returned error: %v", err)
+		t.Error("Peek returned error: %v", err)
 	}
 
 	for i := range copied {
 		if copied[i] != data[i] {
-			t.Errorf("Peeked data incorrect")
+			t.Error("Peeked data incorrect")
 		}
 		copied[i]++
 	}
@@ -97,15 +97,15 @@ func TestCopySemanticsOnPeek(t *testing.T) {
 	actual := make([]byte, 2)
 	_, err = buffer.Read(actual)
 	if err != nil {
-		t.Errorf("Read returned error: %v", err)
+		t.Error("Read returned error: %v", err)
 	}
 
 	for i := range copied {
 		if actual[i] == copied[i] {
-			t.Errorf("original slice was modified")
+			t.Error("original slice was modified")
 		}
 		if actual[i] != data[i] {
-			t.Errorf("original slice was modified")
+			t.Error("original slice was modified")
 		}
 	}
 }
@@ -116,10 +116,10 @@ func TestCopySemanticsOnWrite(t *testing.T) {
 	buffer := NewBuffer()
 	n, err := buffer.Write(dataCopy)
 	if err != nil {
-		t.Errorf("Write returned error: %v", err)
+		t.Error("Write returned error: %v", err)
 	}
 	if n != len(dataCopy) {
-		t.Errorf("Write was partial: %v", err)
+		t.Error("Write was partial: %v", err)
 	}
 
 	for i := range dataCopy {
@@ -129,10 +129,10 @@ func TestCopySemanticsOnWrite(t *testing.T) {
 	for _, d := range data {
 		b, err := buffer.ReadByte()
 		if err != nil {
-			t.Errorf("ReadByte returned error: %v", err)
+			t.Error("ReadByte returned error: %v", err)
 		}
 		if b != d {
-			t.Errorf("original slice was modified")
+			t.Error("original slice was modified")
 		}
 	}
 }
@@ -149,25 +149,25 @@ func TestTrim(t *testing.T) {
 				return err
 			}
 			if x != data[i] {
-				t.Errorf("data read mismatch: got %v expected %v", x, data[i])
+				t.Error("data read mismatch: got %v expected %v", x, data[i])
 			}
 		}
 		return nil
 	})
 
 	if err != nil {
-		t.Errorf("try returned error: %v", err)
+		t.Error("try returned error: %v", err)
 	}
 
 	// We don't expect to have trimmed yet
 	if len(buffer.s) != l {
-		t.Errorf("data was discarded before trim!")
+		t.Error("data was discarded before trim!")
 	}
 
 	buffer.Trim()
 
 	if len(buffer.s) != l-trimBytes {
-		t.Errorf("data wasn't discarded by trim!")
+		t.Error("data wasn't discarded by trim!")
 	}
 
 	err = buffer.Try(func(b *Buffer) error {
@@ -177,14 +177,14 @@ func TestTrim(t *testing.T) {
 				return err
 			}
 			if x != data[i+trimBytes] {
-				t.Errorf("data read mismatch: got %v expected %v", x, data[i+trimBytes])
+				t.Error("data read mismatch: got %v expected %v", x, data[i+trimBytes])
 			}
 		}
 		return nil
 	})
 
 	if err != nil {
-		t.Errorf("try returned error: %v", err)
+		t.Error("try returned error: %v", err)
 	}
 }
 
@@ -198,13 +198,13 @@ func TestTrimLock(t *testing.T) {
 			case <-time.After(5 * time.Second):
 
 			case <-signal:
-				t.Errorf("Trimmed before lock was released")
+				t.Error("Trimmed before lock was released")
 			}
 			return nil
 		})
 
 		if err != nil {
-			t.Errorf("try returned error: %v", err)
+			t.Error("try returned error: %v", err)
 		}
 	}()
 
@@ -218,6 +218,6 @@ func TestTrimLock(t *testing.T) {
 	select {
 	case <-signal:
 	default:
-		t.Errorf("signal was consumed elsewhere")
+		t.Error("signal was consumed elsewhere")
 	}
 }

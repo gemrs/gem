@@ -3,7 +3,7 @@ package task
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/gem/util/safe"
 )
 
@@ -17,7 +17,7 @@ type Task struct {
 	Interval Cycles
 	User     interface{}
 	counter  Cycles
-	logger   log.Logger
+	logger   log.Log
 }
 
 func NewTask(callback TaskCallback, when TaskHook, interval Cycles, user interface{}) *Task {

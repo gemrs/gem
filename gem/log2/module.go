@@ -49,3 +49,10 @@ func (m *Module) Debug(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	m.Dispatch(LvlDebug, msg)
 }
+
+func (m *Module) Child(tag string, ctx Context) Log {
+	if ctx == nil {
+		ctx = m.ctx
+	}
+	return New(m.tag+"/"+tag, ctx)
+}

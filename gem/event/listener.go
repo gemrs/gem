@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/gem/util/expire"
 	"github.com/sinusoids/gem/gem/util/id"
 	"github.com/sinusoids/gem/gem/util/safe"
@@ -18,7 +18,7 @@ type Callback func(*Event, ...interface{})
 type Listener struct {
 	id     int
 	fn     Callback
-	logger log.Logger
+	logger log.Log
 	owner  expire.Expirable
 }
 
@@ -34,7 +34,7 @@ func (l *Listener) Id() int {
 	return l.id
 }
 
-func (l *Listener) setLogger(logger log.Logger) {
+func (l *Listener) setLogger(logger log.Log) {
 	l.logger = logger
 }
 

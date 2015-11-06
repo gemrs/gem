@@ -46,6 +46,6 @@ func TestSnapshot(t *testing.T) {
 	snapshot := Snapshot(dummyPlayer)
 
 	if !comparePlayers(dummyPlayer, snapshot) {
-		t.Errorf("snapshotted player didn't match")
+		t.Error("snapshotted player didn't match")
 	}
 }

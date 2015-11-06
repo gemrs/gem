@@ -5,13 +5,13 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/sinusoids/gem/gem/log2"
 	"github.com/sinusoids/gem/pybind"
 )
 
 var ConnectionDef = pybind.Define("Connection", (*Connection)(nil))
 var RegisterConnection = pybind.GenerateRegisterFunc(ConnectionDef)
-var NewConnection = pybind.GenerateConstructor(ConnectionDef).(func(net.Conn, *log.Module) *Connection)
+var NewConnection = pybind.GenerateConstructor(ConnectionDef).(func(net.Conn, log.Log) *Connection)
 
 func (c *Connection) PyGet_log() (py.Object, error) {
 	fn := pybind.Wrap(c.Log)

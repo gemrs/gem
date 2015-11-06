@@ -50,25 +50,25 @@ func TestConvenienceFunctions(t *testing.T) {
 	records := target.(*mockTarget).records
 
 	if len(records) != 3 {
-		t.Errorf("Record length invalid")
+		t.Error("Record length invalid")
 	}
 
 	for i, r := range records {
 		if r.Level() != entries[i].lvl {
-			t.Errorf("Log level mismatch")
+			t.Error("Log level mismatch")
 		}
 
 		if r.Tag() != "testing" {
-			t.Errorf("Log tag mismatch")
+			t.Error("Log tag mismatch")
 		}
 
 		if r.Message() != entries[i].msg {
-			t.Errorf("Log message mismatch")
+			t.Error("Log message mismatch")
 		}
 
 		rctx := r.Context().ContextMap()
 		if v, ok := rctx["A"]; !ok || v != 123 {
-			t.Errorf("Log context mismatch")
+			t.Error("Log context mismatch")
 		}
 	}
 }
@@ -98,32 +98,32 @@ func TestDispatch(t *testing.T) {
 	}
 
 	if len(log.Targets) != 2 {
-		t.Errorf("Target length invalid")
+		t.Error("Target length invalid")
 	}
 
 	for _, target := range log.Targets {
 		records := target.(*mockTarget).records
 
 		if len(records) != 2 {
-			t.Errorf("Record length invalid")
+			t.Error("Record length invalid")
 		}
 
 		for i, r := range records {
 			if r.Level() != entries[i].lvl {
-				t.Errorf("Log level mismatch")
+				t.Error("Log level mismatch")
 			}
 
 			if r.Tag() != "testing" {
-				t.Errorf("Log tag mismatch")
+				t.Error("Log tag mismatch")
 			}
 
 			if r.Message() != entries[i].msg {
-				t.Errorf("Log message mismatch")
+				t.Error("Log message mismatch")
 			}
 
 			rctx := r.Context().ContextMap()
 			if v, ok := rctx["A"]; !ok || v != 123 {
-				t.Errorf("Log context mismatch")
+				t.Error("Log context mismatch")
 			}
 		}
 	}
@@ -156,47 +156,47 @@ func TestBuffer(t *testing.T) {
 	logger.Dispatch(entries[0].lvl, entries[0].msg)
 
 	if len(buffer.Buffered()) != 1 {
-		t.Errorf("Buffered length incorrect")
+		t.Error("Buffered length incorrect")
 	}
 
 	if len(mtarget.records) != 0 {
-		t.Errorf("Handled length incorrect")
+		t.Error("Handled length incorrect")
 	}
 
 	buffer.Flush()
 
 	if buffer.Buffered() != nil {
-		t.Errorf("Buffer not emptied")
+		t.Error("Buffer not emptied")
 	}
 
 	if len(mtarget.records) != 1 {
-		t.Errorf("Buffer not flushed")
+		t.Error("Buffer not flushed")
 	}
 
 	logger.Dispatch(entries[1].lvl, entries[1].msg)
 
 	if len(mtarget.records) != 2 {
-		t.Errorf("Buffer not flushed")
+		t.Error("Buffer not flushed")
 	}
 
 	records := mtarget.records
 
 	for i, r := range records {
 		if r.Level() != entries[i].lvl {
-			t.Errorf("Log level mismatch")
+			t.Error("Log level mismatch")
 		}
 
 		if r.Tag() != "testing" {
-			t.Errorf("Log tag mismatch")
+			t.Error("Log tag mismatch")
 		}
 
 		if r.Message() != entries[i].msg {
-			t.Errorf("Log message mismatch")
+			t.Error("Log message mismatch")
 		}
 
 		rctx := r.Context().ContextMap()
 		if v, ok := rctx["A"]; !ok || v != 123 {
-			t.Errorf("Log context mismatch")
+			t.Error("Log context mismatch")
 		}
 	}
 }
