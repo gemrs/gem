@@ -7,6 +7,7 @@ import (
 
 var Targets = map[string]Handler{}
 
+// Module is a basic Log, with an attached tag and context
 type Module struct {
 	tag     string
 	ctx     Context
