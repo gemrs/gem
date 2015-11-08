@@ -1,25 +1,27 @@
 import pytest
 
-import gem
+import gem.log
 
 def test_log_api():
     """Detects changes to the log api"""
-    syslog = gem.syslog
 
-    syslog.begin_redirect()
-    syslog.end_redirect()
+    gem.log.begin_redirect()
+    gem.log.end_redirect()
 
-    module_log = syslog.module("test_module")
-    log_funcs = ["critical", "debug", "error", "info", "notice", "warning"]
+    module_log = gem.log.Module("test_module", None)
+    log_funcs = ["debug", "error", "info", "notice"]
+
+    assert hasattr(module_log, "tag")
+    assert hasattr(module_log, "ctx")
 
     for fn in log_funcs:
         assert hasattr(module_log, fn)
         func = getattr(module_log, fn)
         func("{0} log message".format(fn))
 
-    submodule_log = module_log.submodule("test_submodule")
+    child_log = module_log.child("test_child", None)
 
     for fn in log_funcs:
-        assert hasattr(submodule_log, fn)
-        func = getattr(submodule_log, fn)
+        assert hasattr(child_log, fn)
+        func = getattr(child_log, fn)
         func("{0} log message".format(fn))

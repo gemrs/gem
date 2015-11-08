@@ -8,7 +8,7 @@ import (
 )
 
 func TestRecover(t *testing.T) {
-	logger := log.NewMock("recover_test")
+	logger := log.NewMock("recover_test", log.NilContext)
 	panicMsg := "testing safe.Recover"
 	func() {
 		defer Recover(logger)
