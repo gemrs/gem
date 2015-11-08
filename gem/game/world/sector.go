@@ -33,10 +33,3 @@ func (s *Sector) Remove(entity entity.Entity) {
 func (s *Sector) Position() *position.Sector {
 	return s.position
 }
-
-// Active determines if this sector is currently in use.
-// An 'in use' sector is one which contains entities or other information.
-// If a sector is not in use, it can usually be garbage collected.
-func (s *Sector) Active() bool {
-	return s.Collection.Size() > 0
-}

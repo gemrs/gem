@@ -28,17 +28,3 @@ func (i *Instance) Sector(s *position.Sector) *Sector {
 	i.sectors[hash] = NewSector(s)
 	return i.sectors[hash]
 }
-
-// GC removes any inactive sectors from memory
-func (i *Instance) GC() {
-	garbage := make([]position.SectorHash, 0)
-	for hash, sector := range i.sectors {
-		if !sector.Active() {
-			garbage = append(garbage, hash)
-		}
-	}
-
-	for _, hash := range garbage {
-		delete(i.sectors, hash)
-	}
-}

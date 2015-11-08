@@ -14,8 +14,3 @@ func (world *Instance) Py_sector(args *py.Tuple, kwds *py.Dict) (py.Object, erro
 	fn := pybind.Wrap(world.Sector)
 	return fn(args, kwds)
 }
-
-func (world *Instance) Py_gc(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	fn := pybind.Wrap(world.GC)
-	return fn(args, kwds)
-}
