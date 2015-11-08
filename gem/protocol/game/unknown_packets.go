@@ -24,7 +24,7 @@ func (p *UnknownPacket) String() string {
 		hexStrs = append(hexStrs, hex.EncodeToString([]byte{b}))
 	}
 
-	return fmt.Sprintf("Packet %v, size %v, sizetype %v, payload [%v]", p.Number, p.Size, p.SizeType, strings.Join(hexStrs, " "))
+	return fmt.Sprintf("Packet [%v] size [%v] sizetype [%v] payload [%v]", p.Number, p.Size, p.SizeType, strings.Join(hexStrs, " "))
 }
 
 func (p *UnknownPacket) Encode(buf io.Writer, flags interface{}) error {

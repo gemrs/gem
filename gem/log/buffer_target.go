@@ -1,39 +1,5 @@
 package log
 
-import (
-	"io"
-	"text/template"
-)
-
-var standardFormat = "[{{.Level}}] {{.Tag}}: {{.Message}}\n"
-
-// TextTarget formats Records using a template, and writes to an io.Writer
-type TextTarget struct {
-	w   io.Writer
-	fmt *template.Template
-}
-
-func NewTextTarget(w io.Writer) *TextTarget {
-	target := &TextTarget{
-		w: w,
-	}
-	target.SetFormat(standardFormat)
-	return target
-}
-
-// SetFormat customizes the log template. The Record is passed as a parameter to the template.
-func (t *TextTarget) SetFormat(fmt string) {
-	t.fmt = template.Must(template.New("record").Parse(fmt))
-}
-
-// Handle formats a record and writes to the io.Writer
-func (t *TextTarget) Handle(r Record) {
-	err := t.fmt.ExecuteTemplate(t.w, "record", r)
-	if err != nil {
-		panic(err)
-	}
-}
-
 // BufferingTarget sits between the dispatcher and another Handler, and can temporarily
 // buffer all records to memory. When flushed, a buffering target forwards all buffered
 // records to the target.
