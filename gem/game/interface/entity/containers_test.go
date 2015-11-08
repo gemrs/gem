@@ -58,12 +58,12 @@ func TestContainer(t *testing.T) {
 	}{
 		{
 			add:      []MockEntity{e0},
-			entities: []MockEntity{},
+			entities: []MockEntity{e0},
 			remove:   []MockEntity{},
 		},
 		{
 			add:      []MockEntity{e1},
-			entities: []MockEntity{e0},
+			entities: []MockEntity{e0, e1},
 			remove:   []MockEntity{},
 		},
 		{
@@ -73,17 +73,17 @@ func TestContainer(t *testing.T) {
 		},
 		{
 			add:      []MockEntity{e2},
-			entities: []MockEntity{e1, e0},
+			entities: []MockEntity{e1, e2},
 			remove:   []MockEntity{e0},
 		},
 		{
 			add:      []MockEntity{},
-			entities: []MockEntity{e1, e2},
+			entities: []MockEntity{e2},
 			remove:   []MockEntity{e1},
 		},
 		{
 			add:      []MockEntity{},
-			entities: []MockEntity{e2},
+			entities: []MockEntity{},
 			remove:   []MockEntity{e2},
 		},
 		{

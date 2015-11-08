@@ -21,33 +21,37 @@ func (c *Collection) Init() {
 	c.unregister = NewSlice()
 }
 
+// Add requests a new entity be added to the collection.
+// The new entity goes into the tracking list, and to the adding list
 func (c *Collection) Add(entity Entity) {
 	c.register.Add(entity)
+	c.entities.Add(entity)
 }
 
+// Remove requests an entity be removed from the collection
+// The entity is removed from the tracking list, and added to the removing list
 func (c *Collection) Remove(entity Entity) {
 	c.unregister.Add(entity)
+	c.entities.Remove(entity)
 }
 
-// Update cycles the collection.
-// Entities in the adding list are added to the main entity list
-// Entities in the removing list are removed from the main entity list
-// Both adding and removing lists are emptied
+// Update cycles the collection. Both adding and removing lists are emptied.
 func (c *Collection) Update() {
-	c.entities.AddAll(c.register)
-	c.entities.RemoveAll(c.unregister)
 	c.register.Empty()
 	c.unregister.Empty()
 }
 
+// Adding returns a slice of entities being added this cycle
 func (c *Collection) Adding() *Slice {
 	return c.register
 }
 
+// Removing returns a slice of entities being removed this cycle
 func (c *Collection) Removing() *Slice {
 	return c.unregister
 }
 
+// Entities returns a slice of all entities being tracked
 func (c *Collection) Entities() *Slice {
 	return c.entities.Slice()
 }
