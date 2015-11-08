@@ -16,8 +16,8 @@ func TestSnapshot(t *testing.T) {
 	dummyPos := position.NewAbsolute(3500, 3500, 1)
 
 	dummyPlayer := &PlayerSnapshot{
-		flags:  entity.MobFlagWalkUpdate,
-		region: dummyPos.RegionOf(),
+		flags:        entity.MobFlagWalkUpdate,
+		loadedRegion: dummyPos.RegionOf(),
 		profile: &ProfileSnapshot{
 			username: "a player",
 			password: "hunter2",
