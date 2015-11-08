@@ -1,8 +1,8 @@
 import gem.task
 import plugins.gem_plugin as plugins
-import task
+import core.task
 
-class SampleTask(task.Task):
+class SampleTask(core.task.Task):
     def __init__(self, count, interval=1):
         super(SampleTask, self).__init__(interval)
         self.count = count

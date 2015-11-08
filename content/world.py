@@ -1,26 +1,26 @@
 import gem.log
 import gem.game.event
-import event
+import core.event
 
 logger = gem.log.Module(__name__, None)
 
-@event.listener
+@core.event.listener
 class World(object):
     players = {}
 
-    @event.callback(gem.game.event.PlayerLoadProfile)
+    @core.event.callback(gem.game.event.PlayerLoadProfile)
     def load_profile(self, player, profile):
         pass
 
-    @event.callback(gem.game.event.PlayerLogin)
+    @core.event.callback(gem.game.event.PlayerLogin)
     def register_player(self, player):
         self.players[player.index] = player
-        logger.info("registered player %s" % player)
+        logger.info("registered player [%s]" % player)
 
-    @event.callback(gem.game.event.PlayerLogout)
+    @core.event.callback(gem.game.event.PlayerLogout)
     def unregister_player(self, player):
         del self.players[player.index]
-        logger.info("unregistered player %s" % player)
+        logger.info("unregistered player [%s]" % player)
 
     def get_players(self):
         return self.players.values()
