@@ -46,7 +46,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context) error {
 		return fmt.Errorf("couldn't start archive server: %v", err)
 	}
 
-	logger.Info("Found %v archives", s.archives.FileCount())
+	logger.Info("Found [%v] archives", s.archives.FileCount())
 
 	s.t.Go(s.run)
 	return nil
@@ -62,7 +62,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) run() error {
-	logger.Info("Listening on %v", s.laddr)
+	logger.Notice("Listening on [%v]", s.laddr)
 
 	// Accept in a seperate goroutine
 	accept := make(chan net.Conn, 16)

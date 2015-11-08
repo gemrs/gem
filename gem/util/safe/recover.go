@@ -13,7 +13,7 @@ var Unsafe = false
 func Recover(log log.Log) {
 	if err := recover(); err != nil {
 		if Unsafe {
-			log.Info("github.com/sinusoids/gem/gem/safe: Unsafe mode enabled; not recovering")
+			log.Notice("github.com/sinusoids/gem/gem/safe: Unsafe mode enabled; not recovering")
 			panic(err)
 		}
 		stack := make([]byte, 1024*10)

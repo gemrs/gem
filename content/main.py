@@ -49,12 +49,12 @@ def main():
         engine.start()
         signal_handler.setup_exit_handler(engine.stop)
 
-        logger.info("Finished engine initialization")
+        logger.notice("Finished engine initialization")
     except Exception as e:
         logger.error("Startup failed: {0}".format(e))
 
     if args.no_console:
-        logger.info("Press Control-D to toggle the interactive console")
+        logger.notice("Press Control-D to toggle the interactive console")
         while True:
             line = sys.stdin.readline()
             if not line: # readline will return "" on EOF

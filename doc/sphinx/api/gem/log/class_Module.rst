@@ -39,3 +39,7 @@ Module
    .. py:method:: info(message)
 
       :param sting message: The log message
+
+   .. py:method:: notice(message)
+
+      :param sting message: The log message

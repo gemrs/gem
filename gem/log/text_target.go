@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/color"
 )
 
-var standardFormat = "{{ fill 8 (print \"[\" .Level \"]\") | color .Level }} {{print .Tag \":\" | fill 12}} {{highlight .Message}}\n"
+var standardFormat = "{{ print (fill 8 (print \"[\" .Level \"]\")) \" \" (print .Tag \":\" | fill 12) | color .Level}} {{highlight .Message}}\n"
 
 // TextTarget formats Records using a template, and writes to an io.Writer
 type TextTarget struct {
@@ -38,9 +38,10 @@ var colorMap = map[string]colorFunc{
 	"yellow":  color.YellowString,
 
 	/* log levels */
-	"INFO":  nil,
-	"ERROR": color.RedString,
-	"DEBUG": color.YellowString,
+	"INFO":   nil,
+	"ERROR":  color.RedString,
+	"DEBUG":  color.YellowString,
+	"NOTICE": color.GreenString,
 
 	"special": color.CyanString,
 }

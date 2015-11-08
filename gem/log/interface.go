@@ -4,9 +4,10 @@ package log
 type Level string
 
 const (
-	LvlInfo  Level = "INFO"
-	LvlError       = "ERROR"
-	LvlDebug       = "DEBUG"
+	LvlInfo   Level = "INFO"
+	LvlError        = "ERROR"
+	LvlDebug        = "DEBUG"
+	LvlNotice       = "NOTICE"
 )
 
 // Context is a provider of context for a Record
@@ -32,6 +33,7 @@ type Logger interface {
 	Info(string, ...interface{})
 	Error(string, ...interface{})
 	Debug(string, ...interface{})
+	Notice(string, ...interface{})
 }
 
 // A Dispatcher constructs records and pushes them to one or more Handlers

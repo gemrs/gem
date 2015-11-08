@@ -71,3 +71,10 @@ func (m *PyModule) Py_info(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	})
 	return fn(args, kwds)
 }
+
+func (m *PyModule) Py_notice(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	fn := pybind.Wrap(func(message string) {
+		m.Module.Notice(message)
+	})
+	return fn(args, kwds)
+}

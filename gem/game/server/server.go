@@ -80,7 +80,7 @@ func (s *Server) Stop() error {
 // run is the main tcp handler thread. listens for new connections and starts a new goroutine
 // for each connection to handle i/o
 func (s *Server) run() error {
-	logger.Info("Listening on %v", s.laddr)
+	logger.Notice("Listening on [%v]", s.laddr)
 
 	// Accept in a seperate goroutine
 	accept := make(chan net.Conn, 16)
