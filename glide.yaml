@@ -12,6 +12,10 @@ import:
   version: 8640971291e54b520f781270275b7ed8762ac909
 - package: gopkg.in/tomb.v2
   version: 14b3d72120e8d10ea6e6b7f87f7175734b1faab8
+- package: github.com/mattn/go-isatty
+  version: d6aaa2f596ae91a0a58d8e7f2c79670991468e4f
+- package: github.com/shiena/ansicolor
+  version: d445752f6f66f9cd987722f109149f6799cdf1de
 # managed outside glide
 #  - package: github.com/gtank/isaac
 #  - package: github.com/qur/gopy
