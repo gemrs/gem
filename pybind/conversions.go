@@ -38,7 +38,12 @@ func ConvertIn(types []reflect.Type, args *py.Tuple) ([]reflect.Value, error) {
 			return nil, err
 		}
 
-		convertedArgs = append(convertedArgs, reflect.ValueOf(convertedArg))
+		argValue := reflect.ValueOf(convertedArg)
+		if argValue.Type().ConvertibleTo(types[i]) {
+			argValue = argValue.Convert(types[i])
+		}
+
+		convertedArgs = append(convertedArgs, argValue)
 	}
 
 	return convertedArgs, nil
