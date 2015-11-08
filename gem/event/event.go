@@ -11,11 +11,13 @@ type Event struct {
 
 	key       string
 	observers map[int]Observer
+	log       log.Log
 }
 
 func (e *Event) Init(key string) {
 	e.key = key
 	e.observers = make(map[int]Observer)
+	e.log = log.New("event", log.MapContext{"event": key})
 }
 
 func (e *Event) Key() string {
@@ -23,7 +25,6 @@ func (e *Event) Key() string {
 }
 
 func (e *Event) Register(o Observer) {
-	o.setLogger(log.New(e.key, log.NilContext))
 	e.observers[o.Id()] = o
 }
 

@@ -16,10 +16,9 @@ func init() {
 type Callback func(*Event, ...interface{})
 
 type Listener struct {
-	id     int
-	fn     Callback
-	logger log.Log
-	owner  expire.Expirable
+	id    int
+	fn    Callback
+	owner expire.Expirable
 }
 
 func NewListener(owner expire.Expirable, fn Callback) *Listener {
@@ -34,12 +33,9 @@ func (l *Listener) Id() int {
 	return l.id
 }
 
-func (l *Listener) setLogger(logger log.Log) {
-	l.logger = logger
-}
-
 func (l *Listener) Notify(e *Event, args ...interface{}) {
-	defer safe.Recover(l.logger)
+	log := e.log.Child("listener", log.MapContext{"id": l.id})
+	defer safe.Recover(log)
 
 	select {
 	case <-l.owner.Expired():

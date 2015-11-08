@@ -4,7 +4,7 @@ from yapsy.PluginManager import PluginManager
 import gem
 import gem.log
 
-logger = gem.log.Module(__name__, None)
+logger = gem.log.Module("plugin", None)
 
 class GemLogHandler(logging.Handler):
     def emit(self, record):
@@ -31,6 +31,6 @@ class GemPluginManager(PluginManager):
         for plugin_info in self.getAllPlugins():
             plugin = self.getPluginByName(plugin_info.name)
             if plugin is not None:
-                plugin.plugin_object.logger = gem.log.Module(plugin_info.name, None)
+                plugin.plugin_object.logger = logger.child(plugin_info.name, None)
             logger.debug("Loading plugin {0}".format(plugin_info.name))
             self.activatePluginByName(plugin_info.name)

@@ -45,8 +45,8 @@ func (m *PyModule) PyGet_ctx() (py.Object, error) {
 }
 
 func (m *PyModule) Py_child(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
-	fn := pybind.Wrap(func(tag string) *PyModule {
-		return NewPyModule(m.Module.tag+"/"+tag, m.Module.ctx.(py.Object))
+	fn := pybind.Wrap(func(tag string, ctx py.Object) *PyModule {
+		return NewPyModule(m.Module.tag+"/"+tag, ctx)
 	})
 	return fn(args, kwds)
 }

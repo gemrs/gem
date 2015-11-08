@@ -11,9 +11,8 @@ import (
 type PyListener struct {
 	py.BaseObject
 
-	id     int
-	fn     py.Object
-	logger log.Log
+	id int
+	fn py.Object
 }
 
 func (l *PyListener) Init(fn py.Object) {
@@ -33,7 +32,8 @@ func (l *PyListener) Notify(e *Event, args ...interface{}) {
 	argsIn := []interface{}{e}
 	argsIn = append(argsIn, args...)
 
-	defer safe.Recover(l.logger)
+	log := e.log.Child("py_listener", log.MapContext{"id": l.id})
+	defer safe.Recover(log)
 
 	argsOut := []py.Object{}
 	for _, a := range argsIn {
@@ -51,8 +51,4 @@ func (l *PyListener) Notify(e *Event, args ...interface{}) {
 		// Suspect this is because python has cleaned up by the time the runtime evals the error
 		panic(err.Error())
 	}
-}
-
-func (l *PyListener) setLogger(logger log.Log) {
-	l.logger = logger
 }
