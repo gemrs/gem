@@ -32,8 +32,8 @@
   
     <link rel="top" title="Gem 1.0.0 documentation" href="../../../index.html"/>
         <link rel="up" title="gem.log module" href="module_log.html"/>
-        <link rel="next" title="SysLog" href="class_SysLog.html"/>
-        <link rel="prev" title="gem.log module" href="module_log.html"/> 
+        <link rel="next" title="gem.runite module" href="../runite/module_runite.html"/>
+        <link rel="prev" title="LogContext" href="class_LogContext.html"/> 
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
@@ -97,8 +97,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../game/position/module_position.html">gem.game.position module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../game/server/module_server.html">gem.game.server module</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="module_log.html">gem.log module</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="class_LogContext.html">LogContext</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">Module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="class_SysLog.html">SysLog</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../runite/module_runite.html">gem.runite module</a></li>
@@ -157,35 +157,30 @@
 <h1>Module<a class="headerlink" href="#module" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="gem.log.Module">
-<em class="property">class </em><code class="descclassname">gem.log.</code><code class="descname">Module</code><a class="headerlink" href="#gem.log.Module" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gem.log.</code><code class="descname">Module</code><span class="sig-paren">(</span><em>tag</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.Module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Module is a log object which can contain contextual information</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Should not be constructed directly. Instead, one should derive a Module from an existing logger using either <a class="reference internal" href="#gem.log.Module.submodule" title="gem.log.Module.submodule"><code class="xref py py-meth docutils literal"><span class="pre">Module.submodule()</span></code></a> or <a class="reference internal" href="class_SysLog.html#gem.log.SysLog.module" title="gem.log.SysLog.module"><code class="xref py py-meth docutils literal"><span class="pre">SysLog.module()</span></code></a></p>
-</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tag</strong> (<em>string</em>) &#8211; The string with which to tag all log records created by this logger</li>
+<li><strong>LogContext</strong> (<em>context</em>) &#8211; A context provider for all log records created by this logger. May be None.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Methods</p>
 <dl class="method">
-<dt id="gem.log.Module.submodule">
-<code class="descname">submodule</code><span class="sig-paren">(</span><em>prefix</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.Module.submodule" title="Permalink to this definition">¶</a></dt>
+<dt id="gem.log.Module.child">
+<code class="descname">child</code><span class="sig-paren">(</span><em>prefix</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.Module.child" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs a submodule of this log object, using prefix as a prefix for all log messages</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prefix</strong> (<em>string</em>) &#8211; The prefix to prepend all log messages with</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="gem.log.Module.critical">
-<code class="descname">critical</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.Module.critical" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>sting</em>) &#8211; The log message</td>
 </tr>
 </tbody>
 </table>
@@ -230,32 +225,6 @@
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="gem.log.Module.notice">
-<code class="descname">notice</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.Module.notice" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>sting</em>) &#8211; The log message</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="gem.log.Module.warning">
-<code class="descname">warning</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.Module.warning" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> (<em>sting</em>) &#8211; The log message</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -267,10 +236,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="class_SysLog.html" class="btn btn-neutral float-right" title="SysLog" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../runite/module_runite.html" class="btn btn-neutral float-right" title="gem.runite module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="module_log.html" class="btn btn-neutral" title="gem.log module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="class_LogContext.html" class="btn btn-neutral" title="LogContext" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -9,9 +9,8 @@ var Targets = map[string]Handler{}
 
 // Module is a basic Log, with an attached tag and context
 type Module struct {
-	tag     string
-	ctx     Context
-	targets []Handler
+	tag string
+	ctx Context
 }
 
 func New(tag string, ctx Context) Log {

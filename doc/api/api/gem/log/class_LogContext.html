@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gem.log module &mdash; Gem 1.0.0 documentation</title>
+  <title>LogContext &mdash; Gem 1.0.0 documentation</title>
   
 
   
@@ -31,9 +31,9 @@
 
   
     <link rel="top" title="Gem 1.0.0 documentation" href="../../../index.html"/>
-        <link rel="up" title="Gem Kernel API" href="../module_gem.html"/>
-        <link rel="next" title="LogContext" href="class_LogContext.html"/>
-        <link rel="prev" title="Server" href="../game/server/class_Server.html"/> 
+        <link rel="up" title="gem.log module" href="module_log.html"/>
+        <link rel="next" title="Module" href="class_Module.html"/>
+        <link rel="prev" title="gem.log module" href="module_log.html"/> 
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
@@ -96,8 +96,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../game/player/module_player.html">gem.game.player module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../game/position/module_position.html">gem.game.position module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../game/server/module_server.html">gem.game.server module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">gem.log module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="class_LogContext.html">LogContext</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="module_log.html">gem.log module</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="">LogContext</a></li>
 <li class="toctree-l3"><a class="reference internal" href="class_Module.html">Module</a></li>
 </ul>
 </li>
@@ -137,11 +137,13 @@
       
           <li><a href="../module_gem.html">Gem Kernel API</a> &raquo;</li>
       
-    <li>gem.log module</li>
+          <li><a href="module_log.html">gem.log module</a> &raquo;</li>
+      
+    <li>LogContext</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../../_sources/api/gem/log/module_log.txt" rel="nofollow"> View page source</a>
+            <a href="../../../_sources/api/gem/log/class_LogContext.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -151,28 +153,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-gem.log">
-<span id="gem-log-module"></span><h1>gem.log module<a class="headerlink" href="#module-gem.log" title="Permalink to this headline">¶</a></h1>
-<p class="rubric">Functions</p>
-<dl class="function">
-<dt id="gem.log.begin_redirect">
-<code class="descclassname">gem.log.</code><code class="descname">begin_redirect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.begin_redirect" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<p>Starts redirecting all log output to an in-memory buffer. Used by the interactive console to avoid log messages printing over the prompt.</p>
-<dl class="function">
-<dt id="gem.log.end_redirect">
-<code class="descclassname">gem.log.</code><code class="descname">end_redirect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.end_redirect" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<p>Ends the log redirect and resumes logging to stdout. The in-memory buffer created by <a class="reference internal" href="#gem.log.begin_redirect" title="gem.log.begin_redirect"><code class="xref py py-func docutils literal"><span class="pre">begin_redirect()</span></code></a> is flushed and emptied.</p>
-<p class="rubric">Classes</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="class_LogContext.html">LogContext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_Module.html">Module</a></li>
-</ul>
+  <div class="section" id="logcontext">
+<h1>LogContext<a class="headerlink" href="#logcontext" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="gem.log.LogContext">
+<em class="property">class </em><code class="descclassname">gem.log.</code><code class="descname">LogContext</code><a class="headerlink" href="#gem.log.LogContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>LogContext is a base class for objects which provide context to a logger.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Should not be used directly. Instead, subclass and provide implementations for methods.</p>
 </div>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="gem.log.LogContext.log_context">
+<code class="descname">log_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gem.log.LogContext.log_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor for the context dictionary by this LogContext</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The log context</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -182,10 +191,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="class_LogContext.html" class="btn btn-neutral float-right" title="LogContext" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="class_Module.html" class="btn btn-neutral float-right" title="Module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../game/server/class_Server.html" class="btn btn-neutral" title="Server" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="module_log.html" class="btn btn-neutral" title="gem.log module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

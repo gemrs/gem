@@ -5,8 +5,9 @@ import rlcompleter
 
 import gem
 import gem.event
+import gem.log
 
-logger = gem.syslog.module(__name__)
+logger = gem.log.Module(__name__, None)
 
 console = code.InteractiveConsole(locals=globals())
 

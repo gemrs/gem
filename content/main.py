@@ -13,6 +13,7 @@ import gem
 import gem.auth
 import gem.engine
 import gem.runite
+import gem.log
 
 from plugin_loader import PluginLoader
 from service_listeners import ServiceListeners
@@ -26,11 +27,11 @@ parser = argparse.ArgumentParser(description=version_string)
 parser.add_argument('--no-console', action='store_false', dest='no_console', help='disable the interactive console')
 parser.add_argument('--plugin-path', action='append', dest='plugin_path', help='append to the plugin search path')
 
-logger = gem.syslog.module("pymain")
+logger = gem.log.Module("pymain", None)
 args = parser.parse_args()
 
 def main():
-    logger.notice("Starting {0}".format(version_string))
+    logger.info("Starting {0}".format(version_string))
 
     try:
         gem.runite.context = gem.runite.Context()
@@ -50,10 +51,10 @@ def main():
 
         logger.info("Finished engine initialization")
     except Exception as e:
-        logger.critical("Startup failed: {0}".format(e))
+        logger.error("Startup failed: {0}".format(e))
 
     if args.no_console:
-        logger.notice("Press Control-D to toggle the interactive console")
+        logger.info("Press Control-D to toggle the interactive console")
         while True:
             line = sys.stdin.readline()
             if not line: # readline will return "" on EOF
@@ -63,10 +64,10 @@ def main():
             pass
 
 def interactive_console():
-    logger.notice("Transferring control to interactive console")
-    gem.syslog.begin_redirect()
+    logger.info("Transferring control to interactive console")
+    gem.log.begin_redirect()
     console.interact()
-    gem.syslog.end_redirect()
+    gem.log.end_redirect()
     logger.info("Exited interactive console")
 
 if __name__ == "__main__":

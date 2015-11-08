@@ -3,8 +3,9 @@ import gem.auth
 import gem.game
 import gem.game.player
 import gem.game.position
+import gem.log
 
-logger = gem.syslog.module(__name__)
+logger = gem.log.Module(__name__, None)
 
 profile_template = """{
   "username": "",

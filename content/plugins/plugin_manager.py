@@ -2,17 +2,18 @@ import logging
 from yapsy.PluginManager import PluginManager
 
 import gem
+import gem.log
 
-logger = gem.syslog.module(__name__)
+logger = gem.log.Module(__name__, None)
 
 class GemLogHandler(logging.Handler):
     def emit(self, record):
         if record.levelno == logging.CRITICAL:
-            logger.critical(record.getMessage())
+            logger.error(record.getMessage())
         elif record.levelno == logging.ERROR:
             logger.error(record.getMessage())
         elif record.levelno == logging.WARNING:
-            logger.warning(record.getMessage())
+            logger.error(record.getMessage())
         elif record.levelno == logging.INFO:
             logger.info(record.getMessage())
         elif record.levelno == logging.DEBUG:
@@ -30,6 +31,6 @@ class GemPluginManager(PluginManager):
         for plugin_info in self.getAllPlugins():
             plugin = self.getPluginByName(plugin_info.name)
             if plugin is not None:
-                plugin.plugin_object.logger = gem.syslog.module(plugin_info.name)
+                plugin.plugin_object.logger = gem.log.Module(plugin_info.name, None)
             logger.debug("Loading plugin {0}".format(plugin_info.name))
             self.activatePluginByName(plugin_info.name)

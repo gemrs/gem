@@ -5,7 +5,7 @@ import (
 	"text/template"
 )
 
-var standardFormat = "[{{.Level}}] {{.Tag}}: {{.Message}}"
+var standardFormat = "[{{.Level}}] {{.Tag}}: {{.Message}}\n"
 
 // TextTarget formats Records using a template, and writes to an io.Writer
 type TextTarget struct {

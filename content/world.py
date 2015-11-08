@@ -1,7 +1,8 @@
+import gem.log
 import gem.game.event
 import event
 
-logger = gem.syslog.module(__name__)
+logger = gem.log.Module(__name__, None)
 
 @event.listener
 class World(object):

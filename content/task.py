@@ -1,9 +1,10 @@
 import gem
+import gem.log
 import gem.task
 
 from abc import ABCMeta, abstractmethod
 
-logger = gem.syslog.module(__name__)
+logger = gem.log.Module(__name__, None)
 
 class Task(object):
     __metaclass__ = ABCMeta
