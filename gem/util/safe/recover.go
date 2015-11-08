@@ -3,7 +3,7 @@ package safe
 import (
 	"runtime"
 
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 )
 
 // Set Unsafe to disable recovery (for testing)

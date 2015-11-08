@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/protocol"
 	"github.com/sinusoids/gem/gem/util/id"
 	"github.com/sinusoids/gem/gem/util/safe"

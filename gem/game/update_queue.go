@@ -1,7 +1,7 @@
 package game
 
 import (
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 	update_protocol "github.com/sinusoids/gem/gem/protocol/update"
 )
 

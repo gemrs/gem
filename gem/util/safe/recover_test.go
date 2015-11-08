@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 )
 
 func TestRecover(t *testing.T) {

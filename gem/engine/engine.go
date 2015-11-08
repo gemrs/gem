@@ -4,7 +4,7 @@ import (
 	"time"
 
 	engine_event "github.com/sinusoids/gem/gem/engine/event"
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/task"
 	"github.com/sinusoids/gem/gem/util/safe"
 

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/runite"
 	"github.com/sinusoids/gem/gem/runite/format/rt3"
 

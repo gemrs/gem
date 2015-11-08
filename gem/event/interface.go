@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 )
 
 type Observable interface {

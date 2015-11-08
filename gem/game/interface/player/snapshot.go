@@ -6,7 +6,7 @@ import (
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 )
 
 // Snapshot clones a player to a static, read-only implementation of the player interfaces

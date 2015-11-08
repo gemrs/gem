@@ -5,7 +5,7 @@ import (
 
 	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 )
 
 // DecodeFunc is used for parsing the read stream and dealing with the incoming data.

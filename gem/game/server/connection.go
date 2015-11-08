@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/log2"
+	"github.com/sinusoids/gem/gem/log"
 	"github.com/sinusoids/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
