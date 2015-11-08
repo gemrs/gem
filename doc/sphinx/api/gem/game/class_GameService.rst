@@ -10,3 +10,9 @@ GameService
    :param gem.runite.Context context: The runite context to serve content from
    :param string rsa_key: The path to the RSA keypair to use for secure login
    :param gem.auth.ProviderImpl auth_provider: The object implementing :py:class:`gem.auth.ProviderImpl` to use for player authentication
+
+   .. rubric:: Attributes
+
+   .. py:attribute:: world
+
+      The :py:class:`gem.game.world.WorldInstance` of this game service

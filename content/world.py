@@ -22,6 +22,7 @@ class World(object):
 
     def __init__(self):
         self.entity_update_task.submit()
+        self.instance = None
 
     @core.event.callback(gem.game.event.PlayerLoadProfile)
     def load_profile(self, player, profile):
@@ -36,6 +37,9 @@ class World(object):
     def unregister_player(self, player):
         self.entities.remove(player)
         logger.info("unregistered player [%s]" % player)
+
+    def set_instance(self, world_instance):
+        self.instance = world_instance
 
     def get_players(self):
         entity_list = self.entities.entities

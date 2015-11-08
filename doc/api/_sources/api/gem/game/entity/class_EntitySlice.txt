@@ -1,5 +1,5 @@
 EntitySlice
------
+-----------
 
 .. py:currentmodule:: gem.game.entity
 

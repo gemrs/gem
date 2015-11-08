@@ -13,6 +13,7 @@ import (
 	"github.com/sinusoids/gem/gem/game/interface/player"
 	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
+	"github.com/sinusoids/gem/gem/game/world"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 )
 
@@ -20,7 +21,10 @@ import (
 type Player struct {
 	py.BaseObject
 
-	index int
+	index        int
+	sector       *world.Sector
+	world        *world.Instance
+	loadedRegion *position.Region
 
 	*server.Connection
 	*entityimpl.GenericMob
@@ -36,11 +40,16 @@ type Player struct {
 }
 
 // NewGameClient constructs a new GameClient
-func (client *Player) Init(conn *server.Connection) {
+func (client *Player) Init(conn *server.Connection, worldInst *world.Instance) {
 	client.Connection = conn
+	client.world = worldInst
 	client.serverRandKey = []uint32{
 		uint32(rand.Int31()), uint32(rand.Int31()),
 	}
+
+	nilPosition := position.NewAbsolute(0, 0, 0)
+	client.sector = worldInst.Sector(nilPosition.Sector())
+	client.loadedRegion = nilPosition.RegionOf()
 
 	wpq := entityimpl.NewSimpleWaypointQueue()
 	client.GenericMob = entityimpl.NewGenericMob(wpq)
@@ -97,6 +106,10 @@ func (client *Player) SetSecureBlockSize(size int) {
 	client.secureBlockSize = size
 }
 
+func (client *Player) LoadedRegion() *position.Region {
+	return client.loadedRegion
+}
+
 func (client *Player) Animations() player.Animations {
 	return client.animations
 }
@@ -146,10 +159,10 @@ func (client *Player) SetNextStep(next *position.Absolute) {
 
 // SetPosition warps the mob to a given location
 func (client *Player) SetPosition(pos *position.Absolute) {
-	oldRegion := client.Region()
+	oldSector := client.sector.Position()
 	client.GenericMob.SetPosition(pos)
 
-	dx, dy, dz := client.GenericMob.Region().SectorDelta(oldRegion)
+	dx, dy, dz := oldSector.Delta(pos.Sector())
 
 	eventArgs := map[string]interface{}{
 		"entity":   client,
@@ -159,6 +172,9 @@ func (client *Player) SetPosition(pos *position.Absolute) {
 	if dx >= 1 || dy >= 1 || dz >= 1 {
 		game_event.EntitySectorChange.NotifyObservers(eventArgs)
 	}
+
+	loadedRegion := client.LoadedRegion()
+	dx, dy, dz = loadedRegion.SectorDelta(pos.RegionOf())
 
 	if dx >= 5 || dy >= 5 || dz >= 1 {
 		game_event.EntityRegionChange.NotifyObservers(eventArgs)

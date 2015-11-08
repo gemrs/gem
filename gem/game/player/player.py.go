@@ -4,12 +4,13 @@ import (
 	"github.com/qur/gopy/lib"
 
 	"github.com/sinusoids/gem/gem/game/server"
+	"github.com/sinusoids/gem/gem/game/world"
 	"github.com/sinusoids/gem/pybind"
 )
 
 var PlayerDef = pybind.Define("Player", (*Player)(nil))
 var RegisterPlayer = pybind.GenerateRegisterFunc(PlayerDef)
-var NewPlayer = pybind.GenerateConstructor(PlayerDef).(func(*server.Connection) *Player)
+var NewPlayer = pybind.GenerateConstructor(PlayerDef).(func(*server.Connection, *world.Instance) *Player)
 
 func (client *Player) PyGet_username() (py.Object, error) {
 	fn := pybind.Wrap(client.Profile().Username)
@@ -28,6 +29,11 @@ func (client *Player) Py_warp(args *py.Tuple, kwds *py.Dict) (py.Object, error) 
 
 func (client *Player) PyGet_skills() (py.Object, error) {
 	fn := pybind.Wrap(client.Profile().Skills)
+	return fn(nil, nil)
+}
+
+func (client *Player) PyGet_loaded_region() (py.Object, error) {
+	fn := pybind.Wrap(client.LoadedRegion)
 	return fn(nil, nil)
 }
 

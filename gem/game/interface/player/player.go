@@ -4,6 +4,7 @@ import (
 	"github.com/gtank/isaac"
 
 	"github.com/sinusoids/gem/gem/game/interface/entity"
+	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/gem/game/server"
 	"github.com/sinusoids/gem/gem/log"
 )
@@ -23,6 +24,7 @@ type Player interface {
 	FinishInit()
 	LoadProfile()
 	Cleanup()
+	LoadedRegion() *position.Region
 
 	SetDecodeFunc(d DecodeFunc)
 	Conn() *server.Connection

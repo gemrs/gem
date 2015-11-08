@@ -12,6 +12,7 @@ import (
 	"github.com/sinusoids/gem/gem/game/packet"
 	playerimpl "github.com/sinusoids/gem/gem/game/player"
 	"github.com/sinusoids/gem/gem/game/server"
+	"github.com/sinusoids/gem/gem/game/world"
 	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
 	"github.com/sinusoids/gem/gem/runite"
 	"github.com/sinusoids/gem/gem/util/expire"
@@ -27,6 +28,7 @@ type GameService struct {
 	runite *runite.Context
 	key    *crypto.Keypair
 	auth   auth.Provider
+	world  *world.Instance
 }
 
 func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth auth.Provider) error {
@@ -41,6 +43,7 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 	svc.key = key
 	svc.auth = auth
 	svc.NonExpirable = expire.NewNonExpirable()
+	svc.world = world.NewInstance()
 
 	game_event.PlayerFinishLogin.Register(event.NewListener(svc, playerFinishLogin))
 	game_event.PlayerLogout.Register(event.NewListener(svc, playerCleanup))
@@ -64,9 +67,13 @@ func playerCleanup(_ *event.Event, args ...interface{}) {
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log().Info("new game client")
-	client := playerimpl.NewPlayer(conn)
+	client := playerimpl.NewPlayer(conn, svc.world)
 	client.SetDecodeFunc(svc.handshake)
 	return client
+}
+
+func (svc *GameService) World() *world.Instance {
+	return svc.world
 }
 
 func (svc *GameService) EntityUpdate(ev *event.Event, _args ...interface{}) {

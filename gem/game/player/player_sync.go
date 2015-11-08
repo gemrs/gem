@@ -35,11 +35,17 @@ func (client *Player) Cleanup() {
 
 }
 
-func (client *Player) SectorChange() {}
+func (client *Player) SectorChange() {
+	client.sector.Remove(client)
+	client.sector = client.world.Sector(client.Position().Sector())
+	client.sector.Add(client)
+}
 
 // RegionUpdate is called when the player enters a new region
 // It sends the region update packet and sets the correct update flags
 func (client *Player) RegionChange() {
+	client.loadedRegion = client.Position().RegionOf()
+
 	sector := client.Position().Sector()
 	client.Conn().Write <- &game_protocol.OutboundRegionUpdate{
 		SectorX: encoding.Uint16(sector.X()),

@@ -5,6 +5,7 @@ import gem.engine.event
 import gem.game as game
 import gem.game.server as game_server
 
+import world
 import config
 import core.event
 
@@ -26,6 +27,8 @@ class ServiceListeners(object):
             game_service = game.GameService(gem.runite.context, config.rsa_key_path, config.auth_provider)
 
             update_service = game.UpdateService(gem.runite.context)
+
+            world.global_world.set_instance(game_service.world)
 
             self.game_server = game_server.Server(config.game_server_listen)
             self.game_server.set_service(14, game_service)

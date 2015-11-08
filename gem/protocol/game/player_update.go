@@ -58,7 +58,7 @@ func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer) erro
 
 	switch {
 	case (flags & entity.MobFlagRegionUpdate) != 0:
-		localPos := player.Position().LocalTo(player.Region())
+		localPos := player.Position().LocalTo(player.LoadedRegion())
 
 		buf.Write(2, 3) // update type 3 = warp to location
 		buf.Write(2, uint32(localPos.Z()))

@@ -15,8 +15,3 @@ func (mob *GenericMob) PyGet_position() (py.Object, error) {
 	fn := pybind.Wrap(mob.Position)
 	return fn(nil, nil)
 }
-
-func (mob *GenericMob) PyGet_visible_region() (py.Object, error) {
-	fn := pybind.Wrap(mob.Region)
-	return fn(nil, nil)
-}

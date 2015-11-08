@@ -56,6 +56,11 @@ func (c *Collection) Entities() *Slice {
 	return c.entities.Slice()
 }
 
+// Size returns the total number of entities (adding,removing, or tracking) in the collection
+func (c *Collection) Size() int {
+	return c.entities.Size() + c.unregister.Size()
+}
+
 // Slice is a slice of entities.
 // Slices can be added to and emptied, but not removed from. They are intended for buffering
 // entities for addition to a List.

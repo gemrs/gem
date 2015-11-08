@@ -23,7 +23,7 @@ func comparePlayers(p1, p2 Player) bool {
 		return false
 	}
 
-	if !p1.Region().Compare(p2.Region()) {
+	if !p1.LoadedRegion().Compare(p2.LoadedRegion()) {
 		return false
 	}
 

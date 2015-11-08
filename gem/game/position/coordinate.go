@@ -106,6 +106,17 @@ func (pos *Absolute) LocalTo(region *Region) *Local {
 	return local
 }
 
+// A SectorHash is a 64-bit representation of a given sector in the world.
+// This is useful for referencing sectors in a map for fast lookup
+type SectorHash uint64
+
+func (s SectorHash) Sector() *Sector {
+	x := (s >> 0) & 0xFFFF
+	y := (s >> 16) & 0xFFFF
+	z := (s >> 32) & 0xFFFF
+	return NewSector(int(x), int(y), int(z))
+}
+
 // A Sector is an 8x8 tile chunk of the map
 type Sector struct {
 	py.BaseObject
@@ -131,10 +142,26 @@ func (s *Sector) Z() int {
 	return s.z
 }
 
+func (s *Sector) HashCode() SectorHash {
+	x, y, z := uint16(s.X()), uint16(s.Y()), uint16(s.Z())
+	hash := SectorHash(x)
+	hash = hash + SectorHash(uint64(y)<<16)
+	hash = hash + SectorHash(uint64(z)<<32)
+	return hash
+}
+
 func (s *Sector) Compare(other *Sector) bool {
 	return s.x == other.x &&
 		s.y == other.y &&
 		s.z == other.z
+}
+
+func (s *Sector) Delta(other *Sector) (x, y, z int) {
+	x = int(math.Abs(float64(other.x - s.x)))
+	y = int(math.Abs(float64(other.y - s.y)))
+	z = int(math.Abs(float64(other.z - s.z)))
+
+	return x, y, z
 }
 
 // A region is a 13x13 sector (104x104 tile) chunk.
@@ -173,11 +200,7 @@ func (region *Region) Rebase(absolute *Absolute) {
 
 // SectorDelta calculates the delta between two regions in terms of sectors
 func (region *Region) SectorDelta(other *Region) (x, y, z int) {
-	x = int(math.Abs(float64(other.origin.x - region.origin.x)))
-	y = int(math.Abs(float64(other.origin.y - region.origin.y)))
-	z = int(math.Abs(float64(other.origin.z - region.origin.z)))
-
-	return x, y, z
+	return region.origin.Delta(other.origin)
 }
 
 // Local is a coordinate relative to the base of a Region

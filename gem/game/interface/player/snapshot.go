@@ -17,9 +17,9 @@ func Snapshot(player Player) Player {
 	srcWpq := player.WaypointQueue()
 
 	snapshot := &PlayerSnapshot{
-		index:  player.Index(),
-		flags:  player.Flags(),
-		region: player.Region(),
+		index:        player.Index(),
+		flags:        player.Flags(),
+		loadedRegion: player.LoadedRegion(),
 		profile: &ProfileSnapshot{
 			username: srcProfile.Username(),
 			password: srcProfile.Password(),
@@ -84,7 +84,7 @@ type PlayerSnapshot struct {
 	animations    Animations
 	profile       Profile
 	flags         entity.Flags
-	region        *position.Region
+	loadedRegion  *position.Region
 	waypointQueue entity.WaypointQueue
 }
 
@@ -132,8 +132,8 @@ func (p *PlayerSnapshot) ClearFlags() {
 	panic("not implemented")
 }
 
-func (p *PlayerSnapshot) Region() *position.Region {
-	return p.region
+func (p *PlayerSnapshot) LoadedRegion() *position.Region {
+	return p.loadedRegion
 }
 
 func (p *PlayerSnapshot) Position() *position.Absolute {

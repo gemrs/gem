@@ -12,7 +12,3 @@ GenericMob
    .. py:attribute:: position
 
       The mob's current position
-
-   .. py:attribute:: visible_region
-
-      The mob's current visible region

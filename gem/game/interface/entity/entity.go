@@ -18,7 +18,6 @@ const (
 // An Entity is a 'thing' within the world, with a position, and an index.
 type Entity interface {
 	position.Positionable
-	Region() *position.Region
 	EntityType() EntityType
 	RegionChange()
 	SectorChange()

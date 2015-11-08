@@ -12,13 +12,10 @@ type GenericMob struct {
 
 	waypointQueue entity.WaypointQueue
 	position      *position.Absolute
-	region        *position.Region
 	flags         entity.Flags
 }
 
 func (mob *GenericMob) Init(wpq entity.WaypointQueue) {
-	mob.region = position.NewRegion(nil)
-
 	mob.waypointQueue = wpq
 }
 
@@ -50,20 +47,9 @@ func (mob *GenericMob) ClearFlags() {
 	mob.flags = 0
 }
 
-// Region returns the mob's current surrounding region
-func (mob *GenericMob) Region() *position.Region {
-	return mob.region
-}
-
 // SetPosition warps the mob to a given location
 func (mob *GenericMob) SetPosition(pos *position.Absolute) {
 	mob.position = pos
-
-	newRegion := pos.RegionOf()
-	dx, dy, dz := newRegion.SectorDelta(mob.Region())
-	if dx >= 5 || dy >= 5 || dz >= 1 {
-		mob.region = newRegion
-	}
 }
 
 // AppearanceUpdate is called when the player's appearance changes

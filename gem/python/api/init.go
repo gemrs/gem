@@ -13,6 +13,7 @@ import (
 	_ "github.com/sinusoids/gem/gem/game/player"
 	_ "github.com/sinusoids/gem/gem/game/position"
 	_ "github.com/sinusoids/gem/gem/game/server"
+	_ "github.com/sinusoids/gem/gem/game/world"
 	_ "github.com/sinusoids/gem/gem/log"
 	_ "github.com/sinusoids/gem/gem/runite"
 	_ "github.com/sinusoids/gem/gem/task"
