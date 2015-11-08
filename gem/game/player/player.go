@@ -20,6 +20,8 @@ import (
 type Player struct {
 	py.BaseObject
 
+	index int
+
 	*server.Connection
 	*entityimpl.GenericMob
 	decode player.DecodeFunc
@@ -44,6 +46,11 @@ func (client *Player) Init(conn *server.Connection) {
 	client.GenericMob = entityimpl.NewGenericMob(wpq)
 
 	client.animations = NewAnimations()
+	client.index = entity.NextIndex()
+}
+
+func (client *Player) Index() int {
+	return client.index
 }
 
 func (client *Player) SetDecodeFunc(d player.DecodeFunc) {

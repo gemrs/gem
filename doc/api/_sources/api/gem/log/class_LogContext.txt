@@ -1,5 +1,5 @@
 LogContext
-------
+----------
 
 .. py:currentmodule:: gem.log
 

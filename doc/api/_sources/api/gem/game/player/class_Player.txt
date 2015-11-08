@@ -27,6 +27,10 @@ Player
 
    .. py:attribute:: entity_type
 
+   .. py:attribute:: index
+
+      The unique entity index associated with this player
+
    .. rubric:: Methods
 
    .. py:method:: warp(position)

@@ -50,3 +50,8 @@ func (client *Player) PyGet_entity_type() (py.Object, error) {
 	fn := pybind.Wrap(client.EntityType)
 	return fn(nil, nil)
 }
+
+func (client *Player) PyGet_index() (py.Object, error) {
+	fn := pybind.Wrap(client.Index)
+	return fn(nil, nil)
+}

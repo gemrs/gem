@@ -22,8 +22,6 @@ type Client interface {
 	Decode() error
 	Encode(encoding.Encodable) error
 	Disconnect()
-	Index() int
-	SetIndex(index int)
 }
 
 // Connection is a network-level representation of the connection.
@@ -88,16 +86,6 @@ func (conn *Connection) Disconnect() {
 	default:
 		conn.Expire()
 	}
-}
-
-// Index returns the connection's unique index
-func (conn *Connection) Index() int {
-	return conn.index
-}
-
-// Index sets the connection's unique index
-func (conn *Connection) SetIndex(index int) {
-	conn.index = index
 }
 
 // decodeToReadQueue is the goroutine handling the read buffer

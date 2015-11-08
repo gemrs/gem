@@ -164,7 +164,7 @@ func (s *Server) registerClient(client Client) {
 
 	index := <-s.nextIndex
 	s.clients[index] = client
-	client.SetIndex(index)
+	client.Conn().index = index
 }
 
 // unregisterClient removes a client from the clients map
@@ -172,7 +172,7 @@ func (s *Server) unregisterClient(client Client) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
-	delete(s.clients, client.Index())
+	delete(s.clients, client.Conn().index)
 }
 
 // handshake reads the service selection byte and points the connection's decode func

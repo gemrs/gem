@@ -8,7 +8,17 @@ Module
    Module is a log object which can contain contextual information
 
    :param string tag: The string with which to tag all log records created by this logger
-   :param context LogContext: A context provider for all log records created by this logger. May be None.
+   :param LogContext context: A context provider for all log records created by this logger. May be None.
+
+   .. rubric:: Attributes
+
+   .. py:attribute:: tag
+
+      The log tag
+
+   .. py:attribute:: context
+
+      The context provider
 
    .. rubric:: Methods
 
@@ -27,5 +37,9 @@ Module
       :param sting message: The log message
 
    .. py:method:: info(message)
+
+      :param sting message: The log message
+
+   .. py:method:: notice(message)
 
       :param sting message: The log message

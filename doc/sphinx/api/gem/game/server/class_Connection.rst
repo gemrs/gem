@@ -16,10 +16,6 @@ Connection
 
       The :py:class:`gem.log.Module` associated with this connection
 
-   .. py:attribute:: index
-
-      The unique index associated with this connection
-
    .. rubric:: Methods
 
    .. py:method:: disconnect()

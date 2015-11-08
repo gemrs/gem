@@ -22,8 +22,3 @@ func (c *Connection) Py_disconnect(args *py.Tuple, kwds *py.Dict) (py.Object, er
 	fn := pybind.Wrap(c.Disconnect)
 	return fn(args, kwds)
 }
-
-func (c *Connection) PyGet_index() (py.Object, error) {
-	fn := pybind.Wrap(c.Index)
-	return fn(nil, nil)
-}

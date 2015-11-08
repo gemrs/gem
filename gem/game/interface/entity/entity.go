@@ -29,6 +29,7 @@ type Entity interface {
 	EntityType() EntityType
 	RegionChange()
 	SectorChange()
+	Index() int
 }
 
 type Movable interface {

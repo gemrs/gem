@@ -17,6 +17,7 @@ func Snapshot(player Player) Player {
 	srcWpq := player.WaypointQueue()
 
 	snapshot := &PlayerSnapshot{
+		index:  player.Index(),
 		flags:  player.Flags(),
 		region: player.Region(),
 		profile: &ProfileSnapshot{
@@ -79,11 +80,16 @@ func Snapshot(player Player) Player {
 }
 
 type PlayerSnapshot struct {
+	index         int
 	animations    Animations
 	profile       Profile
 	flags         entity.Flags
 	region        *position.Region
 	waypointQueue entity.WaypointQueue
+}
+
+func (p *PlayerSnapshot) Index() int {
+	return p.index
 }
 
 func (p *PlayerSnapshot) SetNextStep(*position.Absolute) {
