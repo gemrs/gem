@@ -1,15 +1,17 @@
 package: gem
 import:
-  - package: gopkg.in/tomb.v2
-    ref:     14b3d72120e8d10ea6e6b7f87f7175734b1faab8
-  - package: github.com/op/go-logging
-    ref:     e8d5414f0947014548c2334044a0fac13187dfee
-  - package: golang.org/x/crypto
-    ref:     c8b9e6388ef638d5a8a9d865c634befdc46a6784
-    subpackages:
-      - /bcrypt
-  - package: golang.org/x/tools
-    ref:     13be4dfe75fd7b383cf1c753873f118a97c4aeb4
+- package: github.com/op/go-logging
+  version: e8d5414f0947014548c2334044a0fac13187dfee
+- package: golang.org/x/crypto
+  version: c8b9e6388ef638d5a8a9d865c634befdc46a6784
+  subpackages:
+  - /bcrypt
+- package: golang.org/x/tools
+  version: 13be4dfe75fd7b383cf1c753873f118a97c4aeb4
+- package: github.com/fatih/color
+  version: 8640971291e54b520f781270275b7ed8762ac909
+- package: gopkg.in/tomb.v2
+  version: 14b3d72120e8d10ea6e6b7f87f7175734b1faab8
 # managed outside glide
 #  - package: github.com/gtank/isaac
 #  - package: github.com/qur/gopy
