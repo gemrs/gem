@@ -13,15 +13,15 @@ EntityCollection
 
    .. py:attribute:: adding
 
-      The slice of entities being added in the next cycle
+      The :py:class:`EntitySlice` of entities being added in the next cycle
 
    .. py:attribute:: removing
 
-      The slice of entities being removed in the next cycle
+      The :py:class:`EntitySlice` of entities being removed in the next cycle
 
    .. py:attribute:: entities
 
-      The slice of entities currently in the collection
+      The :py:class:`EntitySlice` of entities currently in the collection
 
    .. rubric:: Methods
 

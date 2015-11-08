@@ -4,7 +4,7 @@ import (
 	"github.com/qur/gopy/lib"
 )
 
-// Collection is a efficient, cycle based entity collection.
+// Collection is an efficient, cycle based entity collection.
 // The underlying collection is transactional and is updated at a fixed interval.
 // The Update method should be called to commit Register/Unregistered entities.
 type Collection struct {

@@ -15,13 +15,6 @@ const (
 	MobFlagMovementUpdate Flags = (MobFlagRegionUpdate | MobFlagWalkUpdate | MobFlagRunUpdate)
 )
 
-type EntityType string
-
-const (
-	IncompleteType EntityType = "incomplete"
-	PlayerType                = "player"
-)
-
 // An Entity is a 'thing' within the world, with a position, and an index.
 type Entity interface {
 	position.Positionable

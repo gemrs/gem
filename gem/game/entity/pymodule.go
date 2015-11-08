@@ -33,4 +33,21 @@ func init() {
 			panic(err)
 		}
 	}
+
+	createEntityTypeConstants(module)
+}
+
+var entityTypeConstants = map[string]entity.EntityType{
+	"IncompleteType": entity.IncompleteType,
+	"PlayerType":     entity.PlayerType,
+}
+
+func createEntityTypeConstants(module *py.Module) {
+	for identifier, typ := range entityTypeConstants {
+		if pyString, err := py.NewString((string)(typ)); err != nil {
+			panic(err)
+		} else if err := module.AddObject(identifier, pyString); err != nil {
+			panic(err)
+		}
+	}
 }
