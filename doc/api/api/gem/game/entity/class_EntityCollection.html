@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gem.game.entity module &mdash; Gem 1.0.0 documentation</title>
+  <title>EntityCollection &mdash; Gem 1.0.0 documentation</title>
   
 
   
@@ -31,9 +31,9 @@
 
   
     <link rel="top" title="Gem 1.0.0 documentation" href="../../../../index.html"/>
-        <link rel="up" title="Gem Kernel API" href="../../module_gem.html"/>
-        <link rel="next" title="EntityCollection" href="class_EntityCollection.html"/>
-        <link rel="prev" title="PyListener" href="../../event/class_PyListener.html"/> 
+        <link rel="up" title="gem.game.entity module" href="module_entity.html"/>
+        <link rel="next" title="EntityList" href="class_EntityList.html"/>
+        <link rel="prev" title="gem.game.entity module" href="module_entity.html"/> 
 
   
   <script src="../../../../_static/js/modernizr.min.js"></script>
@@ -90,8 +90,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../engine/event/module_event.html">gem.engine.event module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../engine/module_engine.html">gem.engine module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../event/module_event.html">gem.event module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">gem.game.entity module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="class_EntityCollection.html">EntityCollection</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="module_entity.html">gem.game.entity module</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="">EntityCollection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="class_EntityList.html">EntityList</a></li>
 <li class="toctree-l3"><a class="reference internal" href="class_EntitySlice.html">EntitySlice</a></li>
 <li class="toctree-l3"><a class="reference internal" href="class_GenericMob.html">GenericMob</a></li>
@@ -139,11 +139,13 @@
       
           <li><a href="../../module_gem.html">Gem Kernel API</a> &raquo;</li>
       
-    <li>gem.game.entity module</li>
+          <li><a href="module_entity.html">gem.game.entity module</a> &raquo;</li>
+      
+    <li>EntityCollection</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../../../_sources/api/gem/game/entity/module_entity.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../_sources/api/gem/game/entity/class_EntityCollection.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -153,17 +155,74 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-gem.game.entity">
-<span id="gem-game-entity-module"></span><h1>gem.game.entity module<a class="headerlink" href="#module-gem.game.entity" title="Permalink to this headline">¶</a></h1>
-<p class="rubric">Classes</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="class_EntityCollection.html">EntityCollection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_EntityList.html">EntityList</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_EntitySlice.html">EntitySlice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_GenericMob.html">GenericMob</a></li>
+  <div class="section" id="entitycollection">
+<h1>EntityCollection<a class="headerlink" href="#entitycollection" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="gem.game.entity.EntityCollection">
+<em class="property">class </em><code class="descclassname">gem.game.entity.</code><code class="descname">EntityCollection</code><a class="headerlink" href="#gem.game.entity.EntityCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>EntityCollection is an efficient, cycle based entity collection.</p>
+<p>The underlying collection is transactional and is updated at a fixed interval. The update method should be called to commit added/removed entities.</p>
+<p class="rubric">Attributes</p>
+<dl class="attribute">
+<dt id="gem.game.entity.EntityCollection.adding">
+<code class="descname">adding</code><a class="headerlink" href="#gem.game.entity.EntityCollection.adding" title="Permalink to this definition">¶</a></dt>
+<dd><p>The slice of entities being added in the next cycle</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gem.game.entity.EntityCollection.removing">
+<code class="descname">removing</code><a class="headerlink" href="#gem.game.entity.EntityCollection.removing" title="Permalink to this definition">¶</a></dt>
+<dd><p>The slice of entities being removed in the next cycle</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gem.game.entity.EntityCollection.entities">
+<code class="descname">entities</code><a class="headerlink" href="#gem.game.entity.EntityCollection.entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>The slice of entities currently in the collection</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="gem.game.entity.EntityCollection.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>entity</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.game.entity.EntityCollection.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests an entity be added to the collection in the next cycle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity</strong> (<em>Entity</em>) &#8211; The entity to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gem.game.entity.EntityCollection.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>entity</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.game.entity.EntityCollection.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests an entity be removed from the collection in the next cycle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity</strong> (<em>Entity</em>) &#8211; The entity to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gem.game.entity.EntityCollection.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gem.game.entity.EntityCollection.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cycles the collection.</p>
+<ul class="simple">
+<li>Entities in the adding list are added to the main entity list</li>
+<li>Entities in the removing list are removed from the main entity list</li>
+<li>Both adding and removing lists are emptied</li>
 </ul>
-</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -173,10 +232,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="class_EntityCollection.html" class="btn btn-neutral float-right" title="EntityCollection" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="class_EntityList.html" class="btn btn-neutral float-right" title="EntityList" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../../event/class_PyListener.html" class="btn btn-neutral" title="PyListener" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="module_entity.html" class="btn btn-neutral" title="gem.game.entity module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

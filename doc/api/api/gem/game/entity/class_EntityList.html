@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gem.game.entity module &mdash; Gem 1.0.0 documentation</title>
+  <title>EntityList &mdash; Gem 1.0.0 documentation</title>
   
 
   
@@ -31,9 +31,9 @@
 
   
     <link rel="top" title="Gem 1.0.0 documentation" href="../../../../index.html"/>
-        <link rel="up" title="Gem Kernel API" href="../../module_gem.html"/>
-        <link rel="next" title="EntityCollection" href="class_EntityCollection.html"/>
-        <link rel="prev" title="PyListener" href="../../event/class_PyListener.html"/> 
+        <link rel="up" title="gem.game.entity module" href="module_entity.html"/>
+        <link rel="next" title="EntitySlice" href="class_EntitySlice.html"/>
+        <link rel="prev" title="EntityCollection" href="class_EntityCollection.html"/> 
 
   
   <script src="../../../../_static/js/modernizr.min.js"></script>
@@ -90,9 +90,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../engine/event/module_event.html">gem.engine.event module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../engine/module_engine.html">gem.engine module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../event/module_event.html">gem.event module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">gem.game.entity module</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="module_entity.html">gem.game.entity module</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="class_EntityCollection.html">EntityCollection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="class_EntityList.html">EntityList</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">EntityList</a></li>
 <li class="toctree-l3"><a class="reference internal" href="class_EntitySlice.html">EntitySlice</a></li>
 <li class="toctree-l3"><a class="reference internal" href="class_GenericMob.html">GenericMob</a></li>
 </ul>
@@ -139,11 +139,13 @@
       
           <li><a href="../../module_gem.html">Gem Kernel API</a> &raquo;</li>
       
-    <li>gem.game.entity module</li>
+          <li><a href="module_entity.html">gem.game.entity module</a> &raquo;</li>
+      
+    <li>EntityList</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../../../_sources/api/gem/game/entity/module_entity.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../_sources/api/gem/game/entity/class_EntityList.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -153,17 +155,84 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-gem.game.entity">
-<span id="gem-game-entity-module"></span><h1>gem.game.entity module<a class="headerlink" href="#module-gem.game.entity" title="Permalink to this headline">¶</a></h1>
-<p class="rubric">Classes</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="class_EntityCollection.html">EntityCollection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_EntityList.html">EntityList</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_EntitySlice.html">EntitySlice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_GenericMob.html">GenericMob</a></li>
-</ul>
-</div>
+  <div class="section" id="entitylist">
+<h1>EntityList<a class="headerlink" href="#entitylist" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="gem.game.entity.EntityList">
+<em class="property">class </em><code class="descclassname">gem.game.entity.</code><code class="descname">EntityList</code><a class="headerlink" href="#gem.game.entity.EntityList" title="Permalink to this definition">¶</a></dt>
+<dd><p>List is a list of entities, efficient for searching by entity index.</p>
+<p class="rubric">Attributes</p>
+<dl class="attribute">
+<dt id="gem.game.entity.EntityList.slice">
+<code class="descname">slice</code><a class="headerlink" href="#gem.game.entity.EntityList.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>The equivalent <a class="reference internal" href="class_EntitySlice.html#gem.game.entity.EntitySlice" title="gem.game.entity.EntitySlice"><code class="xref py py-class docutils literal"><span class="pre">EntitySlice</span></code></a> of this List.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gem.game.entity.EntityList.size">
+<code class="descname">size</code><a class="headerlink" href="#gem.game.entity.EntityList.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of entities in the list</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="gem.game.entity.EntityList.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>entity</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.game.entity.EntityList.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an entity to the list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity</strong> (<em>Entity</em>) &#8211; The entity to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gem.game.entity.EntityList.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>entity</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.game.entity.EntityList.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an entity from the list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity</strong> (<em>Entity</em>) &#8211; The entity to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gem.game.entity.EntityList.add_all">
+<code class="descname">add_all</code><span class="sig-paren">(</span><em>slice</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.game.entity.EntityList.add_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a slice of entities to the list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>slice</strong> (<a class="reference internal" href="class_EntitySlice.html#gem.game.entity.EntitySlice" title="gem.game.entity.EntitySlice"><em>EntitySlice</em></a>) &#8211; The slice of entities to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gem.game.entity.EntityList.remove_all">
+<code class="descname">remove_all</code><span class="sig-paren">(</span><em>slice</em><span class="sig-paren">)</span><a class="headerlink" href="#gem.game.entity.EntityList.remove_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a slice of entities from the list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>slice</strong> (<a class="reference internal" href="class_EntitySlice.html#gem.game.entity.EntitySlice" title="gem.game.entity.EntitySlice"><em>EntitySlice</em></a>) &#8211; The slice of entities to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -173,10 +242,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="class_EntityCollection.html" class="btn btn-neutral float-right" title="EntityCollection" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="class_EntitySlice.html" class="btn btn-neutral float-right" title="EntitySlice" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../../event/class_PyListener.html" class="btn btn-neutral" title="PyListener" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="class_EntityCollection.html" class="btn btn-neutral" title="EntityCollection" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

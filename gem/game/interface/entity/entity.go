@@ -15,11 +15,11 @@ const (
 	MobFlagMovementUpdate Flags = (MobFlagRegionUpdate | MobFlagWalkUpdate | MobFlagRunUpdate)
 )
 
-type EntityType int
+type EntityType string
 
 const (
-	IncompleteType EntityType = iota
-	PlayerType
+	IncompleteType EntityType = "incomplete"
+	PlayerType                = "player"
 )
 
 // An Entity is a 'thing' within the world, with a position, and an index.

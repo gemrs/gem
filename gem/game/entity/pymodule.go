@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/qur/gopy/lib"
 
+	"github.com/sinusoids/gem/gem/game/interface/entity"
 	"github.com/sinusoids/gem/gem/python/modules"
 )
 
@@ -10,6 +11,9 @@ type registerFunc func(*py.Module) error
 
 var moduleRegisterFuncs = []registerFunc{
 	RegisterGenericMob,
+	entity.RegisterCollection,
+	entity.RegisterSlice,
+	entity.RegisterList,
 }
 
 func init() {
