@@ -4,7 +4,7 @@ import (
 	"time"
 
 	engine_event "github.com/gemrs/gem/gem/engine/event"
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/gem/task"
 	"github.com/gemrs/gem/gem/util/safe"
 

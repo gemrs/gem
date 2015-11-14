@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/gem/util/expire"
 	"github.com/gemrs/gem/gem/util/id"
 	"github.com/gemrs/gem/gem/util/safe"

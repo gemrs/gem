@@ -3,7 +3,7 @@ package task
 import (
 	"container/list"
 
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 )
 
 type _Scheduler struct {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 )
 
 type Sector struct {

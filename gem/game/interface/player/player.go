@@ -6,7 +6,7 @@ import (
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 )
 
 // DecodeFunc is used for parsing the read stream and dealing with the incoming data.

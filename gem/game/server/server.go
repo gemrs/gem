@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/gem/protocol"
 	"github.com/gemrs/gem/gem/util/id"
 	"github.com/gemrs/gem/gem/util/safe"

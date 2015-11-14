@@ -3,7 +3,7 @@ package safe
 import (
 	"runtime"
 
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 )
 
 // Set Unsafe to disable recovery (for testing)

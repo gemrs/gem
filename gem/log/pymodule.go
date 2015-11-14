@@ -6,6 +6,7 @@ import (
 	"github.com/qur/gopy/lib"
 
 	"github.com/gemrs/gem/gem/python/modules"
+	"github.com/gemrs/willow/log"
 )
 
 type registerFunc func(*py.Module) error
@@ -20,9 +21,9 @@ func init() {
 	defer lock.Unlock()
 
 	/* Setup default targets */
-	stdoutTarget := NewTextTarget(os.Stdout)
-	bufferingTarget := NewBufferingTarget(stdoutTarget)
-	Targets["stdout"] = bufferingTarget
+	stdoutTarget := log.NewTextTarget(os.Stdout)
+	bufferingTarget := log.NewBufferingTarget(stdoutTarget)
+	log.Targets["stdout"] = bufferingTarget
 
 	/* Create package */
 	var err error
@@ -43,7 +44,7 @@ func init() {
 }
 
 func Py_begin_redirect() (py.Object, error) {
-	if bufferingTarget, ok := Targets["stdout"].(*BufferingTarget); ok {
+	if bufferingTarget, ok := log.Targets["stdout"].(*log.BufferingTarget); ok {
 		bufferingTarget.Redirect()
 	}
 	py.None.Incref()
@@ -51,7 +52,7 @@ func Py_begin_redirect() (py.Object, error) {
 }
 
 func Py_end_redirect() (py.Object, error) {
-	if bufferingTarget, ok := Targets["stdout"].(*BufferingTarget); ok {
+	if bufferingTarget, ok := log.Targets["stdout"].(*log.BufferingTarget); ok {
 		bufferingTarget.Flush()
 	}
 	py.None.Incref()

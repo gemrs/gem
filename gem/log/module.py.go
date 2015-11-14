@@ -4,6 +4,7 @@ import (
 	"github.com/qur/gopy/lib"
 
 	"github.com/gemrs/gem/pybind"
+	"github.com/gemrs/willow/log"
 )
 
 var PyModuleDef = pybind.Define("Module", (*PyModule)(nil))
@@ -13,29 +14,27 @@ var NewPyModule = pybind.GenerateConstructor(PyModuleDef).(func(string, py.Objec
 type PyModule struct {
 	py.BaseObject
 
-	*Module
+	*log.Module
 }
 
 func (m *PyModule) Init(tag string, ctxObj py.Object) {
-	var ctx Context
+	var ctx log.Context
 	if c, ok := ctxObj.(*PyContext); ok {
 		ctx = c
 	} else {
-		ctx = NilContext
+		ctx = log.NilContext
 	}
-	m.Module = New(tag, ctx).(*Module)
+	m.Module = log.New(tag, ctx).(*log.Module)
 }
 
 func (m *PyModule) PyGet_tag() (py.Object, error) {
-	fn := pybind.Wrap(func() string {
-		return m.Module.tag
-	})
+	fn := pybind.Wrap(m.Module.Tag)
 	return fn(nil, nil)
 }
 
 func (m *PyModule) PyGet_ctx() (py.Object, error) {
 	fn := pybind.Wrap(func() py.Object {
-		if ctx, ok := m.Module.ctx.(*PyContext); ok {
+		if ctx, ok := m.Module.Ctx().(*PyContext); ok {
 			return ctx
 		}
 		py.None.Incref()
@@ -46,7 +45,7 @@ func (m *PyModule) PyGet_ctx() (py.Object, error) {
 
 func (m *PyModule) Py_child(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
 	fn := pybind.Wrap(func(tag string, ctx py.Object) *PyModule {
-		return NewPyModule(m.Module.tag+"/"+tag, ctx)
+		return NewPyModule(m.Module.Tag()+"/"+tag, ctx)
 	})
 	return fn(args, kwds)
 }

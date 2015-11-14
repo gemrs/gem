@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/gemrs/gem/gem/encoding"
-	"github.com/gemrs/gem/gem/log"
 	"github.com/gemrs/gem/gem/util/safe"
+	"github.com/gemrs/willow/log"
 
 	"github.com/qur/gopy/lib"
 )

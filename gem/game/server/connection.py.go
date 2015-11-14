@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/pybind"
 )
 
