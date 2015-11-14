@@ -1,4 +1,4 @@
-package pybind 
+package pybind
 
 import (
 	"reflect"
@@ -28,6 +28,8 @@ func TypeConvIn(value py.Object, typ string) (interface{}, error) {
 	}
 
 	switch v := value.(type) {
+	case *py.Bool:
+		return v.Bool(), nil
 	case *py.String:
 		return v.String(), nil
 	case *py.Int:
@@ -50,6 +52,19 @@ func TypeConvOut(value interface{}, typ string) (py.Object, error) {
 			return py.None, nil
 		}
 	}
+
+	if typ == "bool" {
+		if b, ok := value.(bool); ok {
+			if b {
+				return py.True, nil
+			} else {
+				return py.False, nil
+			}
+		} else {
+			return py.None, nil
+		}
+	}
+
 	return py.BuildValue(PyTupleFormatString(typ), value)
 }
 
