@@ -22,6 +22,10 @@ var LocalDef = pybind.Define("Local", (*Local)(nil))
 var RegisterLocal = pybind.GenerateRegisterFunc(LocalDef)
 var NewLocal = pybind.GenerateConstructor(LocalDef).(func(int, int, int, *Region) *Local)
 
+var AreaDef = pybind.Define("Area", (*Area)(nil))
+var RegisterArea = pybind.GenerateRegisterFunc(AreaDef)
+var NewArea = pybind.GenerateConstructor(AreaDef).(func(*Sector, int, int) *Area)
+
 func (pos *Absolute) PyGet_x() (py.Object, error) {
 	fn := pybind.Wrap(pos.X)
 	return fn(nil, nil)
@@ -104,4 +108,29 @@ func (local *Local) PyGet_region() (py.Object, error) {
 func (local *Local) PyGet_absolute() (py.Object, error) {
 	fn := pybind.Wrap(local.Absolute)
 	return fn(nil, nil)
+}
+
+func (area *Area) PyGet_min_sector() (py.Object, error) {
+	fn := pybind.Wrap(area.MinSector)
+	return fn(nil, nil)
+}
+
+func (area *Area) PyGet_max_sector() (py.Object, error) {
+	fn := pybind.Wrap(area.MaxSector)
+	return fn(nil, nil)
+}
+
+func (area *Area) PyGet_min() (py.Object, error) {
+	fn := pybind.Wrap(area.Min)
+	return fn(nil, nil)
+}
+
+func (area *Area) PyGet_max() (py.Object, error) {
+	fn := pybind.Wrap(area.Max)
+	return fn(nil, nil)
+}
+
+func (area *Area) Py_contains(args *py.Tuple, kwds *py.Dict) (py.Object, error) {
+	fn := pybind.Wrap(area.Contains)
+	return fn(args, kwds)
 }

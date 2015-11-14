@@ -13,6 +13,7 @@ var moduleRegisterFuncs = []registerFunc{
 	RegisterSector,
 	RegisterRegion,
 	RegisterLocal,
+	RegisterArea,
 }
 
 func init() {

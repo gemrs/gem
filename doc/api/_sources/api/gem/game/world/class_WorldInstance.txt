@@ -16,7 +16,3 @@ WorldInstance
       :param gem.game.position.Sector sector: The position of the sector instance to access
       :return: The sector instance
       :rtype: Sector
-
-   .. py:method:: gc()
-
-      Garbage collects any inactive sectors

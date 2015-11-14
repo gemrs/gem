@@ -24,3 +24,15 @@ def test_coord_api():
     region = local.region
     sector = region.origin
     region.rebase(pos.Absolute(abs.x+20, abs.y+20, abs.z))
+
+    area = pos.Area(sector, 4, 4)
+    out_of_bounds = pos.Absolute(area.min.x-10, area.min.y-10, area.min.z)
+    assert area.contains(out_of_bounds) == False
+
+    inside_bounds = pos.Absolute(area.min.x+10, area.min.y+10, area.min.z)
+    assert area.contains(inside_bounds) == True
+
+    min_sector = area.min_sector
+    max_sector = area.max_sector
+    min_pos = area.min
+    max_pos = area.max

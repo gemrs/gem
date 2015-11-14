@@ -1,8 +1,6 @@
 package world
 
 import (
-	"github.com/qur/gopy/lib"
-
 	"github.com/sinusoids/gem/gem/game/position"
 	"github.com/sinusoids/gem/pybind"
 )

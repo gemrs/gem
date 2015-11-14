@@ -31,6 +31,10 @@ Player
 
       The unique entity index associated with this player
 
+   .. py:attribute:: loaded_region
+
+      The chunk of the map currently loaded by the player's client
+
    .. rubric:: Methods
 
    .. py:method:: warp(position)
