@@ -4,7 +4,7 @@ package update
 import (
 	"io"
 
-	"github.com/sinusoids/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/encoding"
 )
 
 type InboundUpdateRequest struct {

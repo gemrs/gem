@@ -3,7 +3,7 @@ package position
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var AbsoluteDef = pybind.Define("Absolute", (*Absolute)(nil))

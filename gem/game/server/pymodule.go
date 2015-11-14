@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/python/modules"
+	"github.com/gemrs/gem/gem/python/modules"
 )
 
 type registerFunc func(*py.Module) error

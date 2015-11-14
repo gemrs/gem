@@ -4,9 +4,9 @@ import (
 	"io"
 	"net"
 
-	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/gem/util/safe"
+	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 )

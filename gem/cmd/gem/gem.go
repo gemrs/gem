@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	_ "github.com/sinusoids/gem/gem/python/api"
+	_ "github.com/gemrs/gem/gem/python/api"
 )
 
 func main() {

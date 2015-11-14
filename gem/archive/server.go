@@ -6,9 +6,9 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/gem/runite"
-	"github.com/sinusoids/gem/gem/runite/format/rt3"
+	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/gem/runite"
+	"github.com/gemrs/gem/gem/runite/format/rt3"
 
 	"bufio"
 	"github.com/qur/gopy/lib"

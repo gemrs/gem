@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sinusoids/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/encoding"
 )
 
 //go:generate bbc test_frame.bb test_frame.bb.go

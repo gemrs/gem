@@ -3,7 +3,7 @@ package update
 import (
 	"fmt"
 
-	"github.com/sinusoids/gem/gem/runite"
+	"github.com/gemrs/gem/gem/runite"
 )
 
 //go:generate bbc update_service.bb update_service.bb.go

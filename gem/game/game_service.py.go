@@ -3,9 +3,9 @@ package game
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/auth"
-	"github.com/sinusoids/gem/gem/runite"
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/gem/auth"
+	"github.com/gemrs/gem/gem/runite"
+	"github.com/gemrs/gem/pybind"
 )
 
 var GameServiceDef = pybind.Define("GameService", (*GameService)(nil))

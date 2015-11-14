@@ -3,8 +3,8 @@ package packet
 import (
 	"reflect"
 
-	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/game/interface/player"
 )
 
 var routingTable = map[string]Handler{}

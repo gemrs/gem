@@ -3,10 +3,10 @@ package packet
 import (
 	"fmt"
 
-	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/game/interface/player"
-	"github.com/sinusoids/gem/gem/game/position"
-	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/position"
+	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 )
 
 func init() {

@@ -3,10 +3,10 @@ package player
 import (
 	"github.com/gtank/isaac"
 
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/position"
-	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/log"
 )
 
 // DecodeFunc is used for parsing the read stream and dealing with the incoming data.

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/sinusoids/gem/gem/crypto"
+	"github.com/gemrs/gem/gem/crypto"
 )
 
 type RSABlock struct {

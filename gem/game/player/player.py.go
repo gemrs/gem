@@ -3,9 +3,9 @@ package player
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/game/world"
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/game/world"
+	"github.com/gemrs/gem/pybind"
 )
 
 var PlayerDef = pybind.Define("Player", (*Player)(nil))

@@ -3,7 +3,7 @@ package safe
 import (
 	"runtime"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/gemrs/gem/gem/log"
 )
 
 // Set Unsafe to disable recovery (for testing)
@@ -13,7 +13,7 @@ var Unsafe = false
 func Recover(log log.Log) {
 	if err := recover(); err != nil {
 		if Unsafe {
-			log.Notice("github.com/sinusoids/gem/gem/safe: Unsafe mode enabled; not recovering")
+			log.Notice("github.com/gemrs/gem/gem/safe: Unsafe mode enabled; not recovering")
 			panic(err)
 		}
 		stack := make([]byte, 1024*10)

@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/sinusoids/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/interface/entity"
 )
 
 // comparePlayers performs a deep comparison between two Players

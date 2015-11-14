@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var ProfileDef = pybind.Define("Profile", (*Profile)(nil))

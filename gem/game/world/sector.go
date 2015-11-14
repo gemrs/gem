@@ -3,9 +3,9 @@ package world
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/position"
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/log"
 )
 
 type Sector struct {

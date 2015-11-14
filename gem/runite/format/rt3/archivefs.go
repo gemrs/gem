@@ -6,7 +6,7 @@ import (
 	"hash/crc32"
 	"sync"
 
-	"github.com/sinusoids/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/encoding"
 )
 
 var archiveIndices = map[string]int{

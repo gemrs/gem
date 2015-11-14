@@ -1,11 +1,11 @@
 package game
 
 import (
-	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/protocol"
-	update_protocol "github.com/sinusoids/gem/gem/protocol/update"
-	"github.com/sinusoids/gem/gem/runite"
+	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/protocol"
+	update_protocol "github.com/gemrs/gem/gem/protocol/update"
+	"github.com/gemrs/gem/gem/runite"
 
 	"github.com/qur/gopy/lib"
 )

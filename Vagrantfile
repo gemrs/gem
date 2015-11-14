@@ -8,7 +8,7 @@ Vagrant.configure(2) do |config|
   config.vm.network "forwarded_port", guest: 43594, host: 43594
   config.vm.network "forwarded_port", guest: 43595, host: 43595
 
-  config.vm.synced_folder ".", "/vagrant/src/github.com/sinusoids/gem"
+  config.vm.synced_folder ".", "/vagrant/src/github.com/gemrs/gem"
   config.ssh.forward_x11 = true
 
   config.vm.provider "virtualbox" do |v|
@@ -17,7 +17,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provider "libvirt" do |lv, override|
-    override.vm.synced_folder ".", "/vagrant/src/github.com/sinusoids/gem", create: true, :nfs => true, :mount_options => ['nolock,vers=3,tcp,noatime'], id: "vagrant-root"
+    override.vm.synced_folder ".", "/vagrant/src/github.com/gemrs/gem", create: true, :nfs => true, :mount_options => ['nolock,vers=3,tcp,noatime'], id: "vagrant-root"
   end
 
   config.vm.provision "shell", inline: <<-SHELL

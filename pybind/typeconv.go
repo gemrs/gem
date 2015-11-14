@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/python"
+	"github.com/gemrs/gem/gem/python"
 )
 
 func TypeConvIn(value py.Object, typ string) (interface{}, error) {

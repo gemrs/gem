@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var AppearanceDef = pybind.Define("Appearance", (*Appearance)(nil))

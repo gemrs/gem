@@ -5,8 +5,8 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/pybind"
 )
 
 var ConnectionDef = pybind.Define("Connection", (*Connection)(nil))

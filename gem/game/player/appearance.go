@@ -3,7 +3,7 @@ package player
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/interface/player"
 )
 
 type Appearance struct {

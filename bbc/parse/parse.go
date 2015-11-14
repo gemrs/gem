@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sinusoids/gem/bbc/ast"
+	"github.com/gemrs/gem/bbc/ast"
 )
 
 //go:generate nex -e binbuf.nex

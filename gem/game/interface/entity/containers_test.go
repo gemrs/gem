@@ -3,9 +3,9 @@ package entity_test
 import (
 	"testing"
 
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/position"
-	_ "github.com/sinusoids/gem/gem/python/api"
+	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/position"
+	_ "github.com/gemrs/gem/gem/python/api"
 )
 
 type MockEntity struct {

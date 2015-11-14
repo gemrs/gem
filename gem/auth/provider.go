@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/interface/player"
 )
 
 //go:generate stringer -type=AuthResponse

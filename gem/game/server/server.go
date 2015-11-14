@@ -5,10 +5,10 @@ import (
 	"net"
 	"sync"
 
-	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/gem/protocol"
-	"github.com/sinusoids/gem/gem/util/id"
-	"github.com/sinusoids/gem/gem/util/safe"
+	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/gem/protocol"
+	"github.com/gemrs/gem/gem/util/id"
+	"github.com/gemrs/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"

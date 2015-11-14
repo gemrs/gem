@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var ProviderImplDef = pybind.Define("ProviderImpl", (*ProviderImpl)(nil))

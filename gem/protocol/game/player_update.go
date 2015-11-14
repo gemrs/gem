@@ -4,9 +4,9 @@ package game
 import (
 	"io"
 
-	"github.com/sinusoids/gem/gem/encoding"
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/interface/player"
 )
 
 type PlayerUpdateBlock struct {

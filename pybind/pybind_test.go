@@ -6,9 +6,9 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/python/modules"
-	"github.com/sinusoids/gem/gem/util/safe"
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/gem/python/modules"
+	"github.com/gemrs/gem/gem/util/safe"
+	"github.com/gemrs/gem/pybind"
 )
 
 var testCatOut = `

@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/sinusoids/gem/gem/util/id"
+	"github.com/gemrs/gem/gem/util/id"
 )
 
 var indexChan <-chan int

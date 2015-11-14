@@ -4,7 +4,7 @@ package game
 import (
 	"io"
 
-	"github.com/sinusoids/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/encoding"
 )
 
 type InboundLoginBlock struct {

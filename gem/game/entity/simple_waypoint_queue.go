@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/position"
 )
 
 /* mob directions */

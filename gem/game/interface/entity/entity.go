@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/position"
 )
 
 type Flags int

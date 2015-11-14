@@ -1,10 +1,10 @@
 package event
 
 import (
-	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/gem/util/expire"
-	"github.com/sinusoids/gem/gem/util/id"
-	"github.com/sinusoids/gem/gem/util/safe"
+	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/gem/util/expire"
+	"github.com/gemrs/gem/gem/util/id"
+	"github.com/gemrs/gem/gem/util/safe"
 )
 
 var nextId <-chan int

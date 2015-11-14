@@ -1,13 +1,13 @@
 package player
 
 import (
-	"github.com/sinusoids/gem/gem/encoding"
-	engine_event "github.com/sinusoids/gem/gem/engine/event"
-	"github.com/sinusoids/gem/gem/event"
-	game_event "github.com/sinusoids/gem/gem/game/event"
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/interface/player"
-	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/encoding"
+	engine_event "github.com/gemrs/gem/gem/engine/event"
+	"github.com/gemrs/gem/gem/event"
+	game_event "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/interface/player"
+	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 )
 
 func (client *Player) LoadProfile() {

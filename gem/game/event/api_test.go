@@ -5,7 +5,7 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/python/test"
+	"github.com/gemrs/gem/gem/python/test"
 )
 
 func TestLogAPI(t *testing.T) {

@@ -3,7 +3,7 @@ package log
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var PyModuleDef = pybind.Define("Module", (*PyModule)(nil))

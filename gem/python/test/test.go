@@ -12,8 +12,8 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	_ "github.com/sinusoids/gem/gem/python/api"
-	"github.com/sinusoids/gem/gem/util/safe"
+	_ "github.com/gemrs/gem/gem/python/api"
+	"github.com/gemrs/gem/gem/util/safe"
 )
 
 func PythonTest(testDir string, t *testing.T) {
@@ -21,7 +21,7 @@ func PythonTest(testDir string, t *testing.T) {
 	safe.Unsafe = true
 
 	gopath := os.Getenv("GOPATH")
-	pythonDir := fmt.Sprintf("%s/src/github.com/sinusoids/gem/content", gopath) // There's probably a better way to locate this
+	pythonDir := fmt.Sprintf("%s/src/github.com/gemrs/gem/content", gopath) // There's probably a better way to locate this
 
 	pyLaunchTest := fmt.Sprintf(`import pytest; test_result = pytest.main("-s %v/%v")`, pythonDir, testDir)
 

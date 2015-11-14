@@ -1,12 +1,12 @@
 package game
 
 import (
-	"github.com/sinusoids/gem/gem/auth"
-	"github.com/sinusoids/gem/gem/encoding"
-	game_event "github.com/sinusoids/gem/gem/game/event"
-	"github.com/sinusoids/gem/gem/game/interface/player"
-	"github.com/sinusoids/gem/gem/protocol"
-	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/auth"
+	"github.com/gemrs/gem/gem/encoding"
+	game_event "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/protocol"
+	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 )
 
 // handshake performs the isaac key exchange

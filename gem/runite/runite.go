@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 
-	"github.com/sinusoids/gem/gem/runite/format/rt3"
+	"github.com/gemrs/gem/gem/runite/format/rt3"
 
 	"github.com/qur/gopy/lib"
 )

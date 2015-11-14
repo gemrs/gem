@@ -6,15 +6,15 @@ import (
 	"github.com/gtank/isaac"
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/encoding"
-	entityimpl "github.com/sinusoids/gem/gem/game/entity"
-	game_event "github.com/sinusoids/gem/gem/game/event"
-	"github.com/sinusoids/gem/gem/game/interface/entity"
-	"github.com/sinusoids/gem/gem/game/interface/player"
-	"github.com/sinusoids/gem/gem/game/position"
-	"github.com/sinusoids/gem/gem/game/server"
-	"github.com/sinusoids/gem/gem/game/world"
-	game_protocol "github.com/sinusoids/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/encoding"
+	entityimpl "github.com/gemrs/gem/gem/game/entity"
+	game_event "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/game/world"
+	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 )
 
 // GameClient is a client which serves players

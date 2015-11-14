@@ -1,8 +1,8 @@
 package player
 
 import (
-	"github.com/sinusoids/gem/gem/game/interface/player"
-	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/position"
 )
 
 type jsonPosition struct {

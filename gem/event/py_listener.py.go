@@ -3,7 +3,7 @@ package event
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var PyListenerDef = pybind.Define("PyListener", (*PyListener)(nil))

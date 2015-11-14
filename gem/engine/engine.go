@@ -3,10 +3,10 @@ package gem
 import (
 	"time"
 
-	engine_event "github.com/sinusoids/gem/gem/engine/event"
-	"github.com/sinusoids/gem/gem/log"
-	"github.com/sinusoids/gem/gem/task"
-	"github.com/sinusoids/gem/gem/util/safe"
+	engine_event "github.com/gemrs/gem/gem/engine/event"
+	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/gem/task"
+	"github.com/gemrs/gem/gem/util/safe"
 
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"

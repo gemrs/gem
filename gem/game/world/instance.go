@@ -3,7 +3,7 @@ package world
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/position"
 )
 
 type Instance struct {

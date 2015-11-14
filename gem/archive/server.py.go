@@ -3,7 +3,7 @@ package archive
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var ServerDef = pybind.Define("Server", (*Server)(nil))

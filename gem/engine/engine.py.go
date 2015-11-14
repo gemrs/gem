@@ -3,7 +3,7 @@ package gem
 import (
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/pybind"
 )
 
 var EngineDef = pybind.Define("Engine", (*Engine)(nil))

@@ -1,8 +1,8 @@
 package world
 
 import (
-	"github.com/sinusoids/gem/gem/game/position"
-	"github.com/sinusoids/gem/pybind"
+	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/pybind"
 )
 
 var SectorDef = pybind.Define("Sector", (*Sector)(nil))

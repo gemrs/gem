@@ -7,7 +7,7 @@ import (
 	"github.com/qur/gopy/lib"
 
 	// Importing this ensures PyInitialize has been called before we setup the api
-	_ "github.com/sinusoids/gem/gem/python/init"
+	_ "github.com/gemrs/gem/gem/python/init"
 )
 
 var gemModules = map[string]*py.Module{}

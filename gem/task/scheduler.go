@@ -3,7 +3,7 @@ package task
 import (
 	"container/list"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/gemrs/gem/gem/log"
 )
 
 type _Scheduler struct {

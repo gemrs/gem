@@ -6,8 +6,8 @@ import (
 
 	"github.com/qur/gopy/lib"
 
-	"github.com/sinusoids/gem/gem/game/interface/player"
-	"github.com/sinusoids/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/position"
 )
 
 // Profile represents the saved state of a user

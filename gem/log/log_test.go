@@ -3,7 +3,7 @@ package log_test
 import (
 	"testing"
 
-	"github.com/sinusoids/gem/gem/log"
+	"github.com/gemrs/gem/gem/log"
 )
 
 type mockTarget struct {
