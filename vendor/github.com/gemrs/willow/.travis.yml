@@ -1,0 +1,11 @@
+language: go
+go:
+  - 1.5
+env:
+  - GO15VENDOREXPERIMENT=1
+before_install:
+  - pip install --user codecov
+script:
+  - go test -coverprofile=coverage.profile github.com/gemrs/willow/log 
+after_success:
+  - codecov
