@@ -27,6 +27,8 @@ func FromLua(lv lua.LValue) interface{} {
 		return lua.LVAsNumber(lv)
 	case *lua.LUserData:
 		return lv.Value
+	case *lua.LFunction:
+		return lv
 	default:
 		panic(fmt.Sprintf("don't know how to convert %v to native type", lv))
 	}

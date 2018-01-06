@@ -19,6 +19,7 @@ import (
 var contentDir = flag.String("content", "content", "the content directory")
 var compiledDir = flag.String("content_out", "content_out", "the compiled content directory")
 var noCompile = flag.Bool("no-compile", false, "skip lua compilation")
+var unsafeLua = flag.Bool("lua-unsafe", false, "invoke lua main without pcall")
 
 func buildMoonScript(dir string) {
 	fmt.Println("Compiling content directory:", dir)
@@ -56,11 +57,18 @@ func main() {
 	event.Bindevent(L)
 	engine_events.Bindengine_event(L)
 
-	if fn, err := L.LoadFile(mainFile); err != nil {
-		panic(err)
+	if *unsafeLua {
+		if fn, err := L.LoadFile(mainFile); err != nil {
+			panic(err)
+		} else {
+			// Specifically not using PCall, as that hides panic traces
+			L.Push(fn)
+			L.Call(0, 0)
+		}
 	} else {
-		// Specifically not using PCall, as that hides panic traces
-		L.Push(fn)
-		L.Call(0, 0)
+		err := L.DoFile(mainFile)
+		if err != nil {
+			panic(err)
+		}
 	}
 }

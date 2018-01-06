@@ -16,6 +16,8 @@ func lBindevent(L *lua.LState) int {
 
 	lBindEvent(L, mod)
 
+	lBindFunc(L, mod)
+
 	L.Push(mod)
 	return 1
 }
@@ -92,3 +94,38 @@ func lBindEventUnregister(L *lua.LState) int {
 	return 0
 
 }
+
+func lBindFunc(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("event.Func")
+	L.SetField(mt, "__call", L.NewFunction(lNewFunc))
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), FuncMethods))
+
+	cls := L.NewUserData()
+	L.SetField(mod, "Func", cls)
+	L.SetMetatable(cls, mt)
+	glua.RegisterType("event.Func", mt)
+}
+
+func lNewFunc(L *lua.LState) int {
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(lua.LValue)
+	L.Remove(1)
+	retVal := NewFunc(L, arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+/*
+func lNewFunc(L *lua.LState) int {
+	// FIXME only works for structs, no custom constructor..
+	obj := &Func{}
+	ud := L.NewUserData()
+	ud.Value = obj
+	L.SetMetatable(ud, L.GetTypeMetatable("event.Func"))
+	L.Push(ud)
+	return 1
+}
+*/
+var FuncMethods = map[string]lua.LGFunction{}

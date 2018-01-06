@@ -116,8 +116,14 @@ func gatherFunction(fn *ast.FuncDecl) *lFunction {
 		Name: fn.Name.Name,
 	}
 
-	args := make([]ast.Expr, fn.Type.Params.NumFields())
-	for i, field := range fn.Type.Params.List {
+	paramList := fn.Type.Params.List
+	if len(paramList) > 0 && printExpr(paramList[0].Type) == "*lua.LState" {
+		method.PassState = true
+		paramList = paramList[1:]
+	}
+
+	args := make([]ast.Expr, len(paramList))
+	for i, field := range paramList {
 		args[i] = field.Type
 	}
 

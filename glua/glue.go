@@ -158,6 +158,10 @@ func (method *lFunction) GenerateCtor() string {
 		argNames[i] = fmt.Sprintf("arg%v", i)
 	}
 
+	if method.PassState {
+		argNames = append([]string{"L"}, argNames...)
+	}
+
 	args := strings.Join(argNames, ", ")
 	if method.Ret != nil {
 		fmt.Fprintf(&buf, "retVal := %v(%v)\n", method.Name, args)
@@ -177,10 +181,11 @@ type lType struct {
 }
 
 type lFunction struct {
-	Name string
-	Recv string
-	Args []ast.Expr
-	Ret  ast.Expr
+	Name      string
+	Recv      string
+	Args      []ast.Expr
+	Ret       ast.Expr
+	PassState bool
 }
 
 type lField struct {
