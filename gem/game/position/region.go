@@ -7,12 +7,12 @@ type Region struct {
 	origin *Sector
 }
 
-func (region *Region) Init(origin *Sector) {
+func NewRegion(origin *Sector) *Region {
 	if origin == nil {
 		sector := NewSector(0, 0, 0)
 		origin = sector
 	}
-	region.origin = origin
+	return &Region{origin}
 }
 
 func (region *Region) Compare(other *Region) bool {

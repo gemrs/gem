@@ -7,9 +7,15 @@ import (
 	"os/exec"
 
 	"github.com/gemrs/gem/gem/archive"
+	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/engine"
 	engine_events "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/event"
+	"github.com/gemrs/gem/gem/game"
+	game_events "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/player"
+	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/log"
 	"github.com/gemrs/gem/gem/runite"
 	willow "github.com/gemrs/willow/log"
@@ -55,7 +61,13 @@ func main() {
 	archive.Bindarchive(L)
 	engine.Bindengine(L)
 	event.Bindevent(L)
+	server.Bindserver(L)
+	game.Bindgame(L)
+	auth.Bindauth(L)
+	player.Bindplayer(L)
+	position.Bindposition(L)
 	engine_events.Bindengine_event(L)
+	game_events.Bindgame_event(L)
 
 	if *unsafeLua {
 		if fn, err := L.LoadFile(mainFile); err != nil {

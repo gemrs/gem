@@ -12,10 +12,12 @@ type Sector struct {
 	logger   log.Log
 }
 
-func (s *Sector) Init(position *position.Sector) {
-	s.Collection = entity.NewCollection()
-	s.position = position
-	s.logger = log.New("world/sector", log.MapContext{"position": position})
+func NewSector(position *position.Sector) *Sector {
+	return &Sector{
+		Collection: entity.NewCollection(),
+		position:   position,
+		logger:     log.New("world/sector", log.MapContext{"position": position}),
+	}
 }
 
 func (s *Sector) Add(entity entity.Entity) {

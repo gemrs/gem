@@ -1,18 +1,21 @@
+//glua:bind module gem.game.position
 package position
 
 import (
 	"fmt"
 )
 
+//go:generate glua .
+
 // Absolute is a coordinate mapping to a single tile within the world
+//glua:bind
 type Absolute struct {
 	x, y, z int
 }
 
-func (pos *Absolute) Init(x, y, z int) {
-	pos.x = x
-	pos.y = y
-	pos.z = z
+//glua:bind constructor Absolute
+func NewAbsolute(x, y, z int) *Absolute {
+	return &Absolute{x, y, z}
 }
 
 func (pos *Absolute) Compare(other *Absolute) bool {
@@ -46,14 +49,17 @@ func (pos *Absolute) NextInterpolatedPoint(target *Absolute) *Absolute {
 	return abs
 }
 
+//glua:bind
 func (pos *Absolute) X() int {
 	return pos.x
 }
 
+//glua:bind
 func (pos *Absolute) Y() int {
 	return pos.y
 }
 
+//glua:bind
 func (pos *Absolute) Z() int {
 	return pos.z
 }

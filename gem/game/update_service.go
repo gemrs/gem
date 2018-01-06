@@ -9,17 +9,21 @@ import (
 )
 
 // updateService represents the internal state of the update servuce
+//glua:bind
 type UpdateService struct {
 	runite *runite.Context
 	queue  updateQueue
 	notify chan int
 }
 
-func (svc *UpdateService) Init(runite *runite.Context) {
+//glua:bind constructor UpdateService
+func NewUpdateService(runite *runite.Context) *UpdateService {
+	svc := &UpdateService{}
 	svc.runite = runite
 	svc.queue = newUpdateQueue()
 	svc.notify = make(chan int, 16)
 	go svc.processQueue()
+	return svc
 }
 
 func (svc *UpdateService) NewClient(conn *server.Connection, service int) server.Client {

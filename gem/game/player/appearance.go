@@ -23,7 +23,8 @@ type Appearance struct {
 	skinColor  int
 }
 
-func (a *Appearance) Init() {
+func NewAppearance() *Appearance {
+	a := &Appearance{}
 	a.gender = 0
 	a.headIcon = 0
 
@@ -40,6 +41,7 @@ func (a *Appearance) Init() {
 	a.legsColor = 9
 	a.feetColor = 5
 	a.skinColor = 0
+	return a
 }
 
 func (a *Appearance) Gender() int {

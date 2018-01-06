@@ -14,6 +14,7 @@ import (
 
 var funcMap = template.FuncMap{
 	"underscore": underscore,
+	"printExpr":  printExpr,
 }
 
 var modTemplate = template.Must(template.New("").Funcs(funcMap).Parse(`package {{.Name}}
@@ -58,26 +59,32 @@ func lNew{{$typeName}}(L *lua.LState) int {
 {{.GenerateCtor}}
 }
 {{end}}
-/*
-func lNew{{$typeName}}(L *lua.LState) int {
-	// FIXME only works for structs, no custom constructor..
-	obj := &{{$typeName}}{}
-	ud := L.NewUserData()
-	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("{{$modName}}.{{$typeName}}"))
-	L.Push(ud)
-	return 1
-}
-*/
+
 var {{$typeName}}Methods = map[string]lua.LGFunction{
 {{range $methodName, $method := $typ.Methods}}
 	"{{underscore $methodName}}": lBind{{$typeName}}{{$methodName}},
+{{end}}
+{{range $propName, $propType := $typ.Accessors}}
+	"{{underscore $propName}}": lBindProp{{$typeName}}{{$propName}},
 {{end}}
 }
 
 {{range $methodName, $method := $typ.Methods}}
 func lBind{{$typeName}}{{$methodName}}(L *lua.LState) int {
 {{$method.Generate}}
+}
+{{end}}
+
+{{range $propName, $propType := $typ.Accessors}}
+func lBindProp{{$typeName}}{{$propName}}(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*{{$typeName}})
+    if L.GetTop() == 2 {
+		val := glua.FromLua(L.Get(2)).({{printExpr $propType}})
+		self.Set{{$propName}}(val)
+        return 0
+    }
+    L.Push(glua.ToLua(L, self.{{$propName}}()))
+    return 1
 }
 {{end}}
 
@@ -178,6 +185,7 @@ type lType struct {
 	Name        string
 	Constructor *lFunction
 	Methods     map[string]*lFunction
+	Accessors   map[string]ast.Expr
 }
 
 type lFunction struct {

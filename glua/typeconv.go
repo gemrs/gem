@@ -24,11 +24,14 @@ func FromLua(lv lua.LValue) interface{} {
 	case lua.LBool:
 		return lua.LVAsBool(lv)
 	case lua.LNumber:
-		return lua.LVAsNumber(lv)
+		//FIXME wont work for float
+		return int(lua.LVAsNumber(lv))
 	case *lua.LUserData:
 		return lv.Value
 	case *lua.LFunction:
 		return lv
+	case *lua.LNilType:
+		return nil
 	default:
 		panic(fmt.Sprintf("don't know how to convert %v to native type", lv))
 	}

@@ -1,3 +1,4 @@
+//glua:bind module gem.game.player
 package player
 
 import (
@@ -8,7 +9,10 @@ import (
 	"github.com/gemrs/gem/gem/game/position"
 )
 
+//go:generate glua .
+
 // Profile represents the saved state of a user
+//glua:bind
 type Profile struct {
 	username string
 	password string
@@ -19,14 +23,17 @@ type Profile struct {
 	appearance *Appearance
 }
 
-func (p *Profile) Init(username, password string) {
-	p.username = username
-	p.password = password
-
-	p.skills = NewSkills()
-	p.appearance = NewAppearance()
+//glua:bind constructor Profile
+func NewProfile(username, password string) *Profile {
+	return &Profile{
+		username:   username,
+		password:   password,
+		skills:     NewSkills(),
+		appearance: NewAppearance(),
+	}
 }
 
+//glua:bind
 func (p *Profile) Username() string {
 	return p.username
 }
@@ -35,6 +42,7 @@ func (p *Profile) setUsername(username string) {
 	p.username = username
 }
 
+//glua:bind
 func (p *Profile) Password() string {
 	return p.password
 }
@@ -43,6 +51,7 @@ func (p *Profile) setPassword(password string) {
 	p.password = password
 }
 
+//glua:bind
 func (p *Profile) Rights() player.Rights {
 	return p.rights
 }
@@ -51,6 +60,7 @@ func (p *Profile) setRights(rights player.Rights) {
 	p.rights = rights
 }
 
+//glua:bind accessor
 func (p *Profile) Position() *position.Absolute {
 	return p.position
 }
@@ -94,7 +104,9 @@ type Skills struct {
 	combatLevel int
 }
 
-func (s *Skills) Init() {}
+func NewSkills() *Skills {
+	return &Skills{}
+}
 
 func (s *Skills) CombatLevel() int {
 	return s.combatLevel

@@ -42,17 +42,6 @@ func lNewModule(L *lua.LState) int {
 
 }
 
-/*
-func lNewModule(L *lua.LState) int {
-	// FIXME only works for structs, no custom constructor..
-	obj := &Module{}
-	ud := L.NewUserData()
-	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("log.Module"))
-	L.Push(ud)
-	return 1
-}
-*/
 var ModuleMethods = map[string]lua.LGFunction{
 
 	"debug": lBindModuleDebug,

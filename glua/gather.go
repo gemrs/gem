@@ -48,9 +48,13 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 						typ := gatherType(spec)
 						module.Types[spec.Name.Name] = typ
 					}
+
 					if spec, ok := spec.(*ast.ValueSpec); ok {
 						fields := gatherFields(spec)
 						for _, field := range fields {
+							if field.Name == "_" {
+								continue
+							}
 							module.Fields[field.Name] = field
 						}
 					}
@@ -89,8 +93,12 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 				}
 
 				if typ, ok := module.Types[receiver]; ok {
-					typ.Methods[fn.Name.Name] = gatherFunction(fn)
-					typ.Methods[fn.Name.Name].Recv = receiver
+					if len(bindArgs) > 0 && bindArgs[0] == "accessor" {
+						typ.Accessors[fn.Name.Name] = fn.Type.Results.List[0].Type
+					} else {
+						typ.Methods[fn.Name.Name] = gatherFunction(fn)
+						typ.Methods[fn.Name.Name].Recv = receiver
+					}
 				}
 			}
 		}
@@ -105,8 +113,9 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 
 func gatherType(spec *ast.TypeSpec) *lType {
 	typ := &lType{
-		Name:    spec.Name.Name,
-		Methods: make(map[string]*lFunction),
+		Name:      spec.Name.Name,
+		Methods:   make(map[string]*lFunction),
+		Accessors: make(map[string]ast.Expr),
 	}
 	return typ
 }
@@ -122,9 +131,11 @@ func gatherFunction(fn *ast.FuncDecl) *lFunction {
 		paramList = paramList[1:]
 	}
 
-	args := make([]ast.Expr, len(paramList))
-	for i, field := range paramList {
-		args[i] = field.Type
+	args := make([]ast.Expr, 0)
+	for _, field := range paramList {
+		for _, _ = range field.Names {
+			args = append(args, field.Type)
+		}
 	}
 
 	method.Args = args

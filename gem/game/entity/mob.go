@@ -11,8 +11,10 @@ type GenericMob struct {
 	flags         entity.Flags
 }
 
-func (mob *GenericMob) Init(wpq entity.WaypointQueue) {
-	mob.waypointQueue = wpq
+func NewGenericMob(wpq entity.WaypointQueue) *GenericMob {
+	return &GenericMob{
+		waypointQueue: wpq,
+	}
 }
 
 func (mob *GenericMob) SetNextStep(next *position.Absolute) {

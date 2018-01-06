@@ -8,8 +8,10 @@ type Instance struct {
 	sectors map[position.SectorHash]*Sector
 }
 
-func (i *Instance) Init() {
-	i.sectors = make(map[position.SectorHash]*Sector)
+func NewInstance() *Instance {
+	return &Instance{
+		sectors: make(map[position.SectorHash]*Sector),
+	}
 }
 
 // Sector returns a sector instance for a given position.Sector.

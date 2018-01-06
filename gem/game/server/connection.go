@@ -36,15 +36,16 @@ type Connection struct {
 	conn  net.Conn
 }
 
-func (c *Connection) Init(conn net.Conn, parentLogger log.Log) {
-	c.ReadBuffer = encoding.NewBuffer()
-	c.WriteBuffer = encoding.NewBuffer()
-	c.Read = make(chan encoding.Decodable, 16)
-	c.Write = make(chan encoding.Encodable, 16)
-	c.DisconnectChan = make(chan bool)
-
-	c.log = parentLogger.Child("connection", log.MapContext{"addr": conn.RemoteAddr().String()})
-	c.conn = conn
+func NewConnection(conn net.Conn, parentLogger log.Log) *Connection {
+	return &Connection{
+		ReadBuffer:     encoding.NewBuffer(),
+		WriteBuffer:    encoding.NewBuffer(),
+		Read:           make(chan encoding.Decodable, 16),
+		Write:          make(chan encoding.Encodable, 16),
+		DisconnectChan: make(chan bool),
+		log:            parentLogger.Child("connection", log.MapContext{"addr": conn.RemoteAddr().String()}),
+		conn:           conn,
+	}
 }
 
 func (c *Connection) Expired() chan bool {

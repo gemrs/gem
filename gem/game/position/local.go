@@ -7,11 +7,8 @@ type Local struct {
 	region *Region
 }
 
-func (local *Local) Init(x, y, z int, region *Region) {
-	local.x = x
-	local.y = y
-	local.z = z
-	local.region = region
+func NewLocal(x, y, z int, region *Region) *Local {
+	return &Local{x, y, z, region}
 }
 
 func (local *Local) X() int {

@@ -20,10 +20,8 @@ type Sector struct {
 	x, y, z int
 }
 
-func (s *Sector) Init(x, y, z int) {
-	s.x = x
-	s.y = y
-	s.z = z
+func NewSector(x, y, z int) *Sector {
+	return &Sector{x, y, z}
 }
 
 func (s *Sector) X() int {

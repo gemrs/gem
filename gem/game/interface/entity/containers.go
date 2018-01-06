@@ -9,10 +9,12 @@ type Collection struct {
 	unregister *Slice // the set of entities to remove this cycle
 }
 
-func (c *Collection) Init() {
-	c.entities = NewList()
-	c.register = NewSlice()
-	c.unregister = NewSlice()
+func NewCollection() *Collection {
+	return &Collection{
+		entities:   NewList(),
+		register:   NewSlice(),
+		unregister: NewSlice(),
+	}
 }
 
 // Add requests a new entity be added to the collection.
@@ -62,8 +64,10 @@ type Slice struct {
 	s []Entity
 }
 
-func (s *Slice) Init() {
+func NewSlice() *Slice {
+	s := &Slice{}
 	s.Empty()
+	return s
 }
 
 func (s *Slice) Empty() {
@@ -99,8 +103,10 @@ type List struct {
 	m map[int]Entity
 }
 
-func (l *List) Init() {
-	l.m = make(map[int]Entity)
+func NewList() *List {
+	return &List{
+		m: make(map[int]Entity),
+	}
 }
 
 // Slice converts the List to a Slice

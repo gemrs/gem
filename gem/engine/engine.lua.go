@@ -39,17 +39,6 @@ func lNewEngine(L *lua.LState) int {
 
 }
 
-/*
-func lNewEngine(L *lua.LState) int {
-	// FIXME only works for structs, no custom constructor..
-	obj := &Engine{}
-	ud := L.NewUserData()
-	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("engine.Engine"))
-	L.Push(ud)
-	return 1
-}
-*/
 var EngineMethods = map[string]lua.LGFunction{
 
 	"join": lBindEngineJoin,

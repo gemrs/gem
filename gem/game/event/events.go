@@ -1,24 +1,19 @@
-package event
+//glua:bind module gem.game.event
+package game_events
 
 import (
 	"github.com/gemrs/gem/gem/event"
 )
 
+//go:generate glua .
+
+//glua:bind
 var (
-	PlayerLoadProfile      = createEvent("PlayerLoadProfile")
-	PlayerLogin            = createEvent("PlayerLogin")
-	PlayerLogout           = createEvent("PlayerLogout")
-	PlayerFinishLogin      = createEvent("PlayerFinishLogin")
-	EntitySectorChange     = createEvent("EntitySectorChange")
-	EntityRegionChange     = createEvent("EntityRegionChange")
-	PlayerAppearanceUpdate = createEvent("PlayerAppearanceUpdate")
+	PlayerLoadProfile      = event.NewEvent("PlayerLoadProfile")
+	PlayerLogin            = event.NewEvent("PlayerLogin")
+	PlayerLogout           = event.NewEvent("PlayerLogout")
+	PlayerFinishLogin      = event.NewEvent("PlayerFinishLogin")
+	EntitySectorChange     = event.NewEvent("EntitySectorChange")
+	EntityRegionChange     = event.NewEvent("EntityRegionChange")
+	PlayerAppearanceUpdate = event.NewEvent("PlayerAppearanceUpdate")
 )
-
-var events = []*event.Event{}
-
-func createEvent(key string) *event.Event {
-	event := event.NewEvent(key)
-	events = append(events, event)
-
-	return event
-}

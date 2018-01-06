@@ -37,7 +37,8 @@ type Player struct {
 }
 
 // NewGameClient constructs a new GameClient
-func (client *Player) Init(conn *server.Connection, worldInst *world.Instance) {
+func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
+	client := &Player{}
 	client.Connection = conn
 	client.world = worldInst
 	client.serverRandKey = []uint32{
@@ -53,6 +54,7 @@ func (client *Player) Init(conn *server.Connection, worldInst *world.Instance) {
 
 	client.animations = NewAnimations()
 	client.index = entity.NextIndex()
+	return client
 }
 
 func (client *Player) Index() int {

@@ -83,7 +83,6 @@ func (svc *GameService) doLogin(client player.Player, username, password string)
 		client.Conn().Write <- &game_protocol.OutboundLoginResponseUnsuccessful{
 			Response: encoding.Uint8(responseCode),
 		}
-		client.Conn().Disconnect()
 		return nil
 	}
 

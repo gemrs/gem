@@ -39,17 +39,6 @@ func lNewContext(L *lua.LState) int {
 
 }
 
-/*
-func lNewContext(L *lua.LState) int {
-	// FIXME only works for structs, no custom constructor..
-	obj := &Context{}
-	ud := L.NewUserData()
-	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("runite.Context"))
-	L.Push(ud)
-	return 1
-}
-*/
 var ContextMethods = map[string]lua.LGFunction{
 
 	"unpack": lBindContextUnpack,

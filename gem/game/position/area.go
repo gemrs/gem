@@ -6,9 +6,11 @@ type Area struct {
 	w, h    int
 }
 
-func (area *Area) Init(origin *Sector, w, h int) {
-	area.w, area.h = w, h
-	area.sectors = make([][]*Sector, w)
+func NewArea(origin *Sector, w, h int) *Area {
+	area := &Area{
+		make([][]*Sector, w),
+		w, h,
+	}
 	for x := 0; x < w; x++ {
 		row := make([]*Sector, h)
 		for y := 0; y < h; y++ {
@@ -16,6 +18,7 @@ func (area *Area) Init(origin *Sector, w, h int) {
 		}
 		area.sectors[x] = row
 	}
+	return area
 }
 
 // MinSector returns the minimum sector of this area

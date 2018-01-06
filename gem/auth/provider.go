@@ -1,3 +1,4 @@
+//glua:bind module gem.game.auth
 package auth
 
 import (
@@ -5,8 +6,18 @@ import (
 )
 
 //go:generate stringer -type=AuthResponse
+//glua:bind
 type AuthResponse int
 
+//glua:bind constructor AuthResponse
+func NewAuthResponse(i int) *AuthResponse {
+	x := AuthResponse(i)
+	return &x
+}
+
+//go:generate glua .
+
+//glua:bind
 const (
 	AuthPending AuthResponse = iota
 	AuthDelay

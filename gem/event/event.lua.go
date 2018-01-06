@@ -44,17 +44,6 @@ func lNewEvent(L *lua.LState) int {
 
 }
 
-/*
-func lNewEvent(L *lua.LState) int {
-	// FIXME only works for structs, no custom constructor..
-	obj := &Event{}
-	ud := L.NewUserData()
-	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("event.Event"))
-	L.Push(ud)
-	return 1
-}
-*/
 var EventMethods = map[string]lua.LGFunction{
 
 	"key": lBindEventKey,
@@ -117,15 +106,4 @@ func lNewFunc(L *lua.LState) int {
 
 }
 
-/*
-func lNewFunc(L *lua.LState) int {
-	// FIXME only works for structs, no custom constructor..
-	obj := &Func{}
-	ud := L.NewUserData()
-	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("event.Func"))
-	L.Push(ud)
-	return 1
-}
-*/
 var FuncMethods = map[string]lua.LGFunction{}

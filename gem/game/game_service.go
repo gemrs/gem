@@ -1,3 +1,4 @@
+//glua:bind module gem.game
 package game
 
 import (
@@ -18,7 +19,10 @@ import (
 	"github.com/gemrs/gem/gem/util/expire"
 )
 
+//go:generate glua .
+
 // GameService represents the internal state of the game
+//glua:bind
 type GameService struct {
 	expire.NonExpirable
 
@@ -28,26 +32,29 @@ type GameService struct {
 	world  *world.Instance
 }
 
-func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth auth.Provider) error {
+//glua:bind constructor GameService
+func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provider) *GameService {
 	var err error
 	var key *crypto.Keypair
 	key, err = crypto.LoadPrivateKey(rsaKeyPath)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	svc.runite = runite
-	svc.key = key
-	svc.auth = auth
-	svc.NonExpirable = expire.NewNonExpirable()
-	svc.world = world.NewInstance()
+	svc := &GameService{
+		runite:       runite,
+		key:          key,
+		auth:         auth,
+		NonExpirable: expire.NewNonExpirable(),
+		world:        world.NewInstance(),
+	}
 
 	game_event.PlayerFinishLogin.Register(event.NewObserver(svc, playerFinishLogin))
 	game_event.PlayerLogout.Register(event.NewObserver(svc, playerCleanup))
 	game_event.EntityRegionChange.Register(event.NewObserver(svc, svc.EntityUpdate))
 	game_event.EntitySectorChange.Register(event.NewObserver(svc, svc.EntityUpdate))
 	game_event.PlayerAppearanceUpdate.Register(event.NewObserver(svc, svc.PlayerUpdate))
-	return nil
+	return svc
 }
 
 // playerFinishLogin calls player.FinishInit on the PlayerFinishLogin event
