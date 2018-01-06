@@ -54,13 +54,13 @@ func lNewModule(L *lua.LState) int {
 */
 var ModuleMethods = map[string]lua.LGFunction{
 
-	"Debug": lBindModuleDebug,
+	"debug": lBindModuleDebug,
 
-	"Error": lBindModuleError,
+	"error": lBindModuleError,
 
-	"Info": lBindModuleInfo,
+	"info": lBindModuleInfo,
 
-	"Notice": lBindModuleNotice,
+	"notice": lBindModuleNotice,
 }
 
 func lBindModuleDebug(L *lua.LState) int {

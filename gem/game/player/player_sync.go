@@ -25,9 +25,9 @@ func (client *Player) FinishInit() {
 		Index:      encoding.Uint16(client.Index()),
 	}
 
-	engine_event.PreTick.Register(event.NewListener(client, client.PreTick))
-	engine_event.Tick.Register(event.NewListener(client, client.Tick))
-	engine_event.PostTick.Register(event.NewListener(client, client.PostTick))
+	engine_event.PreTick.Register(event.NewObserver(client, client.PreTick))
+	engine_event.Tick.Register(event.NewObserver(client, client.Tick))
+	engine_event.PostTick.Register(event.NewObserver(client, client.PostTick))
 }
 
 // Cleanup is called when the player logs out

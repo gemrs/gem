@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/gemrs/gem/gem/archive"
 	"github.com/gemrs/gem/gem/log"
 	"github.com/gemrs/gem/gem/runite"
 	willow "github.com/gemrs/willow/log"
@@ -14,6 +15,7 @@ import (
 
 var contentDir = flag.String("content", "content", "the content directory")
 var compiledDir = flag.String("content_out", "content_out", "the compiled content directory")
+var noCompile = flag.Bool("no-compile", false, "skip lua compilation")
 
 func buildMoonScript(dir string) {
 	fmt.Println("Compiling content directory:", dir)
@@ -32,7 +34,9 @@ func main() {
 	bufferingTarget := willow.NewBufferingTarget(stdoutTarget)
 	willow.Targets["stdout"] = bufferingTarget
 
-	buildMoonScript(*contentDir)
+	if !*noCompile {
+		buildMoonScript(*contentDir)
+	}
 	finalDir := *compiledDir + "/" + *contentDir
 	luaPath := fmt.Sprintf("%v/?.lua;%v", finalDir, lua.LuaPathDefault)
 
@@ -44,6 +48,7 @@ func main() {
 
 	runite.Bindrunite(L)
 	log.Bindlog(L)
+	archive.Bindarchive(L)
 
 	if fn, err := L.LoadFile(mainFile); err != nil {
 		panic(err)

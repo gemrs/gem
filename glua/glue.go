@@ -4,11 +4,19 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
+	"go/printer"
+	"go/token"
 	"html/template"
 	"strings"
+
+	"github.com/fatih/camelcase"
 )
 
-var modTemplate = template.Must(template.New("").Parse(`package {{.Name}}
+var funcMap = template.FuncMap{
+	"underscore": underscore,
+}
+
+var modTemplate = template.Must(template.New("").Funcs(funcMap).Parse(`package {{.Name}}
 
 import lua "github.com/yuin/gopher-lua"
 
@@ -58,7 +66,7 @@ func lNew{{$typeName}}(L *lua.LState) int {
 */
 var {{$typeName}}Methods = map[string]lua.LGFunction{
 {{range $methodName, $method := $typ.Methods}}
-	"{{$methodName}}": lBind{{$typeName}}{{$methodName}},
+	"{{underscore $methodName}}": lBind{{$typeName}}{{$methodName}},
 {{end}}
 }
 
@@ -78,8 +86,15 @@ type lModule struct {
 
 func (mod *lModule) String() string {
 	var buf bytes.Buffer
+
 	modTemplate.Execute(&buf, mod)
 	return string(buf.Bytes())
+}
+
+func printExpr(typ ast.Expr) string {
+	var buf bytes.Buffer
+	printer.Fprint(&buf, token.NewFileSet(), typ)
+	return buf.String()
 }
 
 func fromLua(src, dest string, typ ast.Expr) string {
@@ -89,12 +104,12 @@ func fromLua(src, dest string, typ ast.Expr) string {
 		fmt.Fprintf(&buf, "%v := make([]%v, %vArray.Len())\n", dest, array.Elt, src)
 		fmt.Fprintf(&buf, "%vArray.ForEach(func (k lua.LValue, val lua.LValue) {\n", src)
 		fmt.Fprintf(&buf, "i := int(lua.LVAsNumber(k)) - 1\n")
-		fmt.Fprintf(&buf, "%v[i] = glua.FromLua(val).(%v)\n", dest, array.Elt)
+		fmt.Fprintf(&buf, "%v[i] = glua.FromLua(val).(%v)\n", dest, printExpr(array.Elt))
 		fmt.Fprintf(&buf, "})\n")
 		return buf.String()
 	}
 
-	return fmt.Sprintf("%v := glua.FromLua(%v).(%v)\n", dest, src, typ)
+	return fmt.Sprintf("%v := glua.FromLua(%v).(%v)\n", dest, src, printExpr(typ))
 }
 
 func (method *lFunction) Generate() string {
@@ -159,4 +174,12 @@ type lFunction struct {
 	Recv string
 	Args []ast.Expr
 	Ret  ast.Expr
+}
+
+func underscore(ident string) string {
+	parts := camelcase.Split(ident)
+	for i, s := range parts {
+		parts[i] = strings.ToLower(s)
+	}
+	return strings.Join(parts, "_")
 }

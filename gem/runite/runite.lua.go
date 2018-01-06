@@ -51,7 +51,7 @@ func lNewContext(L *lua.LState) int {
 */
 var ContextMethods = map[string]lua.LGFunction{
 
-	"Unpack": lBindContextUnpack,
+	"unpack": lBindContextUnpack,
 }
 
 func lBindContextUnpack(L *lua.LState) int {

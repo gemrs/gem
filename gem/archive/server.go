@@ -11,6 +11,7 @@ import (
 	"github.com/gemrs/willow/log"
 
 	"bufio"
+
 	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
@@ -18,6 +19,9 @@ import (
 var logger = log.New("archive", log.NilContext)
 var requestRegexp = regexp.MustCompile("JAGGRAB /([a-z]+)[0-9\\-]+")
 
+//go:generate glua .
+
+//glua:bind
 type Server struct {
 	py.BaseObject
 
@@ -29,8 +33,12 @@ type Server struct {
 	t tomb.Tomb
 }
 
-func (s *Server) Init() {}
+//glua:bind constructor Server
+func NewServer() *Server {
+	return &Server{}
+}
 
+//glua:bind
 func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	var err error
 	s.laddr = laddr
@@ -52,6 +60,7 @@ func (s *Server) Start(laddr string, ctx *runite.Context) error {
 	return nil
 }
 
+//glua:bind
 func (s *Server) Stop() error {
 	logger.Info("Stopping archive server...")
 	if s.t.Alive() {

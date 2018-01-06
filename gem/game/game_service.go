@@ -45,11 +45,11 @@ func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth aut
 	svc.NonExpirable = expire.NewNonExpirable()
 	svc.world = world.NewInstance()
 
-	game_event.PlayerFinishLogin.Register(event.NewListener(svc, playerFinishLogin))
-	game_event.PlayerLogout.Register(event.NewListener(svc, playerCleanup))
-	game_event.EntityRegionChange.Register(event.NewListener(svc, svc.EntityUpdate))
-	game_event.EntitySectorChange.Register(event.NewListener(svc, svc.EntityUpdate))
-	game_event.PlayerAppearanceUpdate.Register(event.NewListener(svc, svc.PlayerUpdate))
+	game_event.PlayerFinishLogin.Register(event.NewObserver(svc, playerFinishLogin))
+	game_event.PlayerLogout.Register(event.NewObserver(svc, playerCleanup))
+	game_event.EntityRegionChange.Register(event.NewObserver(svc, svc.EntityUpdate))
+	game_event.EntitySectorChange.Register(event.NewObserver(svc, svc.EntityUpdate))
+	game_event.PlayerAppearanceUpdate.Register(event.NewObserver(svc, svc.PlayerUpdate))
 	return nil
 }
 

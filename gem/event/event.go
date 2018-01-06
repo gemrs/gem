@@ -10,13 +10,13 @@ type Event struct {
 	py.BaseObject
 
 	key       string
-	observers map[int]Observer
+	observers map[int]ObserverIface
 	log       log.Log
 }
 
 func (e *Event) Init(key string) {
 	e.key = key
-	e.observers = make(map[int]Observer)
+	e.observers = make(map[int]ObserverIface)
 	e.log = log.New("event", log.MapContext{"event": key})
 }
 
@@ -24,11 +24,11 @@ func (e *Event) Key() string {
 	return e.key
 }
 
-func (e *Event) Register(o Observer) {
+func (e *Event) Register(o ObserverIface) {
 	e.observers[o.Id()] = o
 }
 
-func (e *Event) Unregister(o Observer) {
+func (e *Event) Unregister(o ObserverIface) {
 	delete(e.observers, o.Id())
 }
 
