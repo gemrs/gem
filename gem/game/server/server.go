@@ -5,12 +5,11 @@ import (
 	"net"
 	"sync"
 
-	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/gem/protocol"
 	"github.com/gemrs/gem/gem/util/id"
 	"github.com/gemrs/gem/gem/util/safe"
+	"github.com/gemrs/willow/log"
 
-	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
 
@@ -18,8 +17,6 @@ var logger = log.New("server", log.NilContext)
 
 // Server is the listener object and its associated state
 type Server struct {
-	py.BaseObject
-
 	laddr string
 	ln    net.Listener
 

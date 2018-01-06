@@ -4,19 +4,16 @@ import (
 	"time"
 
 	engine_event "github.com/gemrs/gem/gem/engine/event"
-	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/gem/task"
 	"github.com/gemrs/gem/gem/util/safe"
+	"github.com/gemrs/willow/log"
 
-	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
 
 var logger = log.New("engine", log.NilContext)
 
 type Engine struct {
-	py.BaseObject
-
 	t tomb.Tomb
 }
 
@@ -32,10 +29,6 @@ func (e *Engine) Start() {
 }
 
 func (e *Engine) Join() {
-	lock := py.NewLock()
-	defer lock.Unlock()
-	lock.UnblockThreads()
-
 	e.t.Wait()
 }
 

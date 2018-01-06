@@ -16,13 +16,10 @@ import (
 	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/gem/gem/util/expire"
-
-	"github.com/qur/gopy/lib"
 )
 
 // GameService represents the internal state of the game
 type GameService struct {
-	py.BaseObject
 	expire.NonExpirable
 
 	runite *runite.Context

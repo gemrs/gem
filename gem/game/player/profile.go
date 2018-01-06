@@ -4,16 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/game/interface/player"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
 // Profile represents the saved state of a user
 type Profile struct {
-	py.BaseObject
-
 	username string
 	password string
 	rights   player.Rights
@@ -95,8 +91,6 @@ func (p *Profile) UnmarshalJSON(objJSON []byte) error {
 }
 
 type Skills struct {
-	py.BaseObject
-
 	combatLevel int
 }
 

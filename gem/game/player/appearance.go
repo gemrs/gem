@@ -1,14 +1,10 @@
 package player
 
 import (
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/game/interface/player"
 )
 
 type Appearance struct {
-	py.BaseObject
-
 	gender   int
 	headIcon int
 

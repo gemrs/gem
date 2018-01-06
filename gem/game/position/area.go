@@ -1,13 +1,7 @@
 package position
 
-import (
-	"github.com/qur/gopy/lib"
-)
-
 // An Area is a rectangular grouping of sectors, with an arbitrary width and height.
 type Area struct {
-	py.BaseObject
-
 	sectors [][]*Sector
 	w, h    int
 }

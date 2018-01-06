@@ -2,8 +2,6 @@ package position
 
 import (
 	"math"
-
-	"github.com/qur/gopy/lib"
 )
 
 // A SectorHash is a 64-bit representation of a given sector in the world.
@@ -19,8 +17,6 @@ func (s SectorHash) Sector() *Sector {
 
 // A Sector is an 8x8 tile chunk of the map
 type Sector struct {
-	py.BaseObject
-
 	x, y, z int
 }
 

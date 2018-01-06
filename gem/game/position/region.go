@@ -1,14 +1,8 @@
 package position
 
-import (
-	"github.com/qur/gopy/lib"
-)
-
 // A region is a 13x13 sector (104x104 tile) chunk.
 // This is the loaded area of the map around the player.
 type Region struct {
-	py.BaseObject
-
 	// The origin of the region is the lowest corner sector, NOT the center.
 	origin *Sector
 }

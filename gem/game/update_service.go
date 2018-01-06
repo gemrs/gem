@@ -6,14 +6,10 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 	update_protocol "github.com/gemrs/gem/gem/protocol/update"
 	"github.com/gemrs/gem/gem/runite"
-
-	"github.com/qur/gopy/lib"
 )
 
 // updateService represents the internal state of the update servuce
 type UpdateService struct {
-	py.BaseObject
-
 	runite *runite.Context
 	queue  updateQueue
 	notify chan int

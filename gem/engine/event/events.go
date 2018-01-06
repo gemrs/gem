@@ -1,10 +1,7 @@
 package event
 
 import (
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/event"
-	"github.com/gemrs/gem/gem/python/modules"
 )
 
 var (
@@ -22,26 +19,4 @@ func createEvent(key string) *event.Event {
 	events = append(events, event)
 
 	return event
-}
-
-func init() {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	/* Create package */
-	var err error
-	var module *py.Module
-	if module, err = modules.Init("gem.engine.event", []py.Method{}); err != nil {
-		panic(err)
-	}
-
-	createEventObjects(module)
-}
-
-func createEventObjects(module *py.Module) {
-	for _, event := range events {
-		if err := module.AddObject(event.Key(), event); err != nil {
-			panic(err)
-		}
-	}
 }

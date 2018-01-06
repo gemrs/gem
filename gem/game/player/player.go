@@ -4,7 +4,6 @@ import (
 	"math/rand"
 
 	"github.com/gtank/isaac"
-	"github.com/qur/gopy/lib"
 
 	"github.com/gemrs/gem/gem/encoding"
 	entityimpl "github.com/gemrs/gem/gem/game/entity"
@@ -19,8 +18,6 @@ import (
 
 // GameClient is a client which serves players
 type Player struct {
-	py.BaseObject
-
 	index        int
 	sector       *world.Sector
 	world        *world.Instance

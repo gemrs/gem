@@ -2,14 +2,10 @@ package position
 
 import (
 	"fmt"
-
-	"github.com/qur/gopy/lib"
 )
 
 // Absolute is a coordinate mapping to a single tile within the world
 type Absolute struct {
-	py.BaseObject
-
 	x, y, z int
 }
 

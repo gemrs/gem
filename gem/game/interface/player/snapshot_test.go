@@ -3,16 +3,11 @@ package player
 import (
 	"testing"
 
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
 func TestSnapshot(t *testing.T) {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
 	dummyPos := position.NewAbsolute(3500, 3500, 1)
 
 	dummyPlayer := &PlayerSnapshot{

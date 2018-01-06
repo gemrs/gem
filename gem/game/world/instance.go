@@ -1,14 +1,10 @@
 package world
 
 import (
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/game/position"
 )
 
 type Instance struct {
-	py.BaseObject
-
 	sectors map[position.SectorHash]*Sector
 }
 

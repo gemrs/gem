@@ -1,1 +1,0 @@
-from motd import MOTD

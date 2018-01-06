@@ -3,13 +3,9 @@ package entity
 import (
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
-
-	"github.com/qur/gopy/lib"
 )
 
 type GenericMob struct {
-	py.BaseObject
-
 	waypointQueue entity.WaypointQueue
 	position      *position.Absolute
 	flags         entity.Flags

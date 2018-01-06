@@ -1,16 +1,12 @@
 package world
 
 import (
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/willow/log"
 )
 
 type Sector struct {
-	py.BaseObject
-
 	*entity.Collection
 	position *position.Sector
 	logger   log.Log

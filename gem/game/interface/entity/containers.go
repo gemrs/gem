@@ -1,15 +1,9 @@
 package entity
 
-import (
-	"github.com/qur/gopy/lib"
-)
-
 // Collection is an efficient, cycle based entity collection.
 // The underlying collection is transactional and is updated at a fixed interval.
 // The Update method should be called to commit Register/Unregistered entities.
 type Collection struct {
-	py.BaseObject
-
 	entities   *List
 	register   *Slice // the set of entities to add this cycle
 	unregister *Slice // the set of entities to remove this cycle
@@ -65,8 +59,6 @@ func (c *Collection) Size() int {
 // Slices can be added to and emptied, but not removed from. They are intended for buffering
 // entities for addition to a List.
 type Slice struct {
-	py.BaseObject
-
 	s []Entity
 }
 
@@ -104,8 +96,6 @@ func (s *Slice) Size() int {
 // List is implemented as a map[Index]Entity for efficiency; lookup can utilize
 // the underlying hash-table lookup of the map type
 type List struct {
-	py.BaseObject
-
 	m map[int]Entity
 }
 

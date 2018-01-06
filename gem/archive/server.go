@@ -12,7 +12,6 @@ import (
 
 	"bufio"
 
-	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
 
@@ -23,8 +22,6 @@ var requestRegexp = regexp.MustCompile("JAGGRAB /([a-z]+)[0-9\\-]+")
 
 //glua:bind
 type Server struct {
-	py.BaseObject
-
 	laddr string
 	ln    net.Listener
 

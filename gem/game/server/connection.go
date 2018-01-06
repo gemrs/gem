@@ -7,8 +7,6 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/util/safe"
 	"github.com/gemrs/willow/log"
-
-	"github.com/qur/gopy/lib"
 )
 
 const (
@@ -27,8 +25,6 @@ type Client interface {
 // Connection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
 type Connection struct {
-	py.BaseObject
-
 	ReadBuffer     *encoding.Buffer
 	WriteBuffer    *encoding.Buffer
 	Read           chan encoding.Decodable
