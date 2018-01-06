@@ -23,6 +23,8 @@ type Player struct {
 	world        *world.Instance
 	loadedRegion *position.Region
 
+	visibleEntities *entity.Collection
+
 	*server.Connection
 	*entityimpl.GenericMob
 	decode player.DecodeFunc
@@ -52,6 +54,7 @@ func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
 	wpq := entityimpl.NewSimpleWaypointQueue()
 	client.GenericMob = entityimpl.NewGenericMob(wpq)
 
+	client.visibleEntities = entity.NewCollection()
 	client.animations = NewAnimations()
 	client.index = entity.NextIndex()
 	return client
@@ -107,6 +110,10 @@ func (client *Player) SetSecureBlockSize(size int) {
 
 func (client *Player) LoadedRegion() *position.Region {
 	return client.loadedRegion
+}
+
+func (client *Player) VisibleEntities() *entity.Collection {
+	return client.visibleEntities
 }
 
 func (client *Player) Animations() player.Animations {

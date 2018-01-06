@@ -26,3 +26,17 @@ func (i *Instance) Sector(s *position.Sector) *Sector {
 	i.sectors[hash] = NewSector(s)
 	return i.sectors[hash]
 }
+
+func (i *Instance) UpdateEntityCollections() {
+	for _, sector := range i.sectors {
+		sector.Update()
+	}
+}
+
+func (instance *Instance) Sectors(s []*position.Sector) []*Sector {
+	list := make([]*Sector, len(s))
+	for i, s := range s {
+		list[i] = instance.Sector(s)
+	}
+	return list
+}

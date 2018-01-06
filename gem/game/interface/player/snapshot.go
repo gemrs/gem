@@ -17,9 +17,10 @@ func Snapshot(player Player) Player {
 	srcWpq := player.WaypointQueue()
 
 	snapshot := &PlayerSnapshot{
-		index:        player.Index(),
-		flags:        player.Flags(),
-		loadedRegion: player.LoadedRegion(),
+		index:           player.Index(),
+		flags:           player.Flags(),
+		loadedRegion:    player.LoadedRegion(),
+		visibleEntities: player.VisibleEntities().Clone(),
 		profile: &ProfileSnapshot{
 			username: srcProfile.Username(),
 			password: srcProfile.Password(),
@@ -80,12 +81,13 @@ func Snapshot(player Player) Player {
 }
 
 type PlayerSnapshot struct {
-	index         int
-	animations    Animations
-	profile       Profile
-	flags         entity.Flags
-	loadedRegion  *position.Region
-	waypointQueue entity.WaypointQueue
+	index           int
+	animations      Animations
+	profile         Profile
+	flags           entity.Flags
+	loadedRegion    *position.Region
+	visibleEntities *entity.Collection
+	waypointQueue   entity.WaypointQueue
 }
 
 func (p *PlayerSnapshot) Index() int {
@@ -134,6 +136,10 @@ func (p *PlayerSnapshot) ClearFlags() {
 
 func (p *PlayerSnapshot) LoadedRegion() *position.Region {
 	return p.loadedRegion
+}
+
+func (p *PlayerSnapshot) VisibleEntities() *entity.Collection {
+	return p.visibleEntities
 }
 
 func (p *PlayerSnapshot) Position() *position.Absolute {

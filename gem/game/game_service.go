@@ -6,6 +6,7 @@ import (
 
 	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/crypto"
+	engine_event "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/event"
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/interface/entity"
@@ -54,6 +55,8 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 	game_event.EntityRegionChange.Register(event.NewObserver(svc, svc.EntityUpdate))
 	game_event.EntitySectorChange.Register(event.NewObserver(svc, svc.EntityUpdate))
 	game_event.PlayerAppearanceUpdate.Register(event.NewObserver(svc, svc.PlayerUpdate))
+
+	engine_event.PostTick.Register(event.NewObserver(svc, svc.UpdateEntityCollections))
 	return svc
 }
 
@@ -78,6 +81,10 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.C
 
 func (svc *GameService) World() *world.Instance {
 	return svc.world
+}
+
+func (svc *GameService) UpdateEntityCollections(ev *event.Event, _args ...interface{}) {
+	svc.world.UpdateEntityCollections()
 }
 
 func (svc *GameService) EntityUpdate(ev *event.Event, _args ...interface{}) {

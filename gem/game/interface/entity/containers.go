@@ -17,6 +17,14 @@ func NewCollection() *Collection {
 	}
 }
 
+func (c *Collection) Clone() *Collection {
+	return &Collection{
+		entities:   c.entities.Clone(),
+		register:   c.register.Clone(),
+		unregister: c.unregister.Clone(),
+	}
+}
+
 // Add requests a new entity be added to the collection.
 // The new entity goes into the tracking list, and to the adding list
 func (c *Collection) Add(entity Entity) {
@@ -29,6 +37,18 @@ func (c *Collection) Add(entity Entity) {
 func (c *Collection) Remove(entity Entity) {
 	c.unregister.Add(entity)
 	c.entities.Remove(entity)
+}
+
+func (c *Collection) AddAll(other *Collection) {
+	for _, e := range other.entities.Slice().Slice() {
+		c.Add(e)
+	}
+}
+
+func (c *Collection) RemoveAll(other *Collection) {
+	for _, e := range other.entities.Slice().Slice() {
+		c.Remove(e)
+	}
 }
 
 // Update cycles the collection. Both adding and removing lists are emptied.
@@ -70,6 +90,14 @@ func NewSlice() *Slice {
 	return s
 }
 
+func (s *Slice) Clone() *Slice {
+	new := &Slice{
+		s: make([]Entity, len(s.s)),
+	}
+	copy(new.s, s.s)
+	return new
+}
+
 func (s *Slice) Empty() {
 	s.s = make([]Entity, 0)
 }
@@ -107,6 +135,16 @@ func NewList() *List {
 	return &List{
 		m: make(map[int]Entity),
 	}
+}
+
+func (list *List) Clone() *List {
+	new := &List{
+		m: make(map[int]Entity),
+	}
+	for k, v := range list.m {
+		new.m[k] = v
+	}
+	return new
 }
 
 // Slice converts the List to a Slice

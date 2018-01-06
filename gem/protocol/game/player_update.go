@@ -2,6 +2,7 @@
 package game
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/encoding"
@@ -25,6 +26,17 @@ func (struc *PlayerUpdateBlock) Encode(w io.Writer, flags interface{}) error {
 	}
 
 	buf.Write(8, 0) // count of other players to update
+
+	visibleEntities := struc.OurPlayer.VisibleEntities()
+	for _, other := range visibleEntities.Adding().Slice() {
+		fmt.Printf("%v adding player %v\n", struc.OurPlayer.Index(), other.Index())
+	}
+	for _, other := range visibleEntities.Entities().Slice() {
+		fmt.Printf("%v tracking player %v\n", struc.OurPlayer.Index(), other.Index())
+	}
+	for _, other := range visibleEntities.Removing().Slice() {
+		fmt.Printf("%v removing player %v\n", struc.OurPlayer.Index(), other.Index())
+	}
 
 	updateBlockBytes := updateBlock.Bytes()
 	if len(updateBlockBytes) > 0 {

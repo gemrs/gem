@@ -25,6 +25,7 @@ type Player interface {
 	LoadProfile()
 	Cleanup()
 	LoadedRegion() *position.Region
+	VisibleEntities() *entity.Collection
 
 	SetDecodeFunc(d DecodeFunc)
 	Conn() *server.Connection
