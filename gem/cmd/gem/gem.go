@@ -3,13 +3,17 @@ package main
 import (
 	"os"
 
-	"github.com/qur/gopy/lib"
-
-	_ "github.com/gemrs/gem/gem/python/api"
+	"github.com/gemrs/gem/gem/runite"
+	lua "github.com/yuin/gopher-lua"
 )
 
 func main() {
-	py.NewLock()
-	py.Main(os.Args)
-	py.Finalize()
+	L := lua.NewState()
+	defer L.Close()
+
+	runite.Bindrunite(L)
+
+	if err := L.DoFile(os.Args[1]); err != nil {
+		panic(err)
+	}
 }
