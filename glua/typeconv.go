@@ -68,11 +68,18 @@ func ToLua(L *lua.LState, v interface{}) lua.LValue {
 			return lua.LNil
 		}
 
-		typ := reflect.TypeOf(v).String()
-		fmt.Printf("converting from %v\n", typ)
+		rType := reflect.TypeOf(v)
+		if rType.Kind() == reflect.Ptr {
+			rType = rType.Elem()
+		}
+		typ := rType.String()
 		ud := L.NewUserData()
 		ud.Value = v
-		L.SetMetatable(ud, L.GetTypeMetatable(typ))
+		mt := L.GetTypeMetatable(typ)
+		if mt == nil {
+			panic(fmt.Sprintf("can't find metatable for %v, not a bound type?", typ))
+		}
+		L.SetMetatable(ud, mt)
 		return ud
 	}
 }

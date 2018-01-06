@@ -22,6 +22,7 @@ func main() {
 		srcName := module.Name + ".lua.go"
 		src, err := imports.Process(srcName, []byte(fmt.Sprint(module)), nil)
 		if err != nil {
+			fmt.Print(module)
 			panic(err)
 		}
 

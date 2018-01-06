@@ -36,7 +36,7 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 			if decl, ok := decl.(*ast.GenDecl); ok {
 				for _, spec := range decl.Specs {
 					if spec, ok := spec.(*ast.TypeSpec); ok {
-						if hasBindComment(decl.Doc) {
+						if ok, _ := hasBindComment(decl.Doc); ok {
 							typ := gatherType(spec)
 							module.Types[spec.Name.Name] = typ
 						}
@@ -50,18 +50,33 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 	for _, file := range pkg.Files {
 		for _, decl := range file.Decls {
 			if fn, ok := decl.(*ast.FuncDecl); ok {
-				if !hasBindComment(fn.Doc) {
+				ok, bindArgs := hasBindComment(fn.Doc)
+				if !ok {
 					continue
 				}
 
 				receiver := receiverName(fn)
 				if receiver == "" {
-					// gatherFunction(fn)
+					if len(bindArgs) > 0 && bindArgs[0] == "constructor" {
+						if len(bindArgs) != 2 {
+							panic("expected type argument to constructor annotation")
+						}
+
+						typeName := bindArgs[1]
+						typ, ok := module.Types[typeName]
+						if !ok {
+							panic(fmt.Sprintf("constructor for unbound type %v", typeName))
+						}
+						typ.Constructor = gatherFunction(fn)
+						typ.Constructor.Recv = typeName
+					} else {
+						//gatherFunction(fn)
+					}
 					continue
 				}
 
 				if typ, ok := module.Types[receiver]; ok {
-					typ.Methods[fn.Name.Name] = gatherMethod(fn)
+					typ.Methods[fn.Name.Name] = gatherFunction(fn)
 					typ.Methods[fn.Name.Name].Recv = receiver
 				}
 			}
@@ -74,13 +89,13 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 func gatherType(spec *ast.TypeSpec) *lType {
 	typ := &lType{
 		Name:    spec.Name.Name,
-		Methods: make(map[string]*lMethod),
+		Methods: make(map[string]*lFunction),
 	}
 	return typ
 }
 
-func gatherMethod(fn *ast.FuncDecl) *lMethod {
-	method := &lMethod{
+func gatherFunction(fn *ast.FuncDecl) *lFunction {
+	method := &lFunction{
 		Name: fn.Name.Name,
 	}
 
@@ -102,8 +117,18 @@ func gatherMethod(fn *ast.FuncDecl) *lMethod {
 	return method
 }
 
-func hasBindComment(comment *ast.CommentGroup) bool {
-	return strings.Contains(comment.Text(), "glua:bind")
+func hasBindComment(comment *ast.CommentGroup) (bool, []string) {
+	if comment == nil {
+		return false, nil
+	}
+
+	for _, c := range comment.List {
+		if !strings.HasPrefix(c.Text, "//glua:bind") {
+			continue
+		}
+		return true, strings.Split(c.Text, " ")[1:]
+	}
+	return false, nil
 }
 
 func receiverName(fn *ast.FuncDecl) string {

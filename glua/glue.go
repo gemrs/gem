@@ -27,9 +27,11 @@ func lBind{{.Name}}(L *lua.LState) int {
 	return 1
 }
 
+{{$modName := .Name}}
+
 {{range $typeName, $typ := .Types}}
 func lBind{{$typeName}}(L *lua.LState, mod *lua.LTable) {
-	mt := L.NewTypeMetatable("{{$typeName}}")
+	mt := L.NewTypeMetatable("{{$modName}}.{{$typeName}}")
 	L.SetField(mt, "__call", L.NewFunction(lNew{{$typeName}}))
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), {{$typeName}}Methods))
 
@@ -38,16 +40,22 @@ func lBind{{$typeName}}(L *lua.LState, mod *lua.LTable) {
 	L.SetMetatable(cls, mt)
 }
 
+{{with $typ.Constructor}}
+func lNew{{$typeName}}(L *lua.LState) int {
+{{.GenerateCtor}}
+}
+{{end}}
+/*
 func lNew{{$typeName}}(L *lua.LState) int {
 	// FIXME only works for structs, no custom constructor..
 	obj := &{{$typeName}}{}
 	ud := L.NewUserData()
 	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("{{$typeName}}"))
+	L.SetMetatable(ud, L.GetTypeMetatable("{{$modName}}.{{$typeName}}"))
 	L.Push(ud)
 	return 1
 }
-
+*/
 var {{$typeName}}Methods = map[string]lua.LGFunction{
 {{range $methodName, $method := $typ.Methods}}
 	"{{$methodName}}": lBind{{$typeName}}{{$methodName}},
@@ -89,7 +97,7 @@ func fromLua(src, dest string, typ ast.Expr) string {
 	return fmt.Sprintf("%v := glua.FromLua(%v).(%v)\n", dest, src, typ)
 }
 
-func (method *lMethod) Generate() string {
+func (method *lFunction) Generate() string {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "self := glua.FromLua(L.Get(1)).(*%v)\n", method.Recv)
 	fmt.Fprintf(&buf, "L.Remove(1)\n")
@@ -114,12 +122,39 @@ func (method *lMethod) Generate() string {
 	return buf.String()
 }
 
-type lType struct {
-	Name    string
-	Methods map[string]*lMethod
+func (method *lFunction) GenerateCtor() string {
+	var buf bytes.Buffer
+	argNames := make([]string, len(method.Args))
+
+	// Remove the cls
+	fmt.Fprintf(&buf, "L.Remove(1)\n")
+
+	for i, arg := range method.Args {
+		fmt.Fprintf(&buf, "arg%vValue := L.Get(1)\n", i)
+		fmt.Fprintf(&buf, "%v", fromLua(fmt.Sprintf("arg%vValue", i), fmt.Sprintf("arg%v", i), arg))
+		fmt.Fprintf(&buf, "L.Remove(1)\n")
+		argNames[i] = fmt.Sprintf("arg%v", i)
+	}
+
+	args := strings.Join(argNames, ", ")
+	if method.Ret != nil {
+		fmt.Fprintf(&buf, "retVal := %v(%v)\n", method.Name, args)
+		fmt.Fprintf(&buf, "L.Push(glua.ToLua(L, retVal))\n")
+		fmt.Fprintf(&buf, "return 1\n")
+	} else {
+		fmt.Fprintf(&buf, "self.%v(%v)\n", method.Name, args)
+		fmt.Fprintf(&buf, "return 0\n")
+	}
+	return buf.String()
 }
 
-type lMethod struct {
+type lType struct {
+	Name        string
+	Constructor *lFunction
+	Methods     map[string]*lFunction
+}
+
+type lFunction struct {
 	Name string
 	Recv string
 	Args []ast.Expr

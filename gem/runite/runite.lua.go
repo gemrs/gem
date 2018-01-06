@@ -21,7 +21,7 @@ func lBindrunite(L *lua.LState) int {
 }
 
 func lBindContext(L *lua.LState, mod *lua.LTable) {
-	mt := L.NewTypeMetatable("Context")
+	mt := L.NewTypeMetatable("runite.Context")
 	L.SetField(mt, "__call", L.NewFunction(lNewContext))
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ContextMethods))
 
@@ -31,15 +31,24 @@ func lBindContext(L *lua.LState, mod *lua.LTable) {
 }
 
 func lNewContext(L *lua.LState) int {
+	L.Remove(1)
+	retVal := NewContext()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+/*
+func lNewContext(L *lua.LState) int {
 	// FIXME only works for structs, no custom constructor..
 	obj := &Context{}
 	ud := L.NewUserData()
 	ud.Value = obj
-	L.SetMetatable(ud, L.GetTypeMetatable("Context"))
+	L.SetMetatable(ud, L.GetTypeMetatable("runite.Context"))
 	L.Push(ud)
 	return 1
 }
-
+*/
 var ContextMethods = map[string]lua.LGFunction{
 
 	"Unpack": lBindContextUnpack,

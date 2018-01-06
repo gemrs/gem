@@ -2,22 +2,25 @@ package runite
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 
 	"github.com/gemrs/gem/gem/runite/format/rt3"
 )
 
-// glua:bind
+//go:generate glua .
+
+//glua:bind
 type Context struct {
 	FS *rt3.JagFS
 }
 
-func (c *Context) Init() {}
+//glua:bind constructor Context
+func NewContext() *Context {
+	return &Context{}
+}
 
-// glua:bind
+//glua:bind
 func (r *Context) Unpack(dataFile string, indexFiles []string) error {
-	fmt.Printf("unpack %v %v\n", dataFile, indexFiles)
 	var err error
 	r.FS, err = UnpackJagFSFiles(dataFile, indexFiles)
 	return err

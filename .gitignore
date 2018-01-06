@@ -3,3 +3,4 @@ __pycache__
 .vagrant/
 client/
 *.pyc
+content_out/
