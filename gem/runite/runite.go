@@ -1,3 +1,4 @@
+//glua:bind module gem.runite
 package runite
 
 import (

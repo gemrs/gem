@@ -8,7 +8,7 @@ import (
 
 // Bindarchive generates a lua binding for archive
 func Bindarchive(L *lua.LState) {
-	L.PreloadModule("archive", lBindarchive)
+	L.PreloadModule("gem.archive", lBindarchive)
 }
 
 // lBindarchive generates the table for the archive module
@@ -29,6 +29,7 @@ func lBindServer(L *lua.LState, mod *lua.LTable) {
 	cls := L.NewUserData()
 	L.SetField(mod, "Server", cls)
 	L.SetMetatable(cls, mt)
+	glua.RegisterType("archive.Server", mt)
 }
 
 func lNewServer(L *lua.LState) int {

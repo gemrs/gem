@@ -1,3 +1,4 @@
+//glua:bind module gem.archive
 package archive
 
 import (

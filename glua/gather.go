@@ -25,20 +25,33 @@ func Gather(path string) ([]*lModule, error) {
 
 func gatherModule(name string, pkg *ast.Package) *lModule {
 	module := &lModule{
-		Name:  name,
-		Types: make(map[string]*lType),
+		Name:   name,
+		Types:  make(map[string]*lType),
+		Fields: make(map[string]*lField),
 	}
 
 	// Ew...
-	// Gather types
+	// Gather types and fields
 	for _, file := range pkg.Files {
+		if file.Doc != nil && module.LuaName == "" {
+			module.LuaName = extractAlias(file.Doc)
+		}
+
 		for _, decl := range file.Decls {
 			if decl, ok := decl.(*ast.GenDecl); ok {
 				for _, spec := range decl.Specs {
+					if ok, _ := hasBindComment(decl.Doc); !ok {
+						continue
+					}
+
 					if spec, ok := spec.(*ast.TypeSpec); ok {
-						if ok, _ := hasBindComment(decl.Doc); ok {
-							typ := gatherType(spec)
-							module.Types[spec.Name.Name] = typ
+						typ := gatherType(spec)
+						module.Types[spec.Name.Name] = typ
+					}
+					if spec, ok := spec.(*ast.ValueSpec); ok {
+						fields := gatherFields(spec)
+						for _, field := range fields {
+							module.Fields[field.Name] = field
 						}
 					}
 				}
@@ -83,6 +96,10 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 		}
 	}
 
+	if module.LuaName == "" {
+		module.LuaName = module.Name
+	}
+
 	return module
 }
 
@@ -115,6 +132,29 @@ func gatherFunction(fn *ast.FuncDecl) *lFunction {
 	}
 
 	return method
+}
+
+func gatherFields(spec *ast.ValueSpec) []*lField {
+	fields := make([]*lField, len(spec.Names))
+	for i, n := range spec.Names {
+		fields[i] = &lField{
+			Name: n.Name,
+		}
+	}
+	return fields
+}
+
+func extractAlias(comment *ast.CommentGroup) string {
+	for _, c := range comment.List {
+		if !strings.HasPrefix(c.Text, "//glua:bind") {
+			continue
+		}
+		args := strings.Split(c.Text, " ")[1:]
+		if args[0] == "module" {
+			return args[1]
+		}
+	}
+	return ""
 }
 
 func hasBindComment(comment *ast.CommentGroup) (bool, []string) {

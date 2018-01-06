@@ -7,6 +7,16 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+var typeRegistry = map[string]lua.LValue{}
+
+func RegisterType(name string, metatable lua.LValue) {
+	if _, ok := typeRegistry[name]; ok {
+		panic(fmt.Sprintf("duplicate type registered: %v", name))
+	}
+
+	typeRegistry[name] = metatable
+}
+
 func FromLua(lv lua.LValue) interface{} {
 	switch lv := lv.(type) {
 	case lua.LString:
@@ -75,8 +85,8 @@ func ToLua(L *lua.LState, v interface{}) lua.LValue {
 		typ := rType.String()
 		ud := L.NewUserData()
 		ud.Value = v
-		mt := L.GetTypeMetatable(typ)
-		if mt == nil {
+		mt, ok := typeRegistry[typ]
+		if ok == false {
 			panic(fmt.Sprintf("can't find metatable for %v, not a bound type?", typ))
 		}
 		L.SetMetatable(ud, mt)

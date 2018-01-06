@@ -7,6 +7,9 @@ import (
 	"os/exec"
 
 	"github.com/gemrs/gem/gem/archive"
+	"github.com/gemrs/gem/gem/engine"
+	engine_events "github.com/gemrs/gem/gem/engine/event"
+	"github.com/gemrs/gem/gem/event"
 	"github.com/gemrs/gem/gem/log"
 	"github.com/gemrs/gem/gem/runite"
 	willow "github.com/gemrs/willow/log"
@@ -49,6 +52,9 @@ func main() {
 	runite.Bindrunite(L)
 	log.Bindlog(L)
 	archive.Bindarchive(L)
+	engine.Bindengine(L)
+	event.Bindevent(L)
+	engine_events.Bindengine_event(L)
 
 	if fn, err := L.LoadFile(mainFile); err != nil {
 		panic(err)

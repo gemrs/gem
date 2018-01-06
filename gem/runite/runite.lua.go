@@ -7,7 +7,7 @@ import (
 
 // Bindrunite generates a lua binding for runite
 func Bindrunite(L *lua.LState) {
-	L.PreloadModule("runite", lBindrunite)
+	L.PreloadModule("gem.runite", lBindrunite)
 }
 
 // lBindrunite generates the table for the runite module
@@ -28,6 +28,7 @@ func lBindContext(L *lua.LState, mod *lua.LTable) {
 	cls := L.NewUserData()
 	L.SetField(mod, "Context", cls)
 	L.SetMetatable(cls, mt)
+	glua.RegisterType("runite.Context", mt)
 }
 
 func lNewContext(L *lua.LState) int {

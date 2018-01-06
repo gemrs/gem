@@ -1,4 +1,5 @@
-package gem
+//glua:bind module gem.engine
+package engine
 
 import (
 	"time"
@@ -13,14 +14,21 @@ import (
 
 var logger = log.New("engine", log.NilContext)
 
+//go:generate glua .
+
+//glua:bind
 type Engine struct {
 	t tomb.Tomb
 }
 
 var EngineTick = 600 * time.Millisecond
 
-func (e *Engine) Init() {}
+//glua:bind constructor Engine
+func NewEngine() *Engine {
+	return &Engine{}
+}
 
+//glua:bind
 func (e *Engine) Start() {
 	logger.Info("Starting engine")
 	engine_event.Startup.NotifyObservers()
@@ -28,10 +36,12 @@ func (e *Engine) Start() {
 	e.t.Go(e.run)
 }
 
+//glua:bind
 func (e *Engine) Join() {
 	e.t.Wait()
 }
 
+//glua:bind
 func (e *Engine) Stop() {
 	engine_event.Shutdown.NotifyObservers()
 	e.t.Kill(nil)

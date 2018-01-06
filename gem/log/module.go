@@ -1,3 +1,4 @@
+//glua:bind module gem.log
 package log
 
 import (

@@ -1,22 +1,17 @@
-package event
+//glua:bind module gem.engine.event
+package engine_event
 
 import (
 	"github.com/gemrs/gem/gem/event"
 )
 
+//go:generate glua .
+
+//glua:bind
 var (
-	Startup  = createEvent("Startup")
-	Shutdown = createEvent("Shutdown")
-	PreTick  = createEvent("PreTick")
-	Tick     = createEvent("Tick")
-	PostTick = createEvent("PostTick")
+	Startup  = event.NewEvent("Startup")
+	Shutdown = event.NewEvent("Shutdown")
+	PreTick  = event.NewEvent("PreTick")
+	Tick     = event.NewEvent("Tick")
+	PostTick = event.NewEvent("PostTick")
 )
-
-var events = []*event.Event{}
-
-func createEvent(key string) *event.Event {
-	event := event.NewEvent(key)
-	events = append(events, event)
-
-	return event
-}

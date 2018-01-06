@@ -22,7 +22,7 @@ import lua "github.com/yuin/gopher-lua"
 
 // Bind{{.Name}} generates a lua binding for {{.Name}}
 func Bind{{.Name}}(L *lua.LState) {
-	L.PreloadModule("{{.Name}}", lBind{{.Name}})
+	L.PreloadModule("{{.LuaName}}", lBind{{.Name}})
 }
 
 // lBind{{.Name}} generates the table for the {{.Name}} module
@@ -30,6 +30,10 @@ func lBind{{.Name}}(L *lua.LState) int {
 	mod := L.NewTable()
 {{range $name, $typ := .Types}}
 	lBind{{$name}}(L, mod)
+{{end}}
+
+{{range .Fields}}
+	L.SetField(mod, "{{underscore .Name}}", glua.ToLua(L, {{.Name}}))
 {{end}}
 	L.Push(mod)
 	return 1
@@ -46,6 +50,7 @@ func lBind{{$typeName}}(L *lua.LState, mod *lua.LTable) {
 	cls := L.NewUserData()
 	L.SetField(mod, "{{$typeName}}", cls)
 	L.SetMetatable(cls, mt)
+	glua.RegisterType("{{$modName}}.{{$typeName}}", mt)
 }
 
 {{with $typ.Constructor}}
@@ -80,8 +85,10 @@ func lBind{{$typeName}}{{$methodName}}(L *lua.LState) int {
 `))
 
 type lModule struct {
-	Name  string
-	Types map[string]*lType
+	Name    string
+	LuaName string
+	Types   map[string]*lType
+	Fields  map[string]*lField
 }
 
 func (mod *lModule) String() string {
@@ -174,6 +181,10 @@ type lFunction struct {
 	Recv string
 	Args []ast.Expr
 	Ret  ast.Expr
+}
+
+type lField struct {
+	Name string
 }
 
 func underscore(ident string) string {

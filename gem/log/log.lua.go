@@ -7,7 +7,7 @@ import (
 
 // Bindlog generates a lua binding for log
 func Bindlog(L *lua.LState) {
-	L.PreloadModule("log", lBindlog)
+	L.PreloadModule("gem.log", lBindlog)
 }
 
 // lBindlog generates the table for the log module
@@ -28,6 +28,7 @@ func lBindModule(L *lua.LState, mod *lua.LTable) {
 	cls := L.NewUserData()
 	L.SetField(mod, "Module", cls)
 	L.SetMetatable(cls, mt)
+	glua.RegisterType("log.Module", mt)
 }
 
 func lNewModule(L *lua.LState) int {
