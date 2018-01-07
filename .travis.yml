@@ -7,4 +7,4 @@ script:
   - bin/build.sh
   - bin/test.sh
 after_success:
-  - codecov -X fix
+  - bash <(curl -s https://codecov.io/bash)
