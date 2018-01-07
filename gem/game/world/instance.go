@@ -42,10 +42,10 @@ func (instance *Instance) Sectors(s []*position.Sector) []*Sector {
 	return list
 }
 
-func (instance *Instance) ForEachPlayer(fn func(p entity.Entity)) {
+func (instance *Instance) AllEntities(typ entity.EntityType) []entity.Entity {
+	entities := make([]entity.Entity, 0)
 	for _, s := range instance.sectors {
-		for _, e := range s.Entities().Filter(entity.PlayerType).Slice() {
-			fn(e)
-		}
+		entities = append(entities, s.Entities().Filter(typ).Slice()...)
 	}
+	return entities
 }

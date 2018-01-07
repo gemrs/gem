@@ -79,9 +79,6 @@ func (client *Player) RegionChange() {
 
 func (client *Player) UpdateWaypointQueue() {
 	client.WaypointQueue().Tick(client)
-}
-
-func (client *Player) UpdateProfilePosition() {
 	client.Profile().SetPosition(client.Position())
 }
 

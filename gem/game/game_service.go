@@ -83,19 +83,21 @@ func (svc *GameService) World() *world.Instance {
 	return svc.world
 }
 
-func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
-	unwrapPlayer := func(fn func(*playerimpl.Player)) func(e entity.Entity) {
-		return func(e entity.Entity) {
-			fn(e.(*playerimpl.Player))
-		}
+func doForAllPlayers(entities []entity.Entity, fn func(*playerimpl.Player)) {
+	for _, e := range entities {
+		p := e.(*playerimpl.Player)
+		fn(p)
 	}
+}
 
-	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).UpdateWaypointQueue))
-	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).UpdateProfilePosition))
-	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).SyncEntityList))
-	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).SendPlayerSync))
-	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).ClearFlags))
-	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).UpdateVisibleEntities))
+func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
+	allPlayers := svc.world.AllEntities(entity.PlayerType)
+
+	doForAllPlayers(allPlayers, (*playerimpl.Player).UpdateWaypointQueue)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).SyncEntityList)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).SendPlayerSync)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).ClearFlags)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).UpdateVisibleEntities)
 	svc.world.UpdateEntityCollections()
 }
 
