@@ -213,6 +213,9 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.
 			AnimRotateCCW:  encoding.Uint16(anims.Animation(player.AnimRotateCCW)),
 			AnimRotateCW:   encoding.Uint16(anims.Animation(player.AnimRotateCW)),
 			AnimRun:        encoding.Uint16(anims.Animation(player.AnimRun)),
+
+			NameHash:    encoding.NameHash(thisPlayer.Profile().Username()),
+			CombatLevel: encoding.Uint8(thisPlayer.Profile().Skills().CombatLevel()),
 		}
 
 		err := appearanceBlock.Encode(buf, nil)
