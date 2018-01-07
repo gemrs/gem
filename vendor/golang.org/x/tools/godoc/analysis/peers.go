@@ -14,10 +14,10 @@ package analysis
 import (
 	"fmt"
 	"go/token"
+	"go/types"
 
 	"golang.org/x/tools/go/pointer"
 	"golang.org/x/tools/go/ssa"
-	"golang.org/x/tools/go/types"
 )
 
 func (a *analysis) doChannelPeers(ptsets map[ssa.Value]pointer.Pointer) {
@@ -113,7 +113,7 @@ func (a *analysis) doChannelPeers(ptsets map[ssa.Value]pointer.Pointer) {
 // -- utilities --------------------------------------------------------
 
 // chanOp abstracts an ssa.Send, ssa.Unop(ARROW), close(), or a SelectState.
-// Derived from oracle/peers.go.
+// Derived from cmd/guru/peers.go.
 type chanOp struct {
 	ch   ssa.Value
 	mode string // sent|received|closed
@@ -123,7 +123,7 @@ type chanOp struct {
 }
 
 // chanOps returns a slice of all the channel operations in the instruction.
-// Derived from oracle/peers.go.
+// Derived from cmd/guru/peers.go.
 func chanOps(instr ssa.Instruction) []chanOp {
 	fn := instr.Parent()
 	var ops []chanOp

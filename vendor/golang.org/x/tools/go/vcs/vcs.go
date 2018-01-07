@@ -268,8 +268,8 @@ func (v *Cmd) Tags(dir string) ([]string, error) {
 	return tags, nil
 }
 
-// TagSync syncs the repo in dir to the named tag,
-// which either is a tag returned by tags or is v.TagDefault.
+// TagSync syncs the repo in dir to the named tag, which is either a
+// tag returned by Tags or the empty string (the default tag).
 // dir must be a valid VCS repo compatible with v and the tag must exist.
 func (v *Cmd) TagSync(dir, tag string) error {
 	if v.TagSyncCmd == "" {
@@ -335,8 +335,7 @@ type vcsPath struct {
 // FromDir inspects dir and its parents to determine the
 // version control system and code repository to use.
 // On return, root is the import path
-// corresponding to the root of the repository
-// (thus root is a prefix of importPath).
+// corresponding to the root of the repository.
 func FromDir(dir, srcRoot string) (vcs *Cmd, root string, err error) {
 	// Clean and double-check that dir is in (a subdirectory of) srcRoot.
 	dir = filepath.Clean(dir)
@@ -345,10 +344,28 @@ func FromDir(dir, srcRoot string) (vcs *Cmd, root string, err error) {
 		return nil, "", fmt.Errorf("directory %q is outside source root %q", dir, srcRoot)
 	}
 
+	var vcsRet *Cmd
+	var rootRet string
+
+	origDir := dir
 	for len(dir) > len(srcRoot) {
 		for _, vcs := range vcsList {
-			if fi, err := os.Stat(filepath.Join(dir, "."+vcs.Cmd)); err == nil && fi.IsDir() {
-				return vcs, dir[len(srcRoot)+1:], nil
+			if _, err := os.Stat(filepath.Join(dir, "."+vcs.Cmd)); err == nil {
+				root := filepath.ToSlash(dir[len(srcRoot)+1:])
+				// Record first VCS we find, but keep looking,
+				// to detect mistakes like one kind of VCS inside another.
+				if vcsRet == nil {
+					vcsRet = vcs
+					rootRet = root
+					continue
+				}
+				// Allow .git inside .git, which can arise due to submodules.
+				if vcsRet == vcs && vcs.Cmd == "git" {
+					continue
+				}
+				// Otherwise, we have one VCS inside a different VCS.
+				return nil, "", fmt.Errorf("directory %q uses %s, but parent %q uses %s",
+					filepath.Join(srcRoot, rootRet), vcsRet.Cmd, filepath.Join(srcRoot, root), vcs.Cmd)
 			}
 		}
 
@@ -361,7 +378,11 @@ func FromDir(dir, srcRoot string) (vcs *Cmd, root string, err error) {
 		dir = ndir
 	}
 
-	return nil, "", fmt.Errorf("directory %q is not using a known version control system", dir)
+	if vcsRet != nil {
+		return vcsRet, rootRet, nil
+	}
+
+	return nil, "", fmt.Errorf("directory %q is not using a known version control system", origDir)
 }
 
 // RepoRoot represents a version control system, a repo, and a root of
@@ -478,11 +499,11 @@ func RepoRootForImportPathStatic(importPath, scheme string) (*RepoRoot, error) {
 // RepoRootForImportDynamic finds a *RepoRoot for a custom domain that's not
 // statically known by RepoRootForImportPathStatic.
 //
-// This handles "vanity import paths" like "name.tld/pkg/foo".
+// This handles custom import paths like "name.tld/pkg/foo" or just "name.tld".
 func RepoRootForImportDynamic(importPath string, verbose bool) (*RepoRoot, error) {
 	slash := strings.Index(importPath, "/")
 	if slash < 0 {
-		return nil, errors.New("import path doesn't contain a slash")
+		slash = len(importPath)
 	}
 	host := importPath[:slash]
 	if !strings.Contains(host, ".") {
@@ -599,24 +620,10 @@ var vcsPaths = []*vcsPath{
 		check:  noVCSSuffix,
 	},
 
-	// Google Code - new syntax
-	{
-		prefix: "code.google.com/",
-		re:     `^(?P<root>code\.google\.com/[pr]/(?P<project>[a-z0-9\-]+)(\.(?P<subrepo>[a-z0-9\-]+))?)(/[A-Za-z0-9_.\-]+)*$`,
-		repo:   "https://{root}",
-		check:  googleCodeVCS,
-	},
-
-	// Google Code - old syntax
-	{
-		re:    `^(?P<project>[a-z0-9_\-.]+)\.googlecode\.com/(git|hg|svn)(?P<path>/.*)?$`,
-		check: oldGoogleCode,
-	},
-
 	// Github
 	{
 		prefix: "github.com/",
-		re:     `^(?P<root>github\.com/[A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+)(/[A-Za-z0-9_.\-]+)*$`,
+		re:     `^(?P<root>github\.com/[A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+)(/[\p{L}0-9_.\-]+)*$`,
 		vcs:    "git",
 		repo:   "https://{root}",
 		check:  noVCSSuffix,
@@ -637,6 +644,15 @@ var vcsPaths = []*vcsPath{
 		vcs:    "bzr",
 		repo:   "https://{root}",
 		check:  launchpadVCS,
+	},
+
+	// Git at OpenStack
+	{
+		prefix: "git.openstack.org",
+		re:     `^(?P<root>git\.openstack\.org/[A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+)(\.git)?(/[A-Za-z0-9_.\-]+)*$`,
+		vcs:    "git",
+		repo:   "https://{root}",
+		check:  noVCSSuffix,
 	},
 
 	// General syntax for any server.
@@ -666,45 +682,6 @@ func noVCSSuffix(match map[string]string) error {
 		}
 	}
 	return nil
-}
-
-var googleCheckout = regexp.MustCompile(`id="checkoutcmd">(hg|git|svn)`)
-
-// googleCodeVCS determines the version control system for
-// a code.google.com repository, by scraping the project's
-// /source/checkout page.
-func googleCodeVCS(match map[string]string) error {
-	if err := noVCSSuffix(match); err != nil {
-		return err
-	}
-	data, err := httpGET(expand(match, "https://code.google.com/p/{project}/source/checkout?repo={subrepo}"))
-	if err != nil {
-		return err
-	}
-
-	if m := googleCheckout.FindSubmatch(data); m != nil {
-		if vcs := ByCmd(string(m[1])); vcs != nil {
-			// Subversion requires the old URLs.
-			// TODO: Test.
-			if vcs == vcsSvn {
-				if match["subrepo"] != "" {
-					return fmt.Errorf("sub-repositories not supported in Google Code Subversion projects")
-				}
-				match["repo"] = expand(match, "https://{project}.googlecode.com/svn")
-			}
-			match["vcs"] = vcs.Cmd
-			return nil
-		}
-	}
-
-	return fmt.Errorf("unable to detect version control system for code.google.com/ path")
-}
-
-// oldGoogleCode is invoked for old-style foo.googlecode.com paths.
-// It prints an error giving the equivalent new path.
-func oldGoogleCode(match map[string]string) error {
-	return fmt.Errorf("invalid Google Code import path: use %s instead",
-		expand(match, "code.google.com/p/{project}{path}"))
 }
 
 // bitbucketVCS determines the version control system for a

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/gtank/isaac"
+	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
 )
 
 //go:generate stringer -type=FrameSize

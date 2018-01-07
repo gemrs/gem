@@ -2,8 +2,6 @@ package position
 
 import (
 	"math"
-
-	"github.com/qur/gopy/lib"
 )
 
 // A SectorHash is a 64-bit representation of a given sector in the world.
@@ -19,15 +17,11 @@ func (s SectorHash) Sector() *Sector {
 
 // A Sector is an 8x8 tile chunk of the map
 type Sector struct {
-	py.BaseObject
-
 	x, y, z int
 }
 
-func (s *Sector) Init(x, y, z int) {
-	s.x = x
-	s.y = y
-	s.z = z
+func NewSector(x, y, z int) *Sector {
+	return &Sector{x, y, z}
 }
 
 func (s *Sector) X() int {
@@ -74,10 +68,49 @@ func (s *Sector) Compare(other *Sector) bool {
 		s.z == other.z
 }
 
+func (s *Sector) SurroundingSectors(size int) []*Sector {
+	originX, originY := s.X(), s.Y()
+	area := make([]*Sector, (size*2+1)*(size*2+1))
+	i := 0
+	for x := originX - size; x <= originX+size; x++ {
+		for y := originY - size; y <= originY+size; y++ {
+			area[i] = NewSector(x, y, s.Z())
+			i++
+		}
+	}
+	return area
+}
+
 func (s *Sector) Delta(other *Sector) (x, y, z int) {
 	x = int(math.Abs(float64(other.x - s.x)))
 	y = int(math.Abs(float64(other.y - s.y)))
 	z = int(math.Abs(float64(other.z - s.z)))
 
 	return x, y, z
+}
+
+func SectorListDelta(a, b []*Sector) (removed, added []*Sector) {
+	aMap := make(map[SectorHash]*Sector)
+	bMap := make(map[SectorHash]*Sector)
+	for _, s := range a {
+		aMap[s.HashCode()] = s
+	}
+
+	for _, s := range b {
+		bMap[s.HashCode()] = s
+	}
+
+	for hash, s := range aMap {
+		if _, ok := bMap[hash]; !ok {
+			removed = append(removed, s)
+		}
+	}
+
+	for hash, s := range bMap {
+		if _, ok := aMap[hash]; !ok {
+			added = append(added, s)
+		}
+	}
+
+	return
 }

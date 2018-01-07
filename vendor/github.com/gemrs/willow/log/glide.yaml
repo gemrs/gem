@@ -1,6 +1,0 @@
-package: github.com/gemrs/willow/log
-import:
-- package: github.com/mattn/go-isatty
-- package: github.com/fatih/color
-- package: github.com/mattn/go-colorable
-- package: github.com/shiena/ansicolor

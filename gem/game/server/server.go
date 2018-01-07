@@ -1,3 +1,4 @@
+//glua:bind module gem.game.server
 package server
 
 import (
@@ -5,21 +6,21 @@ import (
 	"net"
 	"sync"
 
-	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/gem/protocol"
 	"github.com/gemrs/gem/gem/util/id"
 	"github.com/gemrs/gem/gem/util/safe"
+	"github.com/gemrs/willow/log"
 
-	"github.com/qur/gopy/lib"
 	tomb "gopkg.in/tomb.v2"
 )
 
 var logger = log.New("server", log.NilContext)
 
-// Server is the listener object and its associated state
-type Server struct {
-	py.BaseObject
+//go:generate glua .
 
+// Server is the listener object and its associated state
+//glua:bind
+type Server struct {
 	laddr string
 	ln    net.Listener
 
@@ -32,17 +33,20 @@ type Server struct {
 	t tomb.Tomb
 }
 
+//glua:bind constructor Server
+func NewServer() *Server {
+	return &Server{
+		clients: make(map[int]Client),
+	}
+}
+
 // A Service is capable of creating Clients specific to each service (game/update)
 type Service interface {
 	NewClient(conn *Connection, service int) Client
 }
 
-func (s *Server) Init(laddr string) {
-	s.laddr = laddr
-	s.clients = make(map[int]Client)
-}
-
 // SetService registers a service with it's selector id (see protocol.InboundServiceSelect)
+//glua:bind
 func (s *Server) SetService(selector int, service Service) {
 	if s.services == nil {
 		s.services = make(map[int]Service)
@@ -51,8 +55,10 @@ func (s *Server) SetService(selector int, service Service) {
 }
 
 // Start creates the tcp listener and starts the connection handler in a goroutine
-func (s *Server) Start() (err error) {
+//glua:bind
+func (s *Server) Start(laddr string) (err error) {
 	logger.Info("Starting game server...")
+	s.laddr = laddr
 
 	s.ln, err = net.Listen("tcp", s.laddr)
 	if err != nil {
@@ -68,6 +74,7 @@ func (s *Server) Start() (err error) {
 // Stop signals that the listener thread should be stopped.
 // Existing clients are forcefully disconnected. Blocks until all connections and
 // the listener are closed.
+//glua:bind
 func (s *Server) Stop() error {
 	logger.Info("Stopping game server...")
 	if s.t.Alive() {

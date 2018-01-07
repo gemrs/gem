@@ -7,6 +7,7 @@ package vcs
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -26,24 +27,18 @@ func TestRepoRootForImportPath(t *testing.T) {
 		want *RepoRoot
 	}{
 		{
-			"code.google.com/p/go",
-			&RepoRoot{
-				VCS:  vcsHg,
-				Repo: "https://code.google.com/p/go",
-			},
-		},
-		{
-			"code.google.com/r/go",
-			&RepoRoot{
-				VCS:  vcsHg,
-				Repo: "https://code.google.com/r/go",
-			},
-		},
-		{
 			"github.com/golang/groupcache",
 			&RepoRoot{
 				VCS:  vcsGit,
 				Repo: "https://github.com/golang/groupcache",
+			},
+		},
+		// Unicode letters in directories (issue 18660).
+		{
+			"github.com/user/unicode/испытание",
+			&RepoRoot{
+				VCS:  vcsGit,
+				Repo: "https://github.com/user/unicode",
 			},
 		},
 	}
@@ -51,44 +46,56 @@ func TestRepoRootForImportPath(t *testing.T) {
 	for _, test := range tests {
 		got, err := RepoRootForImportPath(test.path, false)
 		if err != nil {
-			t.Errorf("RepoRootForImport(%q): %v", test.path, err)
+			t.Errorf("RepoRootForImportPath(%q): %v", test.path, err)
 			continue
 		}
 		want := test.want
 		if got.VCS.Name != want.VCS.Name || got.Repo != want.Repo {
-			t.Errorf("RepoRootForImport(%q) = VCS(%s) Repo(%s), want VCS(%s) Repo(%s)", test.path, got.VCS, got.Repo, want.VCS, want.Repo)
+			t.Errorf("RepoRootForImportPath(%q) = VCS(%s) Repo(%s), want VCS(%s) Repo(%s)", test.path, got.VCS, got.Repo, want.VCS, want.Repo)
 		}
 	}
 }
 
-// Test that FromDir correctly inspects a given directory and returns the right VCS.
+// Test that FromDir correctly inspects a given directory and returns the right VCS and root.
 func TestFromDir(t *testing.T) {
-	type testStruct struct {
-		path string
-		want *Cmd
-	}
-
-	tests := make([]testStruct, len(vcsList))
 	tempDir, err := ioutil.TempDir("", "vcstest")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	for i, vcs := range vcsList {
-		tests[i] = testStruct{
-			filepath.Join(tempDir, vcs.Name, "."+vcs.Cmd),
-			vcs,
+	for j, vcs := range vcsList {
+		dir := filepath.Join(tempDir, "example.com", vcs.Name, "."+vcs.Cmd)
+		if j&1 == 0 {
+			err := os.MkdirAll(dir, 0755)
+			if err != nil {
+				t.Fatal(err)
+			}
+		} else {
+			err := os.MkdirAll(filepath.Dir(dir), 0755)
+			if err != nil {
+				t.Fatal(err)
+			}
+			f, err := os.Create(dir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			f.Close()
 		}
-	}
 
-	for _, test := range tests {
-		os.MkdirAll(test.path, 0755)
-		got, _, _ := FromDir(test.path, tempDir)
-		if got.Name != test.want.Name {
-			t.Errorf("FromDir(%q, %q) = %s, want %s", test.path, tempDir, got, test.want)
+		want := RepoRoot{
+			VCS:  vcs,
+			Root: path.Join("example.com", vcs.Name),
 		}
-		os.RemoveAll(test.path)
+		var got RepoRoot
+		got.VCS, got.Root, err = FromDir(dir, tempDir)
+		if err != nil {
+			t.Errorf("FromDir(%q, %q): %v", dir, tempDir, err)
+			continue
+		}
+		if got.VCS.Name != want.VCS.Name || got.Root != want.Root {
+			t.Errorf("FromDir(%q, %q) = VCS(%s) Root(%s), want VCS(%s) Root(%s)", dir, tempDir, got.VCS, got.Root, want.VCS, want.Root)
+		}
 	}
 }
 

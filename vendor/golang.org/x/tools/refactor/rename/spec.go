@@ -15,14 +15,16 @@ import (
 	"go/build"
 	"go/parser"
 	"go/token"
+	"go/types"
+	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"golang.org/x/tools/go/buildutil"
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 )
 
 // A spec specifies an entity to rename.
@@ -113,9 +115,13 @@ func parseFromFlag(ctxt *build.Context, fromFlag string) (*spec, error) {
 		spec.fromName = spec.searchFor
 	}
 
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
 	// Sanitize the package.
-	// TODO(adonovan): test with relative packages.  May need loader changes.
-	bp, err := ctxt.Import(spec.pkg, ".", build.FindOnly)
+	bp, err := ctxt.Import(spec.pkg, cwd, build.FindOnly)
 	if err != nil {
 		return nil, fmt.Errorf("can't find package %q", spec.pkg)
 	}
@@ -126,7 +132,7 @@ func parseFromFlag(ctxt *build.Context, fromFlag string) (*spec, error) {
 	}
 
 	if Verbose {
-		fmt.Fprintf(os.Stderr, "-from spec: %+v\n", spec)
+		log.Printf("-from spec: %+v", spec)
 	}
 
 	return &spec, nil
@@ -271,20 +277,23 @@ func findFromObjects(iprog *loader.Program, spec *spec) ([]types.Object, error) 
 	// for main packages, even though that's not an import path.
 	// Seems like a bug.
 	//
-	// pkgObj := iprog.ImportMap[spec.pkg]
-	// if pkgObj == nil {
+	// pkg := iprog.ImportMap[spec.pkg]
+	// if pkg == nil {
 	// 	return fmt.Errorf("cannot find package %s", spec.pkg) // can't happen?
 	// }
+	// info := iprog.AllPackages[pkg]
 
 	// Workaround: lookup by value.
-	var pkgObj *types.Package
-	for pkg := range iprog.AllPackages {
+	var info *loader.PackageInfo
+	var pkg *types.Package
+	for pkg, info = range iprog.AllPackages {
 		if pkg.Path() == spec.pkg {
-			pkgObj = pkg
 			break
 		}
 	}
-	info := iprog.AllPackages[pkgObj]
+	if info == nil {
+		return nil, fmt.Errorf("package %q was not loaded", spec.pkg)
+	}
 
 	objects, err := findObjects(info, spec)
 	if err != nil {
@@ -311,6 +320,11 @@ func findFromObjectsInFile(iprog *loader.Program, spec *spec) ([]types.Object, e
 			// This package contains the query file.
 
 			if spec.offset != 0 {
+				// We cannot refactor generated files since position information is invalidated.
+				if generated(f, thisFile) {
+					return nil, fmt.Errorf("cannot rename identifiers in generated file containing DO NOT EDIT marker: %s", thisFile.Name())
+				}
+
 				// Search for a specific ident by file/offset.
 				id := identAtOffset(iprog.Fset, f, spec.offset)
 				if id == nil {
@@ -451,6 +465,15 @@ func findObjects(info *loader.PackageInfo, spec *spec) ([]types.Object, error) {
 		}
 
 		if spec.searchFor == "" {
+			// If it is an embedded field, return the type of the field.
+			if v, ok := obj.(*types.Var); ok && v.Anonymous() {
+				switch t := v.Type().(type) {
+				case *types.Pointer:
+					return []types.Object{t.Elem().(*types.Named).Obj()}, nil
+				case *types.Named:
+					return []types.Object{t.Obj()}, nil
+				}
+			}
 			return []types.Object{obj}, nil
 		}
 
@@ -541,9 +564,30 @@ func ambiguityError(fset *token.FileSet, objects []types.Object) error {
 			buf.WriteString(", ")
 		}
 		posn := fset.Position(obj.Pos())
-		fmt.Fprintf(&buf, "%s at %s:%d",
-			objectKind(obj), filepath.Base(posn.Filename), posn.Column)
+		fmt.Fprintf(&buf, "%s at %s:%d:%d",
+			objectKind(obj), filepath.Base(posn.Filename), posn.Line, posn.Column)
 	}
 	return fmt.Errorf("ambiguous specifier %s matches %s",
 		objects[0].Name(), buf.String())
+}
+
+// Matches cgo generated comment as well as the proposed standard:
+//	https://golang.org/s/generatedcode
+var generatedRx = regexp.MustCompile(`// .*DO NOT EDIT\.?`)
+
+// generated reports whether ast.File is a generated file.
+func generated(f *ast.File, tokenFile *token.File) bool {
+
+	// Iterate over the comments in the file
+	for _, commentGroup := range f.Comments {
+		for _, comment := range commentGroup.List {
+			if matched := generatedRx.MatchString(comment.Text); matched {
+				// Check if comment is at the beginning of the line in source
+				if pos := tokenFile.Position(comment.Slash); pos.Column == 1 {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }

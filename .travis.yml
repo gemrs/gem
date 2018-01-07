@@ -1,12 +1,10 @@
 language: go
 go:
-  - 1.5
+  - 1.9
 install:
   - bin/install_deps.sh
 script:
   - bin/build.sh
   - bin/test.sh
 after_success:
-  - codecov -X fix
-env:
-  - GO15VENDOREXPERIMENT=1
+  - bash <(curl -s https://codecov.io/bash)

@@ -3,8 +3,7 @@ package player
 import (
 	"math/rand"
 
-	"github.com/gtank/isaac"
-	"github.com/qur/gopy/lib"
+	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
 
 	"github.com/gemrs/gem/gem/encoding"
 	entityimpl "github.com/gemrs/gem/gem/game/entity"
@@ -18,13 +17,14 @@ import (
 )
 
 // GameClient is a client which serves players
+//glua:bind
 type Player struct {
-	py.BaseObject
-
 	index        int
 	sector       *world.Sector
 	world        *world.Instance
 	loadedRegion *position.Region
+
+	visibleEntities *entity.Collection
 
 	*server.Connection
 	*entityimpl.GenericMob
@@ -40,7 +40,9 @@ type Player struct {
 }
 
 // NewGameClient constructs a new GameClient
-func (client *Player) Init(conn *server.Connection, worldInst *world.Instance) {
+//glua:bind constructor Player
+func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
+	client := &Player{}
 	client.Connection = conn
 	client.world = worldInst
 	client.serverRandKey = []uint32{
@@ -54,10 +56,13 @@ func (client *Player) Init(conn *server.Connection, worldInst *world.Instance) {
 	wpq := entityimpl.NewSimpleWaypointQueue()
 	client.GenericMob = entityimpl.NewGenericMob(wpq)
 
+	client.visibleEntities = entity.NewCollection()
 	client.animations = NewAnimations()
 	client.index = entity.NextIndex()
+	return client
 }
 
+//glua:bind
 func (client *Player) Index() int {
 	return client.index
 }
@@ -110,11 +115,16 @@ func (client *Player) LoadedRegion() *position.Region {
 	return client.loadedRegion
 }
 
+func (client *Player) VisibleEntities() *entity.Collection {
+	return client.visibleEntities
+}
+
 func (client *Player) Animations() player.Animations {
 	return client.animations
 }
 
 // Profile returns the player's profile
+//glua:bind
 func (client *Player) Profile() player.Profile {
 	return client.profile
 }
@@ -146,6 +156,7 @@ func (client *Player) AppearanceUpdated() {
 }
 
 // SendMessage puts a message to the player's chat window
+//glua:bind
 func (client *Player) SendMessage(message string) {
 	client.Conn().Write <- &game_protocol.OutboundChatMessage{
 		Message: encoding.JString(message),

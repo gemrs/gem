@@ -9,8 +9,10 @@ package ssa_test
 import (
 	"fmt"
 	"go/ast"
+	exact "go/constant"
 	"go/parser"
 	"go/token"
+	"go/types"
 	"os"
 	"regexp"
 	"runtime"
@@ -18,11 +20,9 @@ import (
 	"testing"
 
 	"golang.org/x/tools/go/ast/astutil"
-	"golang.org/x/tools/go/exact"
 	"golang.org/x/tools/go/loader"
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
-	"golang.org/x/tools/go/types"
 )
 
 func TestObjValueLookup(t *testing.T) {
@@ -194,12 +194,16 @@ func checkVarValue(t *testing.T, prog *ssa.Program, pkg *ssa.Package, ref []ast.
 // Ensure that, in debug mode, we can determine the ssa.Value
 // corresponding to every ast.Expr.
 func TestValueForExpr(t *testing.T) {
+	testValueForExpr(t, "testdata/valueforexpr.go")
+}
+
+func testValueForExpr(t *testing.T, testfile string) {
 	if runtime.GOOS == "android" {
 		t.Skipf("no testdata dir on %s", runtime.GOOS)
 	}
 
 	conf := loader.Config{ParserMode: parser.ParseComments}
-	f, err := conf.ParseFile("testdata/valueforexpr.go", nil)
+	f, err := conf.ParseFile(testfile, nil)
 	if err != nil {
 		t.Error(err)
 		return

@@ -16,15 +16,19 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
+	"go/types"
+	"io"
 	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
 	"path"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 	"golang.org/x/tools/go/types/typeutil"
 	"golang.org/x/tools/refactor/importgraph"
 	"golang.org/x/tools/refactor/satisfy"
@@ -76,7 +80,7 @@ Flags:
            (In due course this bug will be fixed by moving certain
            analyses into the type-checker.)
 
--dryrun    causes the tool to report conflicts but not update any files.
+-d         display diffs instead of rewriting files
 
 -v         enables verbose logging.
 
@@ -137,8 +141,12 @@ var (
 	// It may even cause gorename to crash.  TODO(adonovan): fix that.
 	Force bool
 
-	// DryRun causes the tool to report conflicts but not update any files.
-	DryRun bool
+	// Diff causes the tool to display diffs instead of rewriting files.
+	Diff bool
+
+	// DiffCmd specifies the diff command used by the -d feature.
+	// (The command must accept a -u flag and two filename arguments.)
+	DiffCmd = "diff"
 
 	// ConflictError is returned by Main when it aborts the renaming due to conflicts.
 	// (It is distinguished because the interesting errors are the conflicts themselves.)
@@ -148,11 +156,13 @@ var (
 	Verbose bool
 )
 
+var stdout io.Writer = os.Stdout
+
 type renamer struct {
 	iprog              *loader.Program
 	objsToUpdate       map[types.Object]bool
 	hadConflicts       bool
-	to                 string
+	from, to           string
 	satisfyConstraints map[satisfy.Constraint]bool
 	packages           map[*types.Package]*loader.PackageInfo // subset of iprog.AllPackages to inspect
 	msets              typeutil.MethodSetCache
@@ -163,11 +173,13 @@ var reportError = func(posn token.Position, message string) {
 	fmt.Fprintf(os.Stderr, "%s: %s\n", posn, message)
 }
 
-// importName renames imports of the package with the given path in
-// the given package.  If fromName is not empty, only imports as
-// fromName will be renamed.  If the renaming would lead to a conflict,
-// the file is left unchanged.
+// importName renames imports of fromPath within the package specified by info.
+// If fromName is not empty, importName renames only imports as fromName.
+// If the renaming would lead to a conflict, the file is left unchanged.
 func importName(iprog *loader.Program, info *loader.PackageInfo, fromPath, fromName, to string) error {
+	if fromName == to {
+		return nil // no-op (e.g. rename x/foo to y/foo)
+	}
 	for _, f := range info.Files {
 		var from types.Object
 		for _, imp := range f.Imports {
@@ -192,6 +204,8 @@ func importName(iprog *loader.Program, info *loader.PackageInfo, fromPath, fromN
 		}
 		r.check(from)
 		if r.hadConflicts {
+			reportError(iprog.Fset.Position(f.Imports[0].Pos()),
+				"skipping update of this file")
 			continue // ignore errors; leave the existing name
 		}
 		if err := r.update(); err != nil {
@@ -210,6 +224,11 @@ func Main(ctxt *build.Context, offsetFlag, fromFlag, to string) error {
 
 	if !isValidIdentifier(to) {
 		return fmt.Errorf("-to %q: not a valid identifier", to)
+	}
+
+	if Diff {
+		defer func(saved func(string, []byte) error) { writeFile = saved }(writeFile)
+		writeFile = diff
 	}
 
 	var spec *spec
@@ -248,7 +267,7 @@ func Main(ctxt *build.Context, offsetFlag, fromFlag, to string) error {
 		// package defining the object, plus their tests.
 
 		if Verbose {
-			fmt.Fprintln(os.Stderr, "Potentially global renaming; scanning workspace...")
+			log.Print("Potentially global renaming; scanning workspace...")
 		}
 
 		// Scan the workspace and build the import graph.
@@ -294,6 +313,7 @@ func Main(ctxt *build.Context, offsetFlag, fromFlag, to string) error {
 	r := renamer{
 		iprog:        iprog,
 		objsToUpdate: make(map[types.Object]bool),
+		from:         spec.fromName,
 		to:           to,
 		packages:     make(map[*types.Package]*loader.PackageInfo),
 	}
@@ -329,10 +349,6 @@ func Main(ctxt *build.Context, offsetFlag, fromFlag, to string) error {
 	if r.hadConflicts && !Force {
 		return ConflictError
 	}
-	if DryRun {
-		// TODO(adonovan): print the delta?
-		return nil
-	}
 	return r.update()
 }
 
@@ -347,7 +363,6 @@ func loadProgram(ctxt *build.Context, pkgs map[string]bool) (*loader.Program, er
 		// TODO(adonovan): enable this.  Requires making a lot of code more robust!
 		AllowErrors: false,
 	}
-
 	// Optimization: don't type-check the bodies of functions in our
 	// dependencies, since we only need exported package members.
 	conf.TypeCheckFuncBodies = func(p string) bool {
@@ -361,14 +376,52 @@ func loadProgram(ctxt *build.Context, pkgs map[string]bool) (*loader.Program, er
 		}
 		sort.Strings(list)
 		for _, pkg := range list {
-			fmt.Fprintf(os.Stderr, "Loading package: %s\n", pkg)
+			log.Printf("Loading package: %s", pkg)
 		}
 	}
 
 	for pkg := range pkgs {
 		conf.ImportWithTests(pkg)
 	}
-	return conf.Load()
+
+	// Ideally we would just return conf.Load() here, but go/types
+	// reports certain "soft" errors that gc does not (Go issue 14596).
+	// As a workaround, we set AllowErrors=true and then duplicate
+	// the loader's error checking but allow soft errors.
+	// It would be nice if the loader API permitted "AllowErrors: soft".
+	conf.AllowErrors = true
+	prog, err := conf.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	var errpkgs []string
+	// Report hard errors in indirectly imported packages.
+	for _, info := range prog.AllPackages {
+		if containsHardErrors(info.Errors) {
+			errpkgs = append(errpkgs, info.Pkg.Path())
+		}
+	}
+	if errpkgs != nil {
+		var more string
+		if len(errpkgs) > 3 {
+			more = fmt.Sprintf(" and %d more", len(errpkgs)-3)
+			errpkgs = errpkgs[:3]
+		}
+		return nil, fmt.Errorf("couldn't load packages due to errors: %s%s",
+			strings.Join(errpkgs, ", "), more)
+	}
+	return prog, nil
+}
+
+func containsHardErrors(errors []error) bool {
+	for _, err := range errors {
+		if err, ok := err.(types.Error); ok && err.Soft {
+			continue
+		}
+		return true
+	}
+	return false
 }
 
 // requiresGlobalRename reports whether this renaming could potentially
@@ -402,8 +455,10 @@ func (r *renamer) update() error {
 	// We use token.File, not filename, since a file may appear to
 	// belong to multiple packages and be parsed more than once.
 	// token.File captures this distinction; filename does not.
+
 	var nidents int
 	var filesToUpdate = make(map[*token.File]bool)
+	docRegexp := regexp.MustCompile(`\b` + r.from + `\b`)
 	for _, info := range r.packages {
 		// Mutate the ASTs and note the filenames.
 		for id, obj := range info.Defs {
@@ -411,8 +466,15 @@ func (r *renamer) update() error {
 				nidents++
 				id.Name = r.to
 				filesToUpdate[r.iprog.Fset.File(id.Pos())] = true
+				// Perform the rename in doc comments too.
+				if doc := r.docComment(id); doc != nil {
+					for _, comment := range doc.List {
+						comment.Text = docRegexp.ReplaceAllString(comment.Text, r.to)
+					}
+				}
 			}
 		}
+
 		for id, obj := range info.Uses {
 			if r.objsToUpdate[obj] {
 				nidents++
@@ -422,7 +484,21 @@ func (r *renamer) update() error {
 		}
 	}
 
-	// TODO(adonovan): don't rewrite cgo + generated files.
+	// Renaming not supported if cgo files are affected.
+	var generatedFileNames []string
+	for _, info := range r.packages {
+		for _, f := range info.Files {
+			tokenFile := r.iprog.Fset.File(f.Pos())
+			if filesToUpdate[tokenFile] && generated(f, tokenFile) {
+				generatedFileNames = append(generatedFileNames, tokenFile.Name())
+			}
+		}
+	}
+	if len(generatedFileNames) > 0 {
+		return fmt.Errorf("refusing to modify generated file%s containing DO NOT EDIT marker: %v", plural(len(generatedFileNames)), generatedFileNames)
+	}
+
+	// Write affected files.
 	var nerrs, npkgs int
 	for _, info := range r.packages {
 		first := true
@@ -433,23 +509,61 @@ func (r *renamer) update() error {
 					npkgs++
 					first = false
 					if Verbose {
-						fmt.Fprintf(os.Stderr, "Updating package %s\n",
-							info.Pkg.Path())
+						log.Printf("Updating package %s", info.Pkg.Path())
 					}
 				}
-				if err := rewriteFile(r.iprog.Fset, f, tokenFile.Name()); err != nil {
-					fmt.Fprintf(os.Stderr, "gorename: %s\n", err)
+
+				filename := tokenFile.Name()
+				var buf bytes.Buffer
+				if err := format.Node(&buf, r.iprog.Fset, f); err != nil {
+					log.Printf("failed to pretty-print syntax tree: %v", err)
+					nerrs++
+					continue
+				}
+				if err := writeFile(filename, buf.Bytes()); err != nil {
+					log.Print(err)
 					nerrs++
 				}
 			}
 		}
 	}
-	fmt.Fprintf(os.Stderr, "Renamed %d occurrence%s in %d file%s in %d package%s.\n",
-		nidents, plural(nidents),
-		len(filesToUpdate), plural(len(filesToUpdate)),
-		npkgs, plural(npkgs))
+	if !Diff {
+		fmt.Printf("Renamed %d occurrence%s in %d file%s in %d package%s.\n",
+			nidents, plural(nidents),
+			len(filesToUpdate), plural(len(filesToUpdate)),
+			npkgs, plural(npkgs))
+	}
 	if nerrs > 0 {
 		return fmt.Errorf("failed to rewrite %d file%s", nerrs, plural(nerrs))
+	}
+	return nil
+}
+
+// docComment returns the doc for an identifier.
+func (r *renamer) docComment(id *ast.Ident) *ast.CommentGroup {
+	_, nodes, _ := r.iprog.PathEnclosingInterval(id.Pos(), id.End())
+	for _, node := range nodes {
+		switch decl := node.(type) {
+		case *ast.FuncDecl:
+			return decl.Doc
+		case *ast.Field:
+			return decl.Doc
+		case *ast.GenDecl:
+			return decl.Doc
+		// For {Type,Value}Spec, if the doc on the spec is absent,
+		// search for the enclosing GenDecl
+		case *ast.TypeSpec:
+			if decl.Doc != nil {
+				return decl.Doc
+			}
+		case *ast.ValueSpec:
+			if decl.Doc != nil {
+				return decl.Doc
+			}
+		case *ast.Ident:
+		default:
+			return nil
+		}
 	}
 	return nil
 }
@@ -461,15 +575,29 @@ func plural(n int) string {
 	return ""
 }
 
-var rewriteFile = func(fset *token.FileSet, f *ast.File, filename string) (err error) {
-	// TODO(adonovan): print packages and filenames in a form useful
-	// to editors (so they can reload files).
-	if Verbose {
-		fmt.Fprintf(os.Stderr, "\t%s\n", filename)
+// writeFile is a seam for testing and for the -d flag.
+var writeFile = reallyWriteFile
+
+func reallyWriteFile(filename string, content []byte) error {
+	return ioutil.WriteFile(filename, content, 0644)
+}
+
+func diff(filename string, content []byte) error {
+	renamed := fmt.Sprintf("%s.%d.renamed", filename, os.Getpid())
+	if err := ioutil.WriteFile(renamed, content, 0644); err != nil {
+		return err
 	}
-	var buf bytes.Buffer
-	if err := format.Node(&buf, fset, f); err != nil {
-		return fmt.Errorf("failed to pretty-print syntax tree: %v", err)
+	defer os.Remove(renamed)
+
+	diff, err := exec.Command(DiffCmd, "-u", filename, renamed).CombinedOutput()
+	if len(diff) > 0 {
+		// diff exits with a non-zero status when the files don't match.
+		// Ignore that failure as long as we get output.
+		stdout.Write(diff)
+		return nil
 	}
-	return ioutil.WriteFile(filename, buf.Bytes(), 0644)
+	if err != nil {
+		return fmt.Errorf("computing diff: %v", err)
+	}
+	return nil
 }

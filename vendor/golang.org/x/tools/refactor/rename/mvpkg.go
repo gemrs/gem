@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/build"
+	"go/format"
 	"go/token"
 	"log"
 	"os"
@@ -60,7 +61,7 @@ func Move(ctxt *build.Context, from, to, moveTmpl string) error {
 	}
 
 	// Build the import graph and figure out which packages to update.
-	fwd, rev, errors := importgraph.Build(ctxt)
+	_, rev, errors := importgraph.Build(ctxt)
 	if len(errors) > 0 {
 		// With a large GOPATH tree, errors are inevitable.
 		// Report them but proceed.
@@ -73,14 +74,17 @@ func Move(ctxt *build.Context, from, to, moveTmpl string) error {
 	// Determine the affected packages---the set of packages whose import
 	// statements need updating.
 	affectedPackages := map[string]bool{from: true}
-	destinations := map[string]string{} // maps old dir to new dir
+	destinations := make(map[string]string) // maps old import path to new import path
 	for pkg := range subpackages(ctxt, srcDir, from) {
 		for r := range rev[pkg] {
 			affectedPackages[r] = true
 		}
-		destinations[pkg] = strings.Replace(pkg,
-			// Ensure directories have a trailing "/".
-			filepath.Join(from, ""), filepath.Join(to, ""), 1)
+		// Ensure directories have a trailing separator.
+		dest := strings.Replace(pkg,
+			filepath.Join(from, ""),
+			filepath.Join(to, ""),
+			1)
+		destinations[pkg] = filepath.ToSlash(dest)
 	}
 
 	// Load all the affected packages.
@@ -99,7 +103,6 @@ func Move(ctxt *build.Context, from, to, moveTmpl string) error {
 
 	m := mover{
 		ctxt:             ctxt,
-		fwd:              fwd,
 		rev:              rev,
 		iprog:            iprog,
 		from:             from,
@@ -168,8 +171,8 @@ type mover struct {
 	// with new package names or import paths.
 	iprog *loader.Program
 	ctxt  *build.Context
-	// fwd and rev are the forward and reverse import graphs
-	fwd, rev importgraph.Graph
+	// rev is the reverse import graph.
+	rev importgraph.Graph
 	// from and to are the source and destination import
 	// paths. fromDir and toDir are the source and destination
 	// absolute paths that package source files will be moved between.
@@ -321,8 +324,13 @@ func (m *mover) move() error {
 	}
 
 	for f := range filesToUpdate {
+		var buf bytes.Buffer
+		if err := format.Node(&buf, m.iprog.Fset, f); err != nil {
+			log.Printf("failed to pretty-print syntax tree: %v", err)
+			continue
+		}
 		tokenFile := m.iprog.Fset.File(f.Pos())
-		rewriteFile(m.iprog.Fset, f, tokenFile.Name())
+		writeFile(tokenFile.Name(), buf.Bytes())
 	}
 
 	// Move the directories.

@@ -1,10 +1,8 @@
 package task
 
 import (
-	"github.com/qur/gopy/lib"
-
-	"github.com/gemrs/willow/log"
 	"github.com/gemrs/gem/gem/util/safe"
+	"github.com/gemrs/willow/log"
 )
 
 type TaskCallback func(*Task) bool
@@ -42,31 +40,4 @@ func (task *Task) Tick() bool {
 	}
 
 	return task.counter == 0
-}
-
-func PythonTask(callback py.Object, when TaskHook, interval Cycles, user py.Object) *Task {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	callback.Incref()
-	user.Incref()
-
-	cbFunc := func(task *Task) bool {
-		lock := py.NewLock()
-		defer lock.Unlock()
-
-		argsTuple, err := py.BuildValue("sO", string(when), user)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		reschedule, err := callback.Base().CallObject(argsTuple.(*py.Tuple))
-		if err != nil {
-			panic(err.Error())
-		}
-
-		return reschedule.(*py.Bool).Bool()
-	}
-
-	return NewTask(cbFunc, when, interval, user)
 }

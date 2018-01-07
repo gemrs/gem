@@ -1,3 +1,4 @@
+//glua:bind module gem.game
 package game
 
 import (
@@ -5,6 +6,7 @@ import (
 
 	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/crypto"
+	engine_event "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/event"
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/interface/entity"
@@ -16,13 +18,13 @@ import (
 	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/gem/gem/util/expire"
-
-	"github.com/qur/gopy/lib"
 )
 
+//go:generate glua .
+
 // GameService represents the internal state of the game
+//glua:bind
 type GameService struct {
-	py.BaseObject
 	expire.NonExpirable
 
 	runite *runite.Context
@@ -31,26 +33,31 @@ type GameService struct {
 	world  *world.Instance
 }
 
-func (svc *GameService) Init(runite *runite.Context, rsaKeyPath string, auth auth.Provider) error {
+//glua:bind constructor GameService
+func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provider) *GameService {
 	var err error
 	var key *crypto.Keypair
 	key, err = crypto.LoadPrivateKey(rsaKeyPath)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	svc.runite = runite
-	svc.key = key
-	svc.auth = auth
-	svc.NonExpirable = expire.NewNonExpirable()
-	svc.world = world.NewInstance()
+	svc := &GameService{
+		runite:       runite,
+		key:          key,
+		auth:         auth,
+		NonExpirable: expire.NewNonExpirable(),
+		world:        world.NewInstance(),
+	}
 
-	game_event.PlayerFinishLogin.Register(event.NewListener(svc, playerFinishLogin))
-	game_event.PlayerLogout.Register(event.NewListener(svc, playerCleanup))
-	game_event.EntityRegionChange.Register(event.NewListener(svc, svc.EntityUpdate))
-	game_event.EntitySectorChange.Register(event.NewListener(svc, svc.EntityUpdate))
-	game_event.PlayerAppearanceUpdate.Register(event.NewListener(svc, svc.PlayerUpdate))
-	return nil
+	game_event.PlayerFinishLogin.Register(event.NewObserver(svc, playerFinishLogin))
+	game_event.PlayerLogout.Register(event.NewObserver(svc, playerCleanup))
+	game_event.EntityRegionChange.Register(event.NewObserver(svc, svc.EntityUpdate))
+	game_event.EntitySectorChange.Register(event.NewObserver(svc, svc.EntityUpdate))
+	game_event.PlayerAppearanceUpdate.Register(event.NewObserver(svc, svc.PlayerUpdate))
+
+	engine_event.Tick.Register(event.NewObserver(svc, svc.PlayerTick))
+	return svc
 }
 
 // playerFinishLogin calls player.FinishInit on the PlayerFinishLogin event
@@ -74,6 +81,24 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.C
 
 func (svc *GameService) World() *world.Instance {
 	return svc.world
+}
+
+func doForAllPlayers(entities []entity.Entity, fn func(*playerimpl.Player)) {
+	for _, e := range entities {
+		p := e.(*playerimpl.Player)
+		fn(p)
+	}
+}
+
+func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
+	allPlayers := svc.world.AllEntities(entity.PlayerType)
+
+	doForAllPlayers(allPlayers, (*playerimpl.Player).UpdateWaypointQueue)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).SyncEntityList)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).SendPlayerSync)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).ClearFlags)
+	doForAllPlayers(allPlayers, (*playerimpl.Player).UpdateVisibleEntities)
+	svc.world.UpdateEntityCollections()
 }
 
 func (svc *GameService) EntityUpdate(ev *event.Event, _args ...interface{}) {

@@ -1,19 +1,18 @@
 package world
 
 import (
-	"github.com/qur/gopy/lib"
-
+	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
 type Instance struct {
-	py.BaseObject
-
 	sectors map[position.SectorHash]*Sector
 }
 
-func (i *Instance) Init() {
-	i.sectors = make(map[position.SectorHash]*Sector)
+func NewInstance() *Instance {
+	return &Instance{
+		sectors: make(map[position.SectorHash]*Sector),
+	}
 }
 
 // Sector returns a sector instance for a given position.Sector.
@@ -27,4 +26,26 @@ func (i *Instance) Sector(s *position.Sector) *Sector {
 	// Sector not yet tracked; Create a new sector
 	i.sectors[hash] = NewSector(s)
 	return i.sectors[hash]
+}
+
+func (i *Instance) UpdateEntityCollections() {
+	for _, sector := range i.sectors {
+		sector.Update()
+	}
+}
+
+func (instance *Instance) Sectors(s []*position.Sector) []*Sector {
+	list := make([]*Sector, len(s))
+	for i, s := range s {
+		list[i] = instance.Sector(s)
+	}
+	return list
+}
+
+func (instance *Instance) AllEntities(typ entity.EntityType) []entity.Entity {
+	entities := make([]entity.Entity, 0)
+	for _, s := range instance.sectors {
+		entities = append(entities, s.Entities().Filter(typ).Slice()...)
+	}
+	return entities
 }

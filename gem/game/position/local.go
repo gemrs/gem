@@ -1,23 +1,14 @@
 package position
 
-import (
-	"github.com/qur/gopy/lib"
-)
-
 // Local is a coordinate relative to the base of a Region
 type Local struct {
-	py.BaseObject
-
 	x, y, z int
 	// Region is the region which the coordinates are relative to
 	region *Region
 }
 
-func (local *Local) Init(x, y, z int, region *Region) {
-	local.x = x
-	local.y = y
-	local.z = z
-	local.region = region
+func NewLocal(x, y, z int, region *Region) *Local {
+	return &Local{x, y, z, region}
 }
 
 func (local *Local) X() int {

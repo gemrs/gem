@@ -1,47 +1,17 @@
-package event
+//glua:bind module gem.engine.event
+package engine_event
 
 import (
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/event"
-	"github.com/gemrs/gem/gem/python/modules"
 )
 
+//go:generate glua .
+
+//glua:bind
 var (
-	Startup  = createEvent("Startup")
-	Shutdown = createEvent("Shutdown")
-	PreTick  = createEvent("PreTick")
-	Tick     = createEvent("Tick")
-	PostTick = createEvent("PostTick")
+	Startup  = event.NewEvent("Startup")
+	Shutdown = event.NewEvent("Shutdown")
+	PreTick  = event.NewEvent("PreTick")
+	Tick     = event.NewEvent("Tick")
+	PostTick = event.NewEvent("PostTick")
 )
-
-var events = []*event.Event{}
-
-func createEvent(key string) *event.Event {
-	event := event.NewEvent(key)
-	events = append(events, event)
-
-	return event
-}
-
-func init() {
-	lock := py.NewLock()
-	defer lock.Unlock()
-
-	/* Create package */
-	var err error
-	var module *py.Module
-	if module, err = modules.Init("gem.engine.event", []py.Method{}); err != nil {
-		panic(err)
-	}
-
-	createEventObjects(module)
-}
-
-func createEventObjects(module *py.Module) {
-	for _, event := range events {
-		if err := module.AddObject(event.Key(), event); err != nil {
-			panic(err)
-		}
-	}
-}

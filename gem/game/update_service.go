@@ -6,24 +6,24 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 	update_protocol "github.com/gemrs/gem/gem/protocol/update"
 	"github.com/gemrs/gem/gem/runite"
-
-	"github.com/qur/gopy/lib"
 )
 
 // updateService represents the internal state of the update servuce
+//glua:bind
 type UpdateService struct {
-	py.BaseObject
-
 	runite *runite.Context
 	queue  updateQueue
 	notify chan int
 }
 
-func (svc *UpdateService) Init(runite *runite.Context) {
+//glua:bind constructor UpdateService
+func NewUpdateService(runite *runite.Context) *UpdateService {
+	svc := &UpdateService{}
 	svc.runite = runite
 	svc.queue = newUpdateQueue()
 	svc.notify = make(chan int, 16)
 	go svc.processQueue()
+	return svc
 }
 
 func (svc *UpdateService) NewClient(conn *server.Connection, service int) server.Client {

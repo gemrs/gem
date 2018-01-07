@@ -5,7 +5,6 @@ import (
 
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
-	_ "github.com/gemrs/gem/gem/python/api"
 )
 
 type MockEntity struct {
@@ -27,7 +26,7 @@ func (e MockEntity) Index() int {
 	return e.index
 }
 
-func compareLists(t *testing.T, name string, slice *entity.Slice, tclist []MockEntity) {
+func compareLists(t *testing.T, name string, slice *entity.Set, tclist []MockEntity) {
 	if slice.Size() != len(tclist) {
 		t.Errorf("Invalid size in %v list: got %v expected %v", name, slice.Size(), len(tclist))
 	}
@@ -73,17 +72,17 @@ func TestContainer(t *testing.T) {
 		},
 		{
 			add:      []MockEntity{e2},
-			entities: []MockEntity{e1, e2},
+			entities: []MockEntity{e0, e1, e2},
 			remove:   []MockEntity{e0},
 		},
 		{
 			add:      []MockEntity{},
-			entities: []MockEntity{e2},
+			entities: []MockEntity{e1, e2},
 			remove:   []MockEntity{e1},
 		},
 		{
 			add:      []MockEntity{},
-			entities: []MockEntity{},
+			entities: []MockEntity{e2},
 			remove:   []MockEntity{e2},
 		},
 		{
@@ -113,7 +112,7 @@ func TestContainer(t *testing.T) {
 
 // Test slice filtering works correctly
 func TestFilter(t *testing.T) {
-	sl := entity.NewSlice()
+	sl := entity.NewSet()
 
 	e0, e1, e2 := MockEntity{0, entity.EntityType("a")}, MockEntity{1, entity.EntityType("a")}, MockEntity{2, entity.EntityType("b")}
 
@@ -121,7 +120,7 @@ func TestFilter(t *testing.T) {
 	sl.Add(e1)
 	sl.Add(e2)
 
-	var subset *entity.Slice
+	var subset *entity.Set
 	subset = sl.Filter("a")
 	compareLists(t, "filtered", subset, []MockEntity{e0, e1})
 	subset = sl.Filter("b")

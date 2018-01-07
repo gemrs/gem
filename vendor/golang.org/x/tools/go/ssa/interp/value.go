@@ -36,6 +36,7 @@ package interp
 import (
 	"bytes"
 	"fmt"
+	"go/types"
 	"io"
 	"reflect"
 	"strings"
@@ -43,7 +44,6 @@ import (
 	"unsafe"
 
 	"golang.org/x/tools/go/ssa"
-	"golang.org/x/tools/go/types"
 	"golang.org/x/tools/go/types/typeutil"
 )
 
@@ -382,7 +382,7 @@ func writeValue(buf *bytes.Buffer, v value) {
 	case *hashmap:
 		buf.WriteString("map[")
 		sep := " "
-		for _, e := range v.table {
+		for _, e := range v.entries() {
 			for e != nil {
 				buf.WriteString(sep)
 				sep = " "

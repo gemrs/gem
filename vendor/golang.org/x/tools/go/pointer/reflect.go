@@ -1,3 +1,7 @@
+// Copyright 2013 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package pointer
 
 // This file implements the generation and resolution rules for
@@ -26,11 +30,11 @@ package pointer
 
 import (
 	"fmt"
+	exact "go/constant"
+	"go/types"
 	"reflect"
 
-	"golang.org/x/tools/go/exact"
 	"golang.org/x/tools/go/ssa"
-	"golang.org/x/tools/go/types"
 )
 
 func init() {

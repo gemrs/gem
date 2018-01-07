@@ -1,9 +1,0 @@
-[Core]
-Name = MOTD
-Module = motd
-
-[Documentation]
-Author = sinusoids@gmx.com
-Version = 0.1
-Website = https://github.com/gemrs/gem
-Description = A plugin to display a welcome message to players

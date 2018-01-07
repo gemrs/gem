@@ -2,6 +2,7 @@
 package game
 
 import (
+	"bytes"
 	"io"
 
 	"github.com/gemrs/gem/gem/encoding"
@@ -11,20 +12,73 @@ import (
 
 type PlayerUpdateBlock struct {
 	OurPlayer player.Player
+	buf       []byte
+	err       error
 }
 
-func (struc *PlayerUpdateBlock) Encode(w io.Writer, flags interface{}) error {
+func NewPlayerUpdateBlock(player player.Player) *PlayerUpdate {
+	block := &PlayerUpdateBlock{
+		OurPlayer: player,
+	}
+	block.err = block.build()
+	return (*PlayerUpdate)(block)
+}
+
+func (block *PlayerUpdateBlock) Encode(w io.Writer, flags interface{}) error {
+	w.Write(block.buf)
+	return block.err
+}
+
+func (struc *PlayerUpdateBlock) build() error {
+	var byteBuffer bytes.Buffer
+	w := &byteBuffer
 	buf := encoding.NewBitBuffer(w)
 
 	updateBlock := encoding.NewBuffer()
-	struc.buildUpdateBlock(updateBlock, struc.OurPlayer)
 
-	err := struc.buildMovementBlock(buf)
+	// Update our player
+	struc.buildUpdateBlock(updateBlock, struc.OurPlayer)
+	err := struc.buildMovementBlock(buf, struc.OurPlayer)
 	if err != nil {
 		return err
 	}
 
-	buf.Write(8, 0) // count of other players to update
+	visibleEntities := struc.OurPlayer.VisibleEntities()
+	ourIndex := struc.OurPlayer.Index()
+
+	// Update known players
+	updatingPlayers := visibleEntities.Entities().Clone()
+	updatingPlayers.RemoveAll(visibleEntities.Adding())
+	updatingPlayers = updatingPlayers.Filter(entity.PlayerType)
+	updatingPlayers.Remove(struc.OurPlayer)
+
+	buf.Write(8, uint32(updatingPlayers.Size())) // count of other players to update
+	for _, other := range updatingPlayers.Slice() {
+		other := other.(player.Player)
+		if visibleEntities.Removing().Contains(other) {
+			buf.Write(1, 1)
+			buf.Write(2, 3)
+		} else {
+			struc.buildMovementBlock(buf, other)
+			if other.Flags() != 0 {
+				struc.buildUpdateBlock(updateBlock, other)
+			}
+		}
+	}
+
+	// Add new players
+	for _, other := range visibleEntities.Adding().Filter(entity.PlayerType).Slice() {
+		if ourIndex == other.Index() {
+			continue
+		}
+
+		other := other.(player.Player)
+		struc.addPlayer(buf, other)
+
+		// Force appearance update
+		other.SetFlags(other.Flags() | entity.MobFlagIdentityUpdate)
+		struc.buildUpdateBlock(updateBlock, other)
+	}
 
 	updateBlockBytes := updateBlock.Bytes()
 	if len(updateBlockBytes) > 0 {
@@ -35,15 +89,27 @@ func (struc *PlayerUpdateBlock) Encode(w io.Writer, flags interface{}) error {
 		buf.Close()
 	}
 
+	struc.buf = byteBuffer.Bytes()
+
 	return nil
+}
+
+func (struc *PlayerUpdateBlock) addPlayer(buf *encoding.BitBuffer, other player.Player) {
+	buf.Write(11, uint32(other.Index()))
+
+	buf.Write(1, 1) // Update required
+	buf.Write(1, 1) // Discard walk queue
+
+	deltaX, deltaY, _ := other.Position().Delta(struc.OurPlayer.Position())
+	buf.Write(5, uint32(deltaY))
+	buf.Write(5, uint32(deltaX))
 }
 
 func (struc *PlayerUpdateBlock) Decode(buf io.Reader, flags interface{}) (err error) {
 	panic("not implemented")
 }
 
-func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer) error {
-	player := struc.OurPlayer
+func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer, player player.Player) error {
 	flags := player.Flags()
 
 	// Anything to do?
@@ -56,13 +122,16 @@ func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer) erro
 	// Do we have any non-movement updates to perform?
 	otherUpdateFlags := (flags & ^entity.MobFlagMovementUpdate)
 
+	updatingThisPlayer := struc.OurPlayer.Index() == player.Index()
+
 	switch {
-	case (flags & entity.MobFlagRegionUpdate) != 0:
-		localPos := player.Position().LocalTo(player.LoadedRegion())
+	// When updating other players, don't send warp movements
+	case updatingThisPlayer && (flags&entity.MobFlagRegionUpdate) != 0:
+		localPos := player.Position().LocalTo(struc.OurPlayer.LoadedRegion())
 
 		buf.Write(2, 3) // update type 3 = warp to location
 		buf.Write(2, uint32(localPos.Z()))
-		buf.WriteBit(true) // discard walk queue? not sure when/if we need this
+		buf.WriteBit(false) // discard walk queue? not sure when/if we need this
 		buf.WriteBit(otherUpdateFlags != 0)
 		buf.Write(7, uint32(localPos.Y()))
 		buf.Write(7, uint32(localPos.X()))
@@ -144,6 +213,9 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.
 			AnimRotateCCW:  encoding.Uint16(anims.Animation(player.AnimRotateCCW)),
 			AnimRotateCW:   encoding.Uint16(anims.Animation(player.AnimRotateCW)),
 			AnimRun:        encoding.Uint16(anims.Animation(player.AnimRun)),
+
+			NameHash:    encoding.NameHash(thisPlayer.Profile().Username()),
+			CombatLevel: encoding.Uint8(thisPlayer.Profile().Skills().CombatLevel()),
 		}
 
 		err := appearanceBlock.Encode(buf, nil)

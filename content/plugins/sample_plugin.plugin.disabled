@@ -1,9 +1,0 @@
-[Core]
-Name = SamplePlugin
-Module = sample_plugin
-
-[Documentation]
-Author = sinusoids@gmx.com
-Version = 0.1
-Website = https://github.com/gemrs/gem
-Description = An example of how to create a plugin

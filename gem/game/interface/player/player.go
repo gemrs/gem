@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/gtank/isaac"
+	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
 
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
@@ -25,6 +25,7 @@ type Player interface {
 	LoadProfile()
 	Cleanup()
 	LoadedRegion() *position.Region
+	VisibleEntities() *entity.Collection
 
 	SetDecodeFunc(d DecodeFunc)
 	Conn() *server.Connection

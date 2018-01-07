@@ -13,21 +13,21 @@
 
       The kernel is implemented in Go and thus is deployed as a natively compiled binary.
 
-      The kernel acts as a Python interpreter, and is responsible for invoking the Python layer, and for providing a
-      runtime and to allow access to the abstracted low-level protocol and implementation details through a clean Python
-      native API binding.
+      The kernel acts as a Lua interpreter, and is responsible for invoking the Lua layer, and for providing a
+      runtime to allow access to the abstracted low-level protocol and implementation details through a clean Lua API
+      binding.
 
-      The kernel should ensure fault tolerance in the event of unhandled exceptions or error conditions in Python
-      code. Interpreted languages are a tradeoff between ease of implementation and runtime safety; wrapping the Python
+      The kernel should ensure fault tolerance in the event of unhandled exceptions or error conditions in Lua
+      code. Interpreted languages are a tradeoff between ease of implementation and runtime safety; wrapping the Lua 
       layer in a controlled environment means that the kernel can prioritise runtime safety and avoid fatal crashes.
 
-   1.2. Python
+   1.2. Lua
 
-      The Python layer's role is to provide the high level game logic, and to enable easy and intuitive implementation
-      of content. The Python layer should aim to be as protocol agnostic as possible, with the assistance of the kernel.
+      The Lua layer's role is to provide the high level game logic, and to enable easy and intuitive implementation
+      of content. The Lua layer should aim to be as protocol agnostic as possible, with the assistance of the kernel.
 
       For much of the areas of functionality within Gem, it may be desirable to provide alternate backends to fit into
-      external components. In these cases, the choice has been made to delegate the implementation to the Python layer.
+      external components. In these cases, the choice has been made to delegate the implementation to the Lua layer.
       This simplifies the process of integration with other components and minimizes the amount of configuration and
       third-party code needs to go into the kernel.
 
@@ -37,35 +37,35 @@
 
       1.2.1 Plugins
 
-         The reference implementation of the Python layer provides a plugin interface. The plugin interface allows
+         The reference implementation of the Lua layer provides a plugin interface. The plugin interface allows
          compartmentalisation of chunks of game logic into a redistributable package.
 
          Higher level game logic should be implemented within the plugins layer as appropriate. An example usage of the
          plugin interface might be to distribute quests or skills for inclusion in other Gem servers.
 
-         No additional safety is provided to Python code running as a plugin vs. Python code not running as a plugin; to
-         the kernel, all Python code is treated equally.
+         No additional safety is provided to Lua code running as a plugin vs. Lua code not running as a plugin; to
+         the kernel, all Lua code is treated equally.
 
-   1.3. Kernel/Python API compatibility guarantee
+   1.3. Kernel/Lua API compatibility guarantee
 
-      The Python layer depends heavily on the kernel, and interaction between the two layers is performed through the
-      Python native API provided by the Kernel.
+      The Lua layer depends heavily on the kernel, and interaction between the two layers is performed through the Lua
+      API provided by the Kernel.
 
-      The Python native interface is guaranteed to remain backwards compatible for a minimum of 1 minor release. This
-      guarantee ensures that changes to the native API must be made in a backwards compatible manner for the duration of
-      the minor release in which they were introduced. Deprecation of an API should be made clear within this minor release
-      period through the use of release notes, and through log messages at runtime.
+      The Lua interface is guaranteed to remain backwards compatible for a minimum of 1 minor release. This guarantee
+      ensures that changes to the native API must be made in a backwards compatible manner for the duration of the minor
+      release in which they were introduced. Deprecation of an API should be made clear within this minor release period
+      through the use of release notes, and through log messages at runtime.
 
-      The reference implementation of the Python layer will always drop dependency on deprecated interfaces in the same
+      The reference implementation of the Lua layer will always drop dependency on deprecated interfaces in the same
       minor release they are introduced to the kernel.
 
       An example is provided for clarity:
 
          Feature X is introduced in release 1.0 along with it's native API interface. In version 1.2, it's native API
          interface is modified, deprecated, or extended. In version 1.2, changes to Feature X's interface must be compatible
-         with dependant Python code written for versions 1.0, 1.1, and any patches of these minor releases.
+         with dependant Lua code written for versions 1.0, 1.1, and any patches of these minor releases.
 
-         In version 1.2, the reference implementation of the Python layer removes all usage of the deprecated APIs and
+         In version 1.2, the reference implementation of the Lua layer removes all usage of the deprecated APIs and
          matches any changes made in the kernel to the interface of Feature X.
 
          In version 1.2, interfaces to Feature X which have become deprecated are clearly marked in both release notes
@@ -79,9 +79,9 @@
       deprecate APIs quickly has been chosen in favor of interface stability for two main reasons:
 
          1. Ensuring the best possible code quality and APIs provided by the kernel in the early stages of development
-         2. Ensuring that forked versions of the Python layer are kept closely in sync with the reference implementation.
+         2. Ensuring that forked versions of the Lua layer are kept closely in sync with the reference implementation.
 
-2. Kernel/Python boundary
+2. Kernel/Lua boundary
 
    The following diagram shows where each system or element of game logic belong within the Gem architecture.
 
@@ -108,11 +108,11 @@
                      |      =============================================================
                      |
                      |      +-------------+--------------+--------------+---------------+ |
-                     |      | persistence |     auth     |  world init  |   npc chat    | |  Python
+                     |      | persistence |     auth     |  world init  |   npc chat    | |  Lua
                      |      +-------------+----+---------+---------+----+---------------+ v
                      |      |    interfaces    |      trading      |   object actions   |
                      |      +-----------------------------------------------------------+ |
-                     |      |      skills      |     minigames     |       quests       | |  Python (plugins)
+                     |      |      skills      |     minigames     |       quests       | |  Lua (plugins)
                      |      +------------------+-------------------+--------------------+ v
                      |      |                     other game logic                      |
                       --    +-----------------------------------------------------------+

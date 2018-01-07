@@ -6,13 +6,12 @@ package typeutil_test
 
 import (
 	"fmt"
-	"sort"
-
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"go/types"
+	"sort"
 
-	"golang.org/x/tools/go/types"
 	"golang.org/x/tools/go/types/typeutil"
 )
 

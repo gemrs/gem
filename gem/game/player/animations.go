@@ -1,14 +1,10 @@
 package player
 
 import (
-	"github.com/qur/gopy/lib"
-
 	"github.com/gemrs/gem/gem/game/interface/player"
 )
 
 type Animations struct {
-	py.BaseObject
-
 	idle       int
 	spotRotate int
 	walk       int

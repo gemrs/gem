@@ -20,11 +20,13 @@
 //
 // * The reflect package is only partially implemented.
 //
-// * "sync/atomic" operations are not currently atomic due to the
-// "boxed" value representation: it is not possible to read, modify
-// and write an interface value atomically.  As a consequence, Mutexes
-// are currently broken.  TODO(adonovan): provide a metacircular
-// implementation of Mutex avoiding the broken atomic primitives.
+// * The "testing" package is no longer supported because it
+// depends on low-level details that change too often.
+//
+// * "sync/atomic" operations are not atomic due to the "boxed" value
+// representation: it is not possible to read, modify and write an
+// interface value atomically. As a consequence, Mutexes are currently
+// broken.
 //
 // * recover is only partially implemented.  Also, the interpreter
 // makes no attempt to distinguish target panics from interpreter
@@ -47,12 +49,13 @@ package interp // import "golang.org/x/tools/go/ssa/interp"
 import (
 	"fmt"
 	"go/token"
+	"go/types"
 	"os"
 	"reflect"
 	"runtime"
+	"sync/atomic"
 
 	"golang.org/x/tools/go/ssa"
-	"golang.org/x/tools/go/types"
 )
 
 type continuation int
@@ -84,6 +87,7 @@ type interpreter struct {
 	rtypeMethods       methodSet            // the method set of rtype, which implements the reflect.Type interface.
 	runtimeErrorString types.Type           // the runtime.errorString type
 	sizes              types.Sizes          // the effective type-sizing function
+	goroutines         int32                // atomically updated
 }
 
 type deferred struct {
@@ -267,7 +271,11 @@ func visitInstr(fr *frame, instr ssa.Instruction) continuation {
 
 	case *ssa.Go:
 		fn, args := prepareCall(fr, &instr.Call)
-		go call(fr.i, nil, instr.Pos(), fn, args)
+		atomic.AddInt32(&fr.i.goroutines, 1)
+		go func() {
+			call(fr.i, nil, instr.Pos(), fn, args)
+			atomic.AddInt32(&fr.i.goroutines, -1)
+		}()
 
 	case *ssa.MakeChan:
 		fr.env[instr] = make(chan value, asInt(fr.get(instr.Size)))
@@ -306,9 +314,7 @@ func visitInstr(fr *frame, instr ssa.Instruction) continuation {
 		fr.env[instr] = fr.get(instr.Iter).(iter).next()
 
 	case *ssa.FieldAddr:
-		x := fr.get(instr.X)
-		// FIXME wrong!  &global.f must not change if we do *global = zero!
-		fr.env[instr] = &(*x.(*value)).(structure)[instr.Field]
+		fr.env[instr] = &(*fr.get(instr.X).(*value)).(structure)[instr.Field]
 
 	case *ssa.Field:
 		fr.env[instr] = fr.get(instr.X).(structure)[instr.Field]
@@ -596,6 +602,8 @@ func doRecover(caller *frame) value {
 		caller.caller.panicking = false
 		p := caller.caller.panic
 		caller.caller.panic = nil
+
+		// TODO(adonovan): support runtime.Goexit.
 		switch p := p.(type) {
 		case targetPanic:
 			// The target program explicitly called panic().
@@ -657,11 +665,17 @@ func deleteBodies(pkg *ssa.Package, except ...string) {
 // The SSA program must include the "runtime" package.
 //
 func Interpret(mainpkg *ssa.Package, mode Mode, sizes types.Sizes, filename string, args []string) (exitCode int) {
+	if syswrite == nil {
+		fmt.Fprintln(os.Stderr, "Interpret: unsupported platform.")
+		return 1
+	}
+
 	i := &interpreter{
-		prog:    mainpkg.Prog,
-		globals: make(map[ssa.Value]*value),
-		mode:    mode,
-		sizes:   sizes,
+		prog:       mainpkg.Prog,
+		globals:    make(map[ssa.Value]*value),
+		mode:       mode,
+		sizes:      sizes,
+		goroutines: 1,
 	}
 	runtimePkg := i.prog.ImportedPackage("runtime")
 	if runtimePkg == nil {

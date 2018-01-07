@@ -1,3 +1,4 @@
+//glua:bind module gem.runite
 package runite
 
 import (
@@ -5,18 +6,21 @@ import (
 	"io/ioutil"
 
 	"github.com/gemrs/gem/gem/runite/format/rt3"
-
-	"github.com/qur/gopy/lib"
 )
 
-type Context struct {
-	py.BaseObject
+//go:generate glua .
 
+//glua:bind
+type Context struct {
 	FS *rt3.JagFS
 }
 
-func (c *Context) Init() {}
+//glua:bind constructor Context
+func NewContext() *Context {
+	return &Context{}
+}
 
+//glua:bind
 func (r *Context) Unpack(dataFile string, indexFiles []string) error {
 	var err error
 	r.FS, err = UnpackJagFSFiles(dataFile, indexFiles)

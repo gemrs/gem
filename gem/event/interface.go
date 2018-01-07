@@ -2,12 +2,12 @@ package event
 
 type Observable interface {
 	Key() string
-	Register(Observer)
-	Unregister(Observer)
+	Register(ObserverIface)
+	Unregister(ObserverIface)
 	NotifyObservers(...interface{})
 }
 
-type Observer interface {
+type ObserverIface interface {
 	Id() int
 	Notify(*Event, ...interface{})
 }
