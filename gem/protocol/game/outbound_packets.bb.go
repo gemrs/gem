@@ -7,6 +7,67 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
+type anonymous_outbound_packets_bb_3 struct {
+	Membership encoding.Uint8
+	Index      encoding.Uint16
+}
+
+func (struc *anonymous_outbound_packets_bb_3) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Membership.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_outbound_packets_bb_3) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Membership.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type OutboundPlayerInit anonymous_outbound_packets_bb_3
+
+var OutboundPlayerInitDefinition = encoding.PacketHeader{
+	Type:   (*OutboundPlayerInit)(nil),
+	Number: 249,
+	Size:   encoding.SzFixed,
+}
+
+func (frm *OutboundPlayerInit) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_outbound_packets_bb_3)(frm)
+	hdr := encoding.PacketHeader{
+		Number: OutboundPlayerInitDefinition.Number,
+		Size:   OutboundPlayerInitDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *OutboundPlayerInit) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_outbound_packets_bb_3)(frm)
+	hdr := encoding.PacketHeader{
+		Number: OutboundPlayerInitDefinition.Number,
+		Size:   OutboundPlayerInitDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}
+
 type anonymous_outbound_packets_bb_0 struct {
 	SectorX encoding.Uint16
 	SectorY encoding.Uint16
@@ -119,20 +180,20 @@ func (frm *OutboundChatMessage) Decode(buf io.Reader, flags interface{}) (err er
 }
 
 type OutboundPlayerChatMessage struct {
-	Colour        encoding.Uint8
 	Effects       encoding.Uint8
+	Colour        encoding.Uint8
 	Rights        encoding.Uint8
 	Length        encoding.Uint8
 	PackedMessage encoding.Bytes
 }
 
 func (struc *OutboundPlayerChatMessage) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Colour.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	err = struc.Effects.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.Effects.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	err = struc.Colour.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
@@ -156,12 +217,12 @@ func (struc *OutboundPlayerChatMessage) Encode(buf io.Writer, flags interface{})
 }
 
 func (struc *OutboundPlayerChatMessage) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Colour.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	err = struc.Effects.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
 
-	err = struc.Effects.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	err = struc.Colour.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}
@@ -182,65 +243,4 @@ func (struc *OutboundPlayerChatMessage) Decode(buf io.Reader, flags interface{})
 	}
 
 	return err
-}
-
-type anonymous_outbound_packets_bb_3 struct {
-	Membership encoding.Uint8
-	Index      encoding.Uint16
-}
-
-func (struc *anonymous_outbound_packets_bb_3) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Membership.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *anonymous_outbound_packets_bb_3) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Membership.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-type OutboundPlayerInit anonymous_outbound_packets_bb_3
-
-var OutboundPlayerInitDefinition = encoding.PacketHeader{
-	Type:   (*OutboundPlayerInit)(nil),
-	Number: 249,
-	Size:   encoding.SzFixed,
-}
-
-func (frm *OutboundPlayerInit) Encode(buf io.Writer, flags interface{}) (err error) {
-	struc := (*anonymous_outbound_packets_bb_3)(frm)
-	hdr := encoding.PacketHeader{
-		Number: OutboundPlayerInitDefinition.Number,
-		Size:   OutboundPlayerInitDefinition.Size,
-		Object: struc,
-	}
-	return hdr.Encode(buf, flags)
-}
-
-func (frm *OutboundPlayerInit) Decode(buf io.Reader, flags interface{}) (err error) {
-	struc := (*anonymous_outbound_packets_bb_3)(frm)
-	hdr := encoding.PacketHeader{
-		Number: OutboundPlayerInitDefinition.Number,
-		Size:   OutboundPlayerInitDefinition.Size,
-		Object: struc,
-	}
-	return hdr.Decode(buf, flags)
 }

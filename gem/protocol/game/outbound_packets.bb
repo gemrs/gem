@@ -12,8 +12,8 @@ type OutboundChatMessage frame<253, Var8> struct {
 
 /* Puts a chat message into the client's chat window. */
 type OutboundPlayerChatMessage struct {
-    Colour        uint8
     Effects       uint8
+    Colour        uint8
     Rights        uint8
     Length        uint8<IntNegate>
     PackedMessage byte[...]
