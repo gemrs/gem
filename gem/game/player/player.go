@@ -164,6 +164,12 @@ func (client *Player) SendMessage(message string) {
 	}
 }
 
+// Ask the client to log out
+//glua:bind
+func (client *Player) ForceLogout() {
+	client.Conn().Write <- &game_protocol.OutboundLogout{}
+}
+
 func (client *Player) SetNextStep(next *position.Absolute) {
 	client.SetPosition(next)
 	client.GenericMob.SetNextStep(next)
