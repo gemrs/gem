@@ -10,7 +10,7 @@ import (
 )
 
 //go:generate nex -e binbuf.nex
-//go:generate go tool yacc -o binbuf.y.go binbuf.y
+//go:generate goyacc -o binbuf.y.go binbuf.y
 
 type ErrorList []string
 

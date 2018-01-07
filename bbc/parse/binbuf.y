@@ -2,7 +2,7 @@
 package parse
 
 import (
-	"bbc/ast"
+	"github.com/gemrs/gem/bbc/ast"
 )
 
 %}

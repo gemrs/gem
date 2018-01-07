@@ -54,5 +54,5 @@ import (
 	"strconv"
 	"fmt"
 
-	"bbc/ast"
+	"github.com/gemrs/gem/bbc/ast"
 )
