@@ -5,7 +5,6 @@ import (
 
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
-	_ "github.com/gemrs/gem/gem/python/api"
 )
 
 type MockEntity struct {

@@ -4,10 +4,11 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/interface/entity"
-	"github.com/gemrs/gem/gem/game/interface/player"
 	"github.com/gemrs/gem/gem/game/position"
 	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 )
+
+const PlayerViewDistance = 1
 
 func (client *Player) LoadProfile() {
 	profile := client.Profile().(*Profile)
@@ -31,25 +32,35 @@ func (client *Player) Cleanup() {
 }
 
 func (client *Player) SyncEntityList() {
-	sectorPositions := client.sector.Position().SurroundingSectors(1)
+	sectorPositions := client.sector.Position().SurroundingSectors(PlayerViewDistance)
 	sectors := client.world.Sectors(sectorPositions)
+	allAdded := entity.NewSet()
+	allRemoved := entity.NewSet()
+
 	for _, s := range sectors {
-		for _, e := range s.Adding().Slice() {
-			client.visibleEntities.Add(e)
+		client.visibleEntities.AddAll(s.Collection)
+		allAdded.AddAll(s.Adding())
+		allRemoved.AddAll(s.Removing())
+	}
+
+	for _, e := range allRemoved.Slice() {
+		// Entity was both added and removed, probably went from one sector to another.
+		if allAdded.Contains(e) {
+			continue
 		}
 
-		for _, e := range s.Removing().Slice() {
-			client.visibleEntities.Remove(e)
-		}
+		client.visibleEntities.Remove(e)
 	}
 }
 
 func (client *Player) SectorChange() {
-	oldList := client.sector.Position().SurroundingSectors(1)
+	oldList := client.sector.Position().SurroundingSectors(PlayerViewDistance)
+
 	client.sector.Remove(client)
 	client.sector = client.world.Sector(client.Position().Sector())
 	client.sector.Add(client)
-	newList := client.sector.Position().SurroundingSectors(1)
+
+	newList := client.sector.Position().SurroundingSectors(PlayerViewDistance)
 
 	removedPositions, addedPositions := position.SectorListDelta(oldList, newList)
 	removed, added := client.world.Sectors(removedPositions), client.world.Sectors(addedPositions)
@@ -83,9 +94,7 @@ func (client *Player) UpdateWaypointQueue() {
 }
 
 func (client *Player) SendPlayerSync() {
-	client.Conn().Write <- &game_protocol.PlayerUpdate{
-		OurPlayer: player.Snapshot(client),
-	}
+	client.Conn().Write <- game_protocol.NewPlayerUpdateBlock(client)
 }
 
 func (client *Player) UpdateVisibleEntities() {
