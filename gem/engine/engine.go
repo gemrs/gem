@@ -49,24 +49,12 @@ func (e *Engine) Stop() {
 
 func (e *Engine) run() error {
 	// Start the engine ticking...
-	preTask := task.NewTask(func(*task.Task) bool {
-		engine_event.PreTick.NotifyObservers()
-		return true
-	}, task.PreTick, 1, nil)
-
 	duringTask := task.NewTask(func(*task.Task) bool {
 		engine_event.Tick.NotifyObservers()
 		return true
 	}, task.Tick, 1, nil)
 
-	postTask := task.NewTask(func(*task.Task) bool {
-		engine_event.PostTick.NotifyObservers()
-		return true
-	}, task.PostTick, 1, nil)
-
-	task.Scheduler.Submit(preTask)
 	task.Scheduler.Submit(duringTask)
-	task.Scheduler.Submit(postTask)
 
 	// Main engine loop
 	c := time.Tick(EngineTick)
@@ -78,9 +66,7 @@ func (e *Engine) run() error {
 		func() {
 			defer safe.Recover(logger)
 
-			task.Scheduler.Tick(task.PreTick)
 			task.Scheduler.Tick(task.Tick)
-			task.Scheduler.Tick(task.PostTick)
 		}()
 	}
 	return nil

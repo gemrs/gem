@@ -56,7 +56,7 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 	game_event.EntitySectorChange.Register(event.NewObserver(svc, svc.EntityUpdate))
 	game_event.PlayerAppearanceUpdate.Register(event.NewObserver(svc, svc.PlayerUpdate))
 
-	engine_event.PostTick.Register(event.NewObserver(svc, svc.UpdateEntityCollections))
+	engine_event.Tick.Register(event.NewObserver(svc, svc.PlayerTick))
 	return svc
 }
 
@@ -83,7 +83,19 @@ func (svc *GameService) World() *world.Instance {
 	return svc.world
 }
 
-func (svc *GameService) UpdateEntityCollections(ev *event.Event, _args ...interface{}) {
+func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
+	unwrapPlayer := func(fn func(*playerimpl.Player)) func(e entity.Entity) {
+		return func(e entity.Entity) {
+			fn(e.(*playerimpl.Player))
+		}
+	}
+
+	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).UpdateWaypointQueue))
+	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).UpdateProfilePosition))
+	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).SyncEntityList))
+	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).SendPlayerSync))
+	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).ClearFlags))
+	svc.world.ForEachPlayer(unwrapPlayer((*playerimpl.Player).UpdateVisibleEntities))
 	svc.world.UpdateEntityCollections()
 }
 

@@ -1,6 +1,7 @@
 package world
 
 import (
+	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
@@ -39,4 +40,12 @@ func (instance *Instance) Sectors(s []*position.Sector) []*Sector {
 		list[i] = instance.Sector(s)
 	}
 	return list
+}
+
+func (instance *Instance) ForEachPlayer(fn func(p entity.Entity)) {
+	for _, s := range instance.sectors {
+		for _, e := range s.Entities().Filter(entity.PlayerType).Slice() {
+			fn(e)
+		}
+	}
 }

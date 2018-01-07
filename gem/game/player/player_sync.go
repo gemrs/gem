@@ -2,8 +2,6 @@ package player
 
 import (
 	"github.com/gemrs/gem/gem/encoding"
-	engine_event "github.com/gemrs/gem/gem/engine/event"
-	"github.com/gemrs/gem/gem/event"
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/interface/player"
@@ -25,15 +23,25 @@ func (client *Player) FinishInit() {
 		Membership: encoding.Uint8(1),
 		Index:      encoding.Uint16(client.Index()),
 	}
-
-	engine_event.PreTick.Register(event.NewObserver(client, client.PreTick))
-	engine_event.Tick.Register(event.NewObserver(client, client.Tick))
-	engine_event.PostTick.Register(event.NewObserver(client, client.PostTick))
 }
 
 // Cleanup is called when the player logs out
 func (client *Player) Cleanup() {
 
+}
+
+func (client *Player) SyncEntityList() {
+	sectorPositions := client.sector.Position().SurroundingSectors(1)
+	sectors := client.world.Sectors(sectorPositions)
+	for _, s := range sectors {
+		for _, e := range s.Adding().Slice() {
+			client.visibleEntities.Add(e)
+		}
+
+		for _, e := range s.Removing().Slice() {
+			client.visibleEntities.Remove(e)
+		}
+	}
 }
 
 func (client *Player) SectorChange() {
@@ -69,21 +77,20 @@ func (client *Player) RegionChange() {
 	client.SetFlags(entity.MobFlagRegionUpdate)
 }
 
-func (client *Player) PreTick(_ *event.Event, _ ...interface{}) {
+func (client *Player) UpdateWaypointQueue() {
 	client.WaypointQueue().Tick(client)
+}
+
+func (client *Player) UpdateProfilePosition() {
 	client.Profile().SetPosition(client.Position())
 }
 
-// Tick snapshots the player in their current state and syncs the client
-// Also re-syncs the current session with the player's profile
-func (client *Player) Tick(_ *event.Event, _ ...interface{}) {
+func (client *Player) SendPlayerSync() {
 	client.Conn().Write <- &game_protocol.PlayerUpdate{
 		OurPlayer: player.Snapshot(client),
 	}
 }
 
-// ClearUpdate is called on post-tick, and clears the player's update flags
-func (client *Player) PostTick(_ *event.Event, _ ...interface{}) {
-	client.ClearFlags()
+func (client *Player) UpdateVisibleEntities() {
 	client.visibleEntities.Update()
 }
