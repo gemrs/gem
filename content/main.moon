@@ -6,6 +6,7 @@ event = require "gem.event"
 game = require "gem.game"
 server = require "gem.game.server"
 engine_event = require "gem.engine.event"
+game_event = require "gem.game.event"
 
 import version_string from require("version")
 config = require "config"
@@ -39,6 +40,14 @@ engine_event.startup\register event.Func () ->
 engine_event.shutdown\register event.Func () ->
   game_server\stop!
   archive_server\stop!
+
+-- Init plugins
+load_plugin = (plugin) ->
+  logger\notice "Loading plugin #{plugin}"
+  require plugin
+
+for plugin in *config.plugins
+  load_plugin plugin
 
 -- Start and join the engine
 engine = engine.Engine!

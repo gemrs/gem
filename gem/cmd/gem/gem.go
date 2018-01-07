@@ -48,7 +48,7 @@ func main() {
 		buildMoonScript(*contentDir)
 	}
 	finalDir := *compiledDir + "/" + *contentDir
-	luaPath := fmt.Sprintf("%v/?.lua;%v", finalDir, lua.LuaPathDefault)
+	luaPath := fmt.Sprintf("%v/?.lua;%v/?/init.lua;%v", finalDir, finalDir, lua.LuaPathDefault)
 
 	os.Setenv(lua.LuaPath, luaPath)
 	mainFile := finalDir + "/main.lua"

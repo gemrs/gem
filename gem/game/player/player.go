@@ -17,6 +17,7 @@ import (
 )
 
 // GameClient is a client which serves players
+//glua:bind
 type Player struct {
 	index        int
 	sector       *world.Sector
@@ -39,6 +40,7 @@ type Player struct {
 }
 
 // NewGameClient constructs a new GameClient
+//glua:bind constructor Player
 func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
 	client := &Player{}
 	client.Connection = conn
@@ -60,6 +62,7 @@ func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
 	return client
 }
 
+//glua:bind
 func (client *Player) Index() int {
 	return client.index
 }
@@ -121,6 +124,7 @@ func (client *Player) Animations() player.Animations {
 }
 
 // Profile returns the player's profile
+//glua:bind
 func (client *Player) Profile() player.Profile {
 	return client.profile
 }
@@ -152,6 +156,7 @@ func (client *Player) AppearanceUpdated() {
 }
 
 // SendMessage puts a message to the player's chat window
+//glua:bind
 func (client *Player) SendMessage(message string) {
 	client.Conn().Write <- &game_protocol.OutboundChatMessage{
 		Message: encoding.JString(message),
