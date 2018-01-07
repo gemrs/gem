@@ -268,6 +268,8 @@ func (c *context) generateArrayLength(length ast.LengthSpec) string {
 	switch length := length.(type) {
 	case *ast.StaticLength:
 		return strconv.Itoa(length.Length)
+	case *ast.RemainingLength:
+		return "nil"
 	case *ast.DynamicLength:
 		panic("dynamic array length not implemented")
 	default:

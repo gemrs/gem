@@ -7,6 +7,8 @@
 	return tNumber
 }
 
+/\.\.\./ { return tEllipsis }
+
 /type/   { return tType }
 /string/ { return tStringType }
 /byte/   { return tByteType }

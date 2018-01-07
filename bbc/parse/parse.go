@@ -92,6 +92,7 @@ func (l *Lexer) resolveReferencesTo(name string, typ ast.Node, n ast.Node) {
 	case *ast.StringBaseType:
 	case *ast.ByteBaseType:
 	case *ast.StaticLength:
+	case *ast.RemainingLength:
 	default:
 		if n != nil {
 			// nil can occur due to lex/parse errors.

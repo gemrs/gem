@@ -24,6 +24,7 @@ import (
 %token <sval> tIdentifier
 %token <ival> tNumber
 
+%token tEllipsis
 %token tStruct tType tFrame tBitStruct
 %token tFrameFixed tFrameVar8 tFrameVar16
 %token <n> tStringType tByteType tBitsType
@@ -213,6 +214,10 @@ array_spec
           $$ = &ast.StaticLength{
 	          Length: $2,
           }
+      }
+    | '[' tEllipsis ']'
+      {
+          $$ = &ast.RemainingLength{}
       }
 
 ws

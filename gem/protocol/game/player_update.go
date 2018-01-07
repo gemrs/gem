@@ -109,8 +109,18 @@ func (struc *PlayerUpdateBlock) Decode(buf io.Reader, flags interface{}) (err er
 	panic("not implemented")
 }
 
+func (struc *PlayerUpdateBlock) getModifiedUpdateFlags(updatingPlayer player.Player) entity.Flags {
+	// Clear some flags that don't apply to self updates
+	updatingThisPlayer := struc.OurPlayer.Index() == updatingPlayer.Index()
+	flags := updatingPlayer.Flags()
+	if updatingThisPlayer {
+		flags = flags & ^entity.MobFlagChatUpdate
+	}
+	return flags
+}
+
 func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer, player player.Player) error {
-	flags := player.Flags()
+	flags := struc.getModifiedUpdateFlags(player)
 
 	// Anything to do?
 	if flags == 0 {
@@ -157,8 +167,22 @@ func (struc *PlayerUpdateBlock) buildMovementBlock(buf *encoding.BitBuffer, play
 	return nil
 }
 
+func (struc *PlayerUpdateBlock) buildChatUpdateBlock(w io.Writer, other player.Player) error {
+	message := other.ChatMessageQueue()[0]
+	chatBlock := &OutboundPlayerChatMessage{
+		Effects:       encoding.Uint8(message.Effects),
+		Colour:        encoding.Uint8(message.Colour),
+		Rights:        encoding.Uint8(other.Profile().Rights()),
+		Length:        encoding.Uint8(len(message.PackedMessage)),
+		PackedMessage: message.PackedMessage,
+	}
+
+	return chatBlock.Encode(w, nil)
+}
+
 func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.Player) error {
-	flags := thisPlayer.Flags() & ^entity.MobFlagMovementUpdate
+	flags := struc.getModifiedUpdateFlags(thisPlayer) & ^entity.MobFlagMovementUpdate
+
 	if flags == 0 {
 		return nil
 	}
@@ -173,6 +197,14 @@ func (struc *PlayerUpdateBlock) buildUpdateBlock(w io.Writer, thisPlayer player.
 	} else {
 		flagsEnc := encoding.Uint8(flags)
 		err := flagsEnc.Encode(w, encoding.IntNilFlag)
+		if err != nil {
+			return err
+		}
+	}
+
+	/* Update chat */
+	if (flags & entity.MobFlagChatUpdate) != 0 {
+		err := struc.buildChatUpdateBlock(w, thisPlayer)
 		if err != nil {
 			return err
 		}

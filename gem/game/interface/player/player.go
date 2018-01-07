@@ -27,6 +27,9 @@ type Player interface {
 	LoadedRegion() *position.Region
 	VisibleEntities() *entity.Collection
 
+	ChatMessageQueue() []*ChatMessage
+	AppendChatMessage(*ChatMessage)
+
 	SetDecodeFunc(d DecodeFunc)
 	Conn() *server.Connection
 
@@ -36,4 +39,11 @@ type Player interface {
 	ServerISAACSeed() []uint32
 	SecureBlockSize() int
 	SetSecureBlockSize(s int)
+}
+
+type ChatMessage struct {
+	Effects       uint8
+	Colour        uint8
+	Message       string
+	PackedMessage []byte
 }

@@ -10,6 +10,15 @@ type OutboundChatMessage frame<253, Var8> struct {
     Message string
 }
 
+/* Puts a chat message into the client's chat window. */
+type OutboundPlayerChatMessage struct {
+    Colour        uint8
+    Effects       uint8
+    Rights        uint8
+    Length        uint8<IntNegate>
+    PackedMessage byte[...]
+}
+
 /* Tells the client about it's player on login */
 type OutboundPlayerInit frame<249, Fixed> struct {
     Membership uint8<IntOffset128>

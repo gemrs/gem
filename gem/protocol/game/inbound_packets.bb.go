@@ -47,3 +47,75 @@ func (frm *InboundPing) Decode(buf io.Reader, flags interface{}) (err error) {
 	}
 	return hdr.Decode(buf, flags)
 }
+
+type anonymous_inbound_packets_bb_1 struct {
+	Effects        encoding.Uint8
+	Colour         encoding.Uint8
+	EncodedMessage encoding.Bytes
+}
+
+func (struc *anonymous_inbound_packets_bb_1) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Effects.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntReverse))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Colour.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntReverse))
+	if err != nil {
+		return err
+	}
+
+	err = struc.EncodedMessage.Encode(buf, nil)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_1) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Effects.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntReverse))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Colour.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntReverse))
+	if err != nil {
+		return err
+	}
+
+	err = struc.EncodedMessage.Decode(buf, nil)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type InboundChatMessage anonymous_inbound_packets_bb_1
+
+var InboundChatMessageDefinition = encoding.PacketHeader{
+	Type:   (*InboundChatMessage)(nil),
+	Number: 4,
+	Size:   encoding.SzVar8,
+}
+
+func (frm *InboundChatMessage) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_1)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundChatMessageDefinition.Number,
+		Size:   InboundChatMessageDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundChatMessage) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_1)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundChatMessageDefinition.Number,
+		Size:   InboundChatMessageDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}

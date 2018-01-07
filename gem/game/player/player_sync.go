@@ -93,6 +93,12 @@ func (client *Player) UpdateWaypointQueue() {
 	client.Profile().SetPosition(client.Position())
 }
 
+func (client *Player) ProcessChatQueue() {
+	if len(client.chatQueue) > 0 {
+		client.chatQueue = client.chatQueue[1:]
+	}
+}
+
 func (client *Player) SendPlayerSync() {
 	client.Conn().Write <- game_protocol.NewPlayerUpdateBlock(client)
 }

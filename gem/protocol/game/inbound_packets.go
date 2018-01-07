@@ -13,6 +13,7 @@ var inboundTypes map[int]encoding.Codable
 
 var definitions = []encoding.PacketHeader{
 	InboundPingDefinition,
+	InboundChatMessageDefinition,
 	InboundPlayerWalkDefinition,
 	InboundPlayerWalkMapDefinition,
 }

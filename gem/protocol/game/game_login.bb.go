@@ -7,28 +7,6 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
-type OutboundLoginResponseUnsuccessful struct {
-	Response encoding.Uint8
-}
-
-func (struc *OutboundLoginResponseUnsuccessful) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Response.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *OutboundLoginResponseUnsuccessful) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Response.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
 type InboundLoginBlock struct {
 	LoginType       encoding.Uint8
 	LoginLen        encoding.Uint8
@@ -228,6 +206,28 @@ func (struc *OutboundLoginResponse) Decode(buf io.Reader, flags interface{}) (er
 	}
 
 	err = struc.Flagged.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type OutboundLoginResponseUnsuccessful struct {
+	Response encoding.Uint8
+}
+
+func (struc *OutboundLoginResponseUnsuccessful) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Response.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *OutboundLoginResponseUnsuccessful) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Response.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}

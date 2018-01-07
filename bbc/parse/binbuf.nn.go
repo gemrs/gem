@@ -218,6 +218,38 @@ var dfas = []dfa{
 		},
 	}, []int{ /* Start-of-input transitions */ -1, -1}, []int{ /* End-of-input transitions */ -1, -1}, nil},
 
+	// \.\.\.
+	{[]bool{false, false, false, true}, []func(rune) int{ // Transitions
+		func(r rune) int {
+			switch r {
+			case 46:
+				return 1
+			}
+			return -1
+		},
+		func(r rune) int {
+			switch r {
+			case 46:
+				return 2
+			}
+			return -1
+		},
+		func(r rune) int {
+			switch r {
+			case 46:
+				return 3
+			}
+			return -1
+		},
+		func(r rune) int {
+			switch r {
+			case 46:
+				return -1
+			}
+			return -1
+		},
+	}, []int{ /* Start-of-input transitions */ -1, -1, -1, -1}, []int{ /* End-of-input transitions */ -1, -1, -1, -1}, nil},
+
 	// type
 	{[]bool{false, false, false, false, true}, []func(rune) int{ // Transitions
 		func(r rune) int {
@@ -2029,45 +2061,49 @@ OUTER0:
 			}
 		case 1:
 			{
-				return tType
+				return tEllipsis
 			}
 		case 2:
 			{
-				return tStringType
+				return tType
 			}
 		case 3:
 			{
-				return tByteType
+				return tStringType
 			}
 		case 4:
 			{
-				return tStruct
+				return tByteType
 			}
 		case 5:
 			{
-				return tBitStruct
+				return tStruct
 			}
 		case 6:
 			{
-				return tFrame
+				return tBitStruct
 			}
 		case 7:
 			{
-				return tBitsType
+				return tFrame
 			}
 		case 8:
 			{
-				return tFrameFixed
+				return tBitsType
 			}
 		case 9:
 			{
-				return tFrameVar8
+				return tFrameFixed
 			}
 		case 10:
 			{
-				return tFrameVar16
+				return tFrameVar8
 			}
 		case 11:
+			{
+				return tFrameVar16
+			}
+		case 12:
 			{
 				var err error
 				lval.n, err = ast.ParseIntegerType(yylex.Text())
@@ -2076,30 +2112,30 @@ OUTER0:
 				}
 				return tIntegerType
 			}
-		case 12:
+		case 13:
 			{
 				lval.sval = yylex.Text()
 				return tIntegerFlag
 			}
-		case 13:
+		case 14:
 			{
 				return int(yylex.Text()[0])
 			}
-		case 14:
+		case 15:
 			{
 				lval.sval = yylex.Text()
 				return tIdentifier
 			}
-		case 15:
+		case 16:
 			{ /* eat up whitespace */
 			}
-		case 16:
+		case 17:
 			{ /* eat up one-line comments */
 			}
-		case 17:
+		case 18:
 			{ /* eat up multi-line comments. ugly but functional regex */
 			}
-		case 18:
+		case 19:
 			{
 				yylex.Error(fmt.Sprintf("unrecognized character: %v", yylex.Text()))
 			}

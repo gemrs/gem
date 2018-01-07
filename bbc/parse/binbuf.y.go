@@ -23,19 +23,20 @@ type yySymType struct {
 const tWhitespace = 57346
 const tIdentifier = 57347
 const tNumber = 57348
-const tStruct = 57349
-const tType = 57350
-const tFrame = 57351
-const tBitStruct = 57352
-const tFrameFixed = 57353
-const tFrameVar8 = 57354
-const tFrameVar16 = 57355
-const tStringType = 57356
-const tByteType = 57357
-const tBitsType = 57358
-const tIntegerType = 57359
-const tIntegerFlag = 57360
-const tEOL = 57361
+const tEllipsis = 57349
+const tStruct = 57350
+const tType = 57351
+const tFrame = 57352
+const tBitStruct = 57353
+const tFrameFixed = 57354
+const tFrameVar8 = 57355
+const tFrameVar16 = 57356
+const tStringType = 57357
+const tByteType = 57358
+const tBitsType = 57359
+const tIntegerType = 57360
+const tIntegerFlag = 57361
+const tEOL = 57362
 
 var yyToknames = [...]string{
 	"$end",
@@ -51,6 +52,7 @@ var yyToknames = [...]string{
 	"tWhitespace",
 	"tIdentifier",
 	"tNumber",
+	"tEllipsis",
 	"tStruct",
 	"tType",
 	"tFrame",
@@ -71,7 +73,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line binbuf.y:230
+//line binbuf.y:235
 
 //line yacctab:1
 var yyExca = [...]int{
@@ -82,67 +84,69 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 63
+const yyLast = 65
 
 var yyAct = [...]int{
 
-	2, 35, 48, 7, 46, 5, 18, 9, 60, 19,
-	21, 12, 40, 44, 45, 43, 42, 53, 11, 56,
-	32, 33, 34, 26, 18, 28, 16, 19, 17, 24,
-	23, 15, 30, 58, 59, 47, 5, 27, 50, 20,
-	57, 49, 3, 22, 4, 1, 51, 8, 54, 52,
-	6, 55, 10, 13, 14, 41, 25, 29, 37, 39,
-	38, 36, 31,
+	2, 35, 48, 7, 62, 11, 46, 9, 21, 18,
+	5, 12, 19, 40, 5, 24, 44, 45, 43, 42,
+	32, 33, 34, 26, 18, 57, 16, 19, 23, 17,
+	53, 54, 28, 15, 60, 61, 27, 47, 50, 30,
+	20, 59, 58, 49, 22, 3, 51, 4, 1, 52,
+	8, 56, 55, 6, 10, 13, 14, 41, 25, 29,
+	37, 39, 38, 36, 31,
 }
 var yyPact = [...]int{
 
-	25, -1000, 25, -1000, 25, -1000, 25, -1000, -1000, 3,
-	25, 19, -1000, -1000, -1000, 10, 31, -1000, 39, 39,
-	16, -1000, 25, -1000, 27, 20, -1000, 2, -1000, -1000,
-	-8, 26, -1000, -1000, -1000, 35, -1000, -1000, -1000, -1000,
-	-1000, -1000, 30, 35, -1000, -1000, -1000, -8, -1000, 4,
-	-6, -1000, 35, 33, 24, -1000, -1000, -1000, -1000, -17,
-	-1000,
+	3, -1000, 3, -1000, 3, -1000, 3, -1000, -1000, -11,
+	3, 21, -1000, -1000, -1000, 9, 32, -1000, 40, 40,
+	2, -1000, 3, -1000, 26, 27, -1000, 1, -1000, -1000,
+	-6, 28, -1000, -1000, -1000, 37, -1000, -1000, -1000, -1000,
+	-1000, -1000, 30, 37, -1000, -1000, -1000, -6, -1000, 17,
+	-1, -1000, 37, 35, 34, 25, -1000, -1000, -1000, -1000,
+	-1000, -22, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 62, 2, 1, 61, 60, 59, 58, 57, 56,
-	10, 55, 54, 53, 12, 52, 50, 48, 45, 0,
-	44, 42,
+	0, 64, 2, 1, 63, 62, 61, 60, 59, 58,
+	8, 57, 56, 55, 13, 54, 53, 52, 48, 0,
+	47, 45,
 }
 var yyR1 = [...]int{
 
 	0, 18, 16, 16, 15, 15, 12, 1, 1, 1,
 	13, 14, 14, 10, 9, 9, 8, 4, 4, 17,
 	17, 17, 11, 3, 3, 3, 3, 3, 3, 3,
-	6, 5, 7, 7, 2, 20, 21, 21, 19, 19,
+	6, 5, 7, 7, 2, 2, 20, 21, 21, 19,
+	19,
 }
 var yyR2 = [...]int{
 
 	0, 3, 1, 4, 2, 2, 8, 1, 1, 1,
 	2, 2, 2, 3, 1, 2, 2, 1, 4, 1,
 	1, 3, 1, 1, 1, 1, 1, 1, 1, 2,
-	1, 1, 1, 2, 3, 1, 1, 2, 0, 1,
+	1, 1, 1, 2, 3, 3, 1, 1, 2, 0,
+	1,
 }
 var yyChk = [...]int{
 
 	-1000, -18, -19, -21, -20, 11, -16, -19, -21, -19,
-	-15, 15, -19, -13, -12, 12, 16, -14, 14, 17,
+	-15, 16, -19, -13, -12, 12, 17, -14, 15, 18,
 	8, -10, 4, -10, 13, -9, -19, 10, 5, -8,
-	12, -1, 18, 19, 20, -3, -4, -7, -5, -6,
-	-14, -11, 24, 23, 21, 22, 12, 9, -2, 6,
-	8, -2, -3, 13, -17, -19, 25, 7, 9, 10,
-	25,
+	12, -1, 19, 20, 21, -3, -4, -7, -5, -6,
+	-14, -11, 25, 24, 22, 23, 12, 9, -2, 6,
+	8, -2, -3, 13, 14, -17, -19, 26, 7, 7,
+	9, 10, 26,
 }
 var yyDef = [...]int{
 
-	38, -2, 38, 39, 36, 35, 38, 2, 37, 1,
-	38, 0, 3, 4, 5, 0, 0, 10, 0, 0,
-	0, 11, 38, 12, 0, 0, 14, 0, 13, 15,
+	39, -2, 39, 40, 37, 36, 39, 2, 38, 1,
+	39, 0, 3, 4, 5, 0, 0, 10, 0, 0,
+	0, 11, 39, 12, 0, 0, 14, 0, 13, 15,
 	0, 0, 7, 8, 9, 16, 23, 24, 25, 26,
 	27, 28, 17, 32, 31, 30, 22, 0, 29, 0,
-	38, 33, 6, 0, 0, 19, 20, 34, 18, 0,
-	21,
+	39, 33, 6, 0, 0, 0, 19, 20, 34, 35,
+	18, 0, 21,
 }
 var yyTok1 = [...]int{
 
@@ -163,7 +167,7 @@ var yyTok1 = [...]int{
 var yyTok2 = [...]int{
 
 	2, 3, 11, 12, 13, 14, 15, 16, 17, 18,
-	19, 20, 21, 22, 23, 24, 25, 26,
+	19, 20, 21, 22, 23, 24, 25, 26, 27,
 }
 var yyTok3 = [...]int{
 	0,
@@ -508,39 +512,39 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:52
+		//line binbuf.y:53
 		{
 			yylex.(*Lexer).Ast().Scope = yyDollar[2].n.(*ast.Scope)
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:56
+		//line binbuf.y:57
 		{
 			yyVAL.n = ast.NewScope()
 		}
 	case 3:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line binbuf.y:58
+		//line binbuf.y:59
 		{
 			yyDollar[1].n.(*ast.Scope).Add(yyDollar[3].n)
 		}
 	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:63
+		//line binbuf.y:64
 		{
 			yyVAL.n = yyDollar[2].n
 			yylex.(*Lexer).AddDecl(yyVAL.n)
 		}
 	case 5:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:68
+		//line binbuf.y:69
 		{
 			yyVAL.n = yyDollar[2].n
 			yylex.(*Lexer).AddDecl(yyVAL.n)
 		}
 	case 6:
 		yyDollar = yyS[yypt-8 : yypt+1]
-		//line binbuf.y:76
+		//line binbuf.y:77
 		{
 			yyVAL.n = &ast.Frame{
 				Name:   yyDollar[1].sval,
@@ -551,25 +555,25 @@ yydefault:
 		}
 	case 7:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:88
+		//line binbuf.y:89
 		{
 			yyVAL.size = ast.SzFixed
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:90
+		//line binbuf.y:91
 		{
 			yyVAL.size = ast.SzVar8
 		}
 	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:92
+		//line binbuf.y:93
 		{
 			yyVAL.size = ast.SzVar16
 		}
 	case 10:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:97
+		//line binbuf.y:98
 		{
 			if _, ok := yyDollar[2].n.(*ast.BitStruct); ok {
 				yyDollar[2].n.(*ast.BitStruct).Name = yyDollar[1].sval
@@ -580,7 +584,7 @@ yydefault:
 		}
 	case 11:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:109
+		//line binbuf.y:110
 		{
 			yyVAL.n = &ast.Struct{
 				Name:  yylex.(*Lexer).NameAnonStruct(),
@@ -589,7 +593,7 @@ yydefault:
 		}
 	case 12:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:116
+		//line binbuf.y:117
 		{
 			yyVAL.n = &ast.BitStruct{
 				Name:  yylex.(*Lexer).NameAnonStruct(),
@@ -598,25 +602,25 @@ yydefault:
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:126
+		//line binbuf.y:127
 		{
 			yyVAL.n = yyDollar[2].n
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:130
+		//line binbuf.y:131
 		{
 			yyVAL.n = ast.NewScope()
 		}
 	case 15:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:132
+		//line binbuf.y:133
 		{
 			yyDollar[1].n.(*ast.Scope).Add(yyDollar[2].n.(ast.Node))
 		}
 	case 16:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:137
+		//line binbuf.y:138
 		{
 			yyVAL.n = &ast.Field{
 				Name: yyDollar[1].sval,
@@ -625,32 +629,32 @@ yydefault:
 		}
 	case 18:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line binbuf.y:148
+		//line binbuf.y:149
 		{
 			yyDollar[1].n.(*ast.IntegerType).Modifiers = yyDollar[3].svalarr
 			yyVAL.n = yyDollar[1].n
 		}
 	case 19:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:155
+		//line binbuf.y:156
 		{
 			yyVAL.svalarr = make([]string, 0)
 		}
 	case 20:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:157
+		//line binbuf.y:158
 		{
 			yyVAL.svalarr = append(yyVAL.svalarr, yyDollar[1].sval)
 		}
 	case 21:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:159
+		//line binbuf.y:160
 		{
 			yyVAL.svalarr = append(yyVAL.svalarr, yyDollar[3].sval)
 		}
 	case 22:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:164
+		//line binbuf.y:165
 		{
 			yyVAL.n = &ast.DeclReference{
 				DeclName: yyDollar[1].sval,
@@ -658,7 +662,7 @@ yydefault:
 		}
 	case 29:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:179
+		//line binbuf.y:180
 		{
 			yyVAL.n = &ast.ArrayType{
 				Object: yyDollar[1].n,
@@ -667,25 +671,25 @@ yydefault:
 		}
 	case 30:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:189
+		//line binbuf.y:190
 		{
 			yyVAL.n = &ast.ByteBaseType{}
 		}
 	case 31:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:194
+		//line binbuf.y:195
 		{
 			yyVAL.n = &ast.StringBaseType{}
 		}
 	case 32:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line binbuf.y:199
+		//line binbuf.y:200
 		{
 			yyVAL.n = &ast.BitsType{Count: 1}
 		}
 	case 33:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line binbuf.y:201
+		//line binbuf.y:202
 		{
 			if _, ok := yyDollar[2].length.(*ast.StaticLength); !ok {
 				yylex.(*Lexer).Error("bit fields require a constant length expression")
@@ -695,11 +699,17 @@ yydefault:
 		}
 	case 34:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line binbuf.y:212
+		//line binbuf.y:213
 		{
 			yyVAL.length = &ast.StaticLength{
 				Length: yyDollar[2].ival,
 			}
+		}
+	case 35:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line binbuf.y:219
+		{
+			yyVAL.length = &ast.RemainingLength{}
 		}
 	}
 	goto yystack /* stack new state and value */

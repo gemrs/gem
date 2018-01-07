@@ -86,6 +86,21 @@ func (r *DynamicLength) ByteLength() (int, error) {
 	return 0, ErrVariableType
 }
 
+/* A length spec which is equal to all the remaining data */
+type RemainingLength struct{}
+
+func (r *RemainingLength) Identifier() string {
+	return "remaining length"
+}
+
+func (r *RemainingLength) ConstantExpr() (bool, error) {
+	return false, nil
+}
+
+func (r *RemainingLength) ByteLength() (int, error) {
+	return 0, ErrVariableType
+}
+
 // A Fixed length string (eg. string[256])
 type StringBaseType struct{}
 

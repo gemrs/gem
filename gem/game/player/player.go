@@ -25,6 +25,7 @@ type Player struct {
 	loadedRegion *position.Region
 
 	visibleEntities *entity.Collection
+	chatQueue       []*player.ChatMessage
 
 	*server.Connection
 	*entityimpl.GenericMob
@@ -195,4 +196,21 @@ func (client *Player) SetPosition(pos *position.Absolute) {
 // EntityType identifies what kind of entity this entity is
 func (client *Player) EntityType() entity.EntityType {
 	return entity.PlayerType
+}
+
+func (client *Player) AppendChatMessage(m *player.ChatMessage) {
+	client.chatQueue = append(client.chatQueue, m)
+	client.SetFlags(client.Flags() | entity.MobFlagChatUpdate)
+}
+
+func (client *Player) ChatMessageQueue() []*player.ChatMessage {
+	return client.chatQueue
+}
+
+func (client *Player) ClearFlags() {
+	client.GenericMob.ClearFlags()
+	// Don't clear the chat flag if there are still messages queued
+	if len(client.chatQueue) > 0 {
+		client.SetFlags(client.Flags() | entity.MobFlagChatUpdate)
+	}
 }
