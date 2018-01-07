@@ -3,7 +3,7 @@ package player
 import (
 	"math/rand"
 
-	"github.com/gtank/isaac"
+	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
 
 	"github.com/gemrs/gem/gem/encoding"
 	entityimpl "github.com/gemrs/gem/gem/game/entity"

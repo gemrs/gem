@@ -13,10 +13,10 @@ package pointer
 import (
 	"fmt"
 	"go/token"
+	"go/types"
 
 	"golang.org/x/tools/go/callgraph"
 	"golang.org/x/tools/go/ssa"
-	"golang.org/x/tools/go/types"
 )
 
 var (
@@ -107,6 +107,16 @@ func (a *analysis) setValueNode(v ssa.Value, id nodeid, cgn *cgnode) {
 			a.result.IndirectQueries[v] = ptr
 		}
 		a.genLoad(cgn, ptr.n, v, 0, a.sizeof(t))
+	}
+
+	for _, query := range a.config.extendedQueries[v] {
+		t, nid := a.evalExtendedQuery(v.Type().Underlying(), id, query.ops)
+
+		if query.ptr.a == nil {
+			query.ptr.a = a
+			query.ptr.n = a.addNodes(t, "query.extended")
+		}
+		a.copy(query.ptr.n, nid, a.sizeof(t))
 	}
 }
 
@@ -1287,7 +1297,9 @@ func (a *analysis) generate() {
 		a.genMethodsOf(T)
 	}
 
-	// Generate constraints for entire program.
+	// Generate constraints for functions as they become reachable
+	// from the roots.  (No constraints are generated for functions
+	// that are dead in this analysis scope.)
 	for len(a.genq) > 0 {
 		cgn := a.genq[0]
 		a.genq = a.genq[1:]

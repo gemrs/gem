@@ -1,3 +1,7 @@
+// Copyright 2014 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package eg
 
 // This file defines the AST rewriting pass.
@@ -8,6 +12,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"go/types"
 	"os"
 	"reflect"
 	"sort"
@@ -15,7 +20,6 @@ import (
 	"strings"
 
 	"golang.org/x/tools/go/ast/astutil"
-	"golang.org/x/tools/go/types"
 )
 
 // Transform applies the transformation to the specified parsed file,
@@ -147,7 +151,6 @@ var (
 	selectorExprType = reflect.TypeOf((*ast.SelectorExpr)(nil))
 	objectPtrType    = reflect.TypeOf((*ast.Object)(nil))
 	positionType     = reflect.TypeOf(token.NoPos)
-	callExprType     = reflect.TypeOf((*ast.CallExpr)(nil))
 	scopePtrType     = reflect.TypeOf((*ast.Scope)(nil))
 )
 

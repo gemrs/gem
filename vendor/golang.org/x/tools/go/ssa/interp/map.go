@@ -12,7 +12,7 @@ package interp
 // concurrent map access.
 
 import (
-	"golang.org/x/tools/go/types"
+	"go/types"
 )
 
 type hashable interface {
@@ -110,4 +110,12 @@ func (m *hashmap) len() int {
 		return m.length
 	}
 	return 0
+}
+
+// entries returns a rangeable map of entries.
+func (m *hashmap) entries() map[int]*entry {
+	if m != nil {
+		return m.table
+	}
+	return nil
 }

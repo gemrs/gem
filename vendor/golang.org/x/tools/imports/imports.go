@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:generate go run mkstdlib.go
+
 // Package imports implements a Go pretty-printer (like package "go/format")
 // that also adds or removes import statements as necessary.
 package imports // import "golang.org/x/tools/imports"
@@ -31,10 +33,16 @@ type Options struct {
 	Comments  bool // Print comments (true if nil *Options provided)
 	TabIndent bool // Use tabs for indent (true if nil *Options provided)
 	TabWidth  int  // Tab width (8 if nil *Options provided)
+
+	FormatOnly bool // Disable the insertion and deletion of imports
 }
 
 // Process formats and adjusts imports for the provided file.
 // If opt is nil the defaults are used.
+//
+// Note that filename's directory influences which imports can be chosen,
+// so it is important that filename be accurate.
+// To process data ``as if'' it were in filename, pass the data as a non-nil src.
 func Process(filename string, src []byte, opt *Options) ([]byte, error) {
 	if opt == nil {
 		opt = &Options{Comments: true, TabIndent: true, TabWidth: 8}
@@ -46,9 +54,11 @@ func Process(filename string, src []byte, opt *Options) ([]byte, error) {
 		return nil, err
 	}
 
-	_, err = fixImports(fileSet, file)
-	if err != nil {
-		return nil, err
+	if !opt.FormatOnly {
+		_, err = fixImports(fileSet, file, filename)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	sortImports(fileSet, file)
@@ -88,7 +98,10 @@ func Process(filename string, src []byte, opt *Options) ([]byte, error) {
 		out = adjust(src, out)
 	}
 	if len(spacesBefore) > 0 {
-		out = addImportSpaces(bytes.NewReader(out), spacesBefore)
+		out, err = addImportSpaces(bytes.NewReader(out), spacesBefore)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	out, err = format.Source(out)
@@ -246,9 +259,14 @@ func matchSpace(orig []byte, src []byte) []byte {
 
 var impLine = regexp.MustCompile(`^\s+(?:[\w\.]+\s+)?"(.+)"`)
 
-func addImportSpaces(r io.Reader, breaks []string) []byte {
+// Used to set Scanner buffer size so that large tokens can be handled.
+// see https://github.com/golang/go/issues/18201
+const maxScanTokenSize = bufio.MaxScanTokenSize * 16
+
+func addImportSpaces(r io.Reader, breaks []string) ([]byte, error) {
 	var out bytes.Buffer
 	sc := bufio.NewScanner(r)
+	sc.Buffer(nil, maxScanTokenSize)
 	inImports := false
 	done := false
 	for sc.Scan() {
@@ -266,7 +284,7 @@ func addImportSpaces(r io.Reader, breaks []string) []byte {
 		}
 		if inImports && len(breaks) > 0 {
 			if m := impLine.FindStringSubmatch(s); m != nil {
-				if m[1] == string(breaks[0]) {
+				if m[1] == breaks[0] {
 					out.WriteByte('\n')
 					breaks = breaks[1:]
 				}
@@ -275,5 +293,5 @@ func addImportSpaces(r io.Reader, breaks []string) []byte {
 
 		fmt.Fprintln(&out, s)
 	}
-	return out.Bytes()
+	return out.Bytes(), sc.Err()
 }

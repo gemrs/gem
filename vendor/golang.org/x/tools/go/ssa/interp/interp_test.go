@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build !android,!windows,!plan9
+// +build linux darwin
 
 package interp_test
 
@@ -10,8 +10,10 @@ import (
 	"bytes"
 	"fmt"
 	"go/build"
+	"go/types"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -20,7 +22,6 @@ import (
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/interp"
 	"golang.org/x/tools/go/ssa/ssautil"
-	"golang.org/x/tools/go/types"
 )
 
 // Each line contains a space-separated list of $GOROOT/test/
@@ -152,31 +153,12 @@ var testdataTests = []string{
 	"callstack.go",
 }
 
-// These are files and packages in $GOROOT/src/.
-var gorootSrcTests = []string{
-	"encoding/ascii85",
-	"encoding/hex",
-	// "encoding/pem", // TODO(adonovan): implement (reflect.Value).SetString
-	// "testing",      // TODO(adonovan): implement runtime.Goexit correctly
-	"unicode",
-
-	// Too slow:
-	// "container/ring",
-	// "hash/adler32",
-
-	// TODO(adonovan): packages with Examples require os.Pipe (unimplemented):
-	// "hash/crc32",
-	// "unicode/utf8",
-	// "log",
-	// "path",
-	// "flag",
-	// "encoding/csv"
-	// "text/scanner"
-}
-
 type successPredicate func(exitcode int, output string) error
 
 func run(t *testing.T, dir, input string, success successPredicate) bool {
+	if runtime.GOOS == "darwin" {
+		t.Skip("skipping on darwin until golang.org/issue/23166 is fixed")
+	}
 	fmt.Printf("Input: %s\n", input)
 
 	start := time.Now()
@@ -210,7 +192,7 @@ func run(t *testing.T, dir, input string, success successPredicate) bool {
 		interp.CapturedOutput = nil
 	}()
 
-	hint = fmt.Sprintf("To dump SSA representation, run:\n%% go build golang.org/x/tools/cmd/ssadump && ./ssadump -build=CFP %s\n", input)
+	hint = fmt.Sprintf("To dump SSA representation, run:\n%% go build golang.org/x/tools/cmd/ssadump && ./ssadump -test -build=CFP %s\n", input)
 
 	iprog, err := conf.Load()
 	if err != nil {
@@ -221,36 +203,32 @@ func run(t *testing.T, dir, input string, success successPredicate) bool {
 	prog := ssautil.CreateProgram(iprog, ssa.SanityCheckFunctions)
 	prog.Build()
 
+	// Find first main or test package among the initial packages.
 	var mainPkg *ssa.Package
-	var initialPkgs []*ssa.Package
 	for _, info := range iprog.InitialPackages() {
 		if info.Pkg.Path() == "runtime" {
 			continue // not an initial package
 		}
 		p := prog.Package(info.Pkg)
-		initialPkgs = append(initialPkgs, p)
-		if mainPkg == nil && p.Func("main") != nil {
+		if p.Pkg.Name() == "main" && p.Func("main") != nil {
 			mainPkg = p
+			break
+		}
+
+		mainPkg = prog.CreateTestMainPackage(p)
+		if mainPkg != nil {
+			break
 		}
 	}
 	if mainPkg == nil {
-		testmainPkg := prog.CreateTestMainPackage(initialPkgs...)
-		if testmainPkg == nil {
-			t.Errorf("CreateTestMainPackage(%s) returned nil", mainPkg)
-			return false
-		}
-		if testmainPkg.Func("main") == nil {
-			t.Errorf("synthetic testmain package has no main")
-			return false
-		}
-		mainPkg = testmainPkg
+		t.Fatalf("no main or test packages among initial packages: %s", inputs)
 	}
 
 	var out bytes.Buffer
 	interp.CapturedOutput = &out
 
-	hint = fmt.Sprintf("To trace execution, run:\n%% go build golang.org/x/tools/cmd/ssadump && ./ssadump -build=C -run --interp=T %s\n", input)
-	exitCode := interp.Interpret(mainPkg, 0, &types.StdSizes{8, 8}, inputs[0], []string{})
+	hint = fmt.Sprintf("To trace execution, run:\n%% go build golang.org/x/tools/cmd/ssadump && ./ssadump -build=C -test -run --interp=T %s\n", input)
+	exitCode := interp.Interpret(mainPkg, 0, &types.StdSizes{WordSize: 8, MaxAlign: 8}, inputs[0], []string{})
 
 	// The definition of success varies with each file.
 	if err := success(exitCode, out.String()); err != nil {
@@ -317,34 +295,7 @@ func TestGorootTest(t *testing.T) {
 			failures = append(failures, input)
 		}
 	}
-	for _, input := range gorootSrcTests {
-		if !run(t, filepath.Join(build.Default.GOROOT, "src")+slash, input, success) {
-			failures = append(failures, input)
-		}
-	}
 	printFailures(failures)
-}
-
-// TestTestmainPackage runs the interpreter on a synthetic "testmain" package.
-func TestTestmainPackage(t *testing.T) {
-	if testing.Short() {
-		t.Skip() // too slow on some platforms
-	}
-
-	success := func(exitcode int, output string) error {
-		if exitcode == 0 {
-			return fmt.Errorf("unexpected success")
-		}
-		if !strings.Contains(output, "FAIL: TestFoo") {
-			return fmt.Errorf("missing failure log for TestFoo")
-		}
-		if !strings.Contains(output, "FAIL: TestBar") {
-			return fmt.Errorf("missing failure log for TestBar")
-		}
-		// TODO(adonovan): test benchmarks too
-		return nil
-	}
-	run(t, "testdata"+slash, "a_test.go", success)
 }
 
 // CreateTestMainPackage should return nil if there were no tests.

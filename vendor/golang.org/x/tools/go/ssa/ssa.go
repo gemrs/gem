@@ -10,11 +10,11 @@ package ssa
 import (
 	"fmt"
 	"go/ast"
+	exact "go/constant"
 	"go/token"
+	"go/types"
 	"sync"
 
-	"golang.org/x/tools/go/exact"
-	"golang.org/x/tools/go/types"
 	"golang.org/x/tools/go/types/typeutil"
 )
 
@@ -75,9 +75,6 @@ type Member interface {
 }
 
 // A Type is a Member of a Package representing a package-level named type.
-//
-// Type() returns a *types.Named.
-//
 type Type struct {
 	object *types.TypeName
 	pkg    *Package
@@ -95,7 +92,6 @@ type Type struct {
 type NamedConst struct {
 	object *types.Const
 	Value  *Const
-	pos    token.Pos
 	pkg    *Package
 }
 

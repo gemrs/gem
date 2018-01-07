@@ -7,8 +7,6 @@ package loader_test
 // This file enumerates all packages beneath $GOROOT, loads them, plus
 // their external tests if any, runs the type checker on them, and
 // prints some summary information.
-//
-// Run test with GOMAXPROCS=8.
 
 import (
 	"bytes"
@@ -16,6 +14,7 @@ import (
 	"go/ast"
 	"go/build"
 	"go/token"
+	"go/types"
 	"io/ioutil"
 	"path/filepath"
 	"runtime"
@@ -25,23 +24,14 @@ import (
 
 	"golang.org/x/tools/go/buildutil"
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 )
-
-// The set of packages that transitively depend on cmd/internal/objfile,
-// which uses vendoring, which go/loader does not yet support.
-// TODO(adonovan): add support for vendoring and delete this.
-var skip = map[string]bool{
-	"cmd/addr2line":        true,
-	"cmd/internal/objfile": true,
-	"cmd/nm":               true,
-	"cmd/objdump":          true,
-	"cmd/pprof":            true,
-}
 
 func TestStdlib(t *testing.T) {
 	if runtime.GOOS == "android" {
 		t.Skipf("incomplete std lib on %s", runtime.GOOS)
+	}
+	if testing.Short() {
+		t.Skip("skipping in short mode; uses tons of memory (golang.org/issue/14113)")
 	}
 
 	runtime.GC()
@@ -55,9 +45,6 @@ func TestStdlib(t *testing.T) {
 	ctxt.GOPATH = ""      // disable GOPATH
 	conf := loader.Config{Build: &ctxt}
 	for _, path := range buildutil.AllPackages(conf.Build) {
-		if skip[path] {
-			continue
-		}
 		conf.ImportWithTests(path)
 	}
 
@@ -132,6 +119,9 @@ func TestStdlib(t *testing.T) {
 }
 
 func TestCgoOption(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping in short mode; uses tons of memory (golang.org/issue/14113)")
+	}
 	switch runtime.GOOS {
 	// On these systems, the net and os/user packages don't use cgo
 	// or the std library is incomplete (Android).
@@ -160,7 +150,7 @@ func TestCgoOption(t *testing.T) {
 		pkg, name, genericFile string
 	}{
 		{"net", "cgoLookupHost", "cgo_stub.go"},
-		{"os/user", "lookupId", "lookup_stubs.go"},
+		{"os/user", "current", "lookup_stubs.go"},
 	} {
 		ctxt := build.Default
 		for _, ctxt.CgoEnabled = range []bool{false, true} {

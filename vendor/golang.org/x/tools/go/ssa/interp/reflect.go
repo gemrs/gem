@@ -13,11 +13,11 @@ package interp
 import (
 	"fmt"
 	"go/token"
+	"go/types"
 	"reflect"
 	"unsafe"
 
 	"golang.org/x/tools/go/ssa"
-	"golang.org/x/tools/go/types"
 )
 
 type opaqueType struct {
@@ -331,7 +331,7 @@ func ext۰reflect۰Value۰MapKeys(fr *frame, args []value) value {
 		}
 
 	case *hashmap:
-		for _, e := range v.table {
+		for _, e := range v.entries() {
 			for ; e != nil; e = e.next {
 				keys = append(keys, makeReflectValue(tKey, e.key))
 			}
@@ -363,7 +363,7 @@ func ext۰reflect۰Value۰Pointer(fr *frame, args []value) value {
 	case []value:
 		return reflect.ValueOf(v).Pointer()
 	case *hashmap:
-		return reflect.ValueOf(v.table).Pointer()
+		return reflect.ValueOf(v.entries()).Pointer()
 	case map[value]value:
 		return reflect.ValueOf(v).Pointer()
 	case *ssa.Function:

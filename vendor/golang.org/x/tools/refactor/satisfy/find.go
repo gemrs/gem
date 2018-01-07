@@ -48,9 +48,9 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"go/types"
 
 	"golang.org/x/tools/go/ast/astutil"
-	"golang.org/x/tools/go/types"
 	"golang.org/x/tools/go/types/typeutil"
 )
 
