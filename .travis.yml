@@ -1,6 +1,6 @@
 language: go
 go:
-  - 1.5
+  - 1.9
 install:
   - bin/install_deps.sh
 script:
@@ -8,5 +8,3 @@ script:
   - bin/test.sh
 after_success:
   - codecov -X fix
-env:
-  - GO15VENDOREXPERIMENT=1
