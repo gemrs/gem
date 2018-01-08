@@ -4,13 +4,14 @@ import (
 	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/encoding"
 	game_event "github.com/gemrs/gem/gem/game/event"
-	"github.com/gemrs/gem/gem/game/interface/player"
+	playeriface "github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/protocol"
 	game_protocol "github.com/gemrs/gem/gem/protocol/game"
 )
 
 // handshake performs the isaac key exchange
-func (svc *GameService) handshake(client player.Player) error {
+func (svc *GameService) handshake(client *player.Player) error {
 	serverSeed := client.ServerISAACSeed()
 
 	handshake := protocol.InboundGameHandshake{}
@@ -29,7 +30,7 @@ func (svc *GameService) handshake(client player.Player) error {
 }
 
 // decodeLoginBlock handles the unencrypted login block
-func (svc *GameService) decodeLoginBlock(client player.Player) error {
+func (svc *GameService) decodeLoginBlock(client *player.Player) error {
 	loginBlock := game_protocol.InboundLoginBlock{}
 	if err := loginBlock.Decode(client.Conn().ReadBuffer, nil); err != nil {
 		return err
@@ -48,7 +49,7 @@ func (svc *GameService) decodeLoginBlock(client player.Player) error {
 }
 
 // decodeSecureBlock handles the secure login block and the login response (via doLogin)
-func (svc *GameService) decodeSecureBlock(client player.Player) error {
+func (svc *GameService) decodeSecureBlock(client *player.Player) error {
 	rsaBlock := encoding.RSABlock{&game_protocol.InboundSecureLoginBlock{}}
 	rsaArgs := encoding.RSADecodeArgs{
 		Key:       svc.key,
@@ -76,7 +77,7 @@ func (svc *GameService) decodeSecureBlock(client player.Player) error {
 }
 
 // doLogin authenticates the user, sends the login response, and sets up the client for standard packet processing
-func (svc *GameService) doLogin(client player.Player, username, password string) error {
+func (svc *GameService) doLogin(client *player.Player, username, password string) error {
 	profile, responseCode := svc.auth.LookupProfile(username, password)
 
 	if responseCode != auth.AuthOkay {
@@ -86,7 +87,7 @@ func (svc *GameService) doLogin(client player.Player, username, password string)
 		return nil
 	}
 
-	client.SetProfile(profile.(player.Profile))
+	client.SetProfile(profile.(playeriface.Profile))
 
 	// Successful login, do all the stuff
 	client.Conn().Write <- &game_protocol.OutboundLoginResponse{

@@ -29,7 +29,7 @@ type Player struct {
 
 	*server.Connection
 	*entityimpl.GenericMob
-	decode player.DecodeFunc
+	decode DecodeFunc
 
 	randIn          isaac.ISAAC
 	randOut         isaac.ISAAC
@@ -75,7 +75,7 @@ func (client *Player) EntityType() entity.EntityType {
 	return entity.PlayerType
 }
 
-func (client *Player) SetDecodeFunc(d player.DecodeFunc) {
+func (client *Player) SetDecodeFunc(d DecodeFunc) {
 	client.decode = d
 }
 

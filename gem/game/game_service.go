@@ -87,7 +87,7 @@ func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
-func (svc *GameService) decodePacket(client player.Player) error {
+func (svc *GameService) decodePacket(client *playerimpl.Player) error {
 	b := client.Conn().ReadBuffer
 	data, err := b.Peek(1)
 	if err != nil {

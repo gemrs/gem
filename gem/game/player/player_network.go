@@ -6,6 +6,11 @@ import (
 	"github.com/gemrs/gem/gem/game/server"
 )
 
+// DecodeFunc is used for parsing the read stream and dealing with the incoming data.
+// If io.EOF is returned, it is assumed that we didn't have enough data, and
+// the underlying buffer's read pointer is not altered.
+type DecodeFunc func(*Player) error
+
 // Conn returns the underlying Connection
 func (client *Player) Conn() *server.Connection {
 	return client.Connection
