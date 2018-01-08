@@ -12,8 +12,8 @@ const PlayerViewDistance = 1
 
 func (client *Player) LoadProfile() {
 	profile := client.Profile().(*Profile)
+	profile.setPlayer(client)
 	client.SetPosition(profile.Position())
-	client.SetAppearance(profile.Appearance())
 
 	game_event.PlayerLoadProfile.NotifyObservers(client, client.Profile().(*Profile))
 }

@@ -20,7 +20,6 @@ type Profile interface {
 	SetPosition(*position.Absolute)
 	Skills() Skills
 	Appearance() Appearance
-	SetAppearance(Appearance)
 }
 
 type Skills interface {

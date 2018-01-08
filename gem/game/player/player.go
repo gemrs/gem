@@ -93,17 +93,17 @@ func (client *Player) ServerISAACSeed() []uint32 {
 	return client.serverRandKey
 }
 
+func (client *Player) InitISAAC(inSeed, outSeed []uint32) {
+	client.randIn.SeedArray(inSeed)
+	client.randOut.SeedArray(outSeed)
+}
+
 func (client *Player) ISAACIn() *isaac.ISAAC {
 	return &client.randIn
 }
 
 func (client *Player) ISAACOut() *isaac.ISAAC {
 	return &client.randOut
-}
-
-func (client *Player) InitISAAC(inSeed, outSeed []uint32) {
-	client.randIn.SeedArray(inSeed)
-	client.randOut.SeedArray(outSeed)
 }
 
 func (client *Player) SecureBlockSize() int {
@@ -141,13 +141,6 @@ func (client *Player) SetProfile(profile player.Profile) {
 func (client *Player) Appearance() player.Appearance {
 	profile := client.Profile().(*Profile)
 	return profile.Appearance()
-}
-
-// SetAppearance modifies the player's appearance
-func (client *Player) SetAppearance(a player.Appearance) {
-	profile := client.Profile().(*Profile)
-	profile.SetAppearance(a)
-	client.AppearanceUpdated()
 }
 
 //glua:bind

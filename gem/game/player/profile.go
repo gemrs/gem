@@ -33,6 +33,11 @@ func NewProfile(username, password string) *Profile {
 	}
 }
 
+func (p *Profile) setPlayer(player *Player) {
+	p.skills.setPlayer(player)
+	p.appearance.setPlayer(player)
+}
+
 //glua:bind
 func (p *Profile) Username() string {
 	return p.username
@@ -77,10 +82,6 @@ func (p *Profile) Appearance() player.Appearance {
 	return p.appearance
 }
 
-func (p *Profile) SetAppearance(appearance player.Appearance) {
-	p.appearance = appearance.(*Appearance)
-}
-
 func (p *Profile) String() string {
 	return fmt.Sprintf("Username: %v", p.username)
 }
@@ -98,20 +99,4 @@ func (p *Profile) UnmarshalJSON(objJSON []byte) error {
 
 	jsonObjToProfile(p, deserialized)
 	return nil
-}
-
-type Skills struct {
-	combatLevel int
-}
-
-func NewSkills() *Skills {
-	return &Skills{}
-}
-
-func (s *Skills) CombatLevel() int {
-	return s.combatLevel
-}
-
-func (s *Skills) setCombatLevel(combatLevel int) {
-	s.combatLevel = combatLevel
 }

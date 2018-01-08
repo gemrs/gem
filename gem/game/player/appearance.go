@@ -5,6 +5,8 @@ import (
 )
 
 type Appearance struct {
+	player *Player
+
 	gender   int
 	headIcon int
 
@@ -44,20 +46,33 @@ func NewAppearance() *Appearance {
 	return a
 }
 
+func (a *Appearance) setPlayer(p *Player) {
+	a.player = p
+	a.signalUpdate()
+}
+
+func (a *Appearance) signalUpdate() {
+	if a.player != nil {
+		a.player.AppearanceUpdated()
+	}
+}
+
 func (a *Appearance) Gender() int {
 	return a.gender
 }
 
-func (a *Appearance) setGender(gender int) {
+func (a *Appearance) SetGender(gender int) {
 	a.gender = gender
+	a.signalUpdate()
 }
 
 func (a *Appearance) HeadIcon() int {
 	return a.headIcon
 }
 
-func (a *Appearance) setHeadIcon(headIcon int) {
+func (a *Appearance) SetHeadIcon(headIcon int) {
 	a.headIcon = headIcon
+	a.signalUpdate()
 }
 
 func (a *Appearance) Model(b player.BodyPart) int {
@@ -80,7 +95,7 @@ func (a *Appearance) Model(b player.BodyPart) int {
 	return -1
 }
 
-func (a *Appearance) setModel(b player.BodyPart, model int) {
+func (a *Appearance) SetModel(b player.BodyPart, model int) {
 	switch b {
 	case player.Torso:
 		a.torsoModel = model
@@ -97,6 +112,7 @@ func (a *Appearance) setModel(b player.BodyPart, model int) {
 	case player.Beard:
 		a.beardModel = model
 	}
+	a.signalUpdate()
 }
 
 func (a *Appearance) Color(b player.BodyPart) int {
@@ -115,7 +131,7 @@ func (a *Appearance) Color(b player.BodyPart) int {
 	return -1
 }
 
-func (a *Appearance) setColor(b player.BodyPart, color int) {
+func (a *Appearance) SetColor(b player.BodyPart, color int) {
 	switch b {
 	case player.Hair:
 		a.hairColor = color
@@ -128,4 +144,5 @@ func (a *Appearance) setColor(b player.BodyPart, color int) {
 	case player.Skin:
 		a.skinColor = color
 	}
+	a.signalUpdate()
 }
