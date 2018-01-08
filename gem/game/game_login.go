@@ -4,10 +4,9 @@ import (
 	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/encoding"
 	game_event "github.com/gemrs/gem/gem/game/event"
-	playeriface "github.com/gemrs/gem/gem/game/interface/player"
 	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/protocol"
-	game_protocol "github.com/gemrs/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/protocol/game_protocol"
 )
 
 // handshake performs the isaac key exchange
@@ -87,7 +86,7 @@ func (svc *GameService) doLogin(client *player.Player, username, password string
 		return nil
 	}
 
-	client.SetProfile(profile.(playeriface.Profile))
+	client.SetProfile(profile)
 
 	// Successful login, do all the stuff
 	client.Conn().Write <- &game_protocol.OutboundLoginResponse{

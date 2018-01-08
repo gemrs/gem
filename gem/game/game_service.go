@@ -8,13 +8,12 @@ import (
 	"github.com/gemrs/gem/gem/crypto"
 	engine_event "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/event"
-	"github.com/gemrs/gem/gem/game/interface/entity"
-	"github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/packet"
-	playerimpl "github.com/gemrs/gem/gem/game/player"
+	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
-	game_protocol "github.com/gemrs/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/protocol/game_protocol"
 	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/gem/gem/util/expire"
 )
@@ -55,7 +54,7 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
 	conn.Log().Info("new game client")
-	client := playerimpl.NewPlayer(conn, svc.world)
+	client := player.NewPlayer(conn, svc.world)
 	client.SetDecodeFunc(svc.handshake)
 	return client
 }
@@ -64,9 +63,9 @@ func (svc *GameService) World() *world.Instance {
 	return svc.world
 }
 
-func doForAllPlayers(entities []entity.Entity, fn func(*playerimpl.Player)) {
+func doForAllPlayers(entities []entity.Entity, fn func(*player.Player)) {
 	for _, e := range entities {
-		p := e.(*playerimpl.Player)
+		p := e.(*player.Player)
 		fn(p)
 	}
 }
@@ -77,17 +76,17 @@ func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 	// Ordering is important here. We want to run these things in this specific order,
 	// and 'concurrently' (albeit in a single thread) for each player. ie. All waypoint
 	// queues are updated for all players before syncing entity lists.
-	doForAllPlayers(allPlayers, (*playerimpl.Player).UpdateWaypointQueue)
-	doForAllPlayers(allPlayers, (*playerimpl.Player).SyncEntityList)
-	doForAllPlayers(allPlayers, (*playerimpl.Player).SendPlayerSync)
-	doForAllPlayers(allPlayers, (*playerimpl.Player).UpdateVisibleEntities)
-	doForAllPlayers(allPlayers, (*playerimpl.Player).ProcessChatQueue)
-	doForAllPlayers(allPlayers, (*playerimpl.Player).ClearFlags)
+	doForAllPlayers(allPlayers, (*player.Player).UpdateWaypointQueue)
+	doForAllPlayers(allPlayers, (*player.Player).SyncEntityList)
+	doForAllPlayers(allPlayers, (*player.Player).SendPlayerSync)
+	doForAllPlayers(allPlayers, (*player.Player).UpdateVisibleEntities)
+	doForAllPlayers(allPlayers, (*player.Player).ProcessChatQueue)
+	doForAllPlayers(allPlayers, (*player.Player).ClearFlags)
 	svc.world.UpdateEntityCollections()
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
-func (svc *GameService) decodePacket(client *playerimpl.Player) error {
+func (svc *GameService) decodePacket(client *player.Player) error {
 	b := client.Conn().ReadBuffer
 	data, err := b.Peek(1)
 	if err != nil {
@@ -114,7 +113,7 @@ func (svc *GameService) decodePacket(client *playerimpl.Player) error {
 }
 
 // packetConsumer is the goroutine which picks packets from the readQueue and does something with them
-func (svc *GameService) packetConsumer(client player.Player) {
+func (svc *GameService) packetConsumer(client *player.Player) {
 L:
 	for {
 		select {

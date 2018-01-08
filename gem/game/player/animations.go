@@ -1,7 +1,16 @@
 package player
 
-import (
-	"github.com/gemrs/gem/gem/game/interface/player"
+type Anim int
+
+const (
+	AnimIdle Anim = iota
+	AnimSpotRotate
+	AnimWalk
+	AnimRotate180
+	AnimRotateCCW
+	AnimRotateCW
+	AnimRun
+	AnimMax
 )
 
 type Animations struct {
@@ -26,21 +35,21 @@ func NewAnimations() *Animations {
 	}
 }
 
-func (a *Animations) Animation(anim player.Anim) int {
+func (a *Animations) Animation(anim Anim) int {
 	switch anim {
-	case player.AnimIdle:
+	case AnimIdle:
 		return a.idle
-	case player.AnimSpotRotate:
+	case AnimSpotRotate:
 		return a.spotRotate
-	case player.AnimWalk:
+	case AnimWalk:
 		return a.walk
-	case player.AnimRotate180:
+	case AnimRotate180:
 		return a.rotate180
-	case player.AnimRotateCCW:
+	case AnimRotateCCW:
 		return a.rotateCCW
-	case player.AnimRotateCW:
+	case AnimRotateCW:
 		return a.rotateCW
-	case player.AnimRun:
+	case AnimRun:
 		return a.run
 	}
 	panic("not reached")

@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gemrs/gem/gem/encoding"
-	"github.com/gemrs/gem/gem/game/interface/player"
+	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/position"
-	game_protocol "github.com/gemrs/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/protocol/game_protocol"
 )
 
 func init() {
@@ -14,7 +14,7 @@ func init() {
 	registerHandler((*game_protocol.InboundPlayerWalkMap)(nil), player_walk)
 }
 
-func player_walk(player player.Player, packet encoding.Decodable) {
+func player_walk(player *player.Player, packet encoding.Decodable) {
 	var walkPacket *game_protocol.InboundPlayerWalkBlock
 	switch p := packet.(type) {
 	case *game_protocol.InboundPlayerWalk:

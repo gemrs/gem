@@ -1,7 +1,7 @@
 package world
 
 import (
-	"github.com/gemrs/gem/gem/game/interface/entity"
+	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/position"
 )
 

@@ -1,4 +1,4 @@
-package game
+package game_protocol
 
 /* generate login structures */
 //go:generate bbc game_login.bb game_login.bb.go

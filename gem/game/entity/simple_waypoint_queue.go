@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
@@ -58,7 +57,7 @@ func (q *SimpleWaypointQueue) Push(point *position.Absolute) {
 }
 
 // Tick advances the waypoint queue, and returns the next position of the mob
-func (q *SimpleWaypointQueue) Tick(mob entity.Movable) {
+func (q *SimpleWaypointQueue) Tick(mob Movable) {
 	if len(q.points) == 0 {
 		// Nothing to do
 		return

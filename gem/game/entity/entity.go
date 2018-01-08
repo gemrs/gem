@@ -22,6 +22,7 @@ type Entity interface {
 	Index() int
 }
 
+// A Movable is an entity which can move
 type Movable interface {
 	Entity
 	Flags() Flags

@@ -1,7 +1,6 @@
 package player
 
 import (
-	"github.com/gemrs/gem/gem/game/interface/player"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
@@ -14,7 +13,7 @@ type jsonPosition struct {
 type jsonProfile struct {
 	Username   string         `json:"username"`
 	Password   string         `json:"password"`
-	Rights     player.Rights  `json:"rights"`
+	Rights     Rights         `json:"rights"`
 	Position   jsonPosition   `json:"position"`
 	Skills     jsonSkills     `json:"skills"`
 	Appearance jsonAppearance `json:"appearance"`
@@ -61,19 +60,19 @@ func jsonObjForProfile(p *Profile) jsonProfile {
 			Gender:   appearance.Gender(),
 			HeadIcon: appearance.HeadIcon(),
 
-			TorsoModel: appearance.Model(player.Torso),
-			ArmsModel:  appearance.Model(player.Arms),
-			LegsModel:  appearance.Model(player.Legs),
-			HeadModel:  appearance.Model(player.Head),
-			HandsModel: appearance.Model(player.Hands),
-			FeetModel:  appearance.Model(player.Feet),
-			BeardModel: appearance.Model(player.Beard),
+			TorsoModel: appearance.Model(BodyPartTorso),
+			ArmsModel:  appearance.Model(BodyPartArms),
+			LegsModel:  appearance.Model(BodyPartLegs),
+			HeadModel:  appearance.Model(BodyPartHead),
+			HandsModel: appearance.Model(BodyPartHands),
+			FeetModel:  appearance.Model(BodyPartFeet),
+			BeardModel: appearance.Model(BodyPartBeard),
 
-			HairColor:  appearance.Color(player.Hair),
-			TorsoColor: appearance.Color(player.Torso),
-			LegsColor:  appearance.Color(player.Legs),
-			FeetColor:  appearance.Color(player.Feet),
-			SkinColor:  appearance.Color(player.Skin),
+			HairColor:  appearance.Color(BodyPartHair),
+			TorsoColor: appearance.Color(BodyPartTorso),
+			LegsColor:  appearance.Color(BodyPartLegs),
+			FeetColor:  appearance.Color(BodyPartFeet),
+			SkinColor:  appearance.Color(BodyPartSkin),
 		},
 	}
 
@@ -90,24 +89,24 @@ func jsonObjToProfile(p *Profile, js jsonProfile) {
 	p.setRights(js.Rights)
 	p.SetPosition(position.NewAbsolute(js.Position.X, js.Position.Y, js.Position.Z))
 
-	skills := p.Skills().(*Skills)
+	skills := p.Skills()
 	skills.SetCombatLevel(js.Skills.CombatLevel)
 
-	appearance := p.Appearance().(*Appearance)
+	appearance := p.Appearance()
 	appearance.SetGender(js.Appearance.Gender)
 	appearance.SetHeadIcon(js.Appearance.HeadIcon)
 
-	appearance.SetModel(player.Torso, js.Appearance.TorsoModel)
-	appearance.SetModel(player.Arms, js.Appearance.ArmsModel)
-	appearance.SetModel(player.Legs, js.Appearance.LegsModel)
-	appearance.SetModel(player.Head, js.Appearance.HeadModel)
-	appearance.SetModel(player.Hands, js.Appearance.HandsModel)
-	appearance.SetModel(player.Feet, js.Appearance.FeetModel)
-	appearance.SetModel(player.Beard, js.Appearance.BeardModel)
+	appearance.SetModel(BodyPartTorso, js.Appearance.TorsoModel)
+	appearance.SetModel(BodyPartArms, js.Appearance.ArmsModel)
+	appearance.SetModel(BodyPartLegs, js.Appearance.LegsModel)
+	appearance.SetModel(BodyPartHead, js.Appearance.HeadModel)
+	appearance.SetModel(BodyPartHands, js.Appearance.HandsModel)
+	appearance.SetModel(BodyPartFeet, js.Appearance.FeetModel)
+	appearance.SetModel(BodyPartBeard, js.Appearance.BeardModel)
 
-	appearance.SetColor(player.Hair, js.Appearance.HairColor)
-	appearance.SetColor(player.Torso, js.Appearance.TorsoColor)
-	appearance.SetColor(player.Legs, js.Appearance.LegsColor)
-	appearance.SetColor(player.Feet, js.Appearance.FeetColor)
-	appearance.SetColor(player.Skin, js.Appearance.SkinColor)
+	appearance.SetColor(BodyPartHair, js.Appearance.HairColor)
+	appearance.SetColor(BodyPartTorso, js.Appearance.TorsoColor)
+	appearance.SetColor(BodyPartLegs, js.Appearance.LegsColor)
+	appearance.SetColor(BodyPartFeet, js.Appearance.FeetColor)
+	appearance.SetColor(BodyPartSkin, js.Appearance.SkinColor)
 }

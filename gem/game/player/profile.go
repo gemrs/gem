@@ -5,18 +5,34 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/gemrs/gem/gem/game/interface/player"
+	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
+func (player *Player) LoadProfile() {
+	profile := player.Profile()
+	profile.setPlayer(player)
+	player.SetPosition(profile.Position())
+
+	game_event.PlayerLoadProfile.NotifyObservers(player, player.Profile())
+}
+
 //go:generate glua .
+
+type Rights int
+
+const (
+	RightsPlayer Rights = iota
+	RightsModerator
+	RightsAdmin
+)
 
 // Profile represents the saved state of a user
 //glua:bind
 type Profile struct {
 	username string
 	password string
-	rights   player.Rights
+	rights   Rights
 	position *position.Absolute
 
 	skills     *Skills
@@ -43,25 +59,17 @@ func (p *Profile) Username() string {
 	return p.username
 }
 
-func (p *Profile) setUsername(username string) {
-	p.username = username
-}
-
 //glua:bind
 func (p *Profile) Password() string {
 	return p.password
 }
 
-func (p *Profile) setPassword(password string) {
-	p.password = password
-}
-
 //glua:bind
-func (p *Profile) Rights() player.Rights {
+func (p *Profile) Rights() Rights {
 	return p.rights
 }
 
-func (p *Profile) setRights(rights player.Rights) {
+func (p *Profile) setRights(rights Rights) {
 	p.rights = rights
 }
 
@@ -74,11 +82,11 @@ func (p *Profile) SetPosition(pos *position.Absolute) {
 	p.position = pos
 }
 
-func (p *Profile) Skills() player.Skills {
+func (p *Profile) Skills() *Skills {
 	return p.skills
 }
 
-func (p *Profile) Appearance() player.Appearance {
+func (p *Profile) Appearance() *Appearance {
 	return p.appearance
 }
 

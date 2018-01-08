@@ -1,9 +1,7 @@
 //glua:bind module gem.game.auth
 package auth
 
-import (
-	"github.com/gemrs/gem/gem/game/interface/player"
-)
+import "github.com/gemrs/gem/gem/game/player"
 
 //go:generate stringer -type=AuthResponse
 //glua:bind
@@ -46,5 +44,5 @@ const (
 
 // Provider is a provider of authorization.
 type Provider interface {
-	LookupProfile(name, password string) (player.Profile, AuthResponse)
+	LookupProfile(name, password string) (*player.Profile, AuthResponse)
 }

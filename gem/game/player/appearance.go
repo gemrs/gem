@@ -1,7 +1,18 @@
 package player
 
-import (
-	"github.com/gemrs/gem/gem/game/interface/player"
+type BodyPart int
+
+const (
+	BodyPartTorso BodyPart = iota
+	BodyPartArms
+	BodyPartLegs
+	BodyPartHead
+	BodyPartHands
+	BodyPartFeet
+	BodyPartBeard
+	BodyPartHair
+	BodyPartSkin
+	BodyPartMax
 )
 
 type Appearance struct {
@@ -75,73 +86,73 @@ func (a *Appearance) SetHeadIcon(headIcon int) {
 	a.signalUpdate()
 }
 
-func (a *Appearance) Model(b player.BodyPart) int {
+func (a *Appearance) Model(b BodyPart) int {
 	switch b {
-	case player.Torso:
+	case BodyPartTorso:
 		return a.torsoModel
-	case player.Arms:
+	case BodyPartArms:
 		return a.armsModel
-	case player.Legs:
+	case BodyPartLegs:
 		return a.legsModel
-	case player.Head:
+	case BodyPartHead:
 		return a.headModel
-	case player.Hands:
+	case BodyPartHands:
 		return a.handsModel
-	case player.Feet:
+	case BodyPartFeet:
 		return a.feetModel
-	case player.Beard:
+	case BodyPartBeard:
 		return a.beardModel
 	}
 	return -1
 }
 
-func (a *Appearance) SetModel(b player.BodyPart, model int) {
+func (a *Appearance) SetModel(b BodyPart, model int) {
 	switch b {
-	case player.Torso:
+	case BodyPartTorso:
 		a.torsoModel = model
-	case player.Arms:
+	case BodyPartArms:
 		a.armsModel = model
-	case player.Legs:
+	case BodyPartLegs:
 		a.legsModel = model
-	case player.Head:
+	case BodyPartHead:
 		a.headModel = model
-	case player.Hands:
+	case BodyPartHands:
 		a.handsModel = model
-	case player.Feet:
+	case BodyPartFeet:
 		a.feetModel = model
-	case player.Beard:
+	case BodyPartBeard:
 		a.beardModel = model
 	}
 	a.signalUpdate()
 }
 
-func (a *Appearance) Color(b player.BodyPart) int {
+func (a *Appearance) Color(b BodyPart) int {
 	switch b {
-	case player.Hair:
+	case BodyPartHair:
 		return a.hairColor
-	case player.Torso:
+	case BodyPartTorso:
 		return a.torsoColor
-	case player.Legs:
+	case BodyPartLegs:
 		return a.legsColor
-	case player.Feet:
+	case BodyPartFeet:
 		return a.feetColor
-	case player.Skin:
+	case BodyPartSkin:
 		return a.skinColor
 	}
 	return -1
 }
 
-func (a *Appearance) SetColor(b player.BodyPart, color int) {
+func (a *Appearance) SetColor(b BodyPart, color int) {
 	switch b {
-	case player.Hair:
+	case BodyPartHair:
 		a.hairColor = color
-	case player.Torso:
+	case BodyPartTorso:
 		a.torsoColor = color
-	case player.Legs:
+	case BodyPartLegs:
 		a.legsColor = color
-	case player.Feet:
+	case BodyPartFeet:
 		a.feetColor = color
-	case player.Skin:
+	case BodyPartSkin:
 		a.skinColor = color
 	}
 	a.signalUpdate()

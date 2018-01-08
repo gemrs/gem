@@ -6,14 +6,12 @@ import (
 	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
 
 	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/game/entity"
 	entityimpl "github.com/gemrs/gem/gem/game/entity"
-	game_event "github.com/gemrs/gem/gem/game/event"
-	"github.com/gemrs/gem/gem/game/interface/entity"
-	"github.com/gemrs/gem/gem/game/interface/player"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
-	game_protocol "github.com/gemrs/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/protocol/game_protocol"
 )
 
 // GameClient is a client which serves players
@@ -25,7 +23,7 @@ type Player struct {
 	loadedRegion *position.Region
 
 	visibleEntities *entity.Collection
-	chatQueue       []*player.ChatMessage
+	chatQueue       []*ChatMessage
 
 	*server.Connection
 	*entityimpl.GenericMob
@@ -44,144 +42,87 @@ type Player struct {
 // NewGameClient constructs a new GameClient
 //glua:bind constructor Player
 func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
-	client := &Player{}
-	client.Connection = conn
-	client.world = worldInst
-	client.serverRandKey = []uint32{
+	player := &Player{}
+	player.Connection = conn
+	player.world = worldInst
+	player.serverRandKey = []uint32{
 		uint32(rand.Int31()), uint32(rand.Int31()),
 	}
 
 	nilPosition := position.NewAbsolute(0, 0, 0)
-	client.sector = worldInst.Sector(nilPosition.Sector())
-	client.loadedRegion = nilPosition.RegionOf()
+	player.sector = worldInst.Sector(nilPosition.Sector())
+	player.loadedRegion = nilPosition.RegionOf()
 
 	wpq := entityimpl.NewSimpleWaypointQueue()
-	client.GenericMob = entityimpl.NewGenericMob(wpq)
+	player.GenericMob = entityimpl.NewGenericMob(wpq)
 
-	client.visibleEntities = entity.NewCollection()
-	client.animations = NewAnimations()
-	client.index = entity.NextIndex()
-	client.clientConfig = NewClientConfig(client)
-	return client
+	player.visibleEntities = entity.NewCollection()
+	player.animations = NewAnimations()
+	player.index = entity.NextIndex()
+	player.clientConfig = NewClientConfig(player)
+	return player
 }
 
 //glua:bind
-func (client *Player) Index() int {
-	return client.index
+func (player *Player) Index() int {
+	return player.index
 }
 
 // EntityType identifies what kind of entity this entity is
-func (client *Player) EntityType() entity.EntityType {
+func (player *Player) EntityType() entity.EntityType {
 	return entity.PlayerType
 }
 
-func (client *Player) SetDecodeFunc(d DecodeFunc) {
-	client.decode = d
+func (player *Player) SetDecodeFunc(d DecodeFunc) {
+	player.decode = d
 }
 
-func (client *Player) SecureBlockSize() int {
-	return client.secureBlockSize
+func (player *Player) SecureBlockSize() int {
+	return player.secureBlockSize
 }
 
-func (client *Player) SetSecureBlockSize(size int) {
-	client.secureBlockSize = size
+func (player *Player) SetSecureBlockSize(size int) {
+	player.secureBlockSize = size
 }
 
-func (client *Player) LoadedRegion() *position.Region {
-	return client.loadedRegion
+func (player *Player) LoadedRegion() *position.Region {
+	return player.loadedRegion
 }
 
-func (client *Player) VisibleEntities() *entity.Collection {
-	return client.visibleEntities
+func (player *Player) VisibleEntities() *entity.Collection {
+	return player.visibleEntities
 }
 
-func (client *Player) Animations() player.Animations {
-	return client.animations
+func (player *Player) Animations() *Animations {
+	return player.animations
 }
 
 // Profile returns the player's profile
 //glua:bind
-func (client *Player) Profile() player.Profile {
-	return client.profile
+func (player *Player) Profile() *Profile {
+	return player.profile
 }
 
 // SetProfile sets the player's profile
-func (client *Player) SetProfile(profile player.Profile) {
-	client.profile = profile.(*Profile)
+func (player *Player) SetProfile(profile *Profile) {
+	player.profile = profile
 }
 
 // Appearance returns the player's appearance
-func (client *Player) Appearance() player.Appearance {
-	profile := client.Profile().(*Profile)
+func (player *Player) Appearance() *Appearance {
+	profile := player.Profile()
 	return profile.Appearance()
 }
 
 //glua:bind
-func (client *Player) ClientConfig() player.ClientConfig {
-	return client.clientConfig
-}
-
-// SendPlayerSync sends the player update block
-func (client *Player) SendPlayerSync() {
-	client.Conn().Write <- game_protocol.NewPlayerUpdateBlock(client)
-}
-
-// SendMessage puts a message to the player's chat window
-//glua:bind
-func (client *Player) SendMessage(message string) {
-	client.Conn().Write <- &game_protocol.OutboundChatMessage{
-		Message: encoding.JString(message),
-	}
-}
-
-func (client *Player) sendTabInterface(tab, id int) {
-	client.Conn().Write <- &game_protocol.OutboundTabInterface{
-		Tab:         encoding.Uint8(tab),
-		InterfaceID: encoding.Uint16(id),
-	}
-}
-
-// Ask the client to log out
-//glua:bind
-func (client *Player) SendForceLogout() {
-	client.Conn().Write <- &game_protocol.OutboundLogout{}
-}
-
-func (client *Player) AppendChatMessage(m *player.ChatMessage) {
-	client.chatQueue = append(client.chatQueue, m)
-	client.SetFlags(client.Flags() | entity.MobFlagChatUpdate)
-}
-
-func (client *Player) ChatMessageQueue() []*player.ChatMessage {
-	return client.chatQueue
-}
-
-func (client *Player) ProcessChatQueue() {
-	if len(client.chatQueue) > 0 {
-		client.chatQueue = client.chatQueue[1:]
-	}
-}
-
-func (client *Player) ClearFlags() {
-	client.GenericMob.ClearFlags()
-	// Don't clear the chat flag if there are still messages queued
-	if len(client.chatQueue) > 0 {
-		client.SetFlags(client.Flags() | entity.MobFlagChatUpdate)
-	}
-}
-
-func (client *Player) LoadProfile() {
-	profile := client.Profile().(*Profile)
-	profile.setPlayer(client)
-	client.SetPosition(profile.Position())
-
-	game_event.PlayerLoadProfile.NotifyObservers(client, client.Profile().(*Profile))
+func (player *Player) ClientConfig() *ClientConfig {
+	return player.clientConfig
 }
 
 // FinishInit is called once the player has finished the low level login sequence
-func (client *Player) FinishInit() {
-	client.Conn().Write <- &game_protocol.OutboundPlayerInit{
+func (player *Player) FinishInit() {
+	player.Conn().Write <- &game_protocol.OutboundPlayerInit{
 		Membership: encoding.Uint8(1),
-		Index:      encoding.Uint16(client.Index()),
+		Index:      encoding.Uint16(player.Index()),
 	}
 }

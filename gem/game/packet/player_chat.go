@@ -2,15 +2,15 @@ package packet
 
 import (
 	"github.com/gemrs/gem/gem/encoding"
-	"github.com/gemrs/gem/gem/game/interface/player"
-	game_protocol "github.com/gemrs/gem/gem/protocol/game"
+	"github.com/gemrs/gem/gem/game/player"
+	"github.com/gemrs/gem/gem/protocol/game_protocol"
 )
 
 func init() {
 	registerHandler((*game_protocol.InboundChatMessage)(nil), player_chat)
 }
 
-func player_chat(p player.Player, packet encoding.Decodable) {
+func player_chat(p *player.Player, packet encoding.Decodable) {
 	chatPacket := packet.(*game_protocol.InboundChatMessage)
 	data := ([]byte)(chatPacket.EncodedMessage)
 	size := len(data)

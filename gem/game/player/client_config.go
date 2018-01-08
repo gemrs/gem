@@ -18,23 +18,6 @@ const (
 	TabMusic
 )
 
-var allClientTabs = []int{
-	TabAttack,
-	TabSkills,
-	TabQuests,
-	TabInventory,
-	TabEquipment,
-	TabPrayer,
-	TabMagic,
-	TabUnused,
-	TabFriends,
-	TabIgnore,
-	TabLogout,
-	TabSettings,
-	TabRun,
-	TabMusic,
-}
-
 //glua:bind
 type ClientConfig struct {
 	player        *Player

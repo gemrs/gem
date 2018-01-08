@@ -1,28 +1,27 @@
 package entity
 
 import (
-	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
 type GenericMob struct {
-	waypointQueue entity.WaypointQueue
+	waypointQueue WaypointQueue
 	position      *position.Absolute
-	flags         entity.Flags
+	flags         Flags
 }
 
-func NewGenericMob(wpq entity.WaypointQueue) *GenericMob {
+func NewGenericMob(wpq WaypointQueue) *GenericMob {
 	return &GenericMob{
 		waypointQueue: wpq,
 	}
 }
 
 func (mob *GenericMob) SetNextStep(next *position.Absolute) {
-	if (mob.flags & entity.MobFlagWalkUpdate) != 0 { // Called twice in one cycle - mob is running
-		mob.flags &= ^entity.MobFlagWalkUpdate
-		mob.flags |= entity.MobFlagRunUpdate
+	if (mob.flags & MobFlagWalkUpdate) != 0 { // Called twice in one cycle - mob is running
+		mob.flags &= ^MobFlagWalkUpdate
+		mob.flags |= MobFlagRunUpdate
 	} else {
-		mob.flags |= entity.MobFlagWalkUpdate
+		mob.flags |= MobFlagWalkUpdate
 	}
 }
 
@@ -32,12 +31,12 @@ func (mob *GenericMob) Position() *position.Absolute {
 }
 
 // Flags returns the mob update flags for this mob
-func (mob *GenericMob) Flags() entity.Flags {
+func (mob *GenericMob) Flags() Flags {
 	return mob.flags
 }
 
 // SetFlags ORs the given flags with the player's current update flags
-func (mob *GenericMob) SetFlags(f entity.Flags) {
+func (mob *GenericMob) SetFlags(f Flags) {
 	mob.flags |= f
 }
 
@@ -53,14 +52,14 @@ func (mob *GenericMob) SetPosition(pos *position.Absolute) {
 // AppearanceUpdate is called when the player's appearance changes
 // It ensures the player's appearance is synced at next update
 func (mob *GenericMob) SetAppearanceChanged() {
-	mob.SetFlags(entity.MobFlagIdentityUpdate)
+	mob.SetFlags(MobFlagIdentityUpdate)
 }
 
-func (mob *GenericMob) WaypointQueue() entity.WaypointQueue {
+func (mob *GenericMob) WaypointQueue() WaypointQueue {
 	return mob.waypointQueue
 }
 
 // EntityType identifies what kind of entity this entity is
-func (mob *GenericMob) EntityType() entity.EntityType {
-	return entity.IncompleteType
+func (mob *GenericMob) EntityType() EntityType {
+	return IncompleteType
 }
