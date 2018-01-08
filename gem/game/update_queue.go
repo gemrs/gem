@@ -1,8 +1,8 @@
 package game
 
 import (
+	"github.com/gemrs/gem/gem/protocol/update_protocol"
 	"github.com/gemrs/willow/log"
-	update_protocol "github.com/gemrs/gem/gem/protocol/update"
 )
 
 // An queueItem is something we manage in a priority queue.

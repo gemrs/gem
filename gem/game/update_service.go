@@ -4,7 +4,7 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/protocol"
-	update_protocol "github.com/gemrs/gem/gem/protocol/update"
+	"github.com/gemrs/gem/gem/protocol/update_protocol"
 	"github.com/gemrs/gem/gem/runite"
 )
 
