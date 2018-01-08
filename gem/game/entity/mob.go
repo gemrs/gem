@@ -52,7 +52,7 @@ func (mob *GenericMob) SetPosition(pos *position.Absolute) {
 
 // AppearanceUpdate is called when the player's appearance changes
 // It ensures the player's appearance is synced at next update
-func (mob *GenericMob) AppearanceChange() {
+func (mob *GenericMob) SetAppearanceChanged() {
 	mob.SetFlags(entity.MobFlagIdentityUpdate)
 }
 
@@ -63,12 +63,4 @@ func (mob *GenericMob) WaypointQueue() entity.WaypointQueue {
 // EntityType identifies what kind of entity this entity is
 func (mob *GenericMob) EntityType() entity.EntityType {
 	return entity.IncompleteType
-}
-
-func (mob *GenericMob) SectorChange() {
-	panic("not implemented")
-}
-
-func (mob *GenericMob) RegionChange() {
-	panic("not implemented")
 }

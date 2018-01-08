@@ -7,6 +7,50 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
+type InboundServiceSelect struct {
+	Service encoding.Uint8
+}
+
+func (struc *InboundServiceSelect) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Service.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Service.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type InboundGameHandshake struct {
+	NameHash encoding.Uint8
+}
+
+func (struc *InboundGameHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.NameHash.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *InboundGameHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.NameHash.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 type OutboundGameHandshake struct {
 	ignored         [8]encoding.Uint8
 	loginRequest    encoding.Uint8
@@ -80,50 +124,6 @@ func (struc *OutboundUpdateHandshake) Decode(buf io.Reader, flags interface{}) (
 		if err != nil {
 			return err
 		}
-	}
-
-	return err
-}
-
-type InboundServiceSelect struct {
-	Service encoding.Uint8
-}
-
-func (struc *InboundServiceSelect) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Service.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Service.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-type InboundGameHandshake struct {
-	NameHash encoding.Uint8
-}
-
-func (struc *InboundGameHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.NameHash.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *InboundGameHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.NameHash.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
 	}
 
 	return err

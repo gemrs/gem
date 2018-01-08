@@ -1,5 +1,5 @@
 //glua:bind module gem.game.event
-package game_events
+package game_event
 
 import (
 	"github.com/gemrs/gem/gem/event"
@@ -9,11 +9,7 @@ import (
 
 //glua:bind
 var (
-	PlayerLoadProfile      = event.NewEvent("PlayerLoadProfile")
-	PlayerLogin            = event.NewEvent("PlayerLogin")
-	PlayerLogout           = event.NewEvent("PlayerLogout")
-	PlayerFinishLogin      = event.NewEvent("PlayerFinishLogin")
-	EntitySectorChange     = event.NewEvent("EntitySectorChange")
-	EntityRegionChange     = event.NewEvent("EntityRegionChange")
-	PlayerAppearanceUpdate = event.NewEvent("PlayerAppearanceUpdate")
+	PlayerLoadProfile = event.NewEvent("PlayerLoadProfile")
+	PlayerLogin       = event.NewEvent("PlayerLogin")
+	PlayerLogout      = event.NewEvent("PlayerLogout")
 )

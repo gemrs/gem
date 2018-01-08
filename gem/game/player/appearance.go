@@ -53,7 +53,7 @@ func (a *Appearance) setPlayer(p *Player) {
 
 func (a *Appearance) signalUpdate() {
 	if a.player != nil {
-		a.player.AppearanceUpdated()
+		a.player.SetAppearanceChanged()
 	}
 }
 

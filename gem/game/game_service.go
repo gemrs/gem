@@ -8,7 +8,6 @@ import (
 	"github.com/gemrs/gem/gem/crypto"
 	engine_event "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/event"
-	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/interface/entity"
 	"github.com/gemrs/gem/gem/game/interface/player"
 	"github.com/gemrs/gem/gem/game/packet"
@@ -50,26 +49,8 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 		world:        world.NewInstance(),
 	}
 
-	game_event.PlayerFinishLogin.Register(event.NewObserver(svc, playerFinishLogin))
-	game_event.PlayerLogout.Register(event.NewObserver(svc, playerCleanup))
-	game_event.EntityRegionChange.Register(event.NewObserver(svc, svc.EntityUpdate))
-	game_event.EntitySectorChange.Register(event.NewObserver(svc, svc.EntityUpdate))
-	game_event.PlayerAppearanceUpdate.Register(event.NewObserver(svc, svc.PlayerUpdate))
-
 	engine_event.Tick.Register(event.NewObserver(svc, svc.PlayerTick))
 	return svc
-}
-
-// playerFinishLogin calls player.FinishInit on the PlayerFinishLogin event
-func playerFinishLogin(_ *event.Event, args ...interface{}) {
-	client := args[0].(player.Player)
-	client.FinishInit()
-}
-
-// playerCleanup calls player.Cleanup on the PlayerLogout event
-func playerCleanup(_ *event.Event, args ...interface{}) {
-	client := args[0].(player.Player)
-	client.Cleanup()
 }
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
@@ -93,6 +74,9 @@ func doForAllPlayers(entities []entity.Entity, fn func(*playerimpl.Player)) {
 func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 	allPlayers := svc.world.AllEntities(entity.PlayerType)
 
+	// Ordering is important here. We want to run these things in this specific order,
+	// and 'concurrently' (albeit in a single thread) for each player. ie. All waypoint
+	// queues are updated for all players before syncing entity lists.
 	doForAllPlayers(allPlayers, (*playerimpl.Player).UpdateWaypointQueue)
 	doForAllPlayers(allPlayers, (*playerimpl.Player).SyncEntityList)
 	doForAllPlayers(allPlayers, (*playerimpl.Player).SendPlayerSync)
@@ -100,34 +84,6 @@ func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 	doForAllPlayers(allPlayers, (*playerimpl.Player).ProcessChatQueue)
 	doForAllPlayers(allPlayers, (*playerimpl.Player).ClearFlags)
 	svc.world.UpdateEntityCollections()
-}
-
-func (svc *GameService) EntityUpdate(ev *event.Event, _args ...interface{}) {
-	if len(_args) < 1 {
-		panic("invalid args length")
-	}
-
-	args := _args[0].(map[string]interface{})
-	entity := args["entity"].(entity.Entity)
-	switch ev {
-	case game_event.EntityRegionChange:
-		entity.RegionChange()
-	case game_event.EntitySectorChange:
-		entity.SectorChange()
-	}
-}
-
-func (svc *GameService) PlayerUpdate(ev *event.Event, _args ...interface{}) {
-	if len(_args) < 1 {
-		panic("invalid args length")
-	}
-
-	args := _args[0].(map[string]interface{})
-	player := args["entity"].(player.Player)
-	switch ev {
-	case game_event.PlayerAppearanceUpdate:
-		player.AppearanceChange()
-	}
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator

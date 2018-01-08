@@ -70,40 +70,13 @@ func (client *Player) Index() int {
 	return client.index
 }
 
+// EntityType identifies what kind of entity this entity is
+func (client *Player) EntityType() entity.EntityType {
+	return entity.PlayerType
+}
+
 func (client *Player) SetDecodeFunc(d player.DecodeFunc) {
 	client.decode = d
-}
-
-// Conn returns the underlying Connection
-func (client *Player) Conn() *server.Connection {
-	return client.Connection
-}
-
-// Encode writes encoding.Encodables to the client's buffer using the outbound rand generator
-func (client *Player) Encode(codable encoding.Encodable) error {
-	return codable.Encode(client.Conn().WriteBuffer, client.ISAACOut())
-}
-
-// Decode processes incoming packets and adds them to the read queue
-func (client *Player) Decode() error {
-	return client.decode(client)
-}
-
-func (client *Player) ServerISAACSeed() []uint32 {
-	return client.serverRandKey
-}
-
-func (client *Player) InitISAAC(inSeed, outSeed []uint32) {
-	client.randIn.SeedArray(inSeed)
-	client.randOut.SeedArray(outSeed)
-}
-
-func (client *Player) ISAACIn() *isaac.ISAAC {
-	return &client.randIn
-}
-
-func (client *Player) ISAACOut() *isaac.ISAAC {
-	return &client.randOut
 }
 
 func (client *Player) SecureBlockSize() int {
@@ -148,19 +121,9 @@ func (client *Player) ClientConfig() player.ClientConfig {
 	return client.clientConfig
 }
 
-func (client *Player) tabInterfaceUpdated(tab, id int) {
-	client.Conn().Write <- &game_protocol.OutboundTabInterface{
-		Tab:         encoding.Uint8(tab),
-		InterfaceID: encoding.Uint16(id),
-	}
-}
-
-// AppearanceUpdated signals that the player's appearance should be re-synchronized
-func (client *Player) AppearanceUpdated() {
-	eventArgs := map[string]interface{}{
-		"entity": client,
-	}
-	game_event.PlayerAppearanceUpdate.NotifyObservers(eventArgs)
+// SendPlayerSync sends the player update block
+func (client *Player) SendPlayerSync() {
+	client.Conn().Write <- game_protocol.NewPlayerUpdateBlock(client)
 }
 
 // SendMessage puts a message to the player's chat window
@@ -171,44 +134,17 @@ func (client *Player) SendMessage(message string) {
 	}
 }
 
+func (client *Player) sendTabInterface(tab, id int) {
+	client.Conn().Write <- &game_protocol.OutboundTabInterface{
+		Tab:         encoding.Uint8(tab),
+		InterfaceID: encoding.Uint16(id),
+	}
+}
+
 // Ask the client to log out
 //glua:bind
-func (client *Player) ForceLogout() {
+func (client *Player) SendForceLogout() {
 	client.Conn().Write <- &game_protocol.OutboundLogout{}
-}
-
-func (client *Player) SetNextStep(next *position.Absolute) {
-	client.SetPosition(next)
-	client.GenericMob.SetNextStep(next)
-}
-
-// SetPosition warps the mob to a given location
-func (client *Player) SetPosition(pos *position.Absolute) {
-	oldSector := client.sector.Position()
-	client.GenericMob.SetPosition(pos)
-
-	dx, dy, dz := oldSector.Delta(pos.Sector())
-
-	eventArgs := map[string]interface{}{
-		"entity":   client,
-		"position": pos,
-	}
-
-	if dx >= 1 || dy >= 1 || dz >= 1 {
-		game_event.EntitySectorChange.NotifyObservers(eventArgs)
-	}
-
-	loadedRegion := client.LoadedRegion()
-	dx, dy, dz = loadedRegion.SectorDelta(pos.RegionOf())
-
-	if dx >= 5 || dy >= 5 || dz >= 1 {
-		game_event.EntityRegionChange.NotifyObservers(eventArgs)
-	}
-}
-
-// EntityType identifies what kind of entity this entity is
-func (client *Player) EntityType() entity.EntityType {
-	return entity.PlayerType
 }
 
 func (client *Player) AppendChatMessage(m *player.ChatMessage) {
@@ -220,10 +156,32 @@ func (client *Player) ChatMessageQueue() []*player.ChatMessage {
 	return client.chatQueue
 }
 
+func (client *Player) ProcessChatQueue() {
+	if len(client.chatQueue) > 0 {
+		client.chatQueue = client.chatQueue[1:]
+	}
+}
+
 func (client *Player) ClearFlags() {
 	client.GenericMob.ClearFlags()
 	// Don't clear the chat flag if there are still messages queued
 	if len(client.chatQueue) > 0 {
 		client.SetFlags(client.Flags() | entity.MobFlagChatUpdate)
+	}
+}
+
+func (client *Player) LoadProfile() {
+	profile := client.Profile().(*Profile)
+	profile.setPlayer(client)
+	client.SetPosition(profile.Position())
+
+	game_event.PlayerLoadProfile.NotifyObservers(client, client.Profile().(*Profile))
+}
+
+// FinishInit is called once the player has finished the low level login sequence
+func (client *Player) FinishInit() {
+	client.Conn().Write <- &game_protocol.OutboundPlayerInit{
+		Membership: encoding.Uint8(1),
+		Index:      encoding.Uint16(client.Index()),
 	}
 }

@@ -18,7 +18,7 @@ func (s *Skills) setPlayer(p *Player) {
 func (s *Skills) signalUpdate() {
 	if s.player != nil {
 		// Combat level is technically part of the player's appearance
-		s.player.AppearanceUpdated()
+		s.player.SetAppearanceChanged()
 	}
 }
 

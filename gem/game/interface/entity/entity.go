@@ -19,8 +19,6 @@ const (
 type Entity interface {
 	position.Positionable
 	EntityType() EntityType
-	RegionChange()
-	SectorChange()
 	Index() int
 }
 
@@ -30,6 +28,5 @@ type Movable interface {
 	SetFlags(Flags)
 	ClearFlags()
 	SetNextStep(*position.Absolute)
-	AppearanceChange()
 	WaypointQueue() WaypointQueue
 }

@@ -140,11 +140,11 @@ var PlayerMethods = map[string]lua.LGFunction{
 
 	"client_config": lBindPlayerClientConfig,
 
-	"force_logout": lBindPlayerForceLogout,
-
 	"index": lBindPlayerIndex,
 
 	"profile": lBindPlayerProfile,
+
+	"send_force_logout": lBindPlayerSendForceLogout,
 
 	"send_message": lBindPlayerSendMessage,
 }
@@ -155,14 +155,6 @@ func lBindPlayerClientConfig(L *lua.LState) int {
 	retVal := self.ClientConfig()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
-
-}
-
-func lBindPlayerForceLogout(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*Player)
-	L.Remove(1)
-	self.ForceLogout()
-	return 0
 
 }
 
@@ -181,6 +173,14 @@ func lBindPlayerProfile(L *lua.LState) int {
 	retVal := self.Profile()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
+
+}
+
+func lBindPlayerSendForceLogout(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Player)
+	L.Remove(1)
+	self.SendForceLogout()
+	return 0
 
 }
 

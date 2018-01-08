@@ -57,5 +57,5 @@ func (c *ClientConfig) TabInterface(id int) int {
 //glua:bind
 func (c *ClientConfig) SetTabInterface(tab int, id int) {
 	c.TabInterfaces[tab] = id
-	c.player.tabInterfaceUpdated(tab, id)
+	c.player.sendTabInterface(tab, id)
 }

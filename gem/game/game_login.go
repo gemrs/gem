@@ -97,9 +97,9 @@ func (svc *GameService) doLogin(client player.Player, username, password string)
 	client.SetDecodeFunc(svc.decodePacket)
 	go svc.packetConsumer(client)
 
-	game_event.PlayerLogin.NotifyObservers(client)
 	client.LoadProfile()
-	game_event.PlayerFinishLogin.NotifyObservers(client)
+	client.FinishInit()
+	game_event.PlayerLogin.NotifyObservers(client)
 
 	go func() {
 		client.Conn().WaitForDisconnect()
