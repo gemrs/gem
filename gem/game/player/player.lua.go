@@ -18,12 +18,97 @@ func Bindplayer(L *lua.LState) {
 func lBindplayer(L *lua.LState) int {
 	mod := L.NewTable()
 
+	lBindClientConfig(L, mod)
+
 	lBindPlayer(L, mod)
 
 	lBindProfile(L, mod)
 
+	L.SetField(mod, "tab_attack", glua.ToLua(L, TabAttack))
+
+	L.SetField(mod, "tab_equipment", glua.ToLua(L, TabEquipment))
+
+	L.SetField(mod, "tab_friends", glua.ToLua(L, TabFriends))
+
+	L.SetField(mod, "tab_ignore", glua.ToLua(L, TabIgnore))
+
+	L.SetField(mod, "tab_inventory", glua.ToLua(L, TabInventory))
+
+	L.SetField(mod, "tab_logout", glua.ToLua(L, TabLogout))
+
+	L.SetField(mod, "tab_magic", glua.ToLua(L, TabMagic))
+
+	L.SetField(mod, "tab_music", glua.ToLua(L, TabMusic))
+
+	L.SetField(mod, "tab_prayer", glua.ToLua(L, TabPrayer))
+
+	L.SetField(mod, "tab_quests", glua.ToLua(L, TabQuests))
+
+	L.SetField(mod, "tab_run", glua.ToLua(L, TabRun))
+
+	L.SetField(mod, "tab_settings", glua.ToLua(L, TabSettings))
+
+	L.SetField(mod, "tab_skills", glua.ToLua(L, TabSkills))
+
+	L.SetField(mod, "tab_unused", glua.ToLua(L, TabUnused))
+
 	L.Push(mod)
 	return 1
+}
+
+func lBindClientConfig(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("player.ClientConfig")
+	L.SetField(mt, "__call", L.NewFunction(lNewClientConfig))
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ClientConfigMethods))
+
+	cls := L.NewUserData()
+	L.SetField(mod, "ClientConfig", cls)
+	L.SetMetatable(cls, mt)
+	glua.RegisterType("player.ClientConfig", mt)
+}
+
+func lNewClientConfig(L *lua.LState) int {
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(*Player)
+	L.Remove(1)
+	retVal := NewClientConfig(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+var ClientConfigMethods = map[string]lua.LGFunction{
+
+	"set_tab_interface": lBindClientConfigSetTabInterface,
+
+	"tab_interface": lBindClientConfigTabInterface,
+}
+
+func lBindClientConfigSetTabInterface(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*ClientConfig)
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(int)
+	L.Remove(1)
+	arg1Value := L.Get(1)
+	arg1 := glua.FromLua(arg1Value).(int)
+	L.Remove(1)
+	self.SetTabInterface(arg0, arg1)
+	return 0
+
+}
+
+func lBindClientConfigTabInterface(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*ClientConfig)
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(int)
+	L.Remove(1)
+	retVal := self.TabInterface(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
 }
 
 func lBindPlayer(L *lua.LState, mod *lua.LTable) {
@@ -53,11 +138,32 @@ func lNewPlayer(L *lua.LState) int {
 
 var PlayerMethods = map[string]lua.LGFunction{
 
+	"client_config": lBindPlayerClientConfig,
+
+	"force_logout": lBindPlayerForceLogout,
+
 	"index": lBindPlayerIndex,
 
 	"profile": lBindPlayerProfile,
 
 	"send_message": lBindPlayerSendMessage,
+}
+
+func lBindPlayerClientConfig(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Player)
+	L.Remove(1)
+	retVal := self.ClientConfig()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindPlayerForceLogout(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Player)
+	L.Remove(1)
+	self.ForceLogout()
+	return 0
+
 }
 
 func lBindPlayerIndex(L *lua.LState) int {

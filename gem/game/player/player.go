@@ -36,8 +36,9 @@ type Player struct {
 	serverRandKey   []uint32
 	secureBlockSize int
 
-	animations *Animations
-	profile    *Profile
+	animations   *Animations
+	profile      *Profile
+	clientConfig *ClientConfig
 }
 
 // NewGameClient constructs a new GameClient
@@ -60,6 +61,7 @@ func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
 	client.visibleEntities = entity.NewCollection()
 	client.animations = NewAnimations()
 	client.index = entity.NextIndex()
+	client.clientConfig = NewClientConfig(client)
 	return client
 }
 
@@ -146,6 +148,18 @@ func (client *Player) SetAppearance(a player.Appearance) {
 	profile := client.Profile().(*Profile)
 	profile.SetAppearance(a)
 	client.AppearanceUpdated()
+}
+
+//glua:bind
+func (client *Player) ClientConfig() player.ClientConfig {
+	return client.clientConfig
+}
+
+func (client *Player) tabInterfaceUpdated(tab, id int) {
+	client.Conn().Write <- &game_protocol.OutboundTabInterface{
+		Tab:         encoding.Uint8(tab),
+		InterfaceID: encoding.Uint16(id),
+	}
 }
 
 // AppearanceUpdated signals that the player's appearance should be re-synchronized

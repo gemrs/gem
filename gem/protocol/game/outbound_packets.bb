@@ -22,7 +22,7 @@ type OutboundPlayerChatMessage struct {
 /* Set tab interface */
 type OutboundTabInterface frame<71, Fixed> struct {
 	InterfaceID uint16
-	Icon        uint8<IntOffset128>
+	Tab         uint8<IntOffset128>
 }
 
 /* Set skill */

@@ -26,6 +26,7 @@ type Player interface {
 	Cleanup()
 	LoadedRegion() *position.Region
 	VisibleEntities() *entity.Collection
+	ClientConfig() ClientConfig
 
 	ChatMessageQueue() []*ChatMessage
 	AppendChatMessage(*ChatMessage)
