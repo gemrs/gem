@@ -19,3 +19,6 @@ game_event.player_login\register event.Func (event, player) ->
   config\set_tab_interface(game_player.tab_settings, 4445)
   config\set_tab_interface(game_player.tab_run, 147)
   config\set_tab_interface(game_player.tab_music, 6299)
+
+  hitpoints = player\profile!\skills!\skill(game_player.skill_hitpoints)
+  hitpoints\experience(1154)

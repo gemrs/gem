@@ -46,7 +46,9 @@ func lBind{{.Name}}(L *lua.LState) int {
 {{range $typeName, $typ := .Types}}
 func lBind{{$typeName}}(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("{{$modName}}.{{$typeName}}")
+{{with $typ.Constructor}}
 	L.SetField(mt, "__call", L.NewFunction(lNew{{$typeName}}))
+{{end}}
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), {{$typeName}}Methods))
 
 	cls := L.NewUserData()

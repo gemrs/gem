@@ -23,7 +23,9 @@ func lBindrunite(L *lua.LState) int {
 
 func lBindContext(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("runite.Context")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewContext))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ContextMethods))
 
 	cls := L.NewUserData()

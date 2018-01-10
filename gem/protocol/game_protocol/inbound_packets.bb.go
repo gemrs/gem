@@ -7,6 +7,19 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
+type anonymous_inbound_packets_bb_0 struct {
+}
+
+func (struc *anonymous_inbound_packets_bb_0) Encode(buf io.Writer, flags interface{}) (err error) {
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_0) Decode(buf io.Reader, flags interface{}) (err error) {
+
+	return err
+}
+
 type InboundPing anonymous_inbound_packets_bb_0
 
 var InboundPingDefinition = encoding.PacketHeader{
@@ -105,17 +118,4 @@ func (frm *InboundChatMessage) Decode(buf io.Reader, flags interface{}) (err err
 		Object: struc,
 	}
 	return hdr.Decode(buf, flags)
-}
-
-type anonymous_inbound_packets_bb_0 struct {
-}
-
-func (struc *anonymous_inbound_packets_bb_0) Encode(buf io.Writer, flags interface{}) (err error) {
-
-	return err
-}
-
-func (struc *anonymous_inbound_packets_bb_0) Decode(buf io.Reader, flags interface{}) (err error) {
-
-	return err
 }

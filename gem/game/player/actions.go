@@ -19,6 +19,16 @@ func (player *Player) SendMessage(message string) {
 	}
 }
 
+// SendMessage puts a message to the player's chat window
+//glua:bind
+func (player *Player) sendSkill(id, level, experience int) {
+	player.Conn().Write <- &game_protocol.OutboundSkill{
+		Skill:      encoding.Uint8(id),
+		Level:      encoding.Uint8(level),
+		Experience: encoding.Uint32(experience),
+	}
+}
+
 func (player *Player) sendTabInterface(tab, id int) {
 	player.Conn().Write <- &game_protocol.OutboundTabInterface{
 		Tab:         encoding.Uint8(tab),

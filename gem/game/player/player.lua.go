@@ -24,6 +24,54 @@ func lBindplayer(L *lua.LState) int {
 
 	lBindProfile(L, mod)
 
+	lBindSkill(L, mod)
+
+	lBindSkillId(L, mod)
+
+	lBindSkills(L, mod)
+
+	L.SetField(mod, "skill_agility", glua.ToLua(L, SkillAgility))
+
+	L.SetField(mod, "skill_attack", glua.ToLua(L, SkillAttack))
+
+	L.SetField(mod, "skill_cooking", glua.ToLua(L, SkillCooking))
+
+	L.SetField(mod, "skill_crafting", glua.ToLua(L, SkillCrafting))
+
+	L.SetField(mod, "skill_defence", glua.ToLua(L, SkillDefence))
+
+	L.SetField(mod, "skill_farming", glua.ToLua(L, SkillFarming))
+
+	L.SetField(mod, "skill_firemaking", glua.ToLua(L, SkillFiremaking))
+
+	L.SetField(mod, "skill_fishing", glua.ToLua(L, SkillFishing))
+
+	L.SetField(mod, "skill_fletching", glua.ToLua(L, SkillFletching))
+
+	L.SetField(mod, "skill_herblore", glua.ToLua(L, SkillHerblore))
+
+	L.SetField(mod, "skill_hitpoints", glua.ToLua(L, SkillHitpoints))
+
+	L.SetField(mod, "skill_magic", glua.ToLua(L, SkillMagic))
+
+	L.SetField(mod, "skill_mining", glua.ToLua(L, SkillMining))
+
+	L.SetField(mod, "skill_prayer", glua.ToLua(L, SkillPrayer))
+
+	L.SetField(mod, "skill_range", glua.ToLua(L, SkillRange))
+
+	L.SetField(mod, "skill_runecrafting", glua.ToLua(L, SkillRunecrafting))
+
+	L.SetField(mod, "skill_slayer", glua.ToLua(L, SkillSlayer))
+
+	L.SetField(mod, "skill_smithing", glua.ToLua(L, SkillSmithing))
+
+	L.SetField(mod, "skill_strength", glua.ToLua(L, SkillStrength))
+
+	L.SetField(mod, "skill_thieving", glua.ToLua(L, SkillThieving))
+
+	L.SetField(mod, "skill_woodcutting", glua.ToLua(L, SkillWoodcutting))
+
 	L.SetField(mod, "tab_attack", glua.ToLua(L, TabAttack))
 
 	L.SetField(mod, "tab_equipment", glua.ToLua(L, TabEquipment))
@@ -58,7 +106,9 @@ func lBindplayer(L *lua.LState) int {
 
 func lBindClientConfig(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("player.ClientConfig")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewClientConfig))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ClientConfigMethods))
 
 	cls := L.NewUserData()
@@ -113,7 +163,9 @@ func lBindClientConfigTabInterface(L *lua.LState) int {
 
 func lBindPlayer(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("player.Player")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewPlayer))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), PlayerMethods))
 
 	cls := L.NewUserData()
@@ -142,11 +194,15 @@ var PlayerMethods = map[string]lua.LGFunction{
 
 	"index": lBindPlayerIndex,
 
+	"logger": lBindPlayerLogger,
+
 	"profile": lBindPlayerProfile,
 
 	"send_force_logout": lBindPlayerSendForceLogout,
 
 	"send_message": lBindPlayerSendMessage,
+
+	"send_skill": lBindPlayersendSkill,
 }
 
 func lBindPlayerClientConfig(L *lua.LState) int {
@@ -162,6 +218,15 @@ func lBindPlayerIndex(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Player)
 	L.Remove(1)
 	retVal := self.Index()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindPlayerLogger(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Player)
+	L.Remove(1)
+	retVal := self.Logger()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 
@@ -195,9 +260,28 @@ func lBindPlayerSendMessage(L *lua.LState) int {
 
 }
 
+func lBindPlayersendSkill(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Player)
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(int)
+	L.Remove(1)
+	arg1Value := L.Get(1)
+	arg1 := glua.FromLua(arg1Value).(int)
+	L.Remove(1)
+	arg2Value := L.Get(1)
+	arg2 := glua.FromLua(arg2Value).(int)
+	L.Remove(1)
+	self.sendSkill(arg0, arg1, arg2)
+	return 0
+
+}
+
 func lBindProfile(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("player.Profile")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewProfile))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ProfileMethods))
 
 	cls := L.NewUserData()
@@ -226,6 +310,8 @@ var ProfileMethods = map[string]lua.LGFunction{
 
 	"rights": lBindProfileRights,
 
+	"skills": lBindProfileSkills,
+
 	"username": lBindProfileUsername,
 
 	"position": lBindPropProfilePosition,
@@ -249,6 +335,15 @@ func lBindProfileRights(L *lua.LState) int {
 
 }
 
+func lBindProfileSkills(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Profile)
+	L.Remove(1)
+	retVal := self.Skills()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
 func lBindProfileUsername(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Profile)
 	L.Remove(1)
@@ -266,5 +361,160 @@ func lBindPropProfilePosition(L *lua.LState) int {
 		return 0
 	}
 	L.Push(glua.ToLua(L, self.Position()))
+	return 1
+}
+
+func lBindSkill(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("player.Skill")
+
+	L.SetField(mt, "__call", L.NewFunction(lNewSkill))
+
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), SkillMethods))
+
+	cls := L.NewUserData()
+	L.SetField(mod, "Skill", cls)
+	L.SetMetatable(cls, mt)
+	glua.RegisterType("player.Skill", mt)
+}
+
+func lNewSkill(L *lua.LState) int {
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(SkillId)
+	L.Remove(1)
+	arg1Value := L.Get(1)
+	arg1 := glua.FromLua(arg1Value).(int)
+	L.Remove(1)
+	retVal := NewSkill(arg0, arg1)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+var SkillMethods = map[string]lua.LGFunction{
+
+	"effective_level": lBindSkillEffectiveLevel,
+
+	"maximum_level": lBindSkillMaximumLevel,
+
+	"experience": lBindPropSkillExperience,
+
+	"level_offset": lBindPropSkillLevelOffset,
+
+	"level_percentage": lBindPropSkillLevelPercentage,
+}
+
+func lBindSkillEffectiveLevel(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Skill)
+	L.Remove(1)
+	retVal := self.EffectiveLevel()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindSkillMaximumLevel(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Skill)
+	L.Remove(1)
+	retVal := self.MaximumLevel()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindPropSkillExperience(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Skill)
+	if L.GetTop() == 2 {
+		val := glua.FromLua(L.Get(2)).(int)
+		self.SetExperience(val)
+		return 0
+	}
+	L.Push(glua.ToLua(L, self.Experience()))
+	return 1
+}
+
+func lBindPropSkillLevelOffset(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Skill)
+	if L.GetTop() == 2 {
+		val := glua.FromLua(L.Get(2)).(int)
+		self.SetLevelOffset(val)
+		return 0
+	}
+	L.Push(glua.ToLua(L, self.LevelOffset()))
+	return 1
+}
+
+func lBindPropSkillLevelPercentage(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Skill)
+	if L.GetTop() == 2 {
+		val := glua.FromLua(L.Get(2)).(int)
+		self.SetLevelPercentage(val)
+		return 0
+	}
+	L.Push(glua.ToLua(L, self.LevelPercentage()))
+	return 1
+}
+
+func lBindSkillId(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("player.SkillId")
+
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), SkillIdMethods))
+
+	cls := L.NewUserData()
+	L.SetField(mod, "SkillId", cls)
+	L.SetMetatable(cls, mt)
+	glua.RegisterType("player.SkillId", mt)
+}
+
+var SkillIdMethods = map[string]lua.LGFunction{}
+
+func lBindSkills(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("player.Skills")
+
+	L.SetField(mt, "__call", L.NewFunction(lNewSkills))
+
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), SkillsMethods))
+
+	cls := L.NewUserData()
+	L.SetField(mod, "Skills", cls)
+	L.SetMetatable(cls, mt)
+	glua.RegisterType("player.Skills", mt)
+}
+
+func lNewSkills(L *lua.LState) int {
+	L.Remove(1)
+	retVal := NewSkills()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+var SkillsMethods = map[string]lua.LGFunction{
+
+	"skill": lBindSkillsSkill,
+
+	"combat_level": lBindPropSkillsCombatLevel,
+}
+
+func lBindSkillsSkill(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Skills)
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(SkillId)
+	L.Remove(1)
+	retVal := self.Skill(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindPropSkillsCombatLevel(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Skills)
+	if L.GetTop() == 2 {
+		val := glua.FromLua(L.Get(2)).(int)
+		self.SetCombatLevel(val)
+		return 0
+	}
+	L.Push(glua.ToLua(L, self.CombatLevel()))
 	return 1
 }

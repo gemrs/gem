@@ -23,7 +23,9 @@ func lBindserver(L *lua.LState) int {
 
 func lBindServer(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("server.Server")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewServer))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ServerMethods))
 
 	cls := L.NewUserData()

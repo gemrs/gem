@@ -25,7 +25,9 @@ func lBindevent(L *lua.LState) int {
 
 func lBindEvent(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("event.Event")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewEvent))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), EventMethods))
 
 	cls := L.NewUserData()
@@ -87,7 +89,9 @@ func lBindEventUnregister(L *lua.LState) int {
 
 func lBindFunc(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("event.Func")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewFunc))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), FuncMethods))
 
 	cls := L.NewUserData()

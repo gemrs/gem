@@ -27,7 +27,9 @@ func lBindgame(L *lua.LState) int {
 
 func lBindGameService(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("game.GameService")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewGameService))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), GameServiceMethods))
 
 	cls := L.NewUserData()
@@ -57,7 +59,9 @@ var GameServiceMethods = map[string]lua.LGFunction{}
 
 func lBindUpdateService(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("game.UpdateService")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewUpdateService))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), UpdateServiceMethods))
 
 	cls := L.NewUserData()

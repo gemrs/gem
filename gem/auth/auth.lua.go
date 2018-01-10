@@ -67,7 +67,9 @@ func lBindauth(L *lua.LState) int {
 
 func lBindAuthResponse(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("auth.AuthResponse")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewAuthResponse))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), AuthResponseMethods))
 
 	cls := L.NewUserData()
@@ -91,7 +93,9 @@ var AuthResponseMethods = map[string]lua.LGFunction{}
 
 func lBindFunc(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("auth.Func")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewFunc))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), FuncMethods))
 
 	cls := L.NewUserData()

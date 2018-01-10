@@ -23,7 +23,9 @@ func lBindposition(L *lua.LState) int {
 
 func lBindAbsolute(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("position.Absolute")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewAbsolute))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), AbsoluteMethods))
 
 	cls := L.NewUserData()

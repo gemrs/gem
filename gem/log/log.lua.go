@@ -23,7 +23,9 @@ func lBindlog(L *lua.LState) int {
 
 func lBindModule(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("log.Module")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewModule))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ModuleMethods))
 
 	cls := L.NewUserData()

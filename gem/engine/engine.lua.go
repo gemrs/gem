@@ -23,7 +23,9 @@ func lBindengine(L *lua.LState) int {
 
 func lBindEngine(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("engine.Engine")
+
 	L.SetField(mt, "__call", L.NewFunction(lNewEngine))
+
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), EngineMethods))
 
 	cls := L.NewUserData()

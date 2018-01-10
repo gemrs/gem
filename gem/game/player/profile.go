@@ -82,6 +82,7 @@ func (p *Profile) SetPosition(pos *position.Absolute) {
 	p.position = pos
 }
 
+//glua:bind
 func (p *Profile) Skills() *Skills {
 	return p.skills
 }

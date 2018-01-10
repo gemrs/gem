@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
+	"github.com/gemrs/gem/gem/log"
 
 	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/entity"
@@ -75,6 +76,11 @@ func (player *Player) EntityType() entity.EntityType {
 
 func (player *Player) SetDecodeFunc(d DecodeFunc) {
 	player.decode = d
+}
+
+//glua:bind
+func (player *Player) Logger() *log.Module {
+	return &log.Module{player.Conn().Log()}
 }
 
 func (player *Player) SecureBlockSize() int {
