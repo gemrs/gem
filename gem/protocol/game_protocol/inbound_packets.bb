@@ -7,3 +7,8 @@ type InboundChatMessage frame<4, Var8> struct {
     Colour uint8<IntOffset128, IntReverse>
     EncodedMessage byte[...]
 }
+
+/* The player has entered a command using the '::' syntax */
+type InboundCommand frame<103, Var8> struct {
+    Command string
+}

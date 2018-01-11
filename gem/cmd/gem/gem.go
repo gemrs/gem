@@ -13,6 +13,7 @@ import (
 	"github.com/gemrs/gem/gem/event"
 	"github.com/gemrs/gem/gem/game"
 	game_event "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
@@ -68,6 +69,7 @@ func main() {
 	position.Bindposition(L)
 	engine_event.Bindengine_event(L)
 	game_event.Bindgame_event(L)
+	item.Binditem(L)
 
 	if *unsafeLua {
 		if fn, err := L.LoadFile(mainFile); err != nil {

@@ -12,4 +12,5 @@ var (
 	PlayerLoadProfile = event.NewEvent("PlayerLoadProfile")
 	PlayerLogin       = event.NewEvent("PlayerLogin")
 	PlayerLogout      = event.NewEvent("PlayerLogout")
+	PlayerCommand     = event.NewEvent("PlayerCommand")
 )

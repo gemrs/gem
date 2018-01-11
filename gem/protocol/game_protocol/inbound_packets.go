@@ -16,6 +16,7 @@ var definitions = []encoding.PacketHeader{
 	InboundChatMessageDefinition,
 	InboundPlayerWalkDefinition,
 	InboundPlayerWalkMapDefinition,
+	InboundCommandDefinition,
 }
 
 func init() {
