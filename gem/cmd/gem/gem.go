@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 
 	"github.com/gemrs/gem/gem/archive"
 	"github.com/gemrs/gem/gem/auth"
@@ -23,19 +22,8 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-var contentDir = flag.String("content", "content", "the content directory")
-var compiledDir = flag.String("content_out", "content_out", "the compiled content directory")
-var noCompile = flag.Bool("no-compile", false, "skip lua compilation")
+var contentDir = flag.String("content", "content_out", "the content directory")
 var unsafeLua = flag.Bool("lua-unsafe", false, "invoke lua main without pcall")
-
-func buildMoonScript(dir string) {
-	fmt.Println("Compiling content directory:", dir)
-	out, err := exec.Command("moonc", "-t", *compiledDir, dir).CombinedOutput()
-	fmt.Println(string(out))
-	if err != nil {
-		panic(err)
-	}
-}
 
 func main() {
 	flag.Parse()
@@ -45,14 +33,10 @@ func main() {
 	bufferingTarget := willow.NewBufferingTarget(stdoutTarget)
 	willow.Targets["stdout"] = bufferingTarget
 
-	if !*noCompile {
-		buildMoonScript(*contentDir)
-	}
-	finalDir := *compiledDir + "/" + *contentDir
-	luaPath := fmt.Sprintf("%v/?.lua;%v/?/init.lua;%v", finalDir, finalDir, lua.LuaPathDefault)
+	luaPath := fmt.Sprintf("%v/?.lua;%v/?/init.lua;%v", *contentDir, *contentDir, lua.LuaPathDefault)
 
 	os.Setenv(lua.LuaPath, luaPath)
-	mainFile := finalDir + "/main.lua"
+	mainFile := *contentDir + "/main.lua"
 
 	L := lua.NewState()
 	defer L.Close()
