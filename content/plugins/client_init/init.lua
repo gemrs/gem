@@ -17,7 +17,7 @@ function player_init(event, player)
    config:set_tab_interface(game_player.tab_friends, interfaces.tab_friends)
    config:set_tab_interface(game_player.tab_ignore, interfaces.tab_ignore)
    config:set_tab_interface(game_player.tab_logout, interfaces.tab_logout)
-   config:set_tab_interface(game_player.tab_settings, interfaces.tab_settings_highmem)
+   config:set_tab_interface(game_player.tab_settings, interfaces.tab_settings_lowmem)
    config:set_tab_interface(game_player.tab_run, interfaces.tab_run)
    config:set_tab_interface(game_player.tab_music, interfaces.tab_music_lowmem)
 
