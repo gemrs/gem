@@ -7,32 +7,6 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
-type OutboundUpdateHandshake struct {
-	ignored [8]encoding.Uint8
-}
-
-func (struc *OutboundUpdateHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
-	for i := 0; i < 8; i++ {
-		err = struc.ignored[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	return err
-}
-
-func (struc *OutboundUpdateHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
-	for i := 0; i < 8; i++ {
-		err = struc.ignored[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
-	}
-
-	return err
-}
-
 type InboundServiceSelect struct {
 	Service encoding.Uint8
 }
@@ -121,6 +95,32 @@ func (struc *OutboundGameHandshake) Decode(buf io.Reader, flags interface{}) (er
 
 	for i := 0; i < 2; i++ {
 		err = struc.ServerISAACSeed[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+type OutboundUpdateHandshake struct {
+	ignored [8]encoding.Uint8
+}
+
+func (struc *OutboundUpdateHandshake) Encode(buf io.Writer, flags interface{}) (err error) {
+	for i := 0; i < 8; i++ {
+		err = struc.ignored[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (struc *OutboundUpdateHandshake) Decode(buf io.Reader, flags interface{}) (err error) {
+	for i := 0; i < 8; i++ {
+		err = struc.ignored[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 		if err != nil {
 			return err
 		}

@@ -26,3 +26,9 @@ function player_init(event, player)
 end
 
 game_event.player_login:register(event.Func(player_init))
+
+function item_action(event, player, stack, action)
+   player:send_message("item " .. tostring(stack:definition():id()) .. " action " .. tostring(action))
+end
+
+game_event.player_inventory_action:register(event.Func(item_action))

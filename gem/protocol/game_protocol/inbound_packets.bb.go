@@ -7,102 +7,6 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
-type anonymous_inbound_packets_bb_3 struct {
-	InterfaceID encoding.Uint16
-	Inserting   encoding.Uint8
-	FromSlot    encoding.Uint16
-	ToSlot      encoding.Uint16
-}
-
-func (struc *anonymous_inbound_packets_bb_3) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.InterfaceID.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Inserting.Encode(buf, encoding.IntegerFlag(encoding.IntNegate))
-	if err != nil {
-		return err
-	}
-
-	err = struc.FromSlot.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.ToSlot.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *anonymous_inbound_packets_bb_3) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.InterfaceID.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Inserting.Decode(buf, encoding.IntegerFlag(encoding.IntNegate))
-	if err != nil {
-		return err
-	}
-
-	err = struc.FromSlot.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	if err != nil {
-		return err
-	}
-
-	err = struc.ToSlot.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-type InboundInventorySwapItem anonymous_inbound_packets_bb_3
-
-var InboundInventorySwapItemDefinition = encoding.PacketHeader{
-	Type:   (*InboundInventorySwapItem)(nil),
-	Number: 214,
-	Size:   encoding.SzFixed,
-}
-
-func (frm *InboundInventorySwapItem) Encode(buf io.Writer, flags interface{}) (err error) {
-	struc := (*anonymous_inbound_packets_bb_3)(frm)
-	hdr := encoding.PacketHeader{
-		Number: InboundInventorySwapItemDefinition.Number,
-		Size:   InboundInventorySwapItemDefinition.Size,
-		Object: struc,
-	}
-	return hdr.Encode(buf, flags)
-}
-
-func (frm *InboundInventorySwapItem) Decode(buf io.Reader, flags interface{}) (err error) {
-	struc := (*anonymous_inbound_packets_bb_3)(frm)
-	hdr := encoding.PacketHeader{
-		Number: InboundInventorySwapItemDefinition.Number,
-		Size:   InboundInventorySwapItemDefinition.Size,
-		Object: struc,
-	}
-	return hdr.Decode(buf, flags)
-}
-
-type anonymous_inbound_packets_bb_0 struct {
-}
-
-func (struc *anonymous_inbound_packets_bb_0) Encode(buf io.Writer, flags interface{}) (err error) {
-
-	return err
-}
-
-func (struc *anonymous_inbound_packets_bb_0) Decode(buf io.Reader, flags interface{}) (err error) {
-
-	return err
-}
-
 type InboundPing anonymous_inbound_packets_bb_0
 
 var InboundPingDefinition = encoding.PacketHeader{
@@ -129,6 +33,207 @@ func (frm *InboundPing) Decode(buf io.Reader, flags interface{}) (err error) {
 		Object: struc,
 	}
 	return hdr.Decode(buf, flags)
+}
+
+type anonymous_inbound_packets_bb_5 struct {
+	ItemID      encoding.Uint16
+	Slot        encoding.Uint16
+	InterfaceID encoding.Uint16
+}
+
+func (struc *anonymous_inbound_packets_bb_5) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.ItemID.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.InterfaceID.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_5) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.ItemID.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.InterfaceID.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type InboundInventoryAction2 anonymous_inbound_packets_bb_5
+
+var InboundInventoryAction2Definition = encoding.PacketHeader{
+	Type:   (*InboundInventoryAction2)(nil),
+	Number: 41,
+	Size:   encoding.SzFixed,
+}
+
+func (frm *InboundInventoryAction2) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_5)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction2Definition.Number,
+		Size:   InboundInventoryAction2Definition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundInventoryAction2) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_5)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction2Definition.Number,
+		Size:   InboundInventoryAction2Definition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}
+
+type anonymous_inbound_packets_bb_6 struct {
+	ItemID      encoding.Uint16
+	Slot        encoding.Uint16
+	InterfaceID encoding.Uint16
+}
+
+func (struc *anonymous_inbound_packets_bb_6) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.ItemID.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.InterfaceID.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_6) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.ItemID.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.InterfaceID.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type anonymous_inbound_packets_bb_7 struct {
+	InterfaceID encoding.Uint16
+	Slot        encoding.Uint16
+	ItemID      encoding.Uint16
+}
+
+func (struc *anonymous_inbound_packets_bb_7) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.InterfaceID.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	err = struc.ItemID.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_7) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.InterfaceID.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	err = struc.ItemID.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type InboundInventoryAction4 anonymous_inbound_packets_bb_7
+
+var InboundInventoryAction4Definition = encoding.PacketHeader{
+	Type:   (*InboundInventoryAction4)(nil),
+	Number: 75,
+	Size:   encoding.SzFixed,
+}
+
+func (frm *InboundInventoryAction4) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_7)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction4Definition.Number,
+		Size:   InboundInventoryAction4Definition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundInventoryAction4) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_7)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction4Definition.Number,
+		Size:   InboundInventoryAction4Definition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}
+
+type anonymous_inbound_packets_bb_0 struct {
+}
+
+func (struc *anonymous_inbound_packets_bb_0) Encode(buf io.Writer, flags interface{}) (err error) {
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_0) Decode(buf io.Reader, flags interface{}) (err error) {
+
+	return err
 }
 
 type anonymous_inbound_packets_bb_1 struct {
@@ -203,6 +308,78 @@ func (frm *InboundChatMessage) Decode(buf io.Reader, flags interface{}) (err err
 	return hdr.Decode(buf, flags)
 }
 
+type InboundInventorySwapItem anonymous_inbound_packets_bb_3
+
+var InboundInventorySwapItemDefinition = encoding.PacketHeader{
+	Type:   (*InboundInventorySwapItem)(nil),
+	Number: 214,
+	Size:   encoding.SzFixed,
+}
+
+func (frm *InboundInventorySwapItem) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_3)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventorySwapItemDefinition.Number,
+		Size:   InboundInventorySwapItemDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundInventorySwapItem) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_3)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventorySwapItemDefinition.Number,
+		Size:   InboundInventorySwapItemDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}
+
+type anonymous_inbound_packets_bb_8 struct {
+	ItemID      encoding.Uint16
+	InterfaceID encoding.Uint16
+	Slot        encoding.Uint16
+}
+
+func (struc *anonymous_inbound_packets_bb_8) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.ItemID.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.InterfaceID.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_8) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.ItemID.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.InterfaceID.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 type anonymous_inbound_packets_bb_2 struct {
 	Command encoding.JString
 }
@@ -248,6 +425,189 @@ func (frm *InboundCommand) Decode(buf io.Reader, flags interface{}) (err error) 
 	hdr := encoding.PacketHeader{
 		Number: InboundCommandDefinition.Number,
 		Size:   InboundCommandDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}
+
+type anonymous_inbound_packets_bb_3 struct {
+	InterfaceID encoding.Uint16
+	Inserting   encoding.Uint8
+	FromSlot    encoding.Uint16
+	ToSlot      encoding.Uint16
+}
+
+func (struc *anonymous_inbound_packets_bb_3) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.InterfaceID.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Inserting.Encode(buf, encoding.IntegerFlag(encoding.IntNegate))
+	if err != nil {
+		return err
+	}
+
+	err = struc.FromSlot.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.ToSlot.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_3) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.InterfaceID.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Inserting.Decode(buf, encoding.IntegerFlag(encoding.IntNegate))
+	if err != nil {
+		return err
+	}
+
+	err = struc.FromSlot.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.ToSlot.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type anonymous_inbound_packets_bb_4 struct {
+	InterfaceID encoding.Uint16
+	Slot        encoding.Uint16
+	ItemID      encoding.Uint16
+}
+
+func (struc *anonymous_inbound_packets_bb_4) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.InterfaceID.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Encode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.ItemID.Encode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *anonymous_inbound_packets_bb_4) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.InterfaceID.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Slot.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	if err != nil {
+		return err
+	}
+
+	err = struc.ItemID.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type InboundInventoryAction1 anonymous_inbound_packets_bb_4
+
+var InboundInventoryAction1Definition = encoding.PacketHeader{
+	Type:   (*InboundInventoryAction1)(nil),
+	Number: 122,
+	Size:   encoding.SzFixed,
+}
+
+func (frm *InboundInventoryAction1) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_4)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction1Definition.Number,
+		Size:   InboundInventoryAction1Definition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundInventoryAction1) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_4)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction1Definition.Number,
+		Size:   InboundInventoryAction1Definition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}
+
+type InboundInventoryAction3 anonymous_inbound_packets_bb_6
+
+var InboundInventoryAction3Definition = encoding.PacketHeader{
+	Type:   (*InboundInventoryAction3)(nil),
+	Number: 16,
+	Size:   encoding.SzFixed,
+}
+
+func (frm *InboundInventoryAction3) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_6)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction3Definition.Number,
+		Size:   InboundInventoryAction3Definition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundInventoryAction3) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_6)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction3Definition.Number,
+		Size:   InboundInventoryAction3Definition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}
+
+type InboundInventoryAction5 anonymous_inbound_packets_bb_8
+
+var InboundInventoryAction5Definition = encoding.PacketHeader{
+	Type:   (*InboundInventoryAction5)(nil),
+	Number: 87,
+	Size:   encoding.SzFixed,
+}
+
+func (frm *InboundInventoryAction5) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_8)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction5Definition.Number,
+		Size:   InboundInventoryAction5Definition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundInventoryAction5) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_8)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundInventoryAction5Definition.Number,
+		Size:   InboundInventoryAction5Definition.Size,
 		Object: struc,
 	}
 	return hdr.Decode(buf, flags)
