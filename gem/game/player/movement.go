@@ -24,12 +24,12 @@ func (player *Player) SetPosition(pos *position.Absolute) {
 	if dx >= 5 || dy >= 5 || dz >= 1 {
 		player.RegionChange()
 	}
+
+	player.Profile().SetPosition(player.Position())
 }
 
 func (player *Player) UpdateWaypointQueue() {
 	player.WaypointQueue().Tick(player)
-	// FIXME why update the profile here? why not SetPosition
-	player.Profile().SetPosition(player.Position())
 }
 
 // Called by the waypoint processor to indicate the player's next step

@@ -7,34 +7,6 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
-type InboundCommand anonymous_inbound_packets_bb_2
-
-var InboundCommandDefinition = encoding.PacketHeader{
-	Type:   (*InboundCommand)(nil),
-	Number: 103,
-	Size:   encoding.SzVar8,
-}
-
-func (frm *InboundCommand) Encode(buf io.Writer, flags interface{}) (err error) {
-	struc := (*anonymous_inbound_packets_bb_2)(frm)
-	hdr := encoding.PacketHeader{
-		Number: InboundCommandDefinition.Number,
-		Size:   InboundCommandDefinition.Size,
-		Object: struc,
-	}
-	return hdr.Encode(buf, flags)
-}
-
-func (frm *InboundCommand) Decode(buf io.Reader, flags interface{}) (err error) {
-	struc := (*anonymous_inbound_packets_bb_2)(frm)
-	hdr := encoding.PacketHeader{
-		Number: InboundCommandDefinition.Number,
-		Size:   InboundCommandDefinition.Size,
-		Object: struc,
-	}
-	return hdr.Decode(buf, flags)
-}
-
 type anonymous_inbound_packets_bb_3 struct {
 	InterfaceID encoding.Uint16
 	Inserting   encoding.Uint8
@@ -251,4 +223,32 @@ func (struc *anonymous_inbound_packets_bb_2) Decode(buf io.Reader, flags interfa
 	}
 
 	return err
+}
+
+type InboundCommand anonymous_inbound_packets_bb_2
+
+var InboundCommandDefinition = encoding.PacketHeader{
+	Type:   (*InboundCommand)(nil),
+	Number: 103,
+	Size:   encoding.SzVar8,
+}
+
+func (frm *InboundCommand) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_2)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundCommandDefinition.Number,
+		Size:   InboundCommandDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundCommand) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*anonymous_inbound_packets_bb_2)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundCommandDefinition.Number,
+		Size:   InboundCommandDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
 }
