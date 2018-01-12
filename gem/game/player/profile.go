@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	game_event "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
 )
 
@@ -37,6 +38,7 @@ type Profile struct {
 
 	skills     *Skills
 	appearance *Appearance
+	inventory  *item.Container
 }
 
 //glua:bind constructor Profile
@@ -46,6 +48,7 @@ func NewProfile(username, password string) *Profile {
 		password:   password,
 		skills:     NewSkills(),
 		appearance: NewAppearance(),
+		inventory:  item.NewContainer(28),
 	}
 }
 
@@ -85,6 +88,11 @@ func (p *Profile) SetPosition(pos *position.Absolute) {
 //glua:bind
 func (p *Profile) Skills() *Skills {
 	return p.skills
+}
+
+//glua:bind
+func (p *Profile) Inventory() *item.Container {
+	return p.inventory
 }
 
 func (p *Profile) Appearance() *Appearance {

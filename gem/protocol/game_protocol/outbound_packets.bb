@@ -48,3 +48,10 @@ type OutboundPlayerInit frame<249, Fixed> struct {
     Membership uint8<IntOffset128>
     Index      uint16<IntOffset128>
 }
+
+type OutboundUpdateInventoryItem frame<34, Var16> struct {
+	InventoryID uint16
+	Slot   uint8 // FIXME 'smart' integer
+	ItemID uint16
+	Count  uint8
+}

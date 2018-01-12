@@ -37,11 +37,21 @@ func lBind{{.Name}}(L *lua.LState) int {
 {{range .Fields}}
 	L.SetField(mod, "{{underscore .Name}}", glua.ToLua(L, {{.Name}}))
 {{end}}
+
+{{range $funcName, $func := .Functions}}
+	L.SetField(mod, "{{underscore $funcName}}", L.NewFunction(lBind{{$funcName}}))
+{{end}}
 	L.Push(mod)
 	return 1
 }
 
 {{$modName := .Name}}
+
+{{range $funcName, $func := .Functions}}
+func lBind{{$funcName}}(L *lua.LState) int {
+{{$func.Generate}}
+}
+{{end}}
 
 {{range $typeName, $typ := .Types}}
 func lBind{{$typeName}}(L *lua.LState, mod *lua.LTable) {
@@ -95,10 +105,11 @@ func lBindProp{{$typeName}}{{$propName}}(L *lua.LState) int {
 `))
 
 type lModule struct {
-	Name    string
-	LuaName string
-	Types   map[string]*lType
-	Fields  map[string]*lField
+	Name      string
+	LuaName   string
+	Types     map[string]*lType
+	Fields    map[string]*lField
+	Functions map[string]*lFunction
 }
 
 func (mod *lModule) String() string {
@@ -129,13 +140,17 @@ func fromLua(src, dest string, typ ast.Expr) string {
 	return fmt.Sprintf("%v := glua.FromLua(%v).(%v)\n", dest, src, printExpr(typ))
 }
 
-func (method *lFunction) Generate() string {
+func (function *lFunction) Generate() string {
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "self := glua.FromLua(L.Get(1)).(*%v)\n", method.Recv)
-	fmt.Fprintf(&buf, "L.Remove(1)\n")
+	isMethod := function.Recv != ""
 
-	argNames := make([]string, len(method.Args))
-	for i, arg := range method.Args {
+	if isMethod {
+		fmt.Fprintf(&buf, "self := glua.FromLua(L.Get(1)).(*%v)\n", function.Recv)
+		fmt.Fprintf(&buf, "L.Remove(1)\n")
+	}
+
+	argNames := make([]string, len(function.Args))
+	for i, arg := range function.Args {
 		fmt.Fprintf(&buf, "arg%vValue := L.Get(1)\n", i)
 		fmt.Fprintf(&buf, "%v", fromLua(fmt.Sprintf("arg%vValue", i), fmt.Sprintf("arg%v", i), arg))
 		fmt.Fprintf(&buf, "L.Remove(1)\n")
@@ -143,12 +158,20 @@ func (method *lFunction) Generate() string {
 	}
 
 	args := strings.Join(argNames, ", ")
-	if method.Ret != nil {
-		fmt.Fprintf(&buf, "retVal := self.%v(%v)\n", method.Name, args)
+	if function.Ret != nil {
+		if isMethod {
+			fmt.Fprintf(&buf, "retVal := self.%v(%v)\n", function.Name, args)
+		} else {
+			fmt.Fprintf(&buf, "retVal := %v(%v)\n", function.Name, args)
+		}
 		fmt.Fprintf(&buf, "L.Push(glua.ToLua(L, retVal))\n")
 		fmt.Fprintf(&buf, "return 1\n")
 	} else {
-		fmt.Fprintf(&buf, "self.%v(%v)\n", method.Name, args)
+		if isMethod {
+			fmt.Fprintf(&buf, "self.%v(%v)\n", function.Name, args)
+		} else {
+			fmt.Fprintf(&buf, "%v(%v)\n", function.Name, args)
+		}
 		fmt.Fprintf(&buf, "return 0\n")
 	}
 	return buf.String()

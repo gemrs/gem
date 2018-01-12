@@ -1,7 +1,6 @@
 package player
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -99,7 +98,6 @@ func (s *Skills) SetCombatLevel(combatLevel int) {
 
 //glua:bind
 func (s *Skills) Skill(id SkillId) *Skill {
-	fmt.Printf("skill %v\n", id)
 	return s.skills[id]
 }
 
@@ -134,7 +132,6 @@ func (s *Skill) Experience() int {
 }
 
 func (s *Skill) SetExperience(exp int) {
-	fmt.Printf("set experience to %v\n", exp)
 	s.experience = exp
 	s.signalUpdate()
 }

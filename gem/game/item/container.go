@@ -1,19 +1,50 @@
 package item
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var ErrNoFreeSlots = errors.New("No free slots in inventory")
 
 //glua:bind
 type Container struct {
-	capacity int
-	slots    []*ItemStack
-	listener ContainerListener
+	capacity     int
+	slots        []*Stack
+	slotsUpdated map[int]interface{}
 }
 
 //glua:bind constructor Container
 func NewContainer(capacity int) *Container {
-	return &Container{
-		capacity: capacity,
-		slots:    make([]*ItemStack, capacity),
+	container := &Container{
+		capacity:     capacity,
+		slots:        make([]*Stack, capacity),
+		slotsUpdated: make(map[int]interface{}),
+	}
+
+	// All containers start with all slots updated to force a clear
+	for i := 0; i < capacity; i++ {
+		container.slotsUpdated[i] = 0
+	}
+
+	return container
+}
+
+func (c *Container) setSlotUpdated(slot int) {
+	c.slotsUpdated[slot] = 0
+}
+
+func (c *Container) GetUpdatedSlots() []int {
+	slots := make([]int, 0)
+	for s, _ := range c.slotsUpdated {
+		slots = append(slots, s)
+	}
+	return slots
+}
+
+func (c *Container) ClearUpdatedSlots() {
+	if len(c.slotsUpdated) > 0 {
+		c.slotsUpdated = make(map[int]interface{})
 	}
 }
 
@@ -28,21 +59,61 @@ func (c *Container) assertSize(i int) {
 	}
 }
 
+func (c *Container) updateStackSize(slot, count int) {
+	c.assertSlotPopulated(true, slot)
+	stack := c.Slot(slot)
+	newCount := stack.Count() + count
+	if newCount < 0 {
+		panic(fmt.Sprintf("tried to remove %v from item stack of size %v", count, stack.Count()))
+	}
+
+	if newCount == 0 {
+		c.slots[slot] = nil
+	} else {
+		c.slots[slot].count = newCount
+	}
+
+	c.setSlotUpdated(slot)
+}
+
 //glua:bind
-func (c *Container) Slot(i int) *ItemStack {
+func (c *Container) Add(item *Stack) error {
+	slot := c.FindStackOf(item.Definition())
+	if item.Definition().Stackable() && slot != -1 {
+		c.updateStackSize(slot, item.Count())
+		return nil
+	}
+
+	slot = c.findEmptySlot()
+	if slot != -1 {
+		c.SetSlot(slot, item)
+		return nil
+	}
+
+	return ErrNoFreeSlots
+}
+
+func (c *Container) findEmptySlot() int {
+	for i, stack := range c.slots {
+		if stack == nil {
+			return i
+		}
+	}
+	return -1
+}
+
+//glua:bind
+func (c *Container) Slot(i int) *Stack {
 	c.assertSize(i)
-	c.assertSlotPopulated(true, i)
 	return c.slots[i]
 }
 
 //glua:bind
-func (c *Container) SetSlot(i int, item *ItemStack) {
+func (c *Container) SetSlot(i int, item *Stack) {
 	c.assertSize(i)
 	c.assertSlotPopulated(false, i)
 	c.slots[i] = item
-	if c.listener != nil {
-		c.listener.ContainerSlotSet(i, item)
-	}
+	c.setSlotUpdated(i)
 }
 
 func (c *Container) SlotPopulated(i int) bool {
@@ -56,7 +127,7 @@ func (c *Container) assertSlotPopulated(populated bool, i int) {
 		stateStr = "unpopulated"
 	}
 
-	if c.SlotPopulated(i) == populated {
+	if c.SlotPopulated(i) != populated {
 		panic(fmt.Sprintf("expected slot %v to be %v", i, stateStr))
 	}
 }
@@ -67,15 +138,14 @@ func (c *Container) SwapSlots(a, b int) {
 	c.assertSize(a)
 	c.assertSize(b)
 	c.slots[a], c.slots[b] = c.slots[b], c.slots[a]
-	if c.listener != nil {
-		c.listener.ContainerSlotsSwapped(a, b)
-	}
+	c.setSlotUpdated(a)
+	c.setSlotUpdated(b)
 }
 
 //glua:bind
-func (c *Container) FindStackOf(id int) int {
+func (c *Container) FindStackOf(item *Definition) int {
 	for i, stack := range c.slots {
-		if stack.Id() == id {
+		if stack != nil && stack.Definition() == item {
 			return i
 		}
 	}
@@ -83,23 +153,18 @@ func (c *Container) FindStackOf(id int) int {
 }
 
 //glua:bind
-func (c *Container) RemoveFromSlot(slot, count int) *ItemStack {
+func (c *Container) RemoveFromSlot(slot, count int) *Stack {
+	c.assertSlotPopulated(true, slot)
 	stack := c.Slot(slot)
-	if count > stack.Count() {
-		panic(fmt.Sprintf("tried to remove %v from item stack of size %v", count, stack.Count()))
-	}
+	c.updateStackSize(slot, -count)
 
-	stack.count -= count
-	if stack.Count() == 0 {
-		c.slots[slot] = nil
-	}
-
-	newStack := NewItemStack(stack.Id(), count)
+	newStack := NewStack(stack.Definition(), count)
 	return newStack
 }
 
 //glua:bind
-func (c *Container) RemoveAllFromSlot(slot int) *ItemStack {
+func (c *Container) RemoveAllFromSlot(slot int) *Stack {
+	c.assertSlotPopulated(true, slot)
 	stack := c.Slot(slot)
 	return c.RemoveFromSlot(slot, stack.Count())
 }

@@ -7,6 +7,7 @@ local game = require("gem.game")
 local server = require("gem.game.server")
 local engine_event = require("gem.engine.event")
 local game_event = require("gem.game.event")
+local item = require("gem.game.item")
 
 local version_string = require("version")
 local config = require("config")
@@ -16,6 +17,8 @@ local logger = log.Module("lua_main")
 logger:info("Starting " .. version_string)
 
 -- Load data files
+item.load_definitions(config.item_definition_file)
+
 local data_ctx = runite.Context()
 data_ctx:unpack(config.game_data_file, config.game_index_files)
 

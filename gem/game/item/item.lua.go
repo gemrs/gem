@@ -17,12 +17,24 @@ func lBinditem(L *lua.LState) int {
 
 	lBindContainer(L, mod)
 
-	lBindItemDefinition(L, mod)
+	lBindDefinition(L, mod)
 
-	lBindItemStack(L, mod)
+	lBindStack(L, mod)
+
+	L.SetField(mod, "load_definitions", L.NewFunction(lBindLoadDefinitions))
 
 	L.Push(mod)
 	return 1
+}
+
+func lBindLoadDefinitions(L *lua.LState) int {
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(string)
+	L.Remove(1)
+	retVal := LoadDefinitions(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
 }
 
 func lBindContainer(L *lua.LState, mod *lua.LTable) {
@@ -51,6 +63,8 @@ func lNewContainer(L *lua.LState) int {
 
 var ContainerMethods = map[string]lua.LGFunction{
 
+	"add": lBindContainerAdd,
+
 	"capacity": lBindContainerCapacity,
 
 	"find_stack_of": lBindContainerFindStackOf,
@@ -66,6 +80,18 @@ var ContainerMethods = map[string]lua.LGFunction{
 	"swap_slots": lBindContainerSwapSlots,
 }
 
+func lBindContainerAdd(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Container)
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(*Stack)
+	L.Remove(1)
+	retVal := self.Add(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
 func lBindContainerCapacity(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Container)
 	L.Remove(1)
@@ -79,7 +105,7 @@ func lBindContainerFindStackOf(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Container)
 	L.Remove(1)
 	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(int)
+	arg0 := glua.FromLua(arg0Value).(*Definition)
 	L.Remove(1)
 	retVal := self.FindStackOf(arg0)
 	L.Push(glua.ToLua(L, retVal))
@@ -121,7 +147,7 @@ func lBindContainerSetSlot(L *lua.LState) int {
 	arg0 := glua.FromLua(arg0Value).(int)
 	L.Remove(1)
 	arg1Value := L.Get(1)
-	arg1 := glua.FromLua(arg1Value).(*ItemStack)
+	arg1 := glua.FromLua(arg1Value).(*Stack)
 	L.Remove(1)
 	self.SetSlot(arg0, arg1)
 	return 0
@@ -154,55 +180,179 @@ func lBindContainerSwapSlots(L *lua.LState) int {
 
 }
 
-func lBindItemDefinition(L *lua.LState, mod *lua.LTable) {
-	mt := L.NewTypeMetatable("item.ItemDefinition")
+func lBindDefinition(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("item.Definition")
 
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ItemDefinitionMethods))
+	L.SetField(mt, "__call", L.NewFunction(lNewDefinition))
 
-	cls := L.NewUserData()
-	L.SetField(mod, "ItemDefinition", cls)
-	L.SetMetatable(cls, mt)
-	glua.RegisterType("item.ItemDefinition", mt)
-}
-
-var ItemDefinitionMethods = map[string]lua.LGFunction{}
-
-func lBindItemStack(L *lua.LState, mod *lua.LTable) {
-	mt := L.NewTypeMetatable("item.ItemStack")
-
-	L.SetField(mt, "__call", L.NewFunction(lNewItemStack))
-
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), ItemStackMethods))
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), DefinitionMethods))
 
 	cls := L.NewUserData()
-	L.SetField(mod, "ItemStack", cls)
+	L.SetField(mod, "Definition", cls)
 	L.SetMetatable(cls, mt)
-	glua.RegisterType("item.ItemStack", mt)
+	glua.RegisterType("item.Definition", mt)
 }
 
-func lNewItemStack(L *lua.LState) int {
+func lNewDefinition(L *lua.LState) int {
 	L.Remove(1)
 	arg0Value := L.Get(1)
 	arg0 := glua.FromLua(arg0Value).(int)
 	L.Remove(1)
-	arg1Value := L.Get(1)
-	arg1 := glua.FromLua(arg1Value).(int)
-	L.Remove(1)
-	retVal := NewItemStack(arg0, arg1)
+	retVal := NewDefinition(arg0)
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 
 }
 
-var ItemStackMethods = map[string]lua.LGFunction{
+var DefinitionMethods = map[string]lua.LGFunction{
 
-	"count": lBindItemStackCount,
+	"examine": lBindDefinitionExamine,
 
-	"id": lBindItemStackId,
+	"id": lBindDefinitionId,
+
+	"members": lBindDefinitionMembers,
+
+	"name": lBindDefinitionName,
+
+	"notable": lBindDefinitionNotable,
+
+	"noted": lBindDefinitionNoted,
+
+	"noted_id": lBindDefinitionNotedId,
+
+	"parent_id": lBindDefinitionParentId,
+
+	"shop_value": lBindDefinitionShopValue,
+
+	"stackable": lBindDefinitionStackable,
 }
 
-func lBindItemStackCount(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*ItemStack)
+func lBindDefinitionExamine(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.Examine()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionId(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.Id()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionMembers(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.Members()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionName(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.Name()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionNotable(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.Notable()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionNoted(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.Noted()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionNotedId(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.NotedId()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionParentId(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.ParentId()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionShopValue(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.ShopValue()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindDefinitionStackable(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Definition)
+	L.Remove(1)
+	retVal := self.Stackable()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindStack(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("item.Stack")
+
+	L.SetField(mt, "__call", L.NewFunction(lNewStack))
+
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), StackMethods))
+
+	cls := L.NewUserData()
+	L.SetField(mod, "Stack", cls)
+	L.SetMetatable(cls, mt)
+	glua.RegisterType("item.Stack", mt)
+}
+
+func lNewStack(L *lua.LState) int {
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(*Definition)
+	L.Remove(1)
+	arg1Value := L.Get(1)
+	arg1 := glua.FromLua(arg1Value).(int)
+	L.Remove(1)
+	retVal := NewStack(arg0, arg1)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+var StackMethods = map[string]lua.LGFunction{
+
+	"count": lBindStackCount,
+
+	"definition": lBindStackDefinition,
+}
+
+func lBindStackCount(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Stack)
 	L.Remove(1)
 	retVal := self.Count()
 	L.Push(glua.ToLua(L, retVal))
@@ -210,10 +360,10 @@ func lBindItemStackCount(L *lua.LState) int {
 
 }
 
-func lBindItemStackId(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*ItemStack)
+func lBindStackDefinition(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Stack)
 	L.Remove(1)
-	retVal := self.Id()
+	retVal := self.Definition()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 

@@ -25,9 +25,10 @@ func Gather(path string) ([]*lModule, error) {
 
 func gatherModule(name string, pkg *ast.Package) *lModule {
 	module := &lModule{
-		Name:   name,
-		Types:  make(map[string]*lType),
-		Fields: make(map[string]*lField),
+		Name:      name,
+		Types:     make(map[string]*lType),
+		Fields:    make(map[string]*lField),
+		Functions: make(map[string]*lFunction),
 	}
 
 	// Ew...
@@ -87,7 +88,7 @@ func gatherModule(name string, pkg *ast.Package) *lModule {
 						typ.Constructor = gatherFunction(fn)
 						typ.Constructor.Recv = typeName
 					} else {
-						//gatherFunction(fn)
+						module.Functions[fn.Name.Name] = gatherFunction(fn)
 					}
 					continue
 				}

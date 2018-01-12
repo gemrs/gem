@@ -76,6 +76,7 @@ func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 	// Ordering is important here. We want to run these things in this specific order,
 	// and 'concurrently' (albeit in a single thread) for each player. ie. All waypoint
 	// queues are updated for all players before syncing entity lists.
+	doForAllPlayers(allPlayers, (*player.Player).SyncInventories)
 	doForAllPlayers(allPlayers, (*player.Player).UpdateWaypointQueue)
 	doForAllPlayers(allPlayers, (*player.Player).SyncEntityList)
 	doForAllPlayers(allPlayers, (*player.Player).SendPlayerSync)

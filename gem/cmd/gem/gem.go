@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/gemrs/gem/gem/archive"
 	"github.com/gemrs/gem/gem/auth"
@@ -22,7 +23,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-var contentDir = flag.String("content", "content_out", "the content directory")
+var contentDir = flag.String("content", "content", "the content directory")
 var unsafeLua = flag.Bool("lua-unsafe", false, "invoke lua main without pcall")
 
 func main() {
@@ -33,13 +34,20 @@ func main() {
 	bufferingTarget := willow.NewBufferingTarget(stdoutTarget)
 	willow.Targets["stdout"] = bufferingTarget
 
-	luaPath := fmt.Sprintf("%v/?.lua;%v/?/init.lua;%v", *contentDir, *contentDir, lua.LuaPathDefault)
+	luarocksDir := "lua_modules/share/lua/5.3"
+	luaPath := fmt.Sprintf("%v/?.lua;%v/?/init.lua;%v/?.lua;%v/?/init.lua;", *contentDir, *contentDir, luarocksDir, luarocksDir)
 
 	os.Setenv(lua.LuaPath, luaPath)
 	mainFile := *contentDir + "/main.lua"
 
 	L := lua.NewState()
 	defer L.Close()
+
+	// gopher-lua doesn't set package.config, which is required for some modules
+	lua.OpenPackage(L)
+	packagemod := L.CheckTable(1)
+	L.SetField(packagemod, "config", lua.LString(strings.Join([]string{"/", ";", "?", "!", "-"}, "\n")))
+	L.Remove(0)
 
 	runite.Bindrunite(L)
 	log.Bindlog(L)
