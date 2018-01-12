@@ -1,3 +1,5 @@
 *
 !.gitignore
 !devel.key
+!item_definitions.json
+!interface_ids.properties
