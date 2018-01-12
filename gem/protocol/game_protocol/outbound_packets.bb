@@ -49,6 +49,7 @@ type OutboundPlayerInit frame<249, Fixed> struct {
     Index      uint16<IntOffset128>
 }
 
+/* Set the slot of an inventory interface to a given item */
 type OutboundUpdateInventoryItem frame<34, Var16> struct {
 	InventoryID uint16
 	Slot   uint8 // FIXME 'smart' integer

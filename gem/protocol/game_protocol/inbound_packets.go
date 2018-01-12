@@ -17,6 +17,7 @@ var definitions = []encoding.PacketHeader{
 	InboundPlayerWalkDefinition,
 	InboundPlayerWalkMapDefinition,
 	InboundCommandDefinition,
+	InboundInventorySwapItemDefinition,
 }
 
 func init() {
