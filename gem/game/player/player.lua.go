@@ -100,8 +100,19 @@ func lBindplayer(L *lua.LState) int {
 
 	L.SetField(mod, "tab_unused", glua.ToLua(L, TabUnused))
 
+	L.SetField(mod, "set_inventory_interface_id", L.NewFunction(lBindSetInventoryInterfaceId))
+
 	L.Push(mod)
 	return 1
+}
+
+func lBindSetInventoryInterfaceId(L *lua.LState) int {
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(int)
+	L.Remove(1)
+	SetInventoryInterfaceId(arg0)
+	return 0
+
 }
 
 func lBindClientConfig(L *lua.LState, mod *lua.LTable) {

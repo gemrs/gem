@@ -12,6 +12,7 @@ local item = require("gem.game.item")
 local version_string = require("version")
 local config = require("config")
 local auth = require("auth")
+require("interface_config")
 
 local logger = log.Module("lua_main")
 logger:info("Starting " .. version_string)
@@ -33,7 +34,7 @@ function startup_func()
    game_server:set_service(14, game_service)
    game_server:set_service(15, update_service)
    archive_server:start(config.archive_server_listen, data_ctx)
-   return game_server:start(config.game_server_listen)
+   game_server:start(config.game_server_listen)
 end
 
 engine_event.startup:register(event.Func(startup_func))
@@ -41,7 +42,7 @@ engine_event.startup:register(event.Func(startup_func))
 -- Stop services on engine stop
 function shutdown_func()
    game_server:stop()
-   return archive_server:stop()
+   archive_server:stop()
 end
 
 engine_event.shutdown:register(event.Func(shutdown_func))

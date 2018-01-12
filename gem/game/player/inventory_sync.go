@@ -5,6 +5,13 @@ import (
 	"github.com/gemrs/gem/gem/protocol/game_protocol"
 )
 
+var inventoryInterfaceId = -1
+
+//glua:bind
+func SetInventoryInterfaceId(i int) {
+	inventoryInterfaceId = i
+}
+
 func (p *Player) SyncInventories() {
 	inventory := p.Profile().Inventory()
 	updatedSlots := inventory.GetUpdatedSlots()
@@ -12,7 +19,7 @@ func (p *Player) SyncInventories() {
 	for _, slot := range updatedSlots {
 		item := inventory.Slot(slot)
 		updatePacket := &game_protocol.OutboundUpdateInventoryItem{
-			InventoryID: 3214, // FIXME hardcoded interface id
+			InventoryID: encoding.Uint16(inventoryInterfaceId),
 			Slot:        encoding.Uint8(slot),
 		}
 		if item != nil {
