@@ -121,3 +121,31 @@ func (frm *InboundPlayerWalkMap) Decode(buf io.Reader, flags interface{}) (err e
 	}
 	return hdr.Decode(buf, flags)
 }
+
+type InboundPlayerWalkEntity InboundPlayerWalkBlock
+
+var InboundPlayerWalkEntityDefinition = encoding.PacketHeader{
+	Type:   (*InboundPlayerWalkEntity)(nil),
+	Number: 98,
+	Size:   encoding.SzVar8,
+}
+
+func (frm *InboundPlayerWalkEntity) Encode(buf io.Writer, flags interface{}) (err error) {
+	struc := (*InboundPlayerWalkBlock)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundPlayerWalkEntityDefinition.Number,
+		Size:   InboundPlayerWalkEntityDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Encode(buf, flags)
+}
+
+func (frm *InboundPlayerWalkEntity) Decode(buf io.Reader, flags interface{}) (err error) {
+	struc := (*InboundPlayerWalkBlock)(frm)
+	hdr := encoding.PacketHeader{
+		Number: InboundPlayerWalkEntityDefinition.Number,
+		Size:   InboundPlayerWalkEntityDefinition.Size,
+		Object: struc,
+	}
+	return hdr.Decode(buf, flags)
+}

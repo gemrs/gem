@@ -12,6 +12,7 @@ import (
 func init() {
 	registerHandler((*game_protocol.InboundPlayerWalk)(nil), player_walk)
 	registerHandler((*game_protocol.InboundPlayerWalkMap)(nil), player_walk)
+	registerHandler((*game_protocol.InboundPlayerWalkEntity)(nil), player_walk)
 }
 
 func player_walk(player *player.Player, packet encoding.Decodable) {
@@ -20,6 +21,8 @@ func player_walk(player *player.Player, packet encoding.Decodable) {
 	case *game_protocol.InboundPlayerWalk:
 		walkPacket = (*game_protocol.InboundPlayerWalkBlock)(p)
 	case *game_protocol.InboundPlayerWalkMap:
+		walkPacket = (*game_protocol.InboundPlayerWalkBlock)(p)
+	case *game_protocol.InboundPlayerWalkEntity:
 		walkPacket = (*game_protocol.InboundPlayerWalkBlock)(p)
 	default:
 		panic(fmt.Sprintf("got invalid walk packet: %T", p))
