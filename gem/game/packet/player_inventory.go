@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/player"
@@ -89,6 +90,33 @@ func player_inv_action(p *player.Player, packet encoding.Decodable) {
 	}
 }
 
+type TakeGroundItemInteraction struct {
+	item *item.GroundItem
+}
+
+func (i *TakeGroundItemInteraction) Tick(e entity.Entity) bool {
+	p := e.(*player.Player)
+	groundItem := i.item
+
+	select {
+	case <-groundItem.Expired():
+		return true
+	default:
+	}
+
+	if p.Profile().Inventory().Add(groundItem.Item()) != nil {
+		p.SendMessage("You don't have enough inventory space to hold that item")
+		return true
+	}
+
+	groundItem.Expire()
+	return true
+}
+
+func (i *TakeGroundItemInteraction) Interruptible() bool {
+	return true
+}
+
 func player_take_ground_item(p *player.Player, packet encoding.Decodable) {
 	takeItemPacket := packet.(*game_protocol.InboundTakeGroundItem)
 	itemPos := position.NewAbsolute(int(takeItemPacket.X), int(takeItemPacket.Y), p.Position().Z())
@@ -105,15 +133,10 @@ func player_take_ground_item(p *player.Player, packet encoding.Decodable) {
 	}
 
 	if groundItem == nil {
-		panic("Player asked to pick up item that doesn't exist")
-	}
-
-	fmt.Printf("picking up %v\n", groundItem)
-
-	if p.Profile().Inventory().Add(groundItem.Item()) != nil {
-		p.SendMessage("You don't have enough inventory space to hold that item")
 		return
 	}
 
-	groundItem.Expire()
+	p.InteractionQueue().Append(&TakeGroundItemInteraction{
+		item: groundItem,
+	})
 }

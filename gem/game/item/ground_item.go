@@ -1,8 +1,6 @@
 package item
 
 import (
-	"fmt"
-
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/world"
@@ -32,7 +30,6 @@ func NewGroundItem(item *Stack, pos *position.Absolute, world *world.Instance) *
 
 func (item *GroundItem) activate() {
 	item.sector.Add(item)
-	fmt.Printf("activating ground item %v\n", item)
 }
 
 //glua:Bind

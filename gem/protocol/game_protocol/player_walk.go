@@ -60,8 +60,10 @@ func (struc *InboundPlayerWalkBlock) Decode(buf io.Reader, flags interface{}) (e
 		return err
 	}
 
-	// ignore the extra 14 bytes for now
-	buf.Read(make([]byte, 14))
+	if header.Number == InboundPlayerWalkMapDefinition.Number {
+		// ignore the extra 14 bytes for now
+		buf.Read(make([]byte, 14))
+	}
 
 	return nil
 }

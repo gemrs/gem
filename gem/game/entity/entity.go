@@ -30,4 +30,5 @@ type Movable interface {
 	ClearFlags()
 	SetNextStep(*position.Absolute)
 	WaypointQueue() WaypointQueue
+	InteractionQueue() *InteractionQueue
 }

@@ -49,6 +49,8 @@ func (q *SimpleWaypointQueue) Empty() bool {
 // Clear clears the waypoint queue
 func (q *SimpleWaypointQueue) Clear() {
 	q.points = []*position.Absolute{}
+	q.direction = DirectionNone
+	q.lastDirection = DirectionNone
 }
 
 // Push appends a point to the waypoint queue
@@ -57,19 +59,20 @@ func (q *SimpleWaypointQueue) Push(point *position.Absolute) {
 }
 
 // Tick advances the waypoint queue, and returns the next position of the mob
-func (q *SimpleWaypointQueue) Tick(mob Movable) {
+func (q *SimpleWaypointQueue) Tick(entity Entity) bool {
+	mob := entity.(Movable)
+
 	if len(q.points) == 0 {
 		// Nothing to do
-		return
+		return true
 	}
 
-	current := mob.Position()
 	nextWaypoint := q.points[0]
+	current := mob.Position()
 	if current.Compare(nextWaypoint) {
 		// We've reached a waypoint, dequeue it and continue
 		q.points = q.points[1:]
-		q.Tick(mob)
-		return
+		return q.Tick(mob)
 	}
 
 	next := current.NextInterpolatedPoint(nextWaypoint)
@@ -80,9 +83,16 @@ func (q *SimpleWaypointQueue) Tick(mob Movable) {
 	q.direction = directionMap[dx+1][dy+1]
 
 	mob.SetNextStep(next)
+
+	current = mob.Position()
+	return current.Compare(nextWaypoint) && len(q.points) == 0
 }
 
 // WalkDirection returns the mob's current and (in the case of running) last walking direction
 func (q *SimpleWaypointQueue) WalkDirection() (current, last int) {
 	return q.direction, q.lastDirection
+}
+
+func (q *SimpleWaypointQueue) Interruptible() bool {
+	return true
 }

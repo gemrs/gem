@@ -5,9 +5,9 @@ import (
 )
 
 type WaypointQueue interface {
+	Interaction
 	Empty() bool
 	Clear()
 	Push(point *position.Absolute)
-	Tick(mob Movable)
 	WalkDirection() (current int, last int)
 }

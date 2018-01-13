@@ -43,4 +43,6 @@ func player_walk(player *player.Player, packet encoding.Decodable) {
 
 		wpq.Push(waypoints[i])
 	}
+
+	player.InteractionQueue().InterruptAndAppend(wpq)
 }

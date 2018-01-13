@@ -28,8 +28,8 @@ func (player *Player) SetPosition(pos *position.Absolute) {
 	player.Profile().SetPosition(player.Position())
 }
 
-func (player *Player) UpdateWaypointQueue() {
-	player.WaypointQueue().Tick(player)
+func (player *Player) UpdateInteractionQueue() {
+	player.InteractionQueue().Tick(player)
 }
 
 // Called by the waypoint processor to indicate the player's next step

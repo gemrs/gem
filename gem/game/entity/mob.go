@@ -5,14 +5,16 @@ import (
 )
 
 type GenericMob struct {
-	waypointQueue WaypointQueue
-	position      *position.Absolute
-	flags         Flags
+	waypointQueue    WaypointQueue
+	interactionQueue *InteractionQueue
+	position         *position.Absolute
+	flags            Flags
 }
 
 func NewGenericMob(wpq WaypointQueue) *GenericMob {
 	return &GenericMob{
-		waypointQueue: wpq,
+		waypointQueue:    wpq,
+		interactionQueue: NewInteractionQueue(),
 	}
 }
 
@@ -57,6 +59,10 @@ func (mob *GenericMob) SetAppearanceChanged() {
 
 func (mob *GenericMob) WaypointQueue() WaypointQueue {
 	return mob.waypointQueue
+}
+
+func (mob *GenericMob) InteractionQueue() *InteractionQueue {
+	return mob.interactionQueue
 }
 
 // EntityType identifies what kind of entity this entity is
