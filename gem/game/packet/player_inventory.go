@@ -68,14 +68,18 @@ func player_inv_action(p *player.Player, packet encoding.Decodable) {
 	}
 
 	// FIXME validate
+	// FIXME work out actual action by loading from obj.dat
+	actionString := ""
+	if actionIndex == 5 {
+		actionString = "Drop"
+	}
 
 	_ = itemId
 
 	switch interfaceId {
 	case player.RevisionConstants.InventoryInterfaceId:
 		stack := p.Profile().Inventory().Slot(slot)
-		fmt.Printf("item is %v\n", stack.Definition())
-		game_event.PlayerInventoryAction.NotifyObservers(p, stack, actionIndex)
+		game_event.PlayerInventoryAction.NotifyObservers(p, stack, slot, actionString)
 
 	default:
 		panic(fmt.Sprintf("unknown inventory interface id: %v", interfaceId))

@@ -37,8 +37,8 @@ func (local *Local) Region() *Region {
 // Absolute converts a local coordinate into an absolute coordinate
 func (local *Local) Absolute() *Absolute {
 	abs := NewAbsolute(
-		local.x+(AreaSize*local.Region().origin.x),
-		local.y+(AreaSize*local.Region().origin.y),
+		local.x+(SectorSize*local.Region().origin.x),
+		local.y+(SectorSize*local.Region().origin.y),
 		local.z,
 	)
 	return abs

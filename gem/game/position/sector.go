@@ -39,8 +39,8 @@ func (s *Sector) Z() int {
 // Min returns the absolute coord of the minimum tile in this sector
 func (s *Sector) Min() *Absolute {
 	return NewAbsolute(
-		s.x*AreaSize,
-		s.y*AreaSize,
+		s.x*SectorSize,
+		s.y*SectorSize,
 		s.z,
 	)
 }
@@ -48,8 +48,8 @@ func (s *Sector) Min() *Absolute {
 // Max returns the absolute coord of the maximum tile in this sector
 func (s *Sector) Max() *Absolute {
 	return NewAbsolute(
-		(s.x+1)*AreaSize,
-		(s.y+1)*AreaSize,
+		(s.x+1)*SectorSize,
+		(s.y+1)*SectorSize,
 		s.z,
 	)
 }

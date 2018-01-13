@@ -30,6 +30,11 @@ func (mob *GenericMob) Position() *position.Absolute {
 	return mob.position
 }
 
+// SetPosition warps the mob to a given location
+func (mob *GenericMob) SetPosition(pos *position.Absolute) {
+	mob.position = pos
+}
+
 // Flags returns the mob update flags for this mob
 func (mob *GenericMob) Flags() Flags {
 	return mob.flags
@@ -42,11 +47,6 @@ func (mob *GenericMob) SetFlags(f Flags) {
 
 func (mob *GenericMob) ClearFlags() {
 	mob.flags = 0
-}
-
-// SetPosition warps the mob to a given location
-func (mob *GenericMob) SetPosition(pos *position.Absolute) {
-	mob.position = pos
 }
 
 // AppearanceUpdate is called when the player's appearance changes

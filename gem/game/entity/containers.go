@@ -29,6 +29,10 @@ func (c *Collection) Clone() *Collection {
 // Add requests a new entity be added to the collection.
 // The new entity goes into the tracking list, and to the adding list
 func (c *Collection) Add(entity Entity) {
+	if entity == nil {
+		panic("added nil entity to collection")
+	}
+
 	if c.entities.Contains(entity) {
 		return
 	}
@@ -40,6 +44,10 @@ func (c *Collection) Add(entity Entity) {
 // Remove requests an entity be removed from the collection
 // The entity is removed from the tracking list, and added to the removing list
 func (c *Collection) Remove(entity Entity) {
+	if entity == nil {
+		panic("attempted to remove nil entity to collection")
+	}
+
 	c.unregister.Add(entity)
 }
 
@@ -165,7 +173,7 @@ func (list *Set) Remove(e Entity) {
 	} else if pos == len(list.order)-1 {
 		list.order = list.order[:pos]
 	} else {
-		list.order = append(list.order[:pos-1], list.order[pos:]...)
+		list.order = append(list.order[:pos], list.order[pos+1:]...)
 	}
 }
 

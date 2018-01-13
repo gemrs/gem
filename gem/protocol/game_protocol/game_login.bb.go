@@ -7,50 +7,6 @@ import (
 	"github.com/gemrs/gem/gem/encoding"
 )
 
-type OutboundLoginResponse struct {
-	Response encoding.Uint8
-	Rights   encoding.Uint8
-	Flagged  encoding.Uint8
-}
-
-func (struc *OutboundLoginResponse) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Response.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Rights.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Flagged.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (struc *OutboundLoginResponse) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Response.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Rights.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	err = struc.Flagged.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
 type OutboundLoginResponseUnsuccessful struct {
 	Response encoding.Uint8
 }
@@ -228,6 +184,50 @@ func (struc *InboundSecureLoginBlock) Decode(buf io.Reader, flags interface{}) (
 	}
 
 	err = struc.Password.Decode(buf, 0)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+type OutboundLoginResponse struct {
+	Response encoding.Uint8
+	Rights   encoding.Uint8
+	Flagged  encoding.Uint8
+}
+
+func (struc *OutboundLoginResponse) Encode(buf io.Writer, flags interface{}) (err error) {
+	err = struc.Response.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Rights.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Flagged.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (struc *OutboundLoginResponse) Decode(buf io.Reader, flags interface{}) (err error) {
+	err = struc.Response.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Rights.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	if err != nil {
+		return err
+	}
+
+	err = struc.Flagged.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	if err != nil {
 		return err
 	}

@@ -71,8 +71,8 @@ func (pos *Absolute) String() string {
 // Sector calculates the sector which contains an Absolute
 func (pos *Absolute) Sector() *Sector {
 	sector := NewSector(
-		pos.x/AreaSize,
-		pos.y/AreaSize,
+		pos.x/SectorSize,
+		pos.y/SectorSize,
 		pos.z,
 	)
 	return sector
@@ -88,10 +88,14 @@ func (pos *Absolute) RegionOf() *Region {
 // LocalTo calculates the local coordinates of an Absolute relative to a region
 func (pos *Absolute) LocalTo(region *Region) *Local {
 	local := NewLocal(
-		pos.x-(AreaSize*region.origin.x),
-		pos.y-(AreaSize*region.origin.y),
+		pos.x-(SectorSize*region.origin.x),
+		pos.y-(SectorSize*region.origin.y),
 		pos.z,
 		region,
 	)
 	return local
+}
+
+func (pos *Absolute) SectorLocal() (x, y int) {
+	return pos.X() % SectorSize, pos.Y() % SectorSize
 }

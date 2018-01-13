@@ -80,6 +80,7 @@ func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 	doForAllPlayers(allPlayers, (*player.Player).UpdateWaypointQueue)
 	doForAllPlayers(allPlayers, (*player.Player).SyncEntityList)
 	doForAllPlayers(allPlayers, (*player.Player).SendPlayerSync)
+	doForAllPlayers(allPlayers, (*player.Player).SendGroundItemSync)
 	doForAllPlayers(allPlayers, (*player.Player).UpdateVisibleEntities)
 	doForAllPlayers(allPlayers, (*player.Player).ProcessChatQueue)
 	doForAllPlayers(allPlayers, (*player.Player).ClearFlags)

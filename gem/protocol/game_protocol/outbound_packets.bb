@@ -56,3 +56,26 @@ type OutboundUpdateInventoryItem frame<34, Var16> struct {
 	ItemID uint16
 	Count  uint8
 }
+
+type OutboundCreateGlobalGroundItem frame<215, Fixed> struct {
+	ItemID uint16<IntOffset128>
+	PositionOffset uint8<IntInverse128>
+	Index uint16<IntOffset128>
+	Count uint16<IntOffset128>
+}
+
+type OutboundCreateGroundItem frame<44, Fixed> struct {
+	ItemID uint16<IntLittleEndian, IntOffset128>
+	Count uint16
+	PositionOffset uint8
+}
+
+type OutboundRemoveGroundItem frame<156, Fixed> struct {
+	PositionOffset uint8<IntOffset128>
+	ItemID uint16
+}
+
+type OutboundSetUpdatingSector frame<85, Fixed> struct {
+	PositionY uint8<IntNegate>
+	PositionX uint8<IntNegate>
+}

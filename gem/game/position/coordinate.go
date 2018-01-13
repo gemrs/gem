@@ -1,7 +1,7 @@
 package position
 
 const (
-	AreaSize   int = 8
+	SectorSize int = 8
 	RegionSize int = 13
 )
 

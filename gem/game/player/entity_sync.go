@@ -1,8 +1,11 @@
 package player
 
 import (
+	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/entity"
+	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/protocol/game_protocol"
 )
 
 const PlayerViewDistance = 1
@@ -52,5 +55,50 @@ func (player *Player) onSectorChange() {
 
 	for _, s := range added {
 		player.visibleEntities.AddAll(s.Collection)
+	}
+}
+
+func (player *Player) SendGroundItemSync() {
+	newItems := player.visibleEntities.Adding().Filter(entity.GroundItemType)
+	for _, entity := range newItems.Slice() {
+		player.setUpdatingSector(entity.Position().Sector())
+		itemPos := entity.Position()
+
+		item := entity.(*item.GroundItem)
+		stack := item.Item()
+
+		dx, dy := itemPos.SectorLocal()
+
+		player.Conn().Write <- &game_protocol.OutboundCreateGroundItem{
+			ItemID:         encoding.Uint16(stack.Definition().Id()),
+			PositionOffset: encoding.Uint8((dx << 4) + dy),
+			Count:          encoding.Uint16(stack.Count()),
+		}
+	}
+
+	removingItems := player.visibleEntities.Removing().Filter(entity.GroundItemType)
+	for _, entity := range removingItems.Slice() {
+		player.setUpdatingSector(entity.Position().Sector())
+		itemPos := entity.Position()
+
+		item := entity.(*item.GroundItem)
+		stack := item.Item()
+
+		dx, dy := itemPos.SectorLocal()
+
+		player.Conn().Write <- &game_protocol.OutboundRemoveGroundItem{
+			ItemID:         encoding.Uint16(stack.Definition().Id()),
+			PositionOffset: encoding.Uint8((dx << 4) + dy),
+		}
+	}
+}
+
+func (player *Player) setUpdatingSector(s *position.Sector) {
+	region := player.loadedRegion
+	regionOrigin := region.Origin()
+	dx, dy, _ := s.Min().Delta(regionOrigin.Min())
+	player.Conn().Write <- &game_protocol.OutboundSetUpdatingSector{
+		PositionX: encoding.Uint8(dx),
+		PositionY: encoding.Uint8(dy),
 	}
 }
