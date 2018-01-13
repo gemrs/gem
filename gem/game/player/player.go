@@ -64,6 +64,10 @@ func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
 	return player
 }
 
+func (player *Player) WorldInstance() *world.Instance {
+	return player.world
+}
+
 //glua:bind
 func (player *Player) Index() int {
 	return player.index

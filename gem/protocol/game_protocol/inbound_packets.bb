@@ -50,3 +50,9 @@ type InboundInventoryAction5 frame<87, Fixed> struct {
 	InterfaceID uint16
 	Slot uint16<IntOffset128>
 }
+
+type InboundTakeGroundItem frame<236, Fixed> struct {
+	Y uint16<IntLittleEndian>
+	ItemID uint16
+	X uint16<IntLittleEndian>
+}

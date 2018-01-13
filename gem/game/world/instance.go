@@ -42,6 +42,20 @@ func (instance *Instance) Sectors(s []*position.Sector) []*Sector {
 	return list
 }
 
+func (instance *Instance) EntitiesOnTile(p *position.Absolute) []entity.Entity {
+	entities := make([]entity.Entity, 0)
+	sectorPos := p.Sector()
+	sector := instance.Sector(sectorPos)
+
+	for _, entity := range sector.Entities().Slice() {
+		if entity.Position().Compare(p) {
+			entities = append(entities, entity)
+		}
+	}
+
+	return entities
+}
+
 func (instance *Instance) AllEntities(typ entity.EntityType) []entity.Entity {
 	entities := make([]entity.Entity, 0)
 	for _, s := range instance.sectors {

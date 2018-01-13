@@ -23,6 +23,7 @@ var definitions = []encoding.PacketHeader{
 	InboundInventoryAction3Definition,
 	InboundInventoryAction4Definition,
 	InboundInventoryAction5Definition,
+	InboundTakeGroundItemDefinition,
 }
 
 func init() {
