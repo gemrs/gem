@@ -12,7 +12,8 @@ import (
 
 //glua:bind
 type Context struct {
-	FS *rt3.JagFS
+	FS              *rt3.JagFS
+	ItemDefinitions []*rt3.ItemDefinition
 }
 
 //glua:bind constructor Context
@@ -24,7 +25,16 @@ func NewContext() *Context {
 func (r *Context) Unpack(dataFile string, indexFiles []string) error {
 	var err error
 	r.FS, err = UnpackJagFSFiles(dataFile, indexFiles)
-	return err
+	if err != nil {
+		return err
+	}
+
+	r.ItemDefinitions, err = rt3.LoadItemDefinitions(r.FS)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func UnpackJagFS(data *bytes.Buffer, indices []*bytes.Buffer) (*rt3.JagFS, error) {

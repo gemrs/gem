@@ -41,48 +41,50 @@ func player_inv_action(p *player.Player, packet encoding.Decodable) {
 		slot = int(packet.Slot)
 		interfaceId = int(packet.InterfaceID)
 		itemId = int(packet.ItemID)
-		actionIndex = 1
+		actionIndex = 0
 
 	case *game_protocol.InboundInventoryAction2:
 		slot = int(packet.Slot)
 		interfaceId = int(packet.InterfaceID)
 		itemId = int(packet.ItemID)
-		actionIndex = 2
+		actionIndex = 1
 
 	case *game_protocol.InboundInventoryAction3:
 		slot = int(packet.Slot)
 		interfaceId = int(packet.InterfaceID)
 		itemId = int(packet.ItemID)
-		actionIndex = 3
+		actionIndex = 2
 
 	case *game_protocol.InboundInventoryAction4:
 		slot = int(packet.Slot)
 		interfaceId = int(packet.InterfaceID)
 		itemId = int(packet.ItemID)
-		actionIndex = 4
+		actionIndex = 3
 
 	case *game_protocol.InboundInventoryAction5:
 		slot = int(packet.Slot)
 		interfaceId = int(packet.InterfaceID)
 		itemId = int(packet.ItemID)
-		actionIndex = 5
+		actionIndex = 4
 
 	default:
 		panic("Unknown inventory action packet")
 	}
 
-	// FIXME validate
-	// FIXME work out actual action by loading from obj.dat
-	actionString := ""
-	if actionIndex == 5 {
-		actionString = "Drop"
-	}
-
-	_ = itemId
-
 	switch interfaceId {
 	case player.RevisionConstants.InventoryInterfaceId:
 		stack := p.Profile().Inventory().Slot(slot)
+
+		if stack.Definition().Id() != itemId {
+			panic("inventory action validation failed")
+		}
+
+		actions := stack.Definition().Actions()
+		actionString := actions[actionIndex]
+		if actionIndex == 4 {
+			actionString = "Drop"
+		}
+
 		game_event.PlayerInventoryAction.NotifyObservers(p, stack, slot, actionString)
 
 	default:

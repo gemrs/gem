@@ -18,8 +18,6 @@ local logger = log.Module("lua_main")
 logger:info("Starting " .. version_string)
 
 -- Load data files
-item.load_definitions(config.item_definition_file)
-
 local data_ctx = runite.Context()
 data_ctx:unpack(config.game_data_file, config.game_index_files)
 

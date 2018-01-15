@@ -25,20 +25,8 @@ func lBinditem(L *lua.LState) int {
 
 	lBindStack(L, mod)
 
-	L.SetField(mod, "load_definitions", L.NewFunction(lBindLoadDefinitions))
-
 	L.Push(mod)
 	return 1
-}
-
-func lBindLoadDefinitions(L *lua.LState) int {
-	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(string)
-	L.Remove(1)
-	retVal := LoadDefinitions(arg0)
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
 }
 
 func lBindContainer(L *lua.LState, mod *lua.LTable) {
@@ -210,7 +198,7 @@ func lNewDefinition(L *lua.LState) int {
 
 var DefinitionMethods = map[string]lua.LGFunction{
 
-	"examine": lBindDefinitionExamine,
+	"description": lBindDefinitionDescription,
 
 	"id": lBindDefinitionId,
 
@@ -231,10 +219,10 @@ var DefinitionMethods = map[string]lua.LGFunction{
 	"stackable": lBindDefinitionStackable,
 }
 
-func lBindDefinitionExamine(L *lua.LState) int {
+func lBindDefinitionDescription(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Definition)
 	L.Remove(1)
-	retVal := self.Examine()
+	retVal := self.Description()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 

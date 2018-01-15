@@ -1,28 +1,15 @@
 package item
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"github.com/gemrs/gem/gem/runite"
+	"github.com/gemrs/gem/gem/runite/format/rt3"
 )
 
 var definitions []Definition
 
-type definitionModel struct {
-	Id        int
-	Name      string
-	Examine   string
-	Noted     bool
-	Notable   bool
-	Stackable bool
-	ParentId  int
-	NotedId   int
-	Members   bool
-	ShopValue int
-}
-
 //glua:bind
 type Definition struct {
-	data definitionModel
+	data rt3.ItemDefinition
 }
 
 //glua:bind constructor Definition
@@ -30,8 +17,11 @@ func NewDefinition(id int) *Definition {
 	return &definitions[id]
 }
 
-func (d *Definition) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, &d.data)
+func LoadDefinitions(ctx *runite.Context) {
+	definitions = make([]Definition, len(ctx.ItemDefinitions))
+	for i, def := range ctx.ItemDefinitions {
+		definitions[i].data = *def
+	}
 }
 
 //glua:bind
@@ -45,8 +35,16 @@ func (d *Definition) Name() string {
 }
 
 //glua:bind
-func (d *Definition) Examine() string {
-	return d.data.Examine
+func (d *Definition) Description() string {
+	return d.data.Description
+}
+
+func (d *Definition) Actions() []string {
+	return d.data.Actions
+}
+
+func (d *Definition) GroundActions() []string {
+	return d.data.GroundActions
 }
 
 //glua:bind
@@ -82,19 +80,4 @@ func (d *Definition) Members() bool {
 //glua:bind
 func (d *Definition) ShopValue() int {
 	return d.data.ShopValue
-}
-
-//glua:bind
-func LoadDefinitions(path string) error {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(data, &definitions)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

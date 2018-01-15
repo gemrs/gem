@@ -71,3 +71,12 @@ func (a *ArchiveFS) ResolveArchive(archive string) (crc []byte, err error) {
 
 	return nil, fmt.Errorf("no such archive: %v", err)
 }
+
+func (a *ArchiveFS) Archive(archive string) (*JagArchive, error) {
+	bytes, err := a.File(archiveIndices[archive])
+	if err != nil {
+		return nil, err
+	}
+
+	return NewJagArchive(bytes)
+}
