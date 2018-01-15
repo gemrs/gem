@@ -2,12 +2,11 @@ package rt3
 
 import (
 	"bytes"
+	"compress/bzip2"
 	"errors"
 	"io"
 	"io/ioutil"
 	"strings"
-
-	"github.com/dsnet/compress/bzip2"
 
 	"github.com/gemrs/gem/gem/encoding"
 )
@@ -127,12 +126,7 @@ func (struc *arcHeader) Decode(buf io.Reader, flags interface{}) (err error) {
 func headerlessBzip2Decompress(compressed []byte) ([]byte, error) {
 	bzipData := append([]byte{'B', 'Z', 'h', '1'}, compressed...)
 	reader := bytes.NewReader(bzipData)
-	config := bzip2.ReaderConfig{}
-	bzip2Reader, err := bzip2.NewReader(reader, &config)
-	if err != nil {
-		return nil, err
-	}
-
+	bzip2Reader := bzip2.NewReader(reader)
 	uncompressed, err := ioutil.ReadAll(bzip2Reader)
 	if err != nil {
 		return nil, err
