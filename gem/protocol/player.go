@@ -27,6 +27,7 @@ type Profile interface {
 	Username() string
 	Rights() Rights
 	Inventory() *item.Container
+	Equipment() Equipment
 	Appearance() Appearance
 	Skills() Skills
 	Position() *position.Absolute
@@ -40,7 +41,6 @@ type Player interface {
 	Profile() Profile
 	WorldInstance() World
 	Position() *position.Absolute
-	Animations() Animations
 	LoadedRegion() *position.Region
 	SetWalkDestination(pos *position.Absolute) bool
 	SetRunning(bool)
@@ -101,23 +101,6 @@ type Appearance interface {
 	Color(b BodyPart) int
 }
 
-type Anim int
-
-const (
-	AnimIdle Anim = iota
-	AnimSpotRotate
-	AnimWalk
-	AnimRotate180
-	AnimRotateCCW
-	AnimRotateCW
-	AnimRun
-	AnimMax
-)
-
-type Animations interface {
-	Animation(anim Anim) int
-}
-
 //glua:bind
 type SkillId int
 
@@ -153,4 +136,10 @@ const (
 type Skills interface {
 	CombatLevel() int
 	//	Skill(id SkillId) *Skill
+}
+
+type Equipment interface {
+	Equip(slot int, item *item.Stack) (oldEquipment *item.Stack)
+	Container() *item.Container
+	Slot(i int) *item.Stack
 }

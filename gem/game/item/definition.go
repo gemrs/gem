@@ -7,29 +7,41 @@ import (
 
 //glua:bind
 type Definition struct {
-	data *rt3.ItemDefinition
+	itemData      *rt3.ItemDefinition
+	weaponData    data.WeaponDef
+	equipmentData data.EquipmentDef
 }
 
 //glua:bind constructor Definition
 func NewDefinition(id int) *Definition {
-	data, err := data.Config.Item(id)
+	itemData, err := data.Config.Item(id)
 	if err != nil {
 		return nil
 	}
 
-	return &Definition{
-		data: data,
+	definition := &Definition{
+		itemData: itemData,
 	}
+
+	if weaponData, ok := data.Weapons[id]; ok {
+		definition.weaponData = weaponData
+	}
+
+	if equipmentData, ok := data.Equipment[id]; ok {
+		definition.equipmentData = equipmentData
+	}
+
+	return definition
 }
 
 //glua:bind
 func (d *Definition) Id() int {
-	return d.data.Id
+	return d.itemData.Id
 }
 
 //glua:bind
 func (d *Definition) Name() string {
-	return d.data.Name
+	return d.itemData.Name
 }
 
 //glua:bind
@@ -38,24 +50,32 @@ func (d *Definition) Description() string {
 }
 
 func (d *Definition) Actions() []string {
-	return d.data.InventoryActions[:]
+	return d.itemData.InventoryActions[:]
 }
 
 func (d *Definition) GroundActions() []string {
-	return d.data.GroundActions[:]
+	return d.itemData.GroundActions[:]
 }
 
 //glua:bind
 func (d *Definition) Stackable() bool {
-	return d.data.Stackable || d.data.NotedTemplate >= 0
+	return d.itemData.Stackable || d.itemData.NotedTemplate >= 0
 }
 
 //glua:bind
 func (d *Definition) NotedId() int {
-	return d.data.NotedId
+	return d.itemData.NotedId
 }
 
 //glua:bind
 func (d *Definition) ShopValue() int {
-	return d.data.ShopValue
+	return d.itemData.ShopValue
+}
+
+func (d *Definition) WeaponData() *data.WeaponDef {
+	return &d.weaponData
+}
+
+func (d *Definition) EquipmentData() *data.EquipmentDef {
+	return &d.equipmentData
 }

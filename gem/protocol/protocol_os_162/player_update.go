@@ -6,7 +6,9 @@ import (
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
+	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/game/entity"
+	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/protocol"
 )
 
@@ -282,61 +284,110 @@ func (struc PlayerUpdate) buildChatUpdateBlock(maskBuf *encoding.Buffer, thisPla
 
 func (struc PlayerUpdate) buildAppearanceUpdateBlock(maskBuf *encoding.Buffer, thisPlayer protocol.Player) {
 	appearance := thisPlayer.Profile().Appearance()
-	anims := thisPlayer.Animations()
 	appearanceBuf := encoding.NewBuffer()
 
 	appearanceBuf.PutU8(appearance.Gender())
 	appearanceBuf.PutU8(appearance.SkullIcon())
 	appearanceBuf.PutU8(appearance.HeadIcon())
 
-	// Helm
-	appearanceBuf.PutU8(0)
-	// Cape
-	appearanceBuf.PutU8(0)
-	// Amulet
-	appearanceBuf.PutU8(0)
-	// Right wield
-	appearanceBuf.PutU8(0)
-	// Torso
-	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartTorso))
-	// Left wield
-	appearanceBuf.PutU8(0)
-	// Arms Model
-	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartArms))
-	// Legs Model
-	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartLegs))
-	// Head Model
-	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartHead))
-	// Hands Model
-	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartHands))
-	// Feet Model
-	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartFeet))
-	// Beard Model
-	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartBeard))
-	// Hair Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartHair))
-	// Torso Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartTorso))
-	// Leg Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartLegs))
-	// Feet Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartFeet))
-	// Skin Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartSkin))
-	// Anim Idle
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimIdle))
-	// Anim Spot
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimSpotRotate))
-	// Anim Walk
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimWalk))
-	// Anim Rot180
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotate180))
-	// Anim RotCCW
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotateCCW))
-	// Anim RotCW
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotateCW))
-	// Anim Run
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRun))
+	var anims *data.Animations
+	equipment := thisPlayer.Profile().Equipment()
+	if weapon := equipment.Slot(item.EquipmentWeapon); weapon != nil {
+		anims = weapon.Definition().WeaponData().CharAnimations()
+	} else {
+		anims = data.DefaultAnimations
+	}
+
+	var torsoCoversArms, helmCoversFace, helmCoversHair bool
+	if torso := equipment.Slot(item.EquipmentTorso); torso != nil {
+		torsoCoversArms = torso.Definition().EquipmentData().CoversArms()
+	}
+
+	if helm := equipment.Slot(item.EquipmentHelm); helm != nil {
+		helmCoversFace = helm.Definition().EquipmentData().CoversFace()
+		helmCoversHair = helm.Definition().EquipmentData().CoversHair()
+	}
+
+	for _, slot := range []int{
+		item.EquipmentHelm,
+		item.EquipmentCape,
+		item.EquipmentAmulet,
+		item.EquipmentWeapon} {
+		if e := equipment.Slot(slot); e != nil {
+			appearanceBuf.PutU16(0x200 + e.Definition().Id())
+		} else {
+			appearanceBuf.PutU8(0)
+		}
+	}
+
+	if e := equipment.Slot(item.EquipmentTorso); e != nil {
+		appearanceBuf.PutU16(0x200 + e.Definition().Id())
+	} else {
+		appearanceBuf.PutU16(0x100 + appearance.Model(protocol.BodyPartTorso))
+	}
+
+	if e := equipment.Slot(item.EquipmentShield); e != nil {
+		appearanceBuf.PutU16(0x200 + e.Definition().Id())
+	} else {
+		appearanceBuf.Put8(0)
+	}
+
+	if e := equipment.Slot(item.EquipmentTorso); e != nil && !torsoCoversArms {
+		appearanceBuf.PutU8(0)
+	} else {
+		appearanceBuf.PutU16(0x100 + appearance.Model(protocol.BodyPartArms))
+	}
+
+	if e := equipment.Slot(item.EquipmentLegs); e != nil {
+		appearanceBuf.PutU16(0x200 + e.Definition().Id())
+	} else {
+		appearanceBuf.PutU16(0x100 + appearance.Model(protocol.BodyPartLegs))
+	}
+
+	if e := equipment.Slot(item.EquipmentHelm); e == nil && !helmCoversHair && !helmCoversFace {
+		appearanceBuf.PutU16(0x100 + appearance.Model(protocol.BodyPartHead))
+	} else {
+		appearanceBuf.PutU8(0)
+	}
+
+	if e := equipment.Slot(item.EquipmentHands); e != nil {
+		appearanceBuf.PutU16(0x200 + e.Definition().Id())
+	} else {
+		appearanceBuf.PutU16(0x100 + appearance.Model(protocol.BodyPartHands))
+	}
+
+	if e := equipment.Slot(item.EquipmentFeet); e != nil {
+		appearanceBuf.PutU16(0x200 + e.Definition().Id())
+	} else {
+		appearanceBuf.PutU16(0x100 + appearance.Model(protocol.BodyPartFeet))
+	}
+
+	if e := equipment.Slot(item.EquipmentHelm); (e != nil && helmCoversFace) || appearance.Gender() == 1 {
+		appearanceBuf.PutU8(0)
+	} else {
+		appearanceBuf.PutU16(0x100 + appearance.Model(protocol.BodyPartBeard))
+	}
+
+	for _, part := range []protocol.BodyPart{
+		protocol.BodyPartHair,
+		protocol.BodyPartTorso,
+		protocol.BodyPartLegs,
+		protocol.BodyPartFeet,
+		protocol.BodyPartSkin} {
+		appearanceBuf.PutU8(appearance.Color(part))
+	}
+
+	for _, anim := range []int{
+		anims.Idle,
+		anims.SpotRotate,
+		anims.Walk,
+		anims.Rotate180,
+		anims.RotateCCW,
+		anims.RotateCW,
+		anims.Run} {
+		appearanceBuf.PutU16(anim)
+	}
+
 	// Name
 	appearanceBuf.PutStringZ(thisPlayer.Profile().Username())
 	// Combat level

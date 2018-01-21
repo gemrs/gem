@@ -26,11 +26,15 @@ func lBinddata(L *lua.LState) int {
 
 	L.SetField(mod, "load_config", L.NewFunction(lBindLoadConfig))
 
+	L.SetField(mod, "load_equipment_data", L.NewFunction(lBindLoadEquipmentData))
+
 	L.SetField(mod, "load_huffman_table", L.NewFunction(lBindLoadHuffmanTable))
 
 	L.SetField(mod, "load_map", L.NewFunction(lBindLoadMap))
 
 	L.SetField(mod, "load_map_keys", L.NewFunction(lBindLoadMapKeys))
+
+	L.SetField(mod, "load_weapon_data", L.NewFunction(lBindLoadWeaponData))
 
 	L.Push(mod)
 	return 1
@@ -87,6 +91,16 @@ func lBindLoadConfig(L *lua.LState) int {
 
 }
 
+func lBindLoadEquipmentData(L *lua.LState) int {
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(string)
+	L.Remove(1)
+	retVal := LoadEquipmentData(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
 func lBindLoadHuffmanTable(L *lua.LState) int {
 	arg0Value := L.Get(1)
 	arg0 := glua.FromLua(arg0Value).(*runite.Context)
@@ -113,5 +127,15 @@ func lBindLoadMapKeys(L *lua.LState) int {
 	L.Remove(1)
 	LoadMapKeys(arg0)
 	return 0
+
+}
+
+func lBindLoadWeaponData(L *lua.LState) int {
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(string)
+	L.Remove(1)
+	retVal := LoadWeaponData(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
 
 }

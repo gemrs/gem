@@ -37,7 +37,6 @@ type Player struct {
 	secureBlockSize int
 
 	profile      protocol.Profile
-	animations   *Animations
 	clientConfig *ClientConfig
 	currentFrame protocol.FrameType
 }
@@ -61,7 +60,6 @@ func NewPlayer(index int, conn *server.Connection, worldInst *world.Instance) *P
 	player.GenericMob = entityimpl.NewGenericMob(wpq)
 
 	player.visibleEntities = entity.NewCollection()
-	player.animations = NewAnimations()
 	player.clientConfig = NewClientConfig(player)
 	return player
 }
@@ -119,10 +117,6 @@ func (player *Player) LoadedRegion() *position.Region {
 
 func (player *Player) VisibleEntities() *entity.Collection {
 	return player.visibleEntities
-}
-
-func (player *Player) Animations() protocol.Animations {
-	return player.animations
 }
 
 // Profile returns the player's profile

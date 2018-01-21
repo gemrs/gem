@@ -23,6 +23,7 @@ type Profile struct {
 	skills     *Skills
 	appearance *Appearance
 	inventory  *item.Container
+	equipment  *Equipment
 }
 
 //glua:bind constructor Profile
@@ -32,17 +33,21 @@ func NewProfile(username, password string) *Profile {
 		password:   password,
 		skills:     NewSkills(),
 		appearance: NewAppearance(),
-		inventory:  item.NewContainer(28),
+		inventory:  item.NewContainer(data.Int("inventory.inventory_size")),
+		equipment:  NewEquipment(),
 	}
+
 	profile.inventory.SetInterfaceLocation(
 		data.Int("widget.inventory_group_id"), 0,
 		data.Int("inventory.inventory"))
+
 	return profile
 }
 
 func (p *Profile) SetPlayer(player protocol.Player) {
 	p.skills.setPlayer(player)
 	p.appearance.setPlayer(player)
+	p.equipment.setPlayer(player)
 }
 
 //glua:bind
@@ -81,6 +86,11 @@ func (p *Profile) Skills() protocol.Skills {
 //glua:bind
 func (p *Profile) Inventory() *item.Container {
 	return p.inventory
+}
+
+//glua:bind
+func (p *Profile) Equipment() protocol.Equipment {
+	return p.equipment
 }
 
 func (p *Profile) Appearance() protocol.Appearance {

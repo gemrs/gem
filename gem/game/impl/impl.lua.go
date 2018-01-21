@@ -332,6 +332,8 @@ func lNewProfile(L *lua.LState) int {
 
 var ProfileMethods = map[string]lua.LGFunction{
 
+	"equipment": lBindProfileEquipment,
+
 	"inventory": lBindProfileInventory,
 
 	"password": lBindProfilePassword,
@@ -343,6 +345,15 @@ var ProfileMethods = map[string]lua.LGFunction{
 	"username": lBindProfileUsername,
 
 	"position": lBindPropProfilePosition,
+}
+
+func lBindProfileEquipment(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Profile)
+	L.Remove(1)
+	retVal := self.Equipment()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
 }
 
 func lBindProfileInventory(L *lua.LState) int {
