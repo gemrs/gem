@@ -19,6 +19,7 @@ type PlayerUpdateData struct {
 	Skills           Skills
 }
 
+// +gen pack_outgoing
 type PlayerUpdate struct {
 	Me       PlayerUpdateData
 	Others   map[int]PlayerUpdateData

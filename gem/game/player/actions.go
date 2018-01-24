@@ -2,13 +2,12 @@ package player
 
 import (
 	"github.com/gemrs/gem/gem/game/entity"
-	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/protocol"
 )
 
 // SendPlayerSync sends the player update block
 func (player *Player) SendPlayerSync() {
-	player.Conn().Write <- server.Proto.Encode(buildPlayerUpdate(player))
+	player.Conn().Write <- buildPlayerUpdate(player)
 }
 
 // SendMessage puts a message to the player's chat window
