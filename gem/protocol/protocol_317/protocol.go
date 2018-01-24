@@ -10,11 +10,11 @@ var Protocol protocolImpl
 
 type OutboundPacketDefinition struct {
 	Number int
-	Size   encoding.FrameSize
+	Size   FrameSize
 }
 
 func (d OutboundPacketDefinition) Pack(e encoding.Encodable) encoding.Encodable {
-	return encoding.PacketHeader{
+	return PacketHeader{
 		Number: d.Number,
 		Size:   d.Size,
 		Object: e,
@@ -24,11 +24,11 @@ func (d OutboundPacketDefinition) Pack(e encoding.Encodable) encoding.Encodable 
 type InboundPacketDefinition struct {
 	Type   encoding.Decodable
 	Number int
-	Size   encoding.FrameSize
+	Size   FrameSize
 }
 
 func (d InboundPacketDefinition) Pack(e encoding.Encodable) encoding.Encodable {
-	return encoding.PacketHeader{
+	return PacketHeader{
 		Number: d.Number,
 		Size:   d.Size,
 		Object: e,

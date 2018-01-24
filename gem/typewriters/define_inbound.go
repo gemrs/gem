@@ -95,7 +95,7 @@ var inboundBuildTmpl = template.Must(template.New("").Parse(`
 var inboundPacketBuilders = map[int]func() encoding.Decodable{
 {{range .}}
 	{{.Number}}: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: {{.Name}}Definition.Number,
 			Size: {{.Name}}Definition.Size,
 			Object: new({{.Name}}),
@@ -114,7 +114,7 @@ func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 	case *UnknownPacket:
 		return (*protocol.UnknownPacket)(message)
 
-	case *encoding.PacketHeader:
+	case *PacketHeader:
 		return p.Decode(message.Object.(encoding.Decodable))
 	}
 	panic(fmt.Sprintf("cannot decode %T", message))

@@ -30,7 +30,7 @@ func (struc *InboundPlayerWalkEntity) Decode(buf io.Reader, flags interface{}) {
 }
 
 func decodeWalk(buf io.Reader, flags interface{}, struc *protocol.InboundPlayerWalk) {
-	header := flags.(*encoding.PacketHeader)
+	header := flags.(*PacketHeader)
 	if header.Number == InboundPlayerWalkMapDefinition.Number {
 		// The map walk packet appends 14 extra bytes
 		// Not sure what it is yet. Maybe anti-cheat stuff. It's in method92. Ignore it for now.
