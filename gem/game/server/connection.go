@@ -1,26 +1,15 @@
 package server
 
 import (
+	"fmt"
 	"io"
 	"net"
+	"runtime"
 
-	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/core/encoding"
 	"github.com/gemrs/gem/gem/util/safe"
 	"github.com/gemrs/willow/log"
 )
-
-const (
-	GameServiceType   encoding.Int8 = 14
-	UpdateServiceType encoding.Int8 = 15
-)
-
-// Client is a common interface to game/update clients
-type Client interface {
-	Conn() *Connection
-	Decode() error
-	Encode(encoding.Encodable) error
-	Disconnect()
-}
 
 // Connection is a network-level representation of the connection.
 // It handles read/write buffering, and decodes data into game packets or update requests for processing
@@ -46,6 +35,10 @@ func NewConnection(conn net.Conn, parentLogger log.Log) *Connection {
 		log:            parentLogger.Child("connection", log.MapContext{"addr": conn.RemoteAddr().String()}),
 		conn:           conn,
 	}
+}
+
+func (c *Connection) NetConn() net.Conn {
+	return c.conn
 }
 
 func (c *Connection) Expired() chan bool {
@@ -88,7 +81,7 @@ func (conn *Connection) Disconnect() {
 // decodeToReadQueue is the goroutine handling the read buffer
 // reads from the buffer, decodes Codables using conn.decode, which can choose
 // to either handle the data or place a Codable into the read queue
-func decodeToReadQueue(client Client) {
+func decodeToReadQueue(client GameClient) {
 	conn := client.Conn()
 	defer safe.Recover(conn.Log())
 	for {
@@ -103,10 +96,23 @@ func decodeToReadQueue(client Client) {
 		// todo: formalize this and check for the right error
 		canTrim := false
 		toRead := conn.ReadBuffer.Len()
+		stack := make([]byte, 1024*10)
 		for toRead > 0 && err == nil {
-			err = conn.ReadBuffer.Try(func(b *encoding.Buffer) error {
-				return client.Decode()
+			err = conn.ReadBuffer.Try(func(b *encoding.Buffer) (err error) {
+				defer func() {
+					if e := recover(); e != nil {
+						if e, ok := e.(error); ok {
+							err = e
+						} else {
+							err = fmt.Errorf("%v", e)
+						}
+						runtime.Stack(stack, true)
+					}
+				}()
+				client.Decode()
+				return nil
 			})
+
 			if err == nil {
 				canTrim = true
 			}
@@ -114,6 +120,7 @@ func decodeToReadQueue(client Client) {
 
 		if err != nil && err != io.EOF {
 			conn.Log().Error("decode returned non EOF error: %v", err)
+			conn.Log().Error(string(stack))
 		}
 
 		if canTrim {
@@ -125,7 +132,7 @@ func decodeToReadQueue(client Client) {
 
 // encodeFromWriteQueue is the goroutine handling the write buffer
 // picks from conn.write, encodes the Codables, and flushes the write buffer
-func encodeFromWriteQueue(client Client) {
+func encodeFromWriteQueue(client GameClient) {
 	conn := client.Conn()
 	defer safe.Recover(conn.Log())
 L:

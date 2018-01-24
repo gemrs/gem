@@ -4,7 +4,7 @@ package update_protocol
 import (
 	"io"
 
-	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/core/encoding"
 )
 
 type InboundUpdateRequest struct {
@@ -13,42 +13,22 @@ type InboundUpdateRequest struct {
 	Priority encoding.Int8
 }
 
-func (struc *InboundUpdateRequest) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *InboundUpdateRequest) Encode(buf io.Writer, flags interface{}) {
+	struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.File.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.File.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Priority.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Priority.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	return err
 }
 
-func (struc *InboundUpdateRequest) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *InboundUpdateRequest) Decode(buf io.Reader, flags interface{}) {
+	struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.File.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.File.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Priority.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Priority.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	return err
 }
 
 type OutboundUpdateResponse struct {
@@ -59,60 +39,28 @@ type OutboundUpdateResponse struct {
 	Data  encoding.Bytes
 }
 
-func (struc *OutboundUpdateResponse) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *OutboundUpdateResponse) Encode(buf io.Writer, flags interface{}) {
+	struc.Index.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.File.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.File.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Size.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Size.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Chunk.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Chunk.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Data.Encode(buf, 500)
-	if err != nil {
-		return err
-	}
+	struc.Data.Encode(buf, 500)
 
-	return err
 }
 
-func (struc *OutboundUpdateResponse) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *OutboundUpdateResponse) Decode(buf io.Reader, flags interface{}) {
+	struc.Index.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.File.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.File.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Size.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Size.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Chunk.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Chunk.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Data.Decode(buf, 500)
-	if err != nil {
-		return err
-	}
+	struc.Data.Decode(buf, 500)
 
-	return err
 }

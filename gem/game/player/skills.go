@@ -2,6 +2,8 @@ package player
 
 import (
 	"math"
+
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 var experienceTable [99]int
@@ -26,34 +28,6 @@ func skillExpToLevel(exp int) int {
 }
 
 //glua:bind
-type SkillId int
-
-//glua:bind
-const (
-	SkillAttack SkillId = iota
-	SkillDefence
-	SkillStrength
-	SkillHitpoints
-	SkillRange
-	SkillPrayer
-	SkillMagic
-	SkillCooking
-	SkillWoodcutting
-	SkillFletching
-	SkillFishing
-	SkillFiremaking
-	SkillCrafting
-	SkillSmithing
-	SkillMining
-	SkillHerblore
-	SkillAgility
-	SkillThieving
-	SkillSlayer
-	SkillFarming
-	SkillRunecrafting
-)
-
-//glua:bind
 type Skills struct {
 	player *Player
 
@@ -65,7 +39,7 @@ type Skills struct {
 func NewSkills() *Skills {
 	skills := &Skills{}
 	for i := range skills.skills {
-		skills.skills[i] = NewSkill(SkillId(i), 0) // skill?
+		skills.skills[i] = NewSkill(protocol.SkillId(i), 0) // skill?
 	}
 	return skills
 }
@@ -97,21 +71,21 @@ func (s *Skills) SetCombatLevel(combatLevel int) {
 }
 
 //glua:bind
-func (s *Skills) Skill(id SkillId) *Skill {
+func (s *Skills) Skill(id protocol.SkillId) *Skill {
 	return s.skills[id]
 }
 
 //glua:bind
 type Skill struct {
 	player          *Player
-	id              SkillId
+	id              protocol.SkillId
 	experience      int
 	levelPercentage int
 	levelOffset     int
 }
 
 //glua:bind constructor Skill
-func NewSkill(id SkillId, experience int) *Skill {
+func NewSkill(id protocol.SkillId, experience int) *Skill {
 	return &Skill{
 		id:              id,
 		experience:      experience,

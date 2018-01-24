@@ -1,10 +1,9 @@
 package player
 
 import (
-	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/position"
-	"github.com/gemrs/gem/gem/protocol/game_protocol"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 // SetPosition warps the mob to a given location
@@ -44,9 +43,9 @@ func (player *Player) RegionChange() {
 	player.loadedRegion = player.Position().RegionOf()
 
 	sector := player.Position().Sector()
-	player.Conn().Write <- &game_protocol.OutboundRegionUpdate{
-		SectorX: encoding.Uint16(sector.X()),
-		SectorY: encoding.Uint16(sector.Y()),
+	player.Conn().Write <- protocol.OutboundRegionUpdate{
+		SectorX: sector.X(),
+		SectorY: sector.Y(),
 	}
 
 	player.SetFlags(entity.MobFlagRegionUpdate)

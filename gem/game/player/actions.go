@@ -1,45 +1,45 @@
 package player
 
 import (
-	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/entity"
-	"github.com/gemrs/gem/gem/protocol/game_protocol"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 // SendPlayerSync sends the player update block
 func (player *Player) SendPlayerSync() {
-	player.Conn().Write <- NewPlayerUpdateBlock(player)
+	player.Conn().Write <- server.Proto.Encode(buildPlayerUpdate(player))
 }
 
 // SendMessage puts a message to the player's chat window
 //glua:bind
 func (player *Player) SendMessage(message string) {
-	player.Conn().Write <- &game_protocol.OutboundChatMessage{
-		Message: encoding.JString(message),
+	player.Conn().Write <- protocol.OutboundChatMessage{
+		Message: message,
 	}
 }
 
 // SendMessage puts a message to the player's chat window
 //glua:bind
 func (player *Player) sendSkill(id, level, experience int) {
-	player.Conn().Write <- &game_protocol.OutboundSkill{
-		Skill:      encoding.Uint8(id),
-		Level:      encoding.Uint8(level),
-		Experience: encoding.Uint32(experience),
+	player.Conn().Write <- protocol.OutboundSkill{
+		Skill:      id,
+		Level:      level,
+		Experience: experience,
 	}
 }
 
 func (player *Player) sendTabInterface(tab, id int) {
-	player.Conn().Write <- &game_protocol.OutboundTabInterface{
-		Tab:         encoding.Uint8(tab),
-		InterfaceID: encoding.Uint16(id),
+	player.Conn().Write <- protocol.OutboundTabInterface{
+		Tab:         tab,
+		InterfaceID: id,
 	}
 }
 
 // Ask the player to log out
 //glua:bind
 func (player *Player) SendForceLogout() {
-	player.Conn().Write <- &game_protocol.OutboundLogout{}
+	player.Conn().Write <- protocol.OutboundLogout{}
 }
 
 func (player *Player) ClearFlags() {

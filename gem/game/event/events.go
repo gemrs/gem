@@ -2,7 +2,7 @@
 package game_event
 
 import (
-	"github.com/gemrs/gem/gem/event"
+	"github.com/gemrs/gem/gem/core/event"
 )
 
 //go:generate glua .

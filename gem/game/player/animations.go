@@ -1,17 +1,6 @@
 package player
 
-type Anim int
-
-const (
-	AnimIdle Anim = iota
-	AnimSpotRotate
-	AnimWalk
-	AnimRotate180
-	AnimRotateCCW
-	AnimRotateCW
-	AnimRun
-	AnimMax
-)
+import "github.com/gemrs/gem/gem/protocol"
 
 type Animations struct {
 	idle       int
@@ -35,21 +24,21 @@ func NewAnimations() *Animations {
 	}
 }
 
-func (a *Animations) Animation(anim Anim) int {
+func (a *Animations) Animation(anim protocol.Anim) int {
 	switch anim {
-	case AnimIdle:
+	case protocol.AnimIdle:
 		return a.idle
-	case AnimSpotRotate:
+	case protocol.AnimSpotRotate:
 		return a.spotRotate
-	case AnimWalk:
+	case protocol.AnimWalk:
 		return a.walk
-	case AnimRotate180:
+	case protocol.AnimRotate180:
 		return a.rotate180
-	case AnimRotateCCW:
+	case protocol.AnimRotateCCW:
 		return a.rotateCCW
-	case AnimRotateCW:
+	case protocol.AnimRotateCW:
 		return a.rotateCW
-	case AnimRun:
+	case protocol.AnimRun:
 		return a.run
 	}
 	panic("not reached")

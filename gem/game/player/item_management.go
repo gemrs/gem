@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/gemrs/gem/gem/event"
+	"github.com/gemrs/gem/gem/core/event"
 	"github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/util/expire"

@@ -8,16 +8,18 @@ import (
 
 	"github.com/gemrs/gem/gem/archive"
 	"github.com/gemrs/gem/gem/auth"
+	"github.com/gemrs/gem/gem/core/event"
+	"github.com/gemrs/gem/gem/core/log"
 	"github.com/gemrs/gem/gem/engine"
 	engine_event "github.com/gemrs/gem/gem/engine/event"
-	"github.com/gemrs/gem/gem/event"
 	"github.com/gemrs/gem/gem/game"
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/gem/protocol"
+	"github.com/gemrs/gem/gem/protocol/protocol_317"
 	"github.com/gemrs/gem/gem/runite"
 	willow "github.com/gemrs/willow/log"
 	lua "github.com/yuin/gopher-lua"
@@ -61,7 +63,10 @@ func main() {
 	position.Bindposition(L)
 	engine_event.Bindengine_event(L)
 	game_event.Bindgame_event(L)
+	protocol.Bindprotocol(L)
 	item.Binditem(L)
+
+	server.SetProtocolImpl(protocol_317.Protocol)
 
 	if *unsafeLua {
 		if fn, err := L.LoadFile(mainFile); err != nil {

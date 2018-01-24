@@ -25,12 +25,12 @@ data_ctx:unpack(config.game_data_file, config.game_index_files)
 local archive_server = archive.Server()
 local game_server = server.Server()
 local game_service = game.GameService(data_ctx, config.rsa_key_path, auth.authenticate)
-local update_service = game.UpdateService(data_ctx)
+--local update_service = game.UpdateService(data_ctx)
 
 -- Start services on engine start
 function startup_func()
    game_server:set_service(14, game_service)
-   game_server:set_service(15, update_service)
+--   game_server:set_service(15, update_service)
    archive_server:start(config.archive_server_listen, data_ctx)
    game_server:start(config.game_server_listen)
 end

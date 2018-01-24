@@ -4,8 +4,8 @@ package engine
 import (
 	"time"
 
+	"github.com/gemrs/gem/gem/core/task"
 	engine_event "github.com/gemrs/gem/gem/engine/event"
-	"github.com/gemrs/gem/gem/task"
 	"github.com/gemrs/gem/gem/util/safe"
 	"github.com/gemrs/willow/log"
 

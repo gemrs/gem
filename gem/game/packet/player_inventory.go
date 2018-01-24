@@ -3,30 +3,26 @@ package packet
 import (
 	"fmt"
 
-	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/position"
-	"github.com/gemrs/gem/gem/protocol/game_protocol"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 func init() {
-	registerHandler((*game_protocol.InboundInventorySwapItem)(nil), player_inv_swap)
-	registerHandler((*game_protocol.InboundInventoryAction1)(nil), player_inv_action)
-	registerHandler((*game_protocol.InboundInventoryAction2)(nil), player_inv_action)
-	registerHandler((*game_protocol.InboundInventoryAction3)(nil), player_inv_action)
-	registerHandler((*game_protocol.InboundInventoryAction4)(nil), player_inv_action)
-	registerHandler((*game_protocol.InboundInventoryAction5)(nil), player_inv_action)
-	registerHandler((*game_protocol.InboundTakeGroundItem)(nil), player_take_ground_item)
+	registerHandler((*protocol.InboundInventorySwapItem)(nil), player_inv_swap)
+	registerHandler((*protocol.InboundInventoryAction)(nil), player_inv_action)
+	registerHandler((*protocol.InboundTakeGroundItem)(nil), player_take_ground_item)
 }
 
-func player_inv_swap(p *player.Player, packet encoding.Decodable) {
-	swapItemPacket := packet.(*game_protocol.InboundInventorySwapItem)
+func player_inv_swap(p *player.Player, message server.Message) {
+	swapItemPacket := message.(*protocol.InboundInventorySwapItem)
 	switch int(swapItemPacket.InterfaceID) {
 	case player.RevisionConstants.InventoryInterfaceId:
-		p.Profile().Inventory().SwapSlots(int(swapItemPacket.FromSlot), int(swapItemPacket.ToSlot))
+		p.Profile().Inventory().SwapSlots(swapItemPacket.From, swapItemPacket.To)
 
 	default:
 		panic(fmt.Sprintf("unknown inventory interface id: %v", swapItemPacket.InterfaceID))
@@ -34,61 +30,27 @@ func player_inv_swap(p *player.Player, packet encoding.Decodable) {
 
 }
 
-func player_inv_action(p *player.Player, packet encoding.Decodable) {
-	var slot, interfaceId, itemId, actionIndex int
-	switch packet := packet.(type) {
-	case *game_protocol.InboundInventoryAction1:
-		slot = int(packet.Slot)
-		interfaceId = int(packet.InterfaceID)
-		itemId = int(packet.ItemID)
-		actionIndex = 0
+func player_inv_action(p *player.Player, message server.Message) {
+	action := message.(*protocol.InboundInventoryAction)
 
-	case *game_protocol.InboundInventoryAction2:
-		slot = int(packet.Slot)
-		interfaceId = int(packet.InterfaceID)
-		itemId = int(packet.ItemID)
-		actionIndex = 1
-
-	case *game_protocol.InboundInventoryAction3:
-		slot = int(packet.Slot)
-		interfaceId = int(packet.InterfaceID)
-		itemId = int(packet.ItemID)
-		actionIndex = 2
-
-	case *game_protocol.InboundInventoryAction4:
-		slot = int(packet.Slot)
-		interfaceId = int(packet.InterfaceID)
-		itemId = int(packet.ItemID)
-		actionIndex = 3
-
-	case *game_protocol.InboundInventoryAction5:
-		slot = int(packet.Slot)
-		interfaceId = int(packet.InterfaceID)
-		itemId = int(packet.ItemID)
-		actionIndex = 4
-
-	default:
-		panic("Unknown inventory action packet")
-	}
-
-	switch interfaceId {
+	switch action.InterfaceID {
 	case player.RevisionConstants.InventoryInterfaceId:
-		stack := p.Profile().Inventory().Slot(slot)
+		stack := p.Profile().Inventory().Slot(action.Slot)
 
-		if stack.Definition().Id() != itemId {
+		if stack.Definition().Id() != action.ItemID {
 			panic("inventory action validation failed")
 		}
 
 		actions := stack.Definition().Actions()
-		actionString := actions[actionIndex]
-		if actionIndex == 4 {
+		actionString := actions[action.Action]
+		if action.Action == 4 {
 			actionString = "Drop"
 		}
 
-		game_event.PlayerInventoryAction.NotifyObservers(p, stack, slot, actionString)
+		game_event.PlayerInventoryAction.NotifyObservers(p, stack, action.Slot, actionString)
 
 	default:
-		panic(fmt.Sprintf("unknown inventory interface id: %v", interfaceId))
+		panic(fmt.Sprintf("unknown inventory interface id: %v", action.InterfaceID))
 	}
 }
 
@@ -119,8 +81,8 @@ func (i *TakeGroundItemInteraction) Interruptible() bool {
 	return true
 }
 
-func player_take_ground_item(p *player.Player, packet encoding.Decodable) {
-	takeItemPacket := packet.(*game_protocol.InboundTakeGroundItem)
+func player_take_ground_item(p *player.Player, message server.Message) {
+	takeItemPacket := message.(*protocol.InboundTakeGroundItem)
 	itemPos := position.NewAbsolute(int(takeItemPacket.X), int(takeItemPacket.Y), p.Position().Z())
 	entities := p.WorldInstance().EntitiesOnTile(itemPos)
 

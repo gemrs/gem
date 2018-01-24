@@ -6,7 +6,6 @@ import (
 	"net"
 	"sync"
 
-	"github.com/gemrs/gem/gem/protocol"
 	"github.com/gemrs/gem/gem/util/id"
 	"github.com/gemrs/gem/gem/util/safe"
 	"github.com/gemrs/willow/log"
@@ -27,7 +26,7 @@ type Server struct {
 	nextIndex <-chan int
 
 	m        sync.Mutex
-	clients  map[int]Client
+	clients  map[int]GameClient
 	services map[int]Service
 
 	t tomb.Tomb
@@ -36,13 +35,13 @@ type Server struct {
 //glua:bind constructor Server
 func NewServer() *Server {
 	return &Server{
-		clients: make(map[int]Client),
+		clients: make(map[int]GameClient),
 	}
 }
 
 // A Service is capable of creating Clients specific to each service (game/update)
 type Service interface {
-	NewClient(conn *Connection, service int) Client
+	NewClient(conn *Connection, service int) GameClient
 }
 
 // SetService registers a service with it's selector id (see protocol.InboundServiceSelect)
@@ -165,7 +164,7 @@ func (s *Server) handle(netConn net.Conn) {
 }
 
 // registerClient adds a connection to the clients map
-func (s *Server) registerClient(client Client) {
+func (s *Server) registerClient(client GameClient) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
@@ -175,7 +174,7 @@ func (s *Server) registerClient(client Client) {
 }
 
 // unregisterClient removes a client from the clients map
-func (s *Server) unregisterClient(client Client) {
+func (s *Server) unregisterClient(client GameClient) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
@@ -184,17 +183,12 @@ func (s *Server) unregisterClient(client Client) {
 
 // handshake reads the service selection byte and points the connection's decode func
 // towards the decode func for the selected service
-func (s *Server) handshake(conn *Connection) (Client, error) {
-	var serviceSelect protocol.InboundServiceSelect
-	if err := serviceSelect.Decode(conn.conn, nil); err != nil {
-		return nil, err
-	}
-
-	selector := int(serviceSelect.Service)
+func (s *Server) handshake(conn *Connection) (GameClient, error) {
+	selector := Proto.Handshake(conn)
 
 	service, ok := s.services[selector]
 	if !ok {
-		err := fmt.Errorf("invalid service requested: %v", serviceSelect)
+		err := fmt.Errorf("invalid service requested: %v", selector)
 		conn.Log().Error("%v", err)
 		conn.Disconnect()
 		return nil, err

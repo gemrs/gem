@@ -38,50 +38,43 @@ Number: {{.Number}},
 Size: encoding.{{.Size.String}},
 }
 
-func (frm *{{.Identifier}}) Encode(buf io.Writer, flags interface{}) (err error) {
+func (frm *{{.Identifier}}) Encode(buf io.Writer, flags interface{}) {
 struc := (*{{.Object.Identifier}})(frm)
 hdr := encoding.PacketHeader{
 Number: {{.Identifier}}Definition.Number,
 Size: {{.Identifier}}Definition.Size,
 Object: struc,
 }
-return hdr.Encode(buf, flags)
+hdr.Encode(buf, flags)
 }
 
-func (frm *{{.Identifier}}) Decode(buf io.Reader, flags interface{}) (err error) {
+func (frm *{{.Identifier}}) Decode(buf io.Reader, flags interface{}) {
 struc := (*{{.Object.Identifier}})(frm)
 hdr := encoding.PacketHeader{
 Number: {{.Identifier}}Definition.Number,
 Size: {{.Identifier}}Definition.Size,
 Object: struc,
 }
-return hdr.Decode(buf, flags)
+hdr.Decode(buf, flags)
 }`))
 
-var fieldFuncTmpl = template.Must(template.New("fieldfunc").Parse(`err = struc.{{.Name}}.{{.Operation}}(buf, {{.Flags}})
-if err != nil {
-	return err
-}`))
+var fieldFuncTmpl = template.Must(template.New("fieldfunc").Parse(`struc.{{.Name}}.{{.Operation}}(buf, {{.Flags}})
+`))
 
 var fieldFuncArrayTmpl = template.Must(template.New("fieldfunc").Parse(`for i := 0; i < {{.Size}}; i++ {
-	err = struc.{{.Name}}[i].{{.Operation}}(buf, {{.Flags}})
-	if err != nil {
-		return err
-	}
+	struc.{{.Name}}[i].{{.Operation}}(buf, {{.Flags}})
 }`))
 
-var encodeFuncsTmpl = template.Must(template.New("encodefuncs").Parse(`func (struc *{{.Type}}) Encode(buf io.Writer, flags interface{}) (err error) {
+var encodeFuncsTmpl = template.Must(template.New("encodefuncs").Parse(`func (struc *{{.Type}}) Encode(buf io.Writer, flags interface{}) {
 {{range .EncodeFields}}{{.}}
 
 {{end}}
-return err
 }
 
-func (struc *{{.Type}}) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *{{.Type}}) Decode(buf io.Reader, flags interface{}) {
 {{range .DecodeFields}}{{.}}
 
 {{end}}
-return err
 }`))
 
 type context struct {

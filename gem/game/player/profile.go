@@ -8,6 +8,7 @@ import (
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 func (player *Player) LoadProfile() {
@@ -20,20 +21,12 @@ func (player *Player) LoadProfile() {
 
 //go:generate glua .
 
-type Rights int
-
-const (
-	RightsPlayer Rights = iota
-	RightsModerator
-	RightsAdmin
-)
-
 // Profile represents the saved state of a user
 //glua:bind
 type Profile struct {
 	username string
 	password string
-	rights   Rights
+	rights   protocol.Rights
 	position *position.Absolute
 
 	skills     *Skills
@@ -68,11 +61,11 @@ func (p *Profile) Password() string {
 }
 
 //glua:bind
-func (p *Profile) Rights() Rights {
+func (p *Profile) Rights() protocol.Rights {
 	return p.rights
 }
 
-func (p *Profile) setRights(rights Rights) {
+func (p *Profile) setRights(rights protocol.Rights) {
 	p.rights = rights
 }
 

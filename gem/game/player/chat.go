@@ -1,20 +1,16 @@
 package player
 
-import "github.com/gemrs/gem/gem/game/entity"
+import (
+	"github.com/gemrs/gem/gem/game/entity"
+	"github.com/gemrs/gem/gem/protocol"
+)
 
-type ChatMessage struct {
-	Effects       uint8
-	Colour        uint8
-	Message       string
-	PackedMessage []byte
-}
-
-func (player *Player) AppendChatMessage(m *ChatMessage) {
+func (player *Player) AppendChatMessage(m protocol.InboundChatMessage) {
 	player.chatQueue = append(player.chatQueue, m)
 	player.SetFlags(player.Flags() | entity.MobFlagChatUpdate)
 }
 
-func (player *Player) ChatMessageQueue() []*ChatMessage {
+func (player *Player) ChatMessageQueue() []protocol.InboundChatMessage {
 	return player.chatQueue
 }
 

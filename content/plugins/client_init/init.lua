@@ -1,6 +1,7 @@
 local event = require("gem.event")
 local game_event = require("gem.game.event")
 local game_player = require("gem.game.player")
+local protocol = require("gem.game.protocol")
 local interfaces = require("id.interface")
 
 function player_init(event, player)
@@ -21,7 +22,7 @@ function player_init(event, player)
    config:set_tab_interface(game_player.tab_run, interfaces.tab_run)
    config:set_tab_interface(game_player.tab_music, interfaces.tab_music_lowmem)
 
-   local hitpoints = player:profile():skills():skill(game_player.skill_hitpoints)
+   local hitpoints = player:profile():skills():skill(protocol.skill_hitpoints)
    hitpoints:experience(1154)
 end
 

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/core/encoding"
 )
 
 var (
@@ -71,7 +71,7 @@ func unpackFSIndex(data buffer, indexBuffer *bytes.Buffer) (*JagFSIndex, error) 
 
 	for i := range index.fileIndices {
 		fileIndex := &index.fileIndices[i]
-		if err := fileIndex.Decode(indexBuffer, 0); err != nil {
+		if err := encoding.TryDecode(fileIndex, indexBuffer, 0); err != nil {
 			return nil, ErrInvalidIndex
 		}
 	}
@@ -129,7 +129,7 @@ func (idx *JagFSIndex) constructFile(blockId, length int) (nextBlockId int, err 
 	var block FSBlock
 	block.Data = make(encoding.Bytes, length)
 	buffer := bytes.NewBuffer(idx.data[offset : offset+blockSize])
-	if err := block.Decode(buffer, 0); err != nil {
+	if err := encoding.TryDecode(&block, buffer, 0); err != nil {
 		return 0, ErrInvalidData
 	}
 

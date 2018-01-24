@@ -19,8 +19,6 @@ func lBindgame(L *lua.LState) int {
 
 	lBindGameService(L, mod)
 
-	lBindUpdateService(L, mod)
-
 	L.Push(mod)
 	return 1
 }
@@ -56,29 +54,3 @@ func lNewGameService(L *lua.LState) int {
 }
 
 var GameServiceMethods = map[string]lua.LGFunction{}
-
-func lBindUpdateService(L *lua.LState, mod *lua.LTable) {
-	mt := L.NewTypeMetatable("game.UpdateService")
-
-	L.SetField(mt, "__call", L.NewFunction(lNewUpdateService))
-
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), UpdateServiceMethods))
-
-	cls := L.NewUserData()
-	L.SetField(mod, "UpdateService", cls)
-	L.SetMetatable(cls, mt)
-	glua.RegisterType("game.UpdateService", mt)
-}
-
-func lNewUpdateService(L *lua.LState) int {
-	L.Remove(1)
-	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(*runite.Context)
-	L.Remove(1)
-	retVal := NewUpdateService(arg0)
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-var UpdateServiceMethods = map[string]lua.LGFunction{}

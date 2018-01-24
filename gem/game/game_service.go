@@ -5,16 +5,17 @@ import (
 	"fmt"
 
 	"github.com/gemrs/gem/gem/auth"
-	"github.com/gemrs/gem/gem/crypto"
+	"github.com/gemrs/gem/gem/core/crypto"
+	"github.com/gemrs/gem/gem/core/event"
 	engine_event "github.com/gemrs/gem/gem/engine/event"
-	"github.com/gemrs/gem/gem/event"
 	"github.com/gemrs/gem/gem/game/entity"
+	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/packet"
 	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
-	"github.com/gemrs/gem/gem/protocol/game_protocol"
+	"github.com/gemrs/gem/gem/protocol"
 	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/gem/gem/util/expire"
 )
@@ -55,10 +56,48 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 	return svc
 }
 
-func (svc *GameService) NewClient(conn *server.Connection, service int) server.Client {
+func (svc *GameService) NewClient(conn *server.Connection, service int) server.GameClient {
 	conn.Log().Info("new game client")
 	client := player.NewPlayer(conn, svc.world)
-	client.SetDecodeFunc(svc.handshake)
+
+	loginHandler := server.Proto.NewLoginHandler()
+	loginHandler.SetServerIsaacSeed(client.ServerIsaacSeed())
+	loginHandler.SetRsaKeypair(svc.key)
+	loginHandler.SetCompleteCallback(func(loginHandler server.LoginHandler) error {
+		username, password := loginHandler.Username(), loginHandler.Password()
+		profile, responseCode := svc.auth.LookupProfile(username, password)
+
+		if responseCode != protocol.AuthOkay {
+			client.Conn().Write <- protocol.OutboundLoginResponse{
+				Response: responseCode,
+			}
+			return nil
+		}
+
+		client.InitIsaac(loginHandler.IsaacSeeds())
+		client.SetProfile(profile)
+
+		// Successful login, do all the stuff
+		client.Conn().Write <- protocol.OutboundLoginResponse{
+			Response: responseCode,
+			Rights:   int(client.Profile().Rights()),
+			Flagged:  false,
+		}
+
+		client.SetDecodeFunc(svc.decodePacket)
+		go svc.packetConsumer(client)
+
+		client.LoadProfile()
+		client.FinishInit()
+		game_event.PlayerLogin.NotifyObservers(client)
+
+		go func() {
+			client.Conn().WaitForDisconnect()
+			game_event.PlayerLogout.NotifyObservers(client)
+		}()
+		return nil
+	})
+	loginHandler.Perform(client)
 	return client
 }
 
@@ -91,25 +130,22 @@ func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 }
 
 // decodePacket decodes from the readBuffer using the ISAAC rand generator
-func (svc *GameService) decodePacket(client *player.Player) error {
+func (svc *GameService) decodePacket(client server.GameClient) error {
 	b := client.Conn().ReadBuffer
 	data, err := b.Peek(1)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	idByte := int(data[0])
 
-	rand := client.ISAACIn().Rand()
+	rand := client.IsaacIn().Rand()
 	realId := uint8(uint32(idByte) - rand)
-	packet, err := game_protocol.NewInboundPacket(int(realId))
+	packet, err := server.Proto.NewInboundPacket(int(realId))
 	if err != nil {
 		return fmt.Errorf("%v: packet %v", err, realId)
 	}
-	err = packet.Decode(b, rand)
-	if err != nil {
-		return err
-	}
+	packet.Decode(b, rand)
 
 	if !client.Conn().IsDisconnecting() {
 		client.Conn().Read <- packet
@@ -125,12 +161,16 @@ L:
 		case <-client.Conn().DisconnectChan:
 			break L
 		case pkt := <-client.Conn().Read:
-			if _, ok := pkt.(*game_protocol.UnknownPacket); ok {
+			message := server.Proto.Decode(pkt)
+			switch message := message.(type) {
+			case *protocol.UnknownPacket:
 				/* unknown packet; dump to the log */
 				client.Log().Debug("Got unknown packet: %v", pkt)
 				continue
+			default:
+				packet.Dispatch(client, message)
 			}
-			packet.Dispatch(client, pkt)
+
 		}
 
 	}

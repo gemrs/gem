@@ -1,8 +1,8 @@
 package packet
 
 import (
-	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/player"
+	"github.com/gemrs/gem/gem/game/server"
 )
 
-type Handler func(*player.Player, encoding.Decodable)
+type Handler func(*player.Player, server.Message)

@@ -2,6 +2,7 @@ package player
 
 import (
 	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 type jsonPosition struct {
@@ -11,12 +12,12 @@ type jsonPosition struct {
 }
 
 type jsonProfile struct {
-	Username   string         `json:"username"`
-	Password   string         `json:"password"`
-	Rights     Rights         `json:"rights"`
-	Position   jsonPosition   `json:"position"`
-	Skills     jsonSkills     `json:"skills"`
-	Appearance jsonAppearance `json:"appearance"`
+	Username   string          `json:"username"`
+	Password   string          `json:"password"`
+	Rights     protocol.Rights `json:"rights"`
+	Position   jsonPosition    `json:"position"`
+	Skills     jsonSkills      `json:"skills"`
+	Appearance jsonAppearance  `json:"appearance"`
 }
 
 type jsonSkills struct {
@@ -60,19 +61,19 @@ func jsonObjForProfile(p *Profile) jsonProfile {
 			Gender:   appearance.Gender(),
 			HeadIcon: appearance.HeadIcon(),
 
-			TorsoModel: appearance.Model(BodyPartTorso),
-			ArmsModel:  appearance.Model(BodyPartArms),
-			LegsModel:  appearance.Model(BodyPartLegs),
-			HeadModel:  appearance.Model(BodyPartHead),
-			HandsModel: appearance.Model(BodyPartHands),
-			FeetModel:  appearance.Model(BodyPartFeet),
-			BeardModel: appearance.Model(BodyPartBeard),
+			TorsoModel: appearance.Model(protocol.BodyPartTorso),
+			ArmsModel:  appearance.Model(protocol.BodyPartArms),
+			LegsModel:  appearance.Model(protocol.BodyPartLegs),
+			HeadModel:  appearance.Model(protocol.BodyPartHead),
+			HandsModel: appearance.Model(protocol.BodyPartHands),
+			FeetModel:  appearance.Model(protocol.BodyPartFeet),
+			BeardModel: appearance.Model(protocol.BodyPartBeard),
 
-			HairColor:  appearance.Color(BodyPartHair),
-			TorsoColor: appearance.Color(BodyPartTorso),
-			LegsColor:  appearance.Color(BodyPartLegs),
-			FeetColor:  appearance.Color(BodyPartFeet),
-			SkinColor:  appearance.Color(BodyPartSkin),
+			HairColor:  appearance.Color(protocol.BodyPartHair),
+			TorsoColor: appearance.Color(protocol.BodyPartTorso),
+			LegsColor:  appearance.Color(protocol.BodyPartLegs),
+			FeetColor:  appearance.Color(protocol.BodyPartFeet),
+			SkinColor:  appearance.Color(protocol.BodyPartSkin),
 		},
 	}
 
@@ -96,17 +97,17 @@ func jsonObjToProfile(p *Profile, js jsonProfile) {
 	appearance.SetGender(js.Appearance.Gender)
 	appearance.SetHeadIcon(js.Appearance.HeadIcon)
 
-	appearance.SetModel(BodyPartTorso, js.Appearance.TorsoModel)
-	appearance.SetModel(BodyPartArms, js.Appearance.ArmsModel)
-	appearance.SetModel(BodyPartLegs, js.Appearance.LegsModel)
-	appearance.SetModel(BodyPartHead, js.Appearance.HeadModel)
-	appearance.SetModel(BodyPartHands, js.Appearance.HandsModel)
-	appearance.SetModel(BodyPartFeet, js.Appearance.FeetModel)
-	appearance.SetModel(BodyPartBeard, js.Appearance.BeardModel)
+	appearance.SetModel(protocol.BodyPartTorso, js.Appearance.TorsoModel)
+	appearance.SetModel(protocol.BodyPartArms, js.Appearance.ArmsModel)
+	appearance.SetModel(protocol.BodyPartLegs, js.Appearance.LegsModel)
+	appearance.SetModel(protocol.BodyPartHead, js.Appearance.HeadModel)
+	appearance.SetModel(protocol.BodyPartHands, js.Appearance.HandsModel)
+	appearance.SetModel(protocol.BodyPartFeet, js.Appearance.FeetModel)
+	appearance.SetModel(protocol.BodyPartBeard, js.Appearance.BeardModel)
 
-	appearance.SetColor(BodyPartHair, js.Appearance.HairColor)
-	appearance.SetColor(BodyPartTorso, js.Appearance.TorsoColor)
-	appearance.SetColor(BodyPartLegs, js.Appearance.LegsColor)
-	appearance.SetColor(BodyPartFeet, js.Appearance.FeetColor)
-	appearance.SetColor(BodyPartSkin, js.Appearance.SkinColor)
+	appearance.SetColor(protocol.BodyPartHair, js.Appearance.HairColor)
+	appearance.SetColor(protocol.BodyPartTorso, js.Appearance.TorsoColor)
+	appearance.SetColor(protocol.BodyPartLegs, js.Appearance.LegsColor)
+	appearance.SetColor(protocol.BodyPartFeet, js.Appearance.FeetColor)
+	appearance.SetColor(protocol.BodyPartSkin, js.Appearance.SkinColor)
 }

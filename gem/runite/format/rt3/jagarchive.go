@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/core/encoding"
 )
 
 var ErrFileMissing = errors.New("missing file")
@@ -54,19 +54,13 @@ func (struc *JagArchive) Decode(buf io.Reader, flags interface{}) (err error) {
 	buf = bytes.NewReader(struc.header.Body)
 
 	var fileCount encoding.Uint16
-	err = fileCount.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	fileCount.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
 	dataOffset := 2 + int(fileCount*10)
 	struc.index = make([]ArchiveFileIndex, fileCount)
 	struc.files = make(map[int32][]byte)
 	for i := range struc.index {
-		err2 := struc.index[i].Decode(buf, nil)
-		if err2 != nil {
-			return err2
-		}
+		struc.index[i].Decode(buf, nil)
 
 		ident := int32(struc.index[i].Identifier)
 		dataSize := int(struc.index[i].CompressedSize)
@@ -95,20 +89,11 @@ type arcHeader struct {
 }
 
 func (struc *arcHeader) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.UncompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.UncompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.CompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.CompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Body.Decode(buf, nil)
-	if err != nil {
-		return err
-	}
+	struc.Body.Decode(buf, nil)
 
 	if int(struc.UncompressedSize) != int(struc.CompressedSize) {
 		uncompressed, err := headerlessBzip2Decompress([]byte(struc.Body))

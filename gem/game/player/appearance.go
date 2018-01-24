@@ -1,19 +1,6 @@
 package player
 
-type BodyPart int
-
-const (
-	BodyPartTorso BodyPart = iota
-	BodyPartArms
-	BodyPartLegs
-	BodyPartHead
-	BodyPartHands
-	BodyPartFeet
-	BodyPartBeard
-	BodyPartHair
-	BodyPartSkin
-	BodyPartMax
-)
+import "github.com/gemrs/gem/gem/protocol"
 
 type Appearance struct {
 	player *Player
@@ -86,73 +73,73 @@ func (a *Appearance) SetHeadIcon(headIcon int) {
 	a.signalUpdate()
 }
 
-func (a *Appearance) Model(b BodyPart) int {
+func (a *Appearance) Model(b protocol.BodyPart) int {
 	switch b {
-	case BodyPartTorso:
+	case protocol.BodyPartTorso:
 		return a.torsoModel
-	case BodyPartArms:
+	case protocol.BodyPartArms:
 		return a.armsModel
-	case BodyPartLegs:
+	case protocol.BodyPartLegs:
 		return a.legsModel
-	case BodyPartHead:
+	case protocol.BodyPartHead:
 		return a.headModel
-	case BodyPartHands:
+	case protocol.BodyPartHands:
 		return a.handsModel
-	case BodyPartFeet:
+	case protocol.BodyPartFeet:
 		return a.feetModel
-	case BodyPartBeard:
+	case protocol.BodyPartBeard:
 		return a.beardModel
 	}
 	return -1
 }
 
-func (a *Appearance) SetModel(b BodyPart, model int) {
+func (a *Appearance) SetModel(b protocol.BodyPart, model int) {
 	switch b {
-	case BodyPartTorso:
+	case protocol.BodyPartTorso:
 		a.torsoModel = model
-	case BodyPartArms:
+	case protocol.BodyPartArms:
 		a.armsModel = model
-	case BodyPartLegs:
+	case protocol.BodyPartLegs:
 		a.legsModel = model
-	case BodyPartHead:
+	case protocol.BodyPartHead:
 		a.headModel = model
-	case BodyPartHands:
+	case protocol.BodyPartHands:
 		a.handsModel = model
-	case BodyPartFeet:
+	case protocol.BodyPartFeet:
 		a.feetModel = model
-	case BodyPartBeard:
+	case protocol.BodyPartBeard:
 		a.beardModel = model
 	}
 	a.signalUpdate()
 }
 
-func (a *Appearance) Color(b BodyPart) int {
+func (a *Appearance) Color(b protocol.BodyPart) int {
 	switch b {
-	case BodyPartHair:
+	case protocol.BodyPartHair:
 		return a.hairColor
-	case BodyPartTorso:
+	case protocol.BodyPartTorso:
 		return a.torsoColor
-	case BodyPartLegs:
+	case protocol.BodyPartLegs:
 		return a.legsColor
-	case BodyPartFeet:
+	case protocol.BodyPartFeet:
 		return a.feetColor
-	case BodyPartSkin:
+	case protocol.BodyPartSkin:
 		return a.skinColor
 	}
 	return -1
 }
 
-func (a *Appearance) SetColor(b BodyPart, color int) {
+func (a *Appearance) SetColor(b protocol.BodyPart, color int) {
 	switch b {
-	case BodyPartHair:
+	case protocol.BodyPartHair:
 		a.hairColor = color
-	case BodyPartTorso:
+	case protocol.BodyPartTorso:
 		a.torsoColor = color
-	case BodyPartLegs:
+	case protocol.BodyPartLegs:
 		a.legsColor = color
-	case BodyPartFeet:
+	case protocol.BodyPartFeet:
 		a.feetColor = color
-	case BodyPartSkin:
+	case protocol.BodyPartSkin:
 		a.skinColor = color
 	}
 	a.signalUpdate()

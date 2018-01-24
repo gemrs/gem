@@ -6,7 +6,7 @@ import (
 	"hash/crc32"
 	"sync"
 
-	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/core/encoding"
 )
 
 var archiveIndices = map[string]int{
@@ -46,10 +46,7 @@ func (a *ArchiveFS) generateCrc() error {
 		file.Sum = (file.Sum << 1) + file.Archives[i]
 	}
 
-	err := file.Encode(&a.crc, nil)
-	if err != nil {
-		return err
-	}
+	file.Encode(&a.crc, nil)
 	return nil
 }
 

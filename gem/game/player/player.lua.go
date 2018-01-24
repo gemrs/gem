@@ -5,6 +5,7 @@ import (
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
+	"github.com/gemrs/gem/gem/protocol"
 	"github.com/gemrs/gem/glua"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -26,51 +27,7 @@ func lBindplayer(L *lua.LState) int {
 
 	lBindSkill(L, mod)
 
-	lBindSkillId(L, mod)
-
 	lBindSkills(L, mod)
-
-	L.SetField(mod, "skill_agility", glua.ToLua(L, SkillAgility))
-
-	L.SetField(mod, "skill_attack", glua.ToLua(L, SkillAttack))
-
-	L.SetField(mod, "skill_cooking", glua.ToLua(L, SkillCooking))
-
-	L.SetField(mod, "skill_crafting", glua.ToLua(L, SkillCrafting))
-
-	L.SetField(mod, "skill_defence", glua.ToLua(L, SkillDefence))
-
-	L.SetField(mod, "skill_farming", glua.ToLua(L, SkillFarming))
-
-	L.SetField(mod, "skill_firemaking", glua.ToLua(L, SkillFiremaking))
-
-	L.SetField(mod, "skill_fishing", glua.ToLua(L, SkillFishing))
-
-	L.SetField(mod, "skill_fletching", glua.ToLua(L, SkillFletching))
-
-	L.SetField(mod, "skill_herblore", glua.ToLua(L, SkillHerblore))
-
-	L.SetField(mod, "skill_hitpoints", glua.ToLua(L, SkillHitpoints))
-
-	L.SetField(mod, "skill_magic", glua.ToLua(L, SkillMagic))
-
-	L.SetField(mod, "skill_mining", glua.ToLua(L, SkillMining))
-
-	L.SetField(mod, "skill_prayer", glua.ToLua(L, SkillPrayer))
-
-	L.SetField(mod, "skill_range", glua.ToLua(L, SkillRange))
-
-	L.SetField(mod, "skill_runecrafting", glua.ToLua(L, SkillRunecrafting))
-
-	L.SetField(mod, "skill_slayer", glua.ToLua(L, SkillSlayer))
-
-	L.SetField(mod, "skill_smithing", glua.ToLua(L, SkillSmithing))
-
-	L.SetField(mod, "skill_strength", glua.ToLua(L, SkillStrength))
-
-	L.SetField(mod, "skill_thieving", glua.ToLua(L, SkillThieving))
-
-	L.SetField(mod, "skill_woodcutting", glua.ToLua(L, SkillWoodcutting))
 
 	L.SetField(mod, "tab_attack", glua.ToLua(L, TabAttack))
 
@@ -402,7 +359,7 @@ func lBindSkill(L *lua.LState, mod *lua.LTable) {
 func lNewSkill(L *lua.LState) int {
 	L.Remove(1)
 	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(SkillId)
+	arg0 := glua.FromLua(arg0Value).(protocol.SkillId)
 	L.Remove(1)
 	arg1Value := L.Get(1)
 	arg1 := glua.FromLua(arg1Value).(int)
@@ -477,19 +434,6 @@ func lBindPropSkillLevelPercentage(L *lua.LState) int {
 	return 1
 }
 
-func lBindSkillId(L *lua.LState, mod *lua.LTable) {
-	mt := L.NewTypeMetatable("player.SkillId")
-
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), SkillIdMethods))
-
-	cls := L.NewUserData()
-	L.SetField(mod, "SkillId", cls)
-	L.SetMetatable(cls, mt)
-	glua.RegisterType("player.SkillId", mt)
-}
-
-var SkillIdMethods = map[string]lua.LGFunction{}
-
 func lBindSkills(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("player.Skills")
 
@@ -522,7 +466,7 @@ func lBindSkillsSkill(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Skills)
 	L.Remove(1)
 	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(SkillId)
+	arg0 := glua.FromLua(arg0Value).(protocol.SkillId)
 	L.Remove(1)
 	retVal := self.Skill(arg0)
 	L.Push(glua.ToLua(L, retVal))

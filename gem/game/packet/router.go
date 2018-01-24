@@ -3,8 +3,8 @@ package packet
 import (
 	"reflect"
 
-	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/player"
+	"github.com/gemrs/gem/gem/game/server"
 )
 
 var routingTable = map[string]Handler{}
@@ -14,11 +14,11 @@ func registerHandler(packetType interface{}, handler Handler) {
 	routingTable[typeString] = handler
 }
 
-func Dispatch(player *player.Player, packet encoding.Decodable) {
-	typeString := reflect.TypeOf(packet).String()
+func Dispatch(player *player.Player, message server.Message) {
+	typeString := reflect.TypeOf(message).String()
 	if handler, ok := routingTable[typeString]; ok {
-		handler(player, packet)
+		handler(player, message)
 	} else {
-		player.Log().Info("Unhandled packet of type %v: %v", typeString, packet)
+		player.Log().Info("Unhandled message of type %v: %v", typeString, message)
 	}
 }

@@ -4,7 +4,7 @@ package rt3
 import (
 	"io"
 
-	"github.com/gemrs/gem/gem/encoding"
+	"github.com/gemrs/gem/gem/core/encoding"
 )
 
 type FSIndex struct {
@@ -12,32 +12,18 @@ type FSIndex struct {
 	StartBlock encoding.Int24
 }
 
-func (struc *FSIndex) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.Length.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *FSIndex) Encode(buf io.Writer, flags interface{}) {
+	struc.Length.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.StartBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.StartBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	return err
 }
 
-func (struc *FSIndex) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.Length.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *FSIndex) Decode(buf io.Reader, flags interface{}) {
+	struc.Length.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.StartBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.StartBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	return err
 }
 
 type FSBlock struct {
@@ -48,62 +34,30 @@ type FSBlock struct {
 	Data         encoding.Bytes
 }
 
-func (struc *FSBlock) Encode(buf io.Writer, flags interface{}) (err error) {
-	err = struc.FileID.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *FSBlock) Encode(buf io.Writer, flags interface{}) {
+	struc.FileID.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.FilePosition.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.FilePosition.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.NextBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.NextBlock.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Partition.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Partition.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Data.Encode(buf, 512)
-	if err != nil {
-		return err
-	}
+	struc.Data.Encode(buf, 512)
 
-	return err
 }
 
-func (struc *FSBlock) Decode(buf io.Reader, flags interface{}) (err error) {
-	err = struc.FileID.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+func (struc *FSBlock) Decode(buf io.Reader, flags interface{}) {
+	struc.FileID.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.FilePosition.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.FilePosition.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.NextBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.NextBlock.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Partition.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Partition.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	err = struc.Data.Decode(buf, 512)
-	if err != nil {
-		return err
-	}
+	struc.Data.Decode(buf, 512)
 
-	return err
 }
 
 type CRCFile struct {
@@ -111,34 +65,20 @@ type CRCFile struct {
 	Sum      encoding.Int32
 }
 
-func (struc *CRCFile) Encode(buf io.Writer, flags interface{}) (err error) {
+func (struc *CRCFile) Encode(buf io.Writer, flags interface{}) {
 	for i := 0; i < 9; i++ {
-		err = struc.Archives[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
+		struc.Archives[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	}
 
-	err = struc.Sum.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Sum.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	return err
 }
 
-func (struc *CRCFile) Decode(buf io.Reader, flags interface{}) (err error) {
+func (struc *CRCFile) Decode(buf io.Reader, flags interface{}) {
 	for i := 0; i < 9; i++ {
-		err = struc.Archives[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-		if err != nil {
-			return err
-		}
+		struc.Archives[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 	}
 
-	err = struc.Sum.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	if err != nil {
-		return err
-	}
+	struc.Sum.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	return err
 }

@@ -4,15 +4,14 @@ import (
 	"math/rand"
 
 	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
-	"github.com/gemrs/gem/gem/log"
+	"github.com/gemrs/gem/gem/core/log"
+	"github.com/gemrs/gem/gem/protocol"
 
-	"github.com/gemrs/gem/gem/encoding"
 	"github.com/gemrs/gem/gem/game/entity"
 	entityimpl "github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
-	"github.com/gemrs/gem/gem/protocol/game_protocol"
 )
 
 // GameClient is a client which serves players
@@ -24,11 +23,11 @@ type Player struct {
 	loadedRegion *position.Region
 
 	visibleEntities *entity.Collection
-	chatQueue       []*ChatMessage
+	chatQueue       []protocol.InboundChatMessage
 
 	*server.Connection
 	*entityimpl.GenericMob
-	decode DecodeFunc
+	decode server.DecodeFunc
 
 	randIn          isaac.ISAAC
 	randOut         isaac.ISAAC
@@ -78,7 +77,7 @@ func (player *Player) EntityType() entity.EntityType {
 	return entity.PlayerType
 }
 
-func (player *Player) SetDecodeFunc(d DecodeFunc) {
+func (player *Player) SetDecodeFunc(d server.DecodeFunc) {
 	player.decode = d
 }
 
@@ -131,8 +130,8 @@ func (player *Player) ClientConfig() *ClientConfig {
 
 // FinishInit is called once the player has finished the low level login sequence
 func (player *Player) FinishInit() {
-	player.Conn().Write <- &game_protocol.OutboundPlayerInit{
-		Membership: encoding.Uint8(1),
-		Index:      encoding.Uint16(player.Index()),
+	player.Conn().Write <- protocol.OutboundPlayerInit{
+		Membership: 1,
+		Index:      player.Index(),
 	}
 }
