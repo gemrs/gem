@@ -11,138 +11,138 @@ import (
 
 var InboundPlayerWalkMapDefinition = InboundPacketDefinition{
 	Number: 248,
-	Size:   encoding.SzVar8,
+	Size:   SzVar8,
 }
 
 var OutboundLogoutDefinition = OutboundPacketDefinition{
 	Number: 109,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundCommandDefinition = InboundPacketDefinition{
 	Number: 103,
-	Size:   encoding.SzVar8,
+	Size:   SzVar8,
 }
 
 var InboundTakeGroundItemDefinition = InboundPacketDefinition{
 	Number: 236,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundPlayerWalkDefinition = InboundPacketDefinition{
 	Number: 164,
-	Size:   encoding.SzVar8,
+	Size:   SzVar8,
 }
 
 var PlayerUpdateDefinition = OutboundPacketDefinition{
 	Number: 81,
-	Size:   encoding.SzVar16,
+	Size:   SzVar16,
 }
 
 var OutboundChatMessageDefinition = OutboundPacketDefinition{
 	Number: 253,
-	Size:   encoding.SzVar8,
+	Size:   SzVar8,
 }
 
 var OutboundCreateGroundItemDefinition = OutboundPacketDefinition{
 	Number: 44,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var OutboundPlayerInitDefinition = OutboundPacketDefinition{
 	Number: 249,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundPingDefinition = InboundPacketDefinition{
 	Number: 0,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundInventoryAction2Definition = InboundPacketDefinition{
 	Number: 41,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var OutboundUpdateInventoryItemDefinition = OutboundPacketDefinition{
 	Number: 34,
-	Size:   encoding.SzVar16,
+	Size:   SzVar16,
 }
 
 var OutboundSetTextDefinition = OutboundPacketDefinition{
 	Number: 126,
-	Size:   encoding.SzVar16,
+	Size:   SzVar16,
 }
 
 var InboundInventoryAction4Definition = InboundPacketDefinition{
 	Number: 75,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundInventorySwapItemDefinition = InboundPacketDefinition{
 	Number: 214,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundPlayerWalkEntityDefinition = InboundPacketDefinition{
 	Number: 98,
-	Size:   encoding.SzVar8,
+	Size:   SzVar8,
 }
 
 var OutboundSectorUpdateDefinition = OutboundPacketDefinition{
 	Number: 85,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var OutboundSkillDefinition = OutboundPacketDefinition{
 	Number: 134,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var OutboundCreateGlobalGroundItemDefinition = OutboundPacketDefinition{
 	Number: 215,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var OutboundRemoveGroundItemDefinition = OutboundPacketDefinition{
 	Number: 156,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundInventoryAction5Definition = InboundPacketDefinition{
 	Number: 87,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundChatMessageDefinition = InboundPacketDefinition{
 	Number: 4,
-	Size:   encoding.SzVar8,
+	Size:   SzVar8,
 }
 
 var OutboundTabInterfaceDefinition = OutboundPacketDefinition{
 	Number: 71,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
 	Number: 73,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundInventoryAction1Definition = InboundPacketDefinition{
 	Number: 122,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var InboundInventoryAction3Definition = InboundPacketDefinition{
 	Number: 16,
-	Size:   encoding.SzFixed,
+	Size:   SzFixed,
 }
 
 var inboundPacketBuilders = map[int]func() encoding.Decodable{
 
 	248: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundPlayerWalkMapDefinition.Number,
 			Size:   InboundPlayerWalkMapDefinition.Size,
 			Object: new(InboundPlayerWalkMap),
@@ -150,7 +150,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	103: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundCommandDefinition.Number,
 			Size:   InboundCommandDefinition.Size,
 			Object: new(InboundCommand),
@@ -158,7 +158,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	236: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundTakeGroundItemDefinition.Number,
 			Size:   InboundTakeGroundItemDefinition.Size,
 			Object: new(InboundTakeGroundItem),
@@ -166,7 +166,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	164: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundPlayerWalkDefinition.Number,
 			Size:   InboundPlayerWalkDefinition.Size,
 			Object: new(InboundPlayerWalk),
@@ -174,7 +174,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	0: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundPingDefinition.Number,
 			Size:   InboundPingDefinition.Size,
 			Object: new(InboundPing),
@@ -182,7 +182,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	41: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundInventoryAction2Definition.Number,
 			Size:   InboundInventoryAction2Definition.Size,
 			Object: new(InboundInventoryAction2),
@@ -190,7 +190,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	75: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundInventoryAction4Definition.Number,
 			Size:   InboundInventoryAction4Definition.Size,
 			Object: new(InboundInventoryAction4),
@@ -198,7 +198,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	214: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundInventorySwapItemDefinition.Number,
 			Size:   InboundInventorySwapItemDefinition.Size,
 			Object: new(InboundInventorySwapItem),
@@ -206,7 +206,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	98: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundPlayerWalkEntityDefinition.Number,
 			Size:   InboundPlayerWalkEntityDefinition.Size,
 			Object: new(InboundPlayerWalkEntity),
@@ -214,7 +214,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	87: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundInventoryAction5Definition.Number,
 			Size:   InboundInventoryAction5Definition.Size,
 			Object: new(InboundInventoryAction5),
@@ -222,7 +222,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	4: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundChatMessageDefinition.Number,
 			Size:   InboundChatMessageDefinition.Size,
 			Object: new(InboundChatMessage),
@@ -230,7 +230,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	122: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundInventoryAction1Definition.Number,
 			Size:   InboundInventoryAction1Definition.Size,
 			Object: new(InboundInventoryAction1),
@@ -238,7 +238,7 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 	},
 
 	16: func() encoding.Decodable {
-		return &encoding.PacketHeader{
+		return &PacketHeader{
 			Number: InboundInventoryAction3Definition.Number,
 			Size:   InboundInventoryAction3Definition.Size,
 			Object: new(InboundInventoryAction3),
@@ -291,7 +291,7 @@ func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 	case *UnknownPacket:
 		return (*protocol.UnknownPacket)(message)
 
-	case *encoding.PacketHeader:
+	case *PacketHeader:
 		return p.Decode(message.Object.(encoding.Decodable))
 	}
 	panic(fmt.Sprintf("cannot decode %T", message))

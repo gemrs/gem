@@ -39,14 +39,14 @@ func (p *UnknownPacket) Decode(buf io.Reader, flags interface{}) {
 	/* decode the packet size */
 	if sz, ok := unknownPacketLengths[p.Number]; ok {
 		p.Size = sz
-		p.SizeType = encoding.SzFixed
+		p.SizeType = int(SzFixed)
 	} else {
 		// It's not a fixed length packet, and there are no 16-bit length inbound packets.
 		// Must be an 8-bit var length packet
 		var size8 encoding.Int8
 		size8.Decode(buf, encoding.IntNilFlag)
 		p.Size = int(size8)
-		p.SizeType = encoding.SzVar8
+		p.SizeType = int(SzVar8)
 	}
 
 	/* decode the payload */

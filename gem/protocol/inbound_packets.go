@@ -1,7 +1,5 @@
 package protocol
 
-import "github.com/gemrs/gem/gem/core/encoding"
-
 type InboundPing struct{}
 
 type InboundCommand struct {
@@ -46,7 +44,7 @@ type InboundPlayerWalk struct {
 
 type UnknownPacket struct {
 	Number   int
-	SizeType encoding.FrameSize
+	SizeType int
 	Size     int
 	Payload  []byte
 }
