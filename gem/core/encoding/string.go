@@ -7,13 +7,68 @@ import (
 )
 
 const (
-	stringDelim byte = 0xA
+	jstringDelim byte = 0xA
+	stringDelim  byte = 0x0
 )
 
 // A string terminated by 0xA
 type JString string
 
 func (str JString) Encode(buf io.Writer, flags_ interface{}) {
+	length := flags_.(int)
+
+	data := []byte(str)
+	if length == 0 {
+		// variable length - append jstringDelim
+		data = append(data, jstringDelim)
+	} else {
+		// fixed length - pad for n bytes
+		if len(data) != length {
+			if len(data) > length {
+				panic(fmt.Errorf("string out of bounds for fixed length of %v bytes", length))
+			}
+			padding := make([]byte, length-len(data))
+			data = append(data, padding...)
+		}
+	}
+
+	_, err := buf.Write(data)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (str *JString) Decode(buf io.Reader, flags_ interface{}) {
+	length := flags_.(int)
+	b := make([]byte, length)
+	if length == 0 {
+		// variable length array - read until jstringDelim
+		chr := make([]byte, 1)
+		for {
+			_, err := buf.Read(chr)
+			if err != nil {
+				panic(err)
+			}
+
+			if chr[0] == jstringDelim {
+				break
+			}
+			b = append(b, chr[0])
+		}
+	} else {
+		// Fixed length array - just fill our buffer with n bytes
+		buf.Read(b)
+	}
+
+	b = bytes.Trim(b, "\x00\x0A")
+
+	*str = JString(b)
+}
+
+// A string terminated by 0x0
+type String string
+
+func (str String) Encode(buf io.Writer, flags_ interface{}) {
 	length := flags_.(int)
 
 	data := []byte(str)
@@ -37,7 +92,7 @@ func (str JString) Encode(buf io.Writer, flags_ interface{}) {
 	}
 }
 
-func (str *JString) Decode(buf io.Reader, flags_ interface{}) {
+func (str *String) Decode(buf io.Reader, flags_ interface{}) {
 	length := flags_.(int)
 	b := make([]byte, length)
 	if length == 0 {
@@ -61,5 +116,5 @@ func (str *JString) Decode(buf io.Reader, flags_ interface{}) {
 
 	b = bytes.Trim(b, "\x00\x0A")
 
-	*str = JString(b)
+	*str = String(b)
 }

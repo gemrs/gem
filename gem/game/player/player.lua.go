@@ -29,34 +29,6 @@ func lBindplayer(L *lua.LState) int {
 
 	lBindSkills(L, mod)
 
-	L.SetField(mod, "tab_attack", glua.ToLua(L, TabAttack))
-
-	L.SetField(mod, "tab_equipment", glua.ToLua(L, TabEquipment))
-
-	L.SetField(mod, "tab_friends", glua.ToLua(L, TabFriends))
-
-	L.SetField(mod, "tab_ignore", glua.ToLua(L, TabIgnore))
-
-	L.SetField(mod, "tab_inventory", glua.ToLua(L, TabInventory))
-
-	L.SetField(mod, "tab_logout", glua.ToLua(L, TabLogout))
-
-	L.SetField(mod, "tab_magic", glua.ToLua(L, TabMagic))
-
-	L.SetField(mod, "tab_music", glua.ToLua(L, TabMusic))
-
-	L.SetField(mod, "tab_prayer", glua.ToLua(L, TabPrayer))
-
-	L.SetField(mod, "tab_quests", glua.ToLua(L, TabQuests))
-
-	L.SetField(mod, "tab_run", glua.ToLua(L, TabRun))
-
-	L.SetField(mod, "tab_settings", glua.ToLua(L, TabSettings))
-
-	L.SetField(mod, "tab_skills", glua.ToLua(L, TabSkills))
-
-	L.SetField(mod, "tab_unused", glua.ToLua(L, TabUnused))
-
 	L.SetField(mod, "set_inventory_interface_id", L.NewFunction(lBindSetInventoryInterfaceId))
 
 	L.Push(mod)
@@ -107,7 +79,7 @@ func lBindClientConfigSetTabInterface(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*ClientConfig)
 	L.Remove(1)
 	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(int)
+	arg0 := glua.FromLua(arg0Value).(protocol.InterfaceTab)
 	L.Remove(1)
 	arg1Value := L.Get(1)
 	arg1 := glua.FromLua(arg1Value).(int)
@@ -121,7 +93,7 @@ func lBindClientConfigTabInterface(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*ClientConfig)
 	L.Remove(1)
 	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(int)
+	arg0 := glua.FromLua(arg0Value).(protocol.InterfaceTab)
 	L.Remove(1)
 	retVal := self.TabInterface(arg0)
 	L.Push(glua.ToLua(L, retVal))

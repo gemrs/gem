@@ -1,6 +1,9 @@
 package encoding
 
-import "io"
+import (
+	"fmt"
+	"io"
+)
 
 func TryEncode(e Encodable, buf io.Writer, flags_ interface{}) (err error) {
 	/*defer func() {
@@ -8,6 +11,9 @@ func TryEncode(e Encodable, buf io.Writer, flags_ interface{}) (err error) {
 			err = e.(error)
 		}
 	}()*/
+	if e == nil {
+		return fmt.Errorf("cannot encode nil message")
+	}
 	e.Encode(buf, flags_)
 	return nil
 }

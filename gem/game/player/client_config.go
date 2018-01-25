@@ -1,44 +1,28 @@
 package player
 
-//glua:bind
-const (
-	TabAttack int = iota
-	TabSkills
-	TabQuests
-	TabInventory
-	TabEquipment
-	TabPrayer
-	TabMagic
-	TabUnused
-	TabFriends
-	TabIgnore
-	TabLogout
-	TabSettings
-	TabRun
-	TabMusic
-)
+import "github.com/gemrs/gem/gem/protocol"
 
 //glua:bind
 type ClientConfig struct {
 	player        *Player
-	TabInterfaces map[int]int
+	TabInterfaces map[protocol.InterfaceTab]int
 }
 
 //glua:bind constructor ClientConfig
 func NewClientConfig(player *Player) *ClientConfig {
 	return &ClientConfig{
 		player:        player,
-		TabInterfaces: make(map[int]int),
+		TabInterfaces: make(map[protocol.InterfaceTab]int),
 	}
 }
 
 //glua:bind
-func (c *ClientConfig) TabInterface(id int) int {
+func (c *ClientConfig) TabInterface(id protocol.InterfaceTab) int {
 	return c.TabInterfaces[id]
 }
 
 //glua:bind
-func (c *ClientConfig) SetTabInterface(tab int, id int) {
+func (c *ClientConfig) SetTabInterface(tab protocol.InterfaceTab, id int) {
 	c.TabInterfaces[tab] = id
 	c.player.sendTabInterface(tab, id)
 }

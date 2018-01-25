@@ -28,7 +28,7 @@ func (player *Player) sendSkill(id, level, experience int) {
 	}
 }
 
-func (player *Player) sendTabInterface(tab, id int) {
+func (player *Player) sendTabInterface(tab protocol.InterfaceTab, id int) {
 	player.Conn().Write <- protocol.OutboundTabInterface{
 		Tab:         tab,
 		InterfaceID: id,

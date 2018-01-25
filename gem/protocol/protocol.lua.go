@@ -17,6 +17,8 @@ func lBindprotocol(L *lua.LState) int {
 
 	lBindAuthResponse(L, mod)
 
+	lBindInterfaceTab(L, mod)
+
 	lBindRights(L, mod)
 
 	lBindSkillId(L, mod)
@@ -111,6 +113,40 @@ func lBindprotocol(L *lua.LState) int {
 
 	L.SetField(mod, "skill_woodcutting", glua.ToLua(L, SkillWoodcutting))
 
+	L.SetField(mod, "tab_attack", glua.ToLua(L, TabAttack))
+
+	L.SetField(mod, "tab_clan_chat", glua.ToLua(L, TabClanChat))
+
+	L.SetField(mod, "tab_emotes", glua.ToLua(L, TabEmotes))
+
+	L.SetField(mod, "tab_equipment", glua.ToLua(L, TabEquipment))
+
+	L.SetField(mod, "tab_friends", glua.ToLua(L, TabFriends))
+
+	L.SetField(mod, "tab_ignore", glua.ToLua(L, TabIgnore))
+
+	L.SetField(mod, "tab_inventory", glua.ToLua(L, TabInventory))
+
+	L.SetField(mod, "tab_item_bag", glua.ToLua(L, TabItemBag))
+
+	L.SetField(mod, "tab_logout", glua.ToLua(L, TabLogout))
+
+	L.SetField(mod, "tab_magic", glua.ToLua(L, TabMagic))
+
+	L.SetField(mod, "tab_music", glua.ToLua(L, TabMusic))
+
+	L.SetField(mod, "tab_prayer", glua.ToLua(L, TabPrayer))
+
+	L.SetField(mod, "tab_quests", glua.ToLua(L, TabQuests))
+
+	L.SetField(mod, "tab_run", glua.ToLua(L, TabRun))
+
+	L.SetField(mod, "tab_settings", glua.ToLua(L, TabSettings))
+
+	L.SetField(mod, "tab_skills", glua.ToLua(L, TabSkills))
+
+	L.SetField(mod, "tab_unused", glua.ToLua(L, TabUnused))
+
 	L.Push(mod)
 	return 1
 }
@@ -140,6 +176,19 @@ func lNewAuthResponse(L *lua.LState) int {
 }
 
 var AuthResponseMethods = map[string]lua.LGFunction{}
+
+func lBindInterfaceTab(L *lua.LState, mod *lua.LTable) {
+	mt := L.NewTypeMetatable("protocol.InterfaceTab")
+
+	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), InterfaceTabMethods))
+
+	cls := L.NewUserData()
+	L.SetField(mod, "InterfaceTab", cls)
+	L.SetMetatable(cls, mt)
+	glua.RegisterType("protocol.InterfaceTab", mt)
+}
+
+var InterfaceTabMethods = map[string]lua.LGFunction{}
 
 func lBindRights(L *lua.LState, mod *lua.LTable) {
 	mt := L.NewTypeMetatable("protocol.Rights")

@@ -16,8 +16,9 @@ func init() {
 }
 
 type DefineOutbound struct {
-	packetTypes []string
-	bareTypes   []string
+	packetTypes        []string
+	unimplementedTypes []string
+	bareTypes          []string
 }
 
 func (p DefineOutbound) Name() string {
@@ -31,7 +32,7 @@ func (p DefineOutbound) Imports(t typewriter.Type) []typewriter.ImportSpec {
 var outboundDefineTmpl = template.Must(template.New("").Parse(`
 var {{.Name}}Definition = OutboundPacketDefinition{
 	Number: {{.Number}},
-	Size:   encoding.{{.Size}},
+	Size:   {{.Size}},
 }
 `))
 
@@ -46,6 +47,7 @@ func (p DefineOutbound) Write(w io.Writer, t typewriter.Type) error {
 	if len(values) != 2 {
 		return fmt.Errorf("format: Pkt123,Size")
 	}
+
 	outboundDefineTmpl.Execute(w, struct {
 		Name   string
 		Number string
@@ -65,7 +67,11 @@ func (p *DefineOutbound) Visit(t typewriter.Type) error {
 	}
 
 	if len(tags.Values) > 0 {
-		p.packetTypes = append(p.packetTypes, t.Name)
+		if tags.Values[0].Name == "Unimplemented" {
+			p.unimplementedTypes = append(p.unimplementedTypes, t.Name)
+		} else {
+			p.packetTypes = append(p.packetTypes, t.Name)
+		}
 	} else {
 		p.bareTypes = append(p.bareTypes, t.Name)
 	}
@@ -83,6 +89,11 @@ func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 	case protocol.{{.}}:
 		return {{.}}(message)
 {{end}}
+{{range .UnimplementedTypes}}
+	case protocol.{{.}}:
+        fmt.Println("{{.}} not implemented")
+		return nil
+{{end}}
 	}
 	panic(fmt.Sprintf("cannot encode %T", message))
 }
@@ -91,11 +102,13 @@ func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 func (p DefineOutbound) Collect(w io.Writer) error {
 	if len(p.packetTypes)+len(p.bareTypes) > 0 {
 		return encodeTmpl.Execute(w, struct {
-			PacketTypes []string
-			BareTypes   []string
+			PacketTypes        []string
+			BareTypes          []string
+			UnimplementedTypes []string
 		}{
-			PacketTypes: p.packetTypes,
-			BareTypes:   p.bareTypes,
+			PacketTypes:        p.packetTypes,
+			BareTypes:          p.bareTypes,
+			UnimplementedTypes: p.unimplementedTypes,
 		})
 	}
 	return nil

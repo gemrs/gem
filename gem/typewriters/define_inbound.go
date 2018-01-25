@@ -37,7 +37,7 @@ func (p DefineInbound) Imports(t typewriter.Type) []typewriter.ImportSpec {
 var inboundDefineTmpl = template.Must(template.New("").Parse(`
 var {{.Name}}Definition = InboundPacketDefinition{
 	Number: {{.Number}},
-	Size:   encoding.{{.Size}},
+	Size:   {{.Size}},
 }
 `))
 

@@ -82,6 +82,7 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 			Response: responseCode,
 			Rights:   int(client.Profile().Rights()),
 			Flagged:  false,
+			Index:    client.Index(),
 		}
 
 		client.SetDecodeFunc(svc.decodePacket)

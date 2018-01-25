@@ -1,7 +1,10 @@
 package protocol
 
+import "github.com/gemrs/gem/gem/game/position"
+
 // +gen pack_outgoing
 type OutboundLoginResponse struct {
+	Index    int
 	Response AuthResponse
 	Rights   int
 	Flagged  bool
@@ -14,8 +17,8 @@ type OutboundChatMessage struct {
 
 // +gen pack_outgoing
 type OutboundRegionUpdate struct {
-	SectorX int
-	SectorY int
+	Position    *position.Absolute
+	PlayerIndex int
 }
 
 // +gen pack_outgoing
@@ -27,7 +30,7 @@ type OutboundSkill struct {
 
 // +gen pack_outgoing
 type OutboundTabInterface struct {
-	Tab         int
+	Tab         InterfaceTab
 	InterfaceID int
 }
 
@@ -89,3 +92,34 @@ type OutboundSectorUpdate struct {
 	PositionX int
 	PositionY int
 }
+
+// +gen pack_outgoing
+type OutboundResetCamera struct {
+}
+
+// +gen pack_outgoing
+type OutboundDnsLookup struct {
+	Host string
+}
+
+// +gen pack_outgoing
+type OutboundSetRootInterface struct {
+	Frame FrameType
+}
+
+// +gen pack_outgoing
+type OutboundSetInterface struct {
+	RootID      int
+	ChildID     int
+	InterfaceID int
+	Clickable   bool
+}
+
+// +gen pack_outgoing
+type OutboundScriptEvent struct {
+	ScriptID int
+	Params   []interface{}
+}
+
+// +gen pack_outgoing
+type OutboundInitInterface struct{}

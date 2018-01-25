@@ -16,7 +16,7 @@ cfg.game_index_files = _.map({1,2,3,4}, function(i)
       return cfg.data_path .. "/main_file_cache.idx" .. tostring(i-1)
 end)
 cfg.item_definition_file = cfg.data_path .. "/item_definitions.json"
-cfg.interface_id_file = cfg.data_path .. "/interface_ids.properties"
+cfg.interface_id_file = cfg.data_path .. "/interface_ids.os157.properties"
 
 -- Plugins to load
 cfg.plugins = {

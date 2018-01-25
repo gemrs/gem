@@ -19,7 +19,7 @@ import (
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/protocol"
-	"github.com/gemrs/gem/gem/protocol/protocol_317"
+	"github.com/gemrs/gem/gem/protocol/protocol_os_157"
 	"github.com/gemrs/gem/gem/runite"
 	willow "github.com/gemrs/willow/log"
 	lua "github.com/yuin/gopher-lua"
@@ -66,7 +66,8 @@ func main() {
 	protocol.Bindprotocol(L)
 	item.Binditem(L)
 
-	server.SetProtocolImpl(protocol_317.Protocol)
+	protocol_os_157.LoadMapKeys("/media/psf/gem_share/resources_osrs/xtea/")
+	server.SetProtocolImpl(protocol_os_157.Protocol)
 
 	if *unsafeLua {
 		if fn, err := L.LoadFile(mainFile); err != nil {
