@@ -94,6 +94,8 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 
 		go func() {
 			client.Conn().WaitForDisconnect()
+			worldSector := svc.world.Sector(client.Position().Sector())
+			worldSector.Remove(client)
 			game_event.PlayerLogout.NotifyObservers(client)
 		}()
 		return nil

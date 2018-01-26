@@ -157,8 +157,6 @@ func (s *Server) handle(netConn net.Conn) {
 		conn.flushWriteBuffer()
 	}
 
-	close(conn.Read)
-	close(conn.Write)
 	conn.conn.Close()
 	conn.Log().Info("connection closed")
 }

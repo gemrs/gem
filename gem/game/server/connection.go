@@ -87,7 +87,9 @@ func decodeToReadQueue(client GameClient) {
 	for {
 		err := conn.fillReadBuffer()
 		if err != nil {
-			conn.Log().Debug("read error: %v", err)
+			if err != io.EOF {
+				conn.Log().Debug("read error: %v", err)
+			}
 			conn.Disconnect()
 			break
 		}
