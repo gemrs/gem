@@ -192,7 +192,7 @@ func (struc PlayerUpdate) buildUpdateBlock(w io.Writer, thisPlayer protocol.Play
 			AnimRotateCW:   encoding.Uint16(anims.Animation(protocol.AnimRotateCW)),
 			AnimRun:        encoding.Uint16(anims.Animation(protocol.AnimRun)),
 
-			NameHash:    encoding.NameHash(thisPlayer.Username),
+			Name:        encoding.NameHash(thisPlayer.Username),
 			CombatLevel: encoding.Uint8(thisPlayer.Skills.CombatLevel()),
 		}
 
@@ -200,7 +200,7 @@ func (struc PlayerUpdate) buildUpdateBlock(w io.Writer, thisPlayer protocol.Play
 
 		block := buf.Bytes()
 		blockSize := encoding.Uint8(len(block))
-		blockSize.Encode(w, encoding.IntNegate)
+		blockSize.Encode(w, encoding.IntOffset128)
 
 		_, err := w.Write(block)
 		if err != nil {

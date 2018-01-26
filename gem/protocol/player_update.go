@@ -22,6 +22,7 @@ type PlayerUpdateData struct {
 // +gen pack_outgoing
 type PlayerUpdate struct {
 	Me       PlayerUpdateData
+	Visible  []PlayerUpdateData
 	Others   map[int]PlayerUpdateData
 	Removing map[int]bool
 	Updating []int

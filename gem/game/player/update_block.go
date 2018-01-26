@@ -7,12 +7,21 @@ import (
 
 func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 	block := protocol.PlayerUpdate{
+		Visible:  make([]protocol.PlayerUpdateData, 0),
 		Others:   make(map[int]protocol.PlayerUpdateData),
 		Removing: make(map[int]bool),
 	}
 	block.Me = buildPlayerUpdateData(player)
 
 	visibleEntities := player.VisibleEntities()
+
+	for _, e := range visibleEntities.Entities().Slice() {
+		if e.EntityType() != entity.PlayerType {
+			continue
+		}
+		block.Visible = append(block.Visible, buildPlayerUpdateData(e.(*Player)))
+	}
+
 	updatingPlayers := visibleEntities.Entities().Clone()
 	updatingPlayers.RemoveAll(visibleEntities.Adding())
 	updatingPlayers = updatingPlayers.Filter(entity.PlayerType)

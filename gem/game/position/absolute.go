@@ -28,6 +28,10 @@ func (pos *Absolute) Delta(target *Absolute) (x, y, z int) {
 	return pos.X() - target.X(), pos.Y() - target.Y(), pos.Z() - target.Z()
 }
 
+func (pos *Absolute) DeltaTo(target *Absolute) (x, y, z int) {
+	return target.X() - pos.X(), target.Y() - pos.Y(), target.Z() - pos.Z()
+}
+
 // NextInterpolatedStep returns the one tile closer to the given point
 // used by the waypoint queue to calculate the player's position along a path
 func (pos *Absolute) NextInterpolatedPoint(target *Absolute) *Absolute {

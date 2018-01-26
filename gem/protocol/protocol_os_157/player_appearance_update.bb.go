@@ -10,6 +10,7 @@ import (
 type OutboundPlayerAppearance struct {
 	Gender          encoding.Uint8
 	HeadIcon        encoding.Uint8
+	SkullIcon       encoding.Uint8
 	HelmModel       encoding.Uint8
 	CapeModel       encoding.Uint8
 	AmuletModel     encoding.Uint8
@@ -34,15 +35,18 @@ type OutboundPlayerAppearance struct {
 	AnimRotateCCW   encoding.Uint16
 	AnimRotateCW    encoding.Uint16
 	AnimRun         encoding.Uint16
-	NameHash        encoding.Uint64
+	Name            encoding.String
 	CombatLevel     encoding.Uint8
 	SkillLevel      encoding.Uint16
+	Hidden          encoding.Uint8
 }
 
 func (struc *OutboundPlayerAppearance) Encode(buf io.Writer, flags interface{}) {
 	struc.Gender.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
 	struc.HeadIcon.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+
+	struc.SkullIcon.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
 	struc.HelmModel.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
@@ -92,71 +96,12 @@ func (struc *OutboundPlayerAppearance) Encode(buf io.Writer, flags interface{}) 
 
 	struc.AnimRun.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-	struc.NameHash.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.Name.Encode(buf, 0)
 
 	struc.CombatLevel.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
 	struc.SkillLevel.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
-}
-
-func (struc *OutboundPlayerAppearance) Decode(buf io.Reader, flags interface{}) {
-	struc.Gender.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.HeadIcon.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.HelmModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.CapeModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AmuletModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.RightWieldModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.TorsoModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.LeftWieldModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.ArmsModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.LegsModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.HeadModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.HandsModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.FeetModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.BeardModel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.HairColor.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.TorsoColor.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.LegColor.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.FeetColor.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.SkinColor.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AnimIdle.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AnimSpotRotate.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AnimWalk.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AnimRotate180.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AnimRotateCCW.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AnimRotateCW.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.AnimRun.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.NameHash.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.CombatLevel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	struc.SkillLevel.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.Hidden.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
 }

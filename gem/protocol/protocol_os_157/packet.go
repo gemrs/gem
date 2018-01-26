@@ -53,7 +53,6 @@ func (p PacketHeader) Encode(buf io.Writer, flags interface{}) {
 	case SzVar16:
 		size16 := encoding.Int16(flippedBuf.Len())
 		size16.Encode(buf, encoding.IntNilFlag)
-		fmt.Printf("packet %v has len %v\n", p.Number, flippedBuf.Len())
 	}
 
 	/* encode the buffered payload */

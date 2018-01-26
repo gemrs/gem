@@ -8,6 +8,7 @@ var indexChan <-chan int
 
 func init() {
 	indexChan = id.Generator()
+	<-indexChan
 }
 
 func NextIndex() int {

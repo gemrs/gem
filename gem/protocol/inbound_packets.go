@@ -36,10 +36,9 @@ type WalkWaypoint struct {
 }
 
 type InboundPlayerWalk struct {
-	OriginX   int
-	OriginY   int
-	Waypoints []WalkWaypoint
-	Running   bool
+	X       int
+	Y       int
+	Running bool
 }
 
 type UnknownPacket struct {
