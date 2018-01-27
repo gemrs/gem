@@ -30,6 +30,8 @@ type OutboundSkill struct {
 
 // +gen pack_outgoing
 type OutboundTabInterface struct {
+	ProtoData interface{}
+
 	Tab         InterfaceTab
 	InterfaceID int
 }
@@ -122,4 +124,6 @@ type OutboundScriptEvent struct {
 }
 
 // +gen pack_outgoing
-type OutboundInitInterface struct{}
+type OutboundInitInterface struct {
+	ProtoData interface{}
+}

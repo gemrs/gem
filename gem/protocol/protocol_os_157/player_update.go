@@ -12,10 +12,13 @@ import (
 // +gen define_outbound:"Pkt82,SzVar16"
 type PlayerUpdate protocol.PlayerUpdate
 
-var skipFlags [2048]int
+func (struc PlayerUpdate) attachment() *playerData {
+	return struc.Me.ProtoData.(*playerData)
+}
 
 func (struc PlayerUpdate) Encode(w_ io.Writer, flags interface{}) {
 	w := &bytes.Buffer{}
+	data := struc.attachment()
 
 	maskBuf := encoding.NewBuffer()
 	struc.processPlayersInViewport(w, maskBuf, true)
@@ -23,8 +26,8 @@ func (struc PlayerUpdate) Encode(w_ io.Writer, flags interface{}) {
 	struc.processPlayersOutsideViewport(w, maskBuf, true)
 	struc.processPlayersOutsideViewport(w, maskBuf, false)
 
-	for i, _ := range skipFlags {
-		skipFlags[i] >>= 1
+	for i, _ := range data.skipFlags {
+		data.skipFlags[i] >>= 1
 	}
 
 	maskBytes := maskBuf.Bytes()
@@ -40,18 +43,19 @@ var skip int
 func (struc PlayerUpdate) processPlayersInViewport(w io.Writer, maskBuf *encoding.Buffer, nsn bool) {
 	buf := encoding.NewBitBuffer(w)
 	defer buf.Close()
+	data := struc.attachment()
 
 	skip = 0
 	for i, p := range struc.Visible {
-		update := skipFlags[p.Index]&0x1 != 0
+		update := data.skipFlags[p.Index]&0x1 != 0
 		if nsn {
-			update = skipFlags[p.Index]&0x1 == 0
+			update = data.skipFlags[p.Index]&0x1 == 0
 		}
 
 		if update {
 			if skip > 0 {
 				skip--
-				skipFlags[p.Index] |= 0x2
+				data.skipFlags[p.Index] |= 0x2
 				continue
 			}
 
@@ -63,7 +67,7 @@ func (struc PlayerUpdate) processPlayersInViewport(w io.Writer, maskBuf *encodin
 			} else {
 				buf.Write(1, 0)
 				struc.skipPlayersInViewport(buf, i, nsn)
-				skipFlags[p.Index] |= 0x2
+				data.skipFlags[p.Index] |= 0x2
 			}
 		}
 	}
@@ -80,11 +84,13 @@ func (struc PlayerUpdate) processPlayersOutsideViewport(w io.Writer, maskBuf *en
 }
 
 func (struc PlayerUpdate) skipPlayersInViewport(buf *encoding.BitBuffer, i int, nsn bool) {
+	data := struc.attachment()
+
 	for x := i + 1; x < len(struc.Visible); x++ {
 		p := struc.Visible[x]
-		update := skipFlags[p.Index]&0x1 != 0
+		update := data.skipFlags[p.Index]&0x1 != 0
 		if nsn {
-			update = skipFlags[p.Index]&0x1 == 0
+			update = data.skipFlags[p.Index]&0x1 == 0
 		}
 
 		if update {

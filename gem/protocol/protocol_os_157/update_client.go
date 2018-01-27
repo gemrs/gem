@@ -22,6 +22,10 @@ func NewUpdateClient(conn *server.Connection, svc *UpdateService) *UpdateClient 
 	}
 }
 
+func (client *UpdateClient) SetProtoData(d interface{}) {
+	panic("SetProtoData not implemented")
+}
+
 // Conn returns the underlying Connection
 func (client *UpdateClient) Conn() *server.Connection {
 	return client.Connection

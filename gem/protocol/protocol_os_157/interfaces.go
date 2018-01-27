@@ -40,8 +40,6 @@ var FullscreenFrame = FrameType{
 	},
 }
 
-var DefaultFrame = FixedFrame
-
 var FixedFrame = FrameType{
 	Root:        548,
 	Window:      20,

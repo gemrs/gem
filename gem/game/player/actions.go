@@ -30,6 +30,7 @@ func (player *Player) sendSkill(id, level, experience int) {
 
 func (player *Player) sendTabInterface(tab protocol.InterfaceTab, id int) {
 	player.Conn().Write <- protocol.OutboundTabInterface{
+		ProtoData:   player.protoData,
 		Tab:         tab,
 		InterfaceID: id,
 	}

@@ -2,7 +2,6 @@
 package protocol_os_157
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
@@ -26,8 +25,6 @@ func decodeWalk(buf io.Reader, flags interface{}, struc *protocol.InboundPlayerW
 
 	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
 	struc.X = int(tmp16)
-
-	fmt.Printf("Walk request to %v %v\n", struc.Y, struc.X)
 
 	tmp8.Decode(buf, encoding.IntNilFlag)
 }

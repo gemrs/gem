@@ -46,6 +46,7 @@ type GameClient interface {
 	Encode(encoding.Encodable) error
 	Disconnect()
 
+	SetProtoData(d interface{})
 	SetDecodeFunc(d DecodeFunc)
 	Log() log.Log
 	IsaacIn() *isaac.ISAAC

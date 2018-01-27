@@ -38,6 +38,7 @@ func (handler *LoginHandler) Perform(client server.GameClient) {
 		},
 	}
 
+	client.SetProtoData(newPlayerData())
 	client.SetDecodeFunc(handler.decodeLoginBlock)
 }
 

@@ -1,7 +1,6 @@
 package protocol_os_157
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
@@ -36,7 +35,7 @@ func (struc OutboundRemoveGroundItem) Encode(buf io.Writer, flags interface{}) {
 type OutboundTabInterface protocol.OutboundTabInterface
 
 func (struc OutboundTabInterface) Encode(buf io.Writer, flags interface{}) {
-	frame := MinimalFrame
+	frame := getPlayerData(struc.ProtoData).frame
 	packet := OutboundSetInterfaceDefinition.Pack(OutboundSetInterface{
 		RootID:      frame.Root,
 		ChildID:     frame.Tabs[struc.Tab],
@@ -44,7 +43,6 @@ func (struc OutboundTabInterface) Encode(buf io.Writer, flags interface{}) {
 		Clickable:   true,
 	})
 	packet.Encode(buf, flags)
-	fmt.Printf("set tab %#v\n", packet)
 }
 
 // +gen define_outbound:"Unimplemented"
@@ -192,7 +190,7 @@ func (struc OutboundScriptEvent) Encode(buf io.Writer, flags interface{}) {
 type OutboundInitInterface protocol.OutboundInitInterface
 
 func (struc OutboundInitInterface) Encode(buf io.Writer, flags interface{}) {
-	frame := MinimalFrame
+	frame := getPlayerData(struc.ProtoData).frame
 
 	OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface{
 		Frame: frame,

@@ -57,5 +57,6 @@ func buildPlayerUpdateData(player *Player) protocol.PlayerUpdateData {
 		Appearance:       player.Profile().Appearance(),
 		Animations:       player.Animations(),
 		Skills:           player.Profile().Skills(),
+		ProtoData:        player.protoData,
 	}
 }

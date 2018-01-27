@@ -21,6 +21,7 @@ type Player struct {
 	sector       *world.Sector
 	world        *world.Instance
 	loadedRegion *position.Region
+	protoData    interface{}
 
 	visibleEntities *entity.Collection
 	chatQueue       []protocol.InboundChatMessage
@@ -75,6 +76,10 @@ func (player *Player) Index() int {
 // EntityType identifies what kind of entity this entity is
 func (player *Player) EntityType() entity.EntityType {
 	return entity.PlayerType
+}
+
+func (player *Player) SetProtoData(d interface{}) {
+	player.protoData = d
 }
 
 func (player *Player) SetDecodeFunc(d server.DecodeFunc) {
@@ -141,7 +146,9 @@ func (player *Player) FinishInit() {
 		}
 	*/
 
-	player.Conn().Write <- protocol.OutboundInitInterface{}
+	player.Conn().Write <- protocol.OutboundInitInterface{
+		ProtoData: player.protoData,
+	}
 	/*
 		player.Conn().Write <- protocol.OutboundSetInterface{
 			RootID:      rootIface,

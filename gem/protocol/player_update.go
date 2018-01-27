@@ -17,6 +17,9 @@ type PlayerUpdateData struct {
 	Appearance       Appearance
 	Animations       Animations
 	Skills           Skills
+
+	// Some protocol specific data
+	ProtoData interface{}
 }
 
 // +gen pack_outgoing

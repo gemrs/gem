@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"fmt"
-
 	"github.com/gemrs/gem/gem/game/position"
 )
 
@@ -77,13 +75,9 @@ func (q *SimpleWaypointQueue) Tick(entity Entity) bool {
 		return q.Tick(mob)
 	}
 
-	fmt.Printf("current pos is %v, next waypoint is %v\n", entity.Position(), nextWaypoint)
 	next := current.NextInterpolatedPoint(nextWaypoint)
-	fmt.Printf("next interp is %v\n", next)
 
 	dx, dy, _ := current.DeltaTo(next)
-
-	fmt.Printf("dx %v dy %v\n", dx, dy)
 
 	q.lastDirection = q.direction
 	q.direction = directionMap[dx+1][dy+1]
