@@ -7,7 +7,6 @@ import (
 
 func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 	block := protocol.PlayerUpdate{
-		Visible:  make([]protocol.PlayerUpdateData, 0),
 		Others:   make(map[int]protocol.PlayerUpdateData),
 		Removing: make(map[int]bool),
 	}
@@ -19,7 +18,8 @@ func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 		if e.EntityType() != entity.PlayerType {
 			continue
 		}
-		block.Visible = append(block.Visible, buildPlayerUpdateData(e.(*Player)))
+		block.Visible = append(block.Visible, e.Index())
+		block.Others[e.Index()] = buildPlayerUpdateData(e.(*Player))
 	}
 
 	updatingPlayers := visibleEntities.Entities().Clone()
@@ -28,7 +28,6 @@ func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 	updatingPlayers.Remove(player)
 
 	for _, other := range updatingPlayers.Slice() {
-		block.Others[other.Index()] = buildPlayerUpdateData(other.(*Player))
 		block.Updating = append(block.Updating, other.Index())
 		block.Removing[other.Index()] = visibleEntities.Removing().Contains(other)
 	}
@@ -38,7 +37,6 @@ func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 			continue
 		}
 		block.Adding = append(block.Adding, other.Index())
-		block.Others[other.Index()] = buildPlayerUpdateData(other.(*Player))
 	}
 
 	return block
@@ -57,6 +55,7 @@ func buildPlayerUpdateData(player *Player) protocol.PlayerUpdateData {
 		Appearance:       player.Profile().Appearance(),
 		Animations:       player.Animations(),
 		Skills:           player.Profile().Skills(),
+		Log:              player.Log(),
 		ProtoData:        player.protoData,
 	}
 }

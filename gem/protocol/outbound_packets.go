@@ -17,6 +17,8 @@ type OutboundChatMessage struct {
 
 // +gen pack_outgoing
 type OutboundRegionUpdate struct {
+	ProtoData interface{}
+
 	Position    *position.Absolute
 	PlayerIndex int
 }

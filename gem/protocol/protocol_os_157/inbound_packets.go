@@ -19,19 +19,19 @@ func (protocolImpl) NewInboundPacket(id int) (encoding.Decodable, error) {
 	return definition(), nil
 }
 
-// +gen define_inbound:"Pkt103,SzVar8"
+// +gen define_inbound:"Unimplemented"
 type InboundCommand protocol.InboundCommand
 
 func (struc *InboundCommand) Decode(buf io.Reader, flags interface{}) {
 	(*encoding.JString)(&struc.Command).Decode(buf, 0)
 }
 
-// +gen define_inbound:"Pkt0,SzFixed"
+// +gen define_inbound:"Unimplemented"
 type InboundPing protocol.InboundPing
 
 func (struc *InboundPing) Decode(buf io.Reader, flags interface{}) {}
 
-// +gen define_inbound:"Pkt122,SzFixed,InboundInventoryAction"
+// +gen define_inbound:"Unimplemented"
 type InboundInventoryAction1 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction1) Decode(buf io.Reader, flags interface{}) {
@@ -48,7 +48,7 @@ func (struc *InboundInventoryAction1) Decode(buf io.Reader, flags interface{}) {
 	struc.ItemID = int(tmp16)
 }
 
-// +gen define_inbound:"Pkt41,SzFixed,InboundInventoryAction"
+// +gen define_inbound:"Unimplemented"
 type InboundInventoryAction2 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction2) Decode(buf io.Reader, flags interface{}) {
@@ -65,7 +65,7 @@ func (struc *InboundInventoryAction2) Decode(buf io.Reader, flags interface{}) {
 	struc.InterfaceID = int(tmp16)
 }
 
-// +gen define_inbound:"Pkt16,SzFixed,InboundInventoryAction"
+// +gen define_inbound:"Unimplemented"
 type InboundInventoryAction3 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction3) Decode(buf io.Reader, flags interface{}) {
@@ -82,7 +82,7 @@ func (struc *InboundInventoryAction3) Decode(buf io.Reader, flags interface{}) {
 	struc.InterfaceID = int(tmp16)
 }
 
-// +gen define_inbound:"Pkt75,SzFixed,InboundInventoryAction"
+// +gen define_inbound:"Unimplemented"
 type InboundInventoryAction4 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction4) Decode(buf io.Reader, flags interface{}) {
@@ -99,7 +99,7 @@ func (struc *InboundInventoryAction4) Decode(buf io.Reader, flags interface{}) {
 	struc.ItemID = int(tmp16)
 }
 
-// +gen define_inbound:"Pkt87,SzFixed,InboundInventoryAction"
+// +gen define_inbound:"Unimplemented"
 type InboundInventoryAction5 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction5) Decode(buf io.Reader, flags interface{}) {
@@ -116,7 +116,7 @@ func (struc *InboundInventoryAction5) Decode(buf io.Reader, flags interface{}) {
 	struc.Slot = int(tmp16)
 }
 
-// +gen define_inbound:"Pkt214,SzFixed"
+// +gen define_inbound:"Unimplemented"
 type InboundInventorySwapItem protocol.InboundInventorySwapItem
 
 func (struc *InboundInventorySwapItem) Decode(buf io.Reader, flags interface{}) {
@@ -136,7 +136,7 @@ func (struc *InboundInventorySwapItem) Decode(buf io.Reader, flags interface{}) 
 	struc.To = int(tmp16)
 }
 
-// +gen define_inbound:"Pkt236,SzFixed"
+// +gen define_inbound:"Unimplemented"
 type InboundTakeGroundItem protocol.InboundTakeGroundItem
 
 func (struc *InboundTakeGroundItem) Decode(buf io.Reader, flags interface{}) {
@@ -152,7 +152,7 @@ func (struc *InboundTakeGroundItem) Decode(buf io.Reader, flags interface{}) {
 	struc.X = int(tmp16)
 }
 
-// +gen define_inbound:"Pkt4,SzVar8"
+// +gen define_inbound:"Unimplemented"
 type InboundChatMessage protocol.InboundChatMessage
 
 func (struc *InboundChatMessage) Decode(buf io.Reader, flags interface{}) {

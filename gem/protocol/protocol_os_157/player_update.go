@@ -21,14 +21,10 @@ func (struc PlayerUpdate) Encode(w_ io.Writer, flags interface{}) {
 	data := struc.attachment()
 
 	maskBuf := encoding.NewBuffer()
-	struc.processPlayersInViewport(w, maskBuf, true)
-	struc.processPlayersInViewport(w, maskBuf, false)
-	struc.processPlayersOutsideViewport(w, maskBuf, true)
-	struc.processPlayersOutsideViewport(w, maskBuf, false)
-
-	for i, _ := range data.skipFlags {
-		data.skipFlags[i] >>= 1
-	}
+	struc.processLocalPlayers(w, maskBuf, 0)
+	struc.processLocalPlayers(w, maskBuf, 1)
+	struc.processExternalPlayers(w, maskBuf, 2)
+	struc.processExternalPlayers(w, maskBuf, 3)
 
 	maskBytes := maskBuf.Bytes()
 	if len(maskBytes) > 0 {
@@ -36,72 +32,133 @@ func (struc PlayerUpdate) Encode(w_ io.Writer, flags interface{}) {
 	}
 
 	w_.Write(w.Bytes())
+
+	// Rebuild the player lists to preserve index ordering
+	data.localPlayerCount = 0
+	data.externalPlayerCount = 0
+	for i, _ := range data.skipFlags {
+		if i == 0 {
+			continue
+		}
+
+		data.skipFlags[i].cycle()
+		if _, ok := struc.Others[i]; ok {
+			data.localPlayers[data.localPlayerCount] = i
+			data.localPlayerCount++
+		} else {
+			data.externalPlayers[data.externalPlayerCount] = i
+			data.externalPlayerCount++
+		}
+	}
 }
 
-var skip int
-
-func (struc PlayerUpdate) processPlayersInViewport(w io.Writer, maskBuf *encoding.Buffer, nsn bool) {
+func (struc PlayerUpdate) processLocalPlayers(w io.Writer, maskBuf *encoding.Buffer, iter int) {
 	buf := encoding.NewBitBuffer(w)
 	defer buf.Close()
 	data := struc.attachment()
 
-	skip = 0
-	for i, p := range struc.Visible {
-		update := data.skipFlags[p.Index]&0x1 != 0
-		if nsn {
-			update = data.skipFlags[p.Index]&0x1 == 0
-		}
+	data.skipCount = 0
+	for i := 0; i < data.localPlayerCount; i++ {
+		index := data.localPlayers[i]
 
-		if update {
-			if skip > 0 {
-				skip--
-				data.skipFlags[p.Index] |= 0x2
+		if data.skipFlags[index].shouldUpdate(iter) {
+			if data.skipCount > 0 {
+				data.skipCount--
+				data.skipFlags[index].updateNextIter()
 				continue
 			}
 
-			flags := struc.getModifiedUpdateFlags(p)
+			player, ok := struc.Others[index]
 
-			if flags != 0 {
+			updateRequired := false
+			if ok {
+				if struc.getModifiedUpdateFlags(player) != 0 {
+					updateRequired = true
+				}
+			}
+
+			if updateRequired {
 				buf.Write(1, 1)
-				struc.updatePlayerInViewport(buf, maskBuf, p)
+				struc.updateLocalPlayers(buf, maskBuf, player)
 			} else {
 				buf.Write(1, 0)
-				struc.skipPlayersInViewport(buf, i, nsn)
-				data.skipFlags[p.Index] |= 0x2
+				struc.skipLocalPlayers(buf, i, iter)
+				data.skipFlags[index].updateNextIter()
 			}
 		}
 	}
 }
 
-func (struc PlayerUpdate) processPlayersOutsideViewport(w io.Writer, maskBuf *encoding.Buffer, nsn bool) {
+func (struc PlayerUpdate) isAdding(playerIndex int) bool {
+	for _, i := range struc.Adding {
+		if i == playerIndex {
+			return true
+		}
+	}
+	return false
+}
+
+func (struc PlayerUpdate) processExternalPlayers(w io.Writer, maskBuf *encoding.Buffer, iter int) {
 	buf := encoding.NewBitBuffer(w)
 	defer buf.Close()
+	data := struc.attachment()
 
-	if nsn {
-		buf.Write(1, 0)
-		struc.writeSkip(buf, 2045)
+	data.skipCount = 0
+	for i := 0; i < data.externalPlayerCount; i++ {
+		index := data.externalPlayers[i]
+
+		if data.skipFlags[index].shouldUpdate(iter) {
+			if data.skipCount > 0 {
+				data.skipCount--
+				data.skipFlags[index].updateNextIter()
+				continue
+			}
+
+			if index != struc.Me.Index && struc.isAdding(index) {
+				buf.Write(1, 1)
+				player := struc.Others[index]
+				struc.addPlayer(buf, maskBuf, player)
+				data.skipFlags[index].updateNextIter()
+			} else {
+				buf.Write(1, 0)
+				struc.skipExternalPlayers(buf, i, iter)
+				data.skipFlags[index].updateNextIter()
+			}
+		}
 	}
 }
 
-func (struc PlayerUpdate) skipPlayersInViewport(buf *encoding.BitBuffer, i int, nsn bool) {
+func (struc PlayerUpdate) skipLocalPlayers(buf *encoding.BitBuffer, i int, iter int) {
 	data := struc.attachment()
 
-	for x := i + 1; x < len(struc.Visible); x++ {
-		p := struc.Visible[x]
-		update := data.skipFlags[p.Index]&0x1 != 0
-		if nsn {
-			update = data.skipFlags[p.Index]&0x1 == 0
-		}
+	for x := i + 1; x < data.localPlayerCount; x++ {
+		p := struc.Others[x]
+		index := data.localPlayers[x]
 
-		if update {
+		if data.skipFlags[index].shouldUpdate(iter) {
 			flags := struc.getModifiedUpdateFlags(p)
 			if flags != 0 {
 				break
 			}
-			skip++
+			data.skipCount++
 		}
 	}
-	struc.writeSkip(buf, skip)
+	struc.writeSkip(buf, data.skipCount)
+}
+
+func (struc PlayerUpdate) skipExternalPlayers(buf *encoding.BitBuffer, i int, iter int) {
+	data := struc.attachment()
+
+	for x := i + 1; x < data.externalPlayerCount; x++ {
+		index := data.externalPlayers[x]
+		if data.skipFlags[index].shouldUpdate(iter) {
+			if index != struc.Me.Index && struc.isAdding(index) {
+				break
+			}
+			data.skipCount++
+		}
+	}
+	struc.writeSkip(buf, data.skipCount)
 }
 
 func (struc PlayerUpdate) writeSkip(buf *encoding.BitBuffer, skip int) {
@@ -125,7 +182,26 @@ func (struc PlayerUpdate) writeSkip(buf *encoding.BitBuffer, skip int) {
 	}
 }
 
-func (struc PlayerUpdate) updatePlayerInViewport(buf *encoding.BitBuffer, maskBuf *encoding.Buffer, thisPlayer protocol.PlayerUpdateData) {
+func (struc PlayerUpdate) addPlayer(buf *encoding.BitBuffer, maskBuf *encoding.Buffer, player protocol.PlayerUpdateData) {
+	// Add player
+	buf.Write(2, 0)
+
+	// No region updates
+	buf.Write(1, 0)
+
+	// Absolute position
+	buf.Write(13, uint32(player.Position.X()))
+	buf.Write(13, uint32(player.Position.Y()))
+
+	// Also send flag based updates
+	buf.Write(1, 1)
+
+	// Force identity update
+	flags := entity.MobFlagIdentityUpdate
+	struc.buildBlockUpdates(maskBuf, player, flags)
+}
+
+func (struc PlayerUpdate) updateLocalPlayers(buf *encoding.BitBuffer, maskBuf *encoding.Buffer, thisPlayer protocol.PlayerUpdateData) {
 	flags := struc.getModifiedUpdateFlags(thisPlayer) & ^entity.MobFlagMovementUpdate
 	if flags != 0 {
 		buf.Write(1, 1)
@@ -134,7 +210,10 @@ func (struc PlayerUpdate) updatePlayerInViewport(buf *encoding.BitBuffer, maskBu
 	}
 
 	struc.buildMovementBlock(buf, thisPlayer)
+	struc.buildBlockUpdates(maskBuf, thisPlayer, flags)
+}
 
+func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer protocol.PlayerUpdateData, flags entity.Flags) {
 	if flags > 0 {
 		if flags >= 0x100 {
 			flags |= 0x4
@@ -209,6 +288,7 @@ func (struc PlayerUpdate) getModifiedUpdateFlags(updatingPlayer protocol.PlayerU
 	if updatingThisPlayer {
 		flags = flags & ^entity.MobFlagChatUpdate
 	}
+
 	return flags
 }
 

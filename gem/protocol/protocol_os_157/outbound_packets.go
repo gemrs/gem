@@ -80,9 +80,16 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	bitBuf := encoding.NewBitBuffer(buf)
 	bitBuf.Write(30, uint32(compressedPos))
 
-	for i := 1; i < 2048; i++ {
+	data := getPlayerData(struc.ProtoData)
+
+	data.localPlayers[data.localPlayerCount] = struc.PlayerIndex
+	data.localPlayerCount++
+
+	for i := 1; i < protocol.MaxPlayers; i++ {
 		if i != struc.PlayerIndex {
 			bitBuf.Write(18, 0)
+			data.externalPlayers[data.externalPlayerCount] = i
+			data.externalPlayerCount++
 		}
 	}
 

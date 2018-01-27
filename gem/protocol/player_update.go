@@ -3,6 +3,7 @@ package protocol
 import (
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/willow/log"
 )
 
 const MaxPlayers = 2048
@@ -19,6 +20,7 @@ type PlayerUpdateData struct {
 	Appearance       Appearance
 	Animations       Animations
 	Skills           Skills
+	Log              log.Log
 
 	// Some protocol specific data
 	ProtoData interface{}
@@ -27,9 +29,9 @@ type PlayerUpdateData struct {
 // +gen pack_outgoing
 type PlayerUpdate struct {
 	Me       PlayerUpdateData
-	Visible  []PlayerUpdateData
 	Others   map[int]PlayerUpdateData
 	Removing map[int]bool
+	Visible  []int
 	Updating []int
 	Adding   []int
 }

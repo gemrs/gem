@@ -43,6 +43,7 @@ func (player *Player) RegionChange() {
 	player.loadedRegion = player.Position().RegionOf()
 
 	player.Conn().Write <- protocol.OutboundRegionUpdate{
+		ProtoData:   player.protoData,
 		Position:    player.Position(),
 		PlayerIndex: player.Index(),
 	}

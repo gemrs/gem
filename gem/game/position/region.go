@@ -15,6 +15,18 @@ func NewRegion(origin *Sector) *Region {
 	return &Region{origin}
 }
 
+func (region *Region) X() int {
+	return region.Origin().Min().X() / (SectorSize * RegionSize)
+}
+
+func (region *Region) Y() int {
+	return region.Origin().Min().Y() / (SectorSize * RegionSize)
+}
+
+func (region *Region) Z() int {
+	return region.Origin().Z()
+}
+
 func (region *Region) Compare(other *Region) bool {
 	return region.Origin().Compare(other.Origin())
 }
