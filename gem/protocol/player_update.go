@@ -5,6 +5,8 @@ import (
 	"github.com/gemrs/gem/gem/game/position"
 )
 
+const MaxPlayers = 2048
+
 type PlayerUpdateData struct {
 	Index            int
 	Username         string

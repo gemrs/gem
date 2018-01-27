@@ -117,12 +117,15 @@ func lBindPlayer(L *lua.LState, mod *lua.LTable) {
 func lNewPlayer(L *lua.LState) int {
 	L.Remove(1)
 	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(*server.Connection)
+	arg0 := glua.FromLua(arg0Value).(int)
 	L.Remove(1)
 	arg1Value := L.Get(1)
-	arg1 := glua.FromLua(arg1Value).(*world.Instance)
+	arg1 := glua.FromLua(arg1Value).(*server.Connection)
 	L.Remove(1)
-	retVal := NewPlayer(arg0, arg1)
+	arg2Value := L.Get(1)
+	arg2 := glua.FromLua(arg2Value).(*world.Instance)
+	L.Remove(1)
+	retVal := NewPlayer(arg0, arg1, arg2)
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 

@@ -27,10 +27,11 @@ import (
 type GameService struct {
 	expire.NonExpirable
 
-	runite *runite.Context
-	key    *crypto.Keypair
-	auth   auth.Provider
-	world  *world.Instance
+	runite  *runite.Context
+	key     *crypto.Keypair
+	auth    auth.Provider
+	world   *world.Instance
+	players [protocol.MaxPlayers]*player.Player
 }
 
 //glua:bind constructor GameService
@@ -56,9 +57,19 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 	return svc
 }
 
+func (svc *GameService) findPlayerSlot() int {
+	for i, p := range svc.players {
+		if i > 0 && p == nil {
+			return i
+		}
+	}
+	return -1
+}
+
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.GameClient {
 	conn.Log().Info("new game client")
-	client := player.NewPlayer(conn, svc.world)
+	client := player.NewPlayer(svc.findPlayerSlot(), conn, svc.world)
+	svc.players[client.Index()] = client
 
 	loginHandler := server.Proto.NewLoginHandler()
 	loginHandler.SetServerIsaacSeed(client.ServerIsaacSeed())
@@ -96,6 +107,7 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 			client.Conn().WaitForDisconnect()
 			worldSector := svc.world.Sector(client.Position().Sector())
 			worldSector.Remove(client)
+			svc.players[client.Index()] = nil
 			game_event.PlayerLogout.NotifyObservers(client)
 		}()
 		return nil

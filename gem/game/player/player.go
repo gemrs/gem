@@ -42,8 +42,9 @@ type Player struct {
 
 // NewGameClient constructs a new GameClient
 //glua:bind constructor Player
-func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
+func NewPlayer(index int, conn *server.Connection, worldInst *world.Instance) *Player {
 	player := &Player{}
+	player.index = index
 	player.Connection = conn
 	player.world = worldInst
 	player.serverRandKey = []uint32{
@@ -59,7 +60,6 @@ func NewPlayer(conn *server.Connection, worldInst *world.Instance) *Player {
 
 	player.visibleEntities = entity.NewCollection()
 	player.animations = NewAnimations()
-	player.index = entity.NextIndex()
 	player.clientConfig = NewClientConfig(player)
 	return player
 }
