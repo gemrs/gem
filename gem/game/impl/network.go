@@ -1,4 +1,4 @@
-package player
+package impl
 
 import (
 	"github.com/gemrs/gem/fork/github.com/gtank/isaac"

@@ -1,9 +1,9 @@
-package player
+package impl
 
 import "github.com/gemrs/gem/gem/protocol"
 
 type Appearance struct {
-	player *Player
+	player protocol.Player
 
 	gender   int
 	headIcon int
@@ -44,7 +44,7 @@ func NewAppearance() *Appearance {
 	return a
 }
 
-func (a *Appearance) setPlayer(p *Player) {
+func (a *Appearance) setPlayer(p protocol.Player) {
 	a.player = p
 	a.signalUpdate()
 }

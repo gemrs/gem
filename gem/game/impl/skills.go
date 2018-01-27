@@ -1,4 +1,4 @@
-package player
+package impl
 
 import (
 	"math"
@@ -29,7 +29,7 @@ func skillExpToLevel(exp int) int {
 
 //glua:bind
 type Skills struct {
-	player *Player
+	player protocol.Player
 
 	combatLevel int
 	skills      [21]*Skill
@@ -44,7 +44,7 @@ func NewSkills() *Skills {
 	return skills
 }
 
-func (s *Skills) setPlayer(p *Player) {
+func (s *Skills) setPlayer(p protocol.Player) {
 	s.player = p
 	for i := range s.skills {
 		s.skills[i].player = s.player
@@ -77,7 +77,7 @@ func (s *Skills) Skill(id protocol.SkillId) *Skill {
 
 //glua:bind
 type Skill struct {
-	player          *Player
+	player          protocol.Player
 	id              protocol.SkillId
 	experience      int
 	levelPercentage int
@@ -96,7 +96,7 @@ func NewSkill(id protocol.SkillId, experience int) *Skill {
 
 func (s *Skill) signalUpdate() {
 	if s.player != nil {
-		s.player.sendSkill(int(s.id), s.EffectiveLevel(), s.experience)
+		s.player.SendSkill(int(s.id), s.EffectiveLevel(), s.experience)
 	}
 }
 

@@ -1,8 +1,8 @@
 package packet
 
 import (
-	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
-type Handler func(*player.Player, server.Message)
+type Handler func(protocol.Player, server.Message)

@@ -1,4 +1,4 @@
-package player
+package impl
 
 import (
 	"github.com/gemrs/gem/gem/protocol"
@@ -11,7 +11,7 @@ func (p *Player) SyncInventories() {
 	for _, slot := range updatedSlots {
 		item := inventory.Slot(slot)
 		updatePacket := protocol.OutboundUpdateInventoryItem{
-			InventoryID: RevisionConstants.InventoryInterfaceId,
+			InventoryID: p.CurrentFrame().InventoryInterface(),
 			Slot:        slot,
 		}
 		if item != nil {

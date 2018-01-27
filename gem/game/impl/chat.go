@@ -1,4 +1,4 @@
-package player
+package impl
 
 import (
 	"github.com/gemrs/gem/gem/game/entity"

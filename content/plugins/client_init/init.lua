@@ -1,6 +1,6 @@
 local event = require("gem.event")
 local game_event = require("gem.game.event")
-local game_player = require("gem.game.player")
+local game_impl = require("gem.game.impl")
 local protocol = require("gem.game.protocol")
 local interfaces = require("id.interface")
 

@@ -10,9 +10,9 @@ import (
 	engine_event "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/game/entity"
 	game_event "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/impl"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/packet"
-	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
 	"github.com/gemrs/gem/gem/protocol"
@@ -31,7 +31,7 @@ type GameService struct {
 	key     *crypto.Keypair
 	auth    auth.Provider
 	world   *world.Instance
-	players [protocol.MaxPlayers]*player.Player
+	players [protocol.MaxPlayers]protocol.Player
 }
 
 //glua:bind constructor GameService
@@ -68,7 +68,7 @@ func (svc *GameService) findPlayerSlot() int {
 
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.GameClient {
 	conn.Log().Info("new game client")
-	client := player.NewPlayer(svc.findPlayerSlot(), conn, svc.world)
+	client := impl.NewPlayer(svc.findPlayerSlot(), conn, svc.world)
 	svc.players[client.Index()] = client
 
 	loginHandler := server.Proto.NewLoginHandler()
@@ -120,9 +120,9 @@ func (svc *GameService) World() *world.Instance {
 	return svc.world
 }
 
-func doForAllPlayers(entities []entity.Entity, fn func(*player.Player)) {
+func doForAllPlayers(entities []entity.Entity, fn func(protocol.Player)) {
 	for _, e := range entities {
-		p := e.(*player.Player)
+		p := e.(protocol.Player)
 		fn(p)
 	}
 }
@@ -133,14 +133,14 @@ func (svc *GameService) PlayerTick(ev *event.Event, _args ...interface{}) {
 	// Ordering is important here. We want to run these things in this specific order,
 	// and 'concurrently' (albeit in a single thread) for each player. ie. All waypoint
 	// queues are updated for all players before syncing entity lists.
-	doForAllPlayers(allPlayers, (*player.Player).UpdateInteractionQueue)
-	doForAllPlayers(allPlayers, (*player.Player).SyncInventories)
-	doForAllPlayers(allPlayers, (*player.Player).SyncEntityList)
-	doForAllPlayers(allPlayers, (*player.Player).SendPlayerSync)
-	doForAllPlayers(allPlayers, (*player.Player).SendGroundItemSync)
-	doForAllPlayers(allPlayers, (*player.Player).UpdateVisibleEntities)
-	doForAllPlayers(allPlayers, (*player.Player).ProcessChatQueue)
-	doForAllPlayers(allPlayers, (*player.Player).ClearFlags)
+	doForAllPlayers(allPlayers, (protocol.Player).UpdateInteractionQueue)
+	doForAllPlayers(allPlayers, (protocol.Player).SyncInventories)
+	doForAllPlayers(allPlayers, (protocol.Player).SyncEntityList)
+	doForAllPlayers(allPlayers, (protocol.Player).SendPlayerSync)
+	doForAllPlayers(allPlayers, (protocol.Player).SendGroundItemSync)
+	doForAllPlayers(allPlayers, (protocol.Player).UpdateVisibleEntities)
+	doForAllPlayers(allPlayers, (protocol.Player).ProcessChatQueue)
+	doForAllPlayers(allPlayers, (protocol.Player).ClearFlags)
 	svc.world.UpdateEntityCollections()
 }
 
@@ -170,7 +170,7 @@ func (svc *GameService) decodePacket(client server.GameClient) error {
 }
 
 // packetConsumer is the goroutine which picks packets from the readQueue and does something with them
-func (svc *GameService) packetConsumer(client *player.Player) {
+func (svc *GameService) packetConsumer(client protocol.Player) {
 L:
 	for {
 		select {

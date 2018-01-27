@@ -13,6 +13,10 @@ type FrameType struct {
 	Tabs        map[protocol.InterfaceTab]int
 }
 
+func (f FrameType) InventoryInterface() int {
+	return f.Tabs[protocol.TabInventory]
+}
+
 var FullscreenFrame = FrameType{
 	Root:        165,
 	Window:      6,

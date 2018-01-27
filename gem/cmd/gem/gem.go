@@ -14,8 +14,8 @@ import (
 	engine_event "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/game"
 	game_event "github.com/gemrs/gem/gem/game/event"
+	"github.com/gemrs/gem/gem/game/impl"
 	"github.com/gemrs/gem/gem/game/item"
-	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/protocol"
@@ -59,7 +59,7 @@ func main() {
 	server.Bindserver(L)
 	game.Bindgame(L)
 	auth.Bindauth(L)
-	player.Bindplayer(L)
+	impl.Bindimpl(L)
 	position.Bindposition(L)
 	engine_event.Bindengine_event(L)
 	game_event.Bindgame_event(L)

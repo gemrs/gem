@@ -6,7 +6,6 @@ import (
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
-	"github.com/gemrs/gem/gem/game/player"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/protocol"
@@ -18,10 +17,10 @@ func init() {
 	registerHandler((*protocol.InboundTakeGroundItem)(nil), player_take_ground_item)
 }
 
-func player_inv_swap(p *player.Player, message server.Message) {
+func player_inv_swap(p protocol.Player, message server.Message) {
 	swapItemPacket := message.(*protocol.InboundInventorySwapItem)
 	switch int(swapItemPacket.InterfaceID) {
-	case player.RevisionConstants.InventoryInterfaceId:
+	case p.CurrentFrame().InventoryInterface():
 		p.Profile().Inventory().SwapSlots(swapItemPacket.From, swapItemPacket.To)
 
 	default:
@@ -30,11 +29,11 @@ func player_inv_swap(p *player.Player, message server.Message) {
 
 }
 
-func player_inv_action(p *player.Player, message server.Message) {
+func player_inv_action(p protocol.Player, message server.Message) {
 	action := message.(*protocol.InboundInventoryAction)
 
 	switch action.InterfaceID {
-	case player.RevisionConstants.InventoryInterfaceId:
+	case p.CurrentFrame().InventoryInterface():
 		stack := p.Profile().Inventory().Slot(action.Slot)
 
 		if stack.Definition().Id() != action.ItemID {
@@ -59,7 +58,7 @@ type TakeGroundItemInteraction struct {
 }
 
 func (i *TakeGroundItemInteraction) Tick(e entity.Entity) bool {
-	p := e.(*player.Player)
+	p := e.(protocol.Player)
 	groundItem := i.item
 
 	select {
@@ -81,7 +80,7 @@ func (i *TakeGroundItemInteraction) Interruptible() bool {
 	return true
 }
 
-func player_take_ground_item(p *player.Player, message server.Message) {
+func player_take_ground_item(p protocol.Player, message server.Message) {
 	takeItemPacket := message.(*protocol.InboundTakeGroundItem)
 	itemPos := position.NewAbsolute(int(takeItemPacket.X), int(takeItemPacket.Y), p.Position().Z())
 	entities := p.WorldInstance().EntitiesOnTile(itemPos)

@@ -1,4 +1,4 @@
-package player
+package impl
 
 import (
 	"math/rand"
@@ -35,9 +35,10 @@ type Player struct {
 	serverRandKey   []uint32
 	secureBlockSize int
 
+	profile      protocol.Profile
 	animations   *Animations
-	profile      *Profile
 	clientConfig *ClientConfig
+	currentFrame protocol.FrameType
 }
 
 // NewGameClient constructs a new GameClient
@@ -64,7 +65,15 @@ func NewPlayer(index int, conn *server.Connection, worldInst *world.Instance) *P
 	return player
 }
 
-func (player *Player) WorldInstance() *world.Instance {
+func (player *Player) CurrentFrame() protocol.FrameType {
+	return player.currentFrame
+}
+
+func (player *Player) SetCurrentFrame(frame protocol.FrameType) {
+	player.currentFrame = frame
+}
+
+func (player *Player) WorldInstance() protocol.World {
 	return player.world
 }
 
@@ -113,19 +122,13 @@ func (player *Player) Animations() *Animations {
 
 // Profile returns the player's profile
 //glua:bind
-func (player *Player) Profile() *Profile {
+func (player *Player) Profile() protocol.Profile {
 	return player.profile
 }
 
 // SetProfile sets the player's profile
-func (player *Player) SetProfile(profile *Profile) {
+func (player *Player) SetProfile(profile protocol.Profile) {
 	player.profile = profile
-}
-
-// Appearance returns the player's appearance
-func (player *Player) Appearance() *Appearance {
-	profile := player.Profile()
-	return profile.Appearance()
 }
 
 //glua:bind

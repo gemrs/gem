@@ -12,7 +12,6 @@ local item = require("gem.game.item")
 local version_string = require("version")
 local config = require("config")
 local auth = require("auth")
-require("interface_config")
 
 local logger = log.Module("lua_main")
 logger:info("Starting " .. version_string)

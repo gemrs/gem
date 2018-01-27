@@ -1,4 +1,4 @@
-package player
+package impl
 
 import (
 	"github.com/gemrs/gem/gem/game/entity"
@@ -20,7 +20,7 @@ func (player *Player) SendMessage(message string) {
 
 // SendMessage puts a message to the player's chat window
 //glua:bind
-func (player *Player) sendSkill(id, level, experience int) {
+func (player *Player) SendSkill(id, level, experience int) {
 	player.Conn().Write <- protocol.OutboundSkill{
 		Skill:      id,
 		Level:      level,

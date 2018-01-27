@@ -6,6 +6,7 @@ import (
 	"github.com/gemrs/gem/gem/core/crypto"
 	"github.com/gemrs/gem/gem/core/encoding"
 	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 func (p protocolImpl) Handshake(conn *server.Connection) int {
@@ -38,8 +39,11 @@ func (handler *LoginHandler) Perform(client server.GameClient) {
 		},
 	}
 
-	client.SetProtoData(newPlayerData())
-	client.SetDecodeFunc(handler.decodeLoginBlock)
+	player := client.(protocol.Player)
+	playerData := newPlayerData()
+	player.SetProtoData(playerData)
+	player.SetCurrentFrame(playerData.frame)
+	player.SetDecodeFunc(handler.decodeLoginBlock)
 }
 
 func (handler *LoginHandler) SetRsaKeypair(keypair *crypto.Keypair) {

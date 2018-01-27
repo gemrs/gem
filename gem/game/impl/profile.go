@@ -1,8 +1,7 @@
-//glua:bind module gem.game.player
-package player
+//glua:bind module gem.game.impl
+package impl
 
 import (
-	"encoding/json"
 	"fmt"
 
 	game_event "github.com/gemrs/gem/gem/game/event"
@@ -12,8 +11,8 @@ import (
 )
 
 func (player *Player) LoadProfile() {
-	profile := player.Profile()
-	profile.setPlayer(player)
+	profile := player.profile
+	profile.SetPlayer(player)
 	player.SetPosition(profile.Position())
 
 	game_event.PlayerLoadProfile.NotifyObservers(player, player.Profile())
@@ -45,7 +44,7 @@ func NewProfile(username, password string) *Profile {
 	}
 }
 
-func (p *Profile) setPlayer(player *Player) {
+func (p *Profile) SetPlayer(player protocol.Player) {
 	p.skills.setPlayer(player)
 	p.appearance.setPlayer(player)
 }
@@ -79,7 +78,7 @@ func (p *Profile) SetPosition(pos *position.Absolute) {
 }
 
 //glua:bind
-func (p *Profile) Skills() *Skills {
+func (p *Profile) Skills() protocol.Skills {
 	return p.skills
 }
 
@@ -88,25 +87,10 @@ func (p *Profile) Inventory() *item.Container {
 	return p.inventory
 }
 
-func (p *Profile) Appearance() *Appearance {
+func (p *Profile) Appearance() protocol.Appearance {
 	return p.appearance
 }
 
 func (p *Profile) String() string {
 	return fmt.Sprintf("Username: %v", p.username)
-}
-
-func (p *Profile) MarshalJSON() ([]byte, error) {
-	return json.Marshal(jsonObjForProfile(p))
-}
-
-func (p *Profile) UnmarshalJSON(objJSON []byte) error {
-	var deserialized jsonProfile
-	err := json.Unmarshal(objJSON, &deserialized)
-	if err != nil {
-		return err
-	}
-
-	jsonObjToProfile(p, deserialized)
-	return nil
 }

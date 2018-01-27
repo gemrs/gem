@@ -25,4 +25,6 @@ const (
 	TabEmotes
 )
 
-type FrameType interface{}
+type FrameType interface {
+	InventoryInterface() int
+}
