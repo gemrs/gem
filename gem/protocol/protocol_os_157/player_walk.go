@@ -12,10 +12,17 @@ import (
 type InboundPlayerWalk protocol.InboundPlayerWalk
 
 func (struc *InboundPlayerWalk) Decode(buf io.Reader, flags interface{}) {
-	decodeWalk(buf, flags, (*protocol.InboundPlayerWalk)(struc))
+	decodeWalk(buf, flags, (*protocol.InboundPlayerWalk)(struc), false)
 }
 
-func decodeWalk(buf io.Reader, flags interface{}, struc *protocol.InboundPlayerWalk) {
+// +gen define_inbound:"Pkt84,SzVar8,InboundPlayerWalk"
+type InboundPlayerWalkMap protocol.InboundPlayerWalk
+
+func (struc *InboundPlayerWalkMap) Decode(buf io.Reader, flags interface{}) {
+	decodeWalk(buf, flags, (*protocol.InboundPlayerWalk)(struc), true)
+}
+
+func decodeWalk(buf io.Reader, flags interface{}, struc *protocol.InboundPlayerWalk, mapClick bool) {
 	//header := flags.(*PacketHeader)
 	var tmp16 encoding.Int16
 	var tmp8 encoding.Int8
@@ -27,4 +34,9 @@ func decodeWalk(buf io.Reader, flags interface{}, struc *protocol.InboundPlayerW
 	struc.X = int(tmp16)
 
 	tmp8.Decode(buf, encoding.IntNilFlag)
+
+	if mapClick {
+		// ignore the extra 13 bytes for now
+		buf.Read(make([]byte, 13))
+	}
 }

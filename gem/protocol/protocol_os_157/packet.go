@@ -78,7 +78,7 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) {
 	number = uint8(shiftedNumber)
 
 	if int(number) != p.Number {
-		panic(fmt.Sprintf("packet number mismatch. Got %v, expected %v", int(number), p.Number))
+		panic(fmt.Errorf("packet number mismatch. Got %v, expected %v", int(number), p.Number))
 	}
 
 	/* decode the packet size */

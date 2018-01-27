@@ -2,6 +2,7 @@ package protocol_os_157
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
@@ -19,6 +20,8 @@ func (struc PlayerUpdate) attachment() *playerData {
 func (struc PlayerUpdate) Encode(w_ io.Writer, flags interface{}) {
 	w := &bytes.Buffer{}
 	data := struc.attachment()
+
+	//struc.Me.Log.Debug("local player list is %v\n", data.localPlayers)
 
 	maskBuf := encoding.NewBuffer()
 	struc.processLocalPlayers(w, maskBuf, 0)
@@ -116,7 +119,11 @@ func (struc PlayerUpdate) processExternalPlayers(w io.Writer, maskBuf *encoding.
 
 			if index != struc.Me.Index && struc.isAdding(index) {
 				buf.Write(1, 1)
-				player := struc.Others[index]
+				player, ok := struc.Others[index]
+				if !ok {
+					panic(fmt.Errorf("don't have player data for index %v\n", index))
+				}
+
 				struc.addPlayer(buf, maskBuf, player)
 				data.skipFlags[index].updateNextIter()
 			} else {
@@ -132,7 +139,11 @@ func (struc PlayerUpdate) skipLocalPlayers(buf *encoding.BitBuffer, i int, iter 
 	data := struc.attachment()
 
 	for x := i + 1; x < data.localPlayerCount; x++ {
-		p := struc.Others[x]
+		p, ok := struc.Others[x]
+		if !ok {
+			panic(fmt.Errorf("don't have player data for index %v\n", x))
+		}
+
 		index := data.localPlayers[x]
 
 		if data.skipFlags[index].shouldUpdate(iter) {
@@ -197,7 +208,8 @@ func (struc PlayerUpdate) addPlayer(buf *encoding.BitBuffer, maskBuf *encoding.B
 	buf.Write(1, 1)
 
 	// Force identity update
-	flags := entity.MobFlagIdentityUpdate
+	flags := struc.getModifiedUpdateFlags(player) & ^entity.MobFlagMovementUpdate
+	flags |= entity.MobFlagIdentityUpdate
 	struc.buildBlockUpdates(maskBuf, player, flags)
 }
 
@@ -304,6 +316,7 @@ func (struc PlayerUpdate) buildMovementBlock(buf *encoding.BitBuffer, player pro
 		buf.Write(3, uint32(current))
 
 	case (flags & entity.MobFlagWalkUpdate) != 0:
+		struc.Me.Log.Debug("movement update for player %v", player.Index)
 		current, _ := player.WaypointQueue.WalkDirection()
 
 		buf.Write(2, 1) // update type 1 = walking

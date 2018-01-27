@@ -41,7 +41,7 @@ func (p *UnknownPacket) Decode(buf io.Reader, flags interface{}) {
 	/* decode the packet size */
 	sz, ok := unknownPacketLengths[p.Number]
 	if !ok {
-		panic(fmt.Sprintf("unknown length for packet %v", p.Number))
+		panic(fmt.Errorf("unknown length for packet %v", p.Number))
 	}
 
 	switch sz {
