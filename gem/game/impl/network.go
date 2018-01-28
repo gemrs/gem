@@ -1,6 +1,8 @@
 package impl
 
 import (
+	"bytes"
+
 	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
 	"github.com/gemrs/gem/gem/core/encoding"
 	"github.com/gemrs/gem/gem/game/server"
@@ -13,12 +15,12 @@ func (player *Player) Conn() *server.Connection {
 
 // Send writes encoding.Encodables to the player's buffer using the outbound rand generator
 func (player *Player) Send(codable encoding.Encodable) error {
-	var buf encoding.Encoded
+	var buf bytes.Buffer
 	err := encoding.TryEncode(codable, &buf, &player.randOut)
 	if err != nil {
 		return err
 	}
-	player.Write <- buf
+	player.Write <- encoding.Encoded{buf}
 	return nil
 }
 

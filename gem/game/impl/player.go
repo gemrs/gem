@@ -138,81 +138,81 @@ func (player *Player) ClientConfig() *ClientConfig {
 
 // FinishInit is called once the player has finished the low level login sequence
 func (player *Player) FinishInit() {
-	player.Conn().Write <- protocol.OutboundPlayerInit{
+	player.Send(protocol.OutboundPlayerInit{
 		Membership: 1,
 		Index:      player.Index(),
-	}
+	})
 	/*
-		player.Conn().Write <- protocol.OutboundResetCamera{}
-		player.Conn().Write <- protocol.OutboundDnsLookup{
+		player.Send(protocol.OutboundResetCamera{})
+		player.Send(protocol.OutboundDnsLookup{
 			Host: "127.0.0.1",
-		}
+		})
 	*/
 
-	player.Conn().Write <- protocol.OutboundInitInterface{
+	player.Send(protocol.OutboundInitInterface{
 		ProtoData: player.protoData,
-	}
+	})
 	/*
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     chatBox,
 			InterfaceID: 162,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     expDisplay,
 			InterfaceID: 163,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     dataOrbs,
 			InterfaceID: 160,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     privateChat,
 			InterfaceID: 122,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     29,
 			InterfaceID: 378,
 			Clickable:   false,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     28,
 			InterfaceID: 50,
 			Clickable:   false,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundScriptEvent{
+		player.Send(protocol.OutboundScriptEvent{
 			ScriptID: 233,
 			Params: []interface{}{
 				3276804, 7085, 0, 0, 434, 1912, 0, 400, -1,
 			},
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundScriptEvent{
+		player.Send(protocol.OutboundScriptEvent{
 			ScriptID: 233,
 			Params: []interface{}{
 				3276805, 32817, 0, 100, 93, 179, 0, 800, 820,
 			},
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundScriptEvent{
+		player.Send(protocol.OutboundScriptEvent{
 			ScriptID: 1080,
 			Params:   []interface{}{},
-		}
+		})
 
 		attackStyleTab := 8
 		skillsTab := 9
@@ -229,112 +229,112 @@ func (player *Player) FinishInit() {
 		emotesTab := 20
 		musicListTab := 21
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     attackStyleTab,
 			InterfaceID: 593,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     skillsTab,
 			InterfaceID: 320,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     journeyTab,
 			InterfaceID: 399,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     itemBagTab,
 			InterfaceID: 149,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     equipmentTab,
 			InterfaceID: 387,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     prayerTab,
 			InterfaceID: 541,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     spellBookTab,
 			InterfaceID: 218,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     clanChatTab,
 			InterfaceID: 7,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     friendListTab,
 			InterfaceID: 429,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     ignoreListTab,
 			InterfaceID: 432,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     logoutTab,
 			InterfaceID: 182,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     gameSettingsTab,
 			InterfaceID: 261,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     emotesTab,
 			InterfaceID: 216,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundSetInterface{
+		player.Send(protocol.OutboundSetInterface{
 			RootID:      rootIface,
 			ChildID:     musicListTab,
 			InterfaceID: 239,
 			Clickable:   true,
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundScriptEvent{
+		player.Send(protocol.OutboundScriptEvent{
 			ScriptID: 2014,
 			Params:   []interface{}{0, 0, 0, 0, 0, 0},
-		}
+		})
 
-		player.Conn().Write <- protocol.OutboundScriptEvent{
+		player.Send(protocol.OutboundScriptEvent{
 			ScriptID: 2015,
 			Params:   []interface{}{0},
-		}
+		})
 	*/
 }

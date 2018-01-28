@@ -70,9 +70,9 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 		profile, responseCode := svc.auth.LookupProfile(username, password)
 
 		if responseCode != protocol.AuthOkay {
-			client.Conn().Write <- protocol.OutboundLoginResponse{
+			client.Send(protocol.OutboundLoginResponse{
 				Response: responseCode,
-			}
+			})
 			return nil
 		}
 
@@ -80,12 +80,12 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 		client.SetProfile(profile)
 
 		// Successful login, do all the stuff
-		client.Conn().Write <- protocol.OutboundLoginResponse{
+		client.Send(protocol.OutboundLoginResponse{
 			Response: responseCode,
 			Rights:   int(client.Profile().Rights()),
 			Flagged:  false,
 			Index:    client.Index(),
-		}
+		})
 
 		client.SetDecodeFunc(svc.decodePacket)
 		go svc.packetConsumer(client)

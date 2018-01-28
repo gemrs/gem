@@ -43,7 +43,7 @@ type DecodeFunc func(GameClient) error
 type GameClient interface {
 	Conn() *Connection
 	Decode() error
-	Encode(encoding.Encodable) error
+	Send(encoding.Encodable) error
 	Disconnect()
 
 	SetProtoData(d interface{})

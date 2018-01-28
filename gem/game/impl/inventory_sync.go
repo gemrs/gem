@@ -19,7 +19,7 @@ func (p *Player) SyncInventories() {
 			updatePacket.Count = item.Count()
 		}
 
-		p.Conn().Write <- updatePacket
+		p.Send(updatePacket)
 	}
 	inventory.ClearUpdatedSlots()
 }

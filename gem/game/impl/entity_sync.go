@@ -67,11 +67,11 @@ func (player *Player) SendGroundItemSync() {
 
 		dx, dy := itemPos.SectorLocal()
 
-		player.Conn().Write <- protocol.OutboundCreateGroundItem{
+		player.Send(protocol.OutboundCreateGroundItem{
 			ItemID:         stack.Definition().Id(),
 			PositionOffset: (dx << 4) + dy,
 			Count:          stack.Count(),
-		}
+		})
 	}
 
 	removingItems := player.visibleEntities.Removing().Filter(entity.GroundItemType)
@@ -84,10 +84,10 @@ func (player *Player) SendGroundItemSync() {
 
 		dx, dy := itemPos.SectorLocal()
 
-		player.Conn().Write <- protocol.OutboundRemoveGroundItem{
+		player.Send(protocol.OutboundRemoveGroundItem{
 			ItemID:         stack.Definition().Id(),
 			PositionOffset: (dx << 4) + dy,
-		}
+		})
 	}
 }
 
@@ -95,8 +95,8 @@ func (player *Player) setUpdatingSector(s *position.Sector) {
 	region := player.loadedRegion
 	regionOrigin := region.Origin()
 	dx, dy, _ := s.Min().Delta(regionOrigin.Min())
-	player.Conn().Write <- protocol.OutboundSectorUpdate{
+	player.Send(protocol.OutboundSectorUpdate{
 		PositionX: dx,
 		PositionY: dy,
-	}
+	})
 }

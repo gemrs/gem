@@ -48,7 +48,7 @@ type Player interface {
 
 	Conn() *server.Connection
 	Decode() error
-	Encode(encoding.Encodable) error
+	Send(encoding.Encodable) error
 	Disconnect()
 	SetProtoData(d interface{})
 	SetDecodeFunc(d server.DecodeFunc)

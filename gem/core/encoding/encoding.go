@@ -18,10 +18,12 @@ type Encodable interface {
 	Encode(buf io.Writer, flags_ interface{})
 }
 
-type Encoded bytes.Buffer
+type Encoded struct {
+	bytes.Buffer
+}
 
 func (e *Encoded) Read(p []byte) (n int, err error) {
-	return e.Read(p)
+	return e.Buffer.Read(p)
 }
 
 var NilFlags int = 0

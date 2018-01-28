@@ -42,10 +42,10 @@ func (player *Player) SetNextStep(next *position.Absolute) {
 func (player *Player) RegionChange() {
 	player.loadedRegion = player.Position().RegionOf()
 
-	player.Conn().Write <- protocol.OutboundRegionUpdate{
+	player.Send(protocol.OutboundRegionUpdate{
 		ProtoData: player.protoData,
 		Player:    buildPlayerUpdateData(player),
-	}
+	})
 
 	player.SetFlags(entity.MobFlagRegionUpdate)
 }

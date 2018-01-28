@@ -7,39 +7,39 @@ import (
 
 // SendPlayerSync sends the player update block
 func (player *Player) SendPlayerSync() {
-	player.Conn().Write <- buildPlayerUpdate(player)
+	player.Send(buildPlayerUpdate(player))
 }
 
 // SendMessage puts a message to the player's chat window
 //glua:bind
 func (player *Player) SendMessage(message string) {
-	player.Conn().Write <- protocol.OutboundChatMessage{
+	player.Send(protocol.OutboundChatMessage{
 		Message: message,
-	}
+	})
 }
 
 // SendMessage puts a message to the player's chat window
 //glua:bind
 func (player *Player) SendSkill(id, level, experience int) {
-	player.Conn().Write <- protocol.OutboundSkill{
+	player.Send(protocol.OutboundSkill{
 		Skill:      id,
 		Level:      level,
 		Experience: experience,
-	}
+	})
 }
 
 func (player *Player) sendTabInterface(tab protocol.InterfaceTab, id int) {
-	player.Conn().Write <- protocol.OutboundTabInterface{
+	player.Send(protocol.OutboundTabInterface{
 		ProtoData:   player.protoData,
 		Tab:         tab,
 		InterfaceID: id,
-	}
+	})
 }
 
 // Ask the player to log out
 //glua:bind
 func (player *Player) SendForceLogout() {
-	player.Conn().Write <- protocol.OutboundLogout{}
+	player.Send(protocol.OutboundLogout{})
 }
 
 func (player *Player) ClearFlags() {

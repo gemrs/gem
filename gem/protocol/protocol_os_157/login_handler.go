@@ -33,11 +33,11 @@ type LoginHandler struct {
 func (handler *LoginHandler) Perform(client server.GameClient) {
 	serverSeed := handler.serverIsaacSeed
 
-	client.Conn().Write <- &OutboundGameHandshake{
+	client.Send(&OutboundGameHandshake{
 		ServerISAACSeed: [2]encoding.Uint32{
 			encoding.Uint32(serverSeed[0]), encoding.Uint32(serverSeed[1]),
 		},
-	}
+	})
 
 	player := client.(protocol.Player)
 	playerData := newPlayerData()
