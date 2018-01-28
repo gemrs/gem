@@ -1,6 +1,7 @@
 package protocol_os_157
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
@@ -74,43 +75,74 @@ func (struc OutboundPlayerInit) Encode(buf io.Writer, flags interface{}) {
 type OutboundRegionUpdate protocol.OutboundRegionUpdate
 
 func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
-	pos := struc.Position
-
-	compressedPos := pos.Y() + (pos.X() << 14) + (pos.Z() << 28)
-	bitBuf := encoding.NewBitBuffer(buf)
-	bitBuf.Write(30, uint32(compressedPos))
-
 	data := getPlayerData(struc.ProtoData)
+	pos := struc.Player.Position
+	playerIndex := struc.Player.Index
 
-	data.localPlayers[data.localPlayerCount] = struc.PlayerIndex
-	data.localPlayerCount++
+	if !data.playerIndexInitialized {
+		data.playerIndexInitialized = true
 
-	for i := 1; i < protocol.MaxPlayers; i++ {
-		if i != struc.PlayerIndex {
-			bitBuf.Write(18, 0)
-			data.externalPlayers[data.externalPlayerCount] = i
-			data.externalPlayerCount++
+		compressedPos := pos.Y() + (pos.X() << 14) + (pos.Z() << 28)
+		bitBuf := encoding.NewBitBuffer(buf)
+		bitBuf.Write(30, uint32(compressedPos))
+
+		data.localPlayers[data.localPlayerCount] = playerIndex
+		data.localPlayerCount++
+
+		for i := 1; i < protocol.MaxPlayers; i++ {
+			if i != playerIndex {
+				bitBuf.Write(18, 0)
+				data.externalPlayers[data.externalPlayerCount] = i
+				data.externalPlayerCount++
+			}
 		}
-	}
 
-	bitBuf.Close()
+		bitBuf.Close()
+	}
 
 	sector := pos.Sector()
 	sectorX := sector.X()
 	sectorY := sector.Y()
-	encoding.Uint16(sectorX).Encode(buf, encoding.IntLittleEndian)
-	encoding.Uint16(sectorY).Encode(buf, encoding.IntOffset128)
-	encoding.Uint16(9).Encode(buf, encoding.IntNilFlag)
+	encoding.Uint16(sectorY).Encode(buf, encoding.IntLittleEndian)
+	encoding.Uint16(sectorX).Encode(buf, encoding.IntOffset128)
 
-	for x := (sectorX - 6) / 8; x <= (6+sectorX)/8; x++ {
-		for y := (sectorY - 6) / 8; y <= (6+sectorY)/8; y++ {
-			region := y + (x << 8)
-			keys := mapKeys[region]
-			for _, key := range keys {
-				encoding.Uint32(key).Encode(buf, encoding.IntNilFlag)
+	fmt.Printf("sector is %v %v\n", sectorX, sectorY)
+
+	regionX, regionY := sectorX/8, sectorY/8
+	tutorialIsland := false
+	if (regionX == 48 || regionX == 49) && regionY == 48 {
+		tutorialIsland = true
+	}
+
+	if regionX == 48 && regionY == 148 {
+		tutorialIsland = true
+	}
+
+	count := 0
+	allKeys := make([]int, 0)
+	for x := (sectorX - 6) / 8; x <= (sectorX+6)/8; x++ {
+		for y := (sectorY - 6) / 8; y <= (sectorY+6)/8; y++ {
+			if !tutorialIsland || y != 49 && y != 149 && y != 147 && x != 50 && (x != 49 || y != 47) {
+				region := y + (x << 8)
+				keys, ok := mapKeys[region]
+				fmt.Printf("sending keys for region %v\n", region)
+				if !ok {
+					panic(fmt.Errorf("don't have map keys for region %v", region))
+				}
+				for _, key := range keys {
+					allKeys = append(allKeys, key)
+				}
+				count++
 			}
 		}
 	}
+
+	encoding.Uint16(count).Encode(buf, encoding.IntNilFlag)
+	for _, key := range allKeys {
+		encoding.Uint32(key).Encode(buf, encoding.IntNilFlag)
+	}
+
+	fmt.Printf("wrote %v keys\n", count)
 }
 
 // +gen define_outbound:"Unimplemented"

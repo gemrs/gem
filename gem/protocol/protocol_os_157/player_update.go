@@ -301,6 +301,8 @@ func (struc PlayerUpdate) getModifiedUpdateFlags(updatingPlayer protocol.PlayerU
 		flags = flags & ^entity.MobFlagChatUpdate
 	}
 
+	flags &= ^entity.MobFlagRegionUpdate
+
 	return flags
 }
 

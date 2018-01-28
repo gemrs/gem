@@ -3,13 +3,14 @@ package protocol_os_157
 import "github.com/gemrs/gem/gem/protocol"
 
 type playerData struct {
-	skipCount           int
-	skipFlags           [protocol.MaxPlayers]skipBits
-	localPlayers        [protocol.MaxPlayers]int
-	externalPlayers     [protocol.MaxPlayers]int
-	localPlayerCount    int
-	externalPlayerCount int
-	frame               FrameType
+	skipCount              int
+	skipFlags              [protocol.MaxPlayers]skipBits
+	localPlayers           [protocol.MaxPlayers]int
+	externalPlayers        [protocol.MaxPlayers]int
+	localPlayerCount       int
+	externalPlayerCount    int
+	frame                  FrameType
+	playerIndexInitialized bool
 }
 
 func newPlayerData() *playerData {

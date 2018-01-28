@@ -26,6 +26,14 @@ func (i *Instance) FindPlayerSlot() int {
 	return -1
 }
 
+func (i *Instance) SetPlayerSlot(slot int, p protocol.Player) {
+	i.players[slot] = p
+}
+
+func (i *Instance) GetPlayers() []protocol.Player {
+	return i.players[:]
+}
+
 // Sector returns a sector instance for a given position.Sector.
 // If the sector is not currently active, the sector is instantiated first.
 func (i *Instance) Sector(s *position.Sector) protocol.Sector {

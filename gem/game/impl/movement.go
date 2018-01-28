@@ -20,11 +20,11 @@ func (player *Player) SetPosition(pos *position.Absolute) {
 	loadedRegion := player.LoadedRegion()
 	dx, dy, dz = loadedRegion.SectorDelta(pos.RegionOf())
 
+	player.Profile().SetPosition(player.Position())
+
 	if dx >= 5 || dy >= 5 || dz >= 1 {
 		player.RegionChange()
 	}
-
-	player.Profile().SetPosition(player.Position())
 }
 
 func (player *Player) UpdateInteractionQueue() {
@@ -43,9 +43,8 @@ func (player *Player) RegionChange() {
 	player.loadedRegion = player.Position().RegionOf()
 
 	player.Conn().Write <- protocol.OutboundRegionUpdate{
-		ProtoData:   player.protoData,
-		Position:    player.Position(),
-		PlayerIndex: player.Index(),
+		ProtoData: player.protoData,
+		Player:    buildPlayerUpdateData(player),
 	}
 
 	player.SetFlags(entity.MobFlagRegionUpdate)

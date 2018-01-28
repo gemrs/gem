@@ -9,9 +9,9 @@ type World interface {
 	EntitiesOnTile(p *position.Absolute) []entity.Entity
 	Sector(s *position.Sector) Sector
 	Sectors(s []*position.Sector) []Sector
-	/*	FindPlayerSlot() int
-		SetPlayerSlot(i int, p Player)
-		GetPlayers() []Player*/
+	FindPlayerSlot() int
+	SetPlayerSlot(i int, p Player)
+	GetPlayers() []Player
 }
 
 type Sector interface {

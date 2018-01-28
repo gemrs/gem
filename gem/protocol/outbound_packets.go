@@ -1,7 +1,5 @@
 package protocol
 
-import "github.com/gemrs/gem/gem/game/position"
-
 // +gen pack_outgoing
 type OutboundLoginResponse struct {
 	Index    int
@@ -19,8 +17,7 @@ type OutboundChatMessage struct {
 type OutboundRegionUpdate struct {
 	ProtoData interface{}
 
-	Position    *position.Absolute
-	PlayerIndex int
+	Player PlayerUpdateData
 }
 
 // +gen pack_outgoing
