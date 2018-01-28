@@ -11,9 +11,15 @@ func (player *Player) Conn() *server.Connection {
 	return player.Connection
 }
 
-// Encode writes encoding.Encodables to the player's buffer using the outbound rand generator
-func (player *Player) Encode(codable encoding.Encodable) error {
-	return encoding.TryEncode(codable, player.Conn().WriteBuffer, &player.randOut)
+// Send writes encoding.Encodables to the player's buffer using the outbound rand generator
+func (player *Player) Send(codable encoding.Encodable) error {
+	var buf encoding.Encoded
+	err := encoding.TryEncode(codable, &buf, &player.randOut)
+	if err != nil {
+		return err
+	}
+	player.Write <- buf
+	return nil
 }
 
 // Decode processes incoming packets and adds them to the read queue

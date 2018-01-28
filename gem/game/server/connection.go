@@ -17,7 +17,7 @@ type Connection struct {
 	ReadBuffer     *encoding.Buffer
 	WriteBuffer    *encoding.Buffer
 	Read           chan encoding.Decodable
-	Write          chan encoding.Encodable
+	Write          chan encoding.Encoded
 	DisconnectChan chan bool
 
 	log   log.Log
@@ -30,7 +30,7 @@ func NewConnection(conn net.Conn, parentLogger log.Log) *Connection {
 		ReadBuffer:     encoding.NewBuffer(),
 		WriteBuffer:    encoding.NewBuffer(),
 		Read:           make(chan encoding.Decodable, 16),
-		Write:          make(chan encoding.Encodable, 16),
+		Write:          make(chan encoding.Encoded, 16),
 		DisconnectChan: make(chan bool),
 		log:            parentLogger.Child("connection", log.MapContext{"addr": conn.RemoteAddr().String()}),
 		conn:           conn,
@@ -140,7 +140,7 @@ func encodeFromWriteQueue(client GameClient) {
 L:
 	for {
 		select {
-		case codable, ok := <-conn.Write:
+		case buffer, ok := <-conn.Write:
 			if ok {
 				select {
 				case <-conn.DisconnectChan:
@@ -153,7 +153,8 @@ L:
 				break L
 			}
 
-			err := client.Encode(codable)
+			writeBuffer := conn.WriteBuffer
+			_, err := io.Copy(writeBuffer, &buffer)
 			if err == nil {
 				err = conn.flushWriteBuffer()
 			}
