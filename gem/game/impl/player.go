@@ -18,8 +18,8 @@ import (
 //glua:bind
 type Player struct {
 	index        int
-	sector       *world.Sector
-	world        *world.Instance
+	sector       protocol.Sector
+	world        protocol.World
 	loadedRegion *position.Region
 	protoData    interface{}
 

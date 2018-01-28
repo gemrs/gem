@@ -1,22 +1,23 @@
-package item
+package impl
 
 import (
 	"github.com/gemrs/gem/gem/game/entity"
+	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
-	"github.com/gemrs/gem/gem/game/world"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 //glua:bind
 type GroundItem struct {
 	index      int
 	position   *position.Absolute
-	item       *Stack
-	sector     *world.Sector
+	item       *item.Stack
+	sector     protocol.Sector
 	expireChan chan bool
 }
 
 //glua:bind constructor GroundItem
-func NewGroundItem(item *Stack, pos *position.Absolute, world *world.Instance) *GroundItem {
+func NewGroundItem(item *item.Stack, pos *position.Absolute, world protocol.World) *GroundItem {
 	entity := &GroundItem{
 		index:      entity.NextIndex(),
 		position:   pos,
@@ -48,12 +49,12 @@ func (item *GroundItem) Index() int {
 }
 
 //glua:bind
-func (item *GroundItem) Item() *Stack {
+func (item *GroundItem) Item() *item.Stack {
 	return item.item
 }
 
 //glua:bind
-func (item *GroundItem) Definition() *Definition {
+func (item *GroundItem) Definition() *item.Definition {
 	return item.item.Definition()
 }
 

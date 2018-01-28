@@ -5,7 +5,6 @@ import (
 
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/event"
-	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/protocol"
@@ -54,7 +53,7 @@ func player_inv_action(p protocol.Player, message server.Message) {
 }
 
 type TakeGroundItemInteraction struct {
-	item *item.GroundItem
+	item entity.GroundItem
 }
 
 func (i *TakeGroundItemInteraction) Tick(e entity.Entity) bool {
@@ -85,9 +84,9 @@ func player_take_ground_item(p protocol.Player, message server.Message) {
 	itemPos := position.NewAbsolute(int(takeItemPacket.X), int(takeItemPacket.Y), p.Position().Z())
 	entities := p.WorldInstance().EntitiesOnTile(itemPos)
 
-	var groundItem *item.GroundItem
-	for _, entity := range entities {
-		if item, ok := entity.(*item.GroundItem); ok {
+	var groundItem entity.GroundItem
+	for _, e := range entities {
+		if item, ok := e.(entity.GroundItem); ok {
 			if item.Definition().Id() == int(takeItemPacket.ItemID) {
 				groundItem = item
 				break

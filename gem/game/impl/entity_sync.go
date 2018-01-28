@@ -2,7 +2,6 @@ package impl
 
 import (
 	"github.com/gemrs/gem/gem/game/entity"
-	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/protocol"
 )
@@ -16,9 +15,9 @@ func (player *Player) SyncEntityList() {
 	allRemoved := entity.NewSet()
 
 	for _, s := range sectors {
-		player.visibleEntities.AddAll(s.Collection)
-		allAdded.AddAll(s.Adding())
-		allRemoved.AddAll(s.Removing())
+		player.visibleEntities.AddAll(s.Collection())
+		allAdded.AddAll(s.Collection().Adding())
+		allRemoved.AddAll(s.Collection().Removing())
 	}
 
 	for _, e := range allRemoved.Slice() {
@@ -49,11 +48,11 @@ func (player *Player) onSectorChange() {
 	removed, added := player.world.Sectors(removedPositions), player.world.Sectors(addedPositions)
 
 	for _, s := range removed {
-		player.visibleEntities.RemoveAll(s.Collection)
+		player.visibleEntities.RemoveAll(s.Collection())
 	}
 
 	for _, s := range added {
-		player.visibleEntities.AddAll(s.Collection)
+		player.visibleEntities.AddAll(s.Collection())
 	}
 }
 
@@ -63,7 +62,7 @@ func (player *Player) SendGroundItemSync() {
 		player.setUpdatingSector(entity.Position().Sector())
 		itemPos := entity.Position()
 
-		item := entity.(*item.GroundItem)
+		item := entity.(*GroundItem)
 		stack := item.Item()
 
 		dx, dy := itemPos.SectorLocal()
@@ -80,7 +79,7 @@ func (player *Player) SendGroundItemSync() {
 		player.setUpdatingSector(entity.Position().Sector())
 		itemPos := entity.Position()
 
-		item := entity.(*item.GroundItem)
+		item := entity.(*GroundItem)
 		stack := item.Item()
 
 		dx, dy := itemPos.SectorLocal()

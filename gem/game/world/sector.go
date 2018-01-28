@@ -7,25 +7,29 @@ import (
 )
 
 type Sector struct {
-	*entity.Collection
-	position *position.Sector
-	logger   log.Log
+	collection *entity.Collection
+	position   *position.Sector
+	logger     log.Log
 }
 
 func NewSector(position *position.Sector) *Sector {
 	return &Sector{
-		Collection: entity.NewCollection(),
+		collection: entity.NewCollection(),
 		position:   position,
 		logger:     log.New("world/sector", log.MapContext{"position": position}),
 	}
 }
 
+func (s *Sector) Collection() *entity.Collection {
+	return s.collection
+}
+
 func (s *Sector) Add(entity entity.Entity) {
-	s.Collection.Add(entity)
+	s.collection.Add(entity)
 }
 
 func (s *Sector) Remove(entity entity.Entity) {
-	s.Collection.Remove(entity)
+	s.collection.Remove(entity)
 }
 
 func (s *Sector) Position() *position.Sector {

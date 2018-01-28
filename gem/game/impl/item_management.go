@@ -3,7 +3,6 @@ package impl
 import (
 	"github.com/gemrs/gem/gem/core/event"
 	"github.com/gemrs/gem/gem/game/event"
-	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/util/expire"
 )
 
@@ -21,5 +20,5 @@ func PlayerDropItem(event *event.Event, args ...interface{}) {
 	}
 
 	stack := p.Profile().Inventory().RemoveAllFromSlot(slot)
-	item.NewGroundItem(stack, p.Position(), p.world)
+	NewGroundItem(stack, p.Position(), p.world)
 }

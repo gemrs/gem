@@ -2,8 +2,6 @@
 package item
 
 import (
-	"github.com/gemrs/gem/gem/game/position"
-	"github.com/gemrs/gem/gem/game/world"
 	"github.com/gemrs/gem/glua"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -20,8 +18,6 @@ func lBinditem(L *lua.LState) int {
 	lBindContainer(L, mod)
 
 	lBindDefinition(L, mod)
-
-	lBindGroundItem(L, mod)
 
 	lBindStack(L, mod)
 
@@ -304,83 +300,6 @@ func lBindDefinitionStackable(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Definition)
 	L.Remove(1)
 	retVal := self.Stackable()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-func lBindGroundItem(L *lua.LState, mod *lua.LTable) {
-	mt := L.NewTypeMetatable("item.GroundItem")
-
-	L.SetField(mt, "__call", L.NewFunction(lNewGroundItem))
-
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), GroundItemMethods))
-
-	cls := L.NewUserData()
-	L.SetField(mod, "GroundItem", cls)
-	L.SetMetatable(cls, mt)
-	glua.RegisterType("item.GroundItem", mt)
-}
-
-func lNewGroundItem(L *lua.LState) int {
-	L.Remove(1)
-	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(*Stack)
-	L.Remove(1)
-	arg1Value := L.Get(1)
-	arg1 := glua.FromLua(arg1Value).(*position.Absolute)
-	L.Remove(1)
-	arg2Value := L.Get(1)
-	arg2 := glua.FromLua(arg2Value).(*world.Instance)
-	L.Remove(1)
-	retVal := NewGroundItem(arg0, arg1, arg2)
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-var GroundItemMethods = map[string]lua.LGFunction{
-
-	"definition": lBindGroundItemDefinition,
-
-	"index": lBindGroundItemIndex,
-
-	"item": lBindGroundItemItem,
-
-	"position": lBindGroundItemPosition,
-}
-
-func lBindGroundItemDefinition(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*GroundItem)
-	L.Remove(1)
-	retVal := self.Definition()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-func lBindGroundItemIndex(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*GroundItem)
-	L.Remove(1)
-	retVal := self.Index()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-func lBindGroundItemItem(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*GroundItem)
-	L.Remove(1)
-	retVal := self.Item()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-func lBindGroundItemPosition(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*GroundItem)
-	L.Remove(1)
-	retVal := self.Position()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 

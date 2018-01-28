@@ -23,10 +23,6 @@ type LoginHandler interface {
 	IsaacSeeds() (in []uint32, out []uint32)
 }
 
-type World interface {
-	EntitiesOnTile(p *position.Absolute) []entity.Entity
-}
-
 type Profile interface {
 	Username() string
 	Rights() Rights
