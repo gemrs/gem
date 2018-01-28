@@ -4,8 +4,8 @@ const MaxPlayers = 2048
 
 // +gen pack_outgoing
 type PlayerUpdate struct {
-	Me       PlayerUpdateData
-	Others   map[int]PlayerUpdateData
+	Me       Player
+	Others   map[int]Player
 	Removing map[int]bool
 	Visible  []int
 	Updating []int

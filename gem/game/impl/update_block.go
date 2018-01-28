@@ -7,10 +7,10 @@ import (
 
 func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 	block := protocol.PlayerUpdate{
-		Others:   make(map[int]protocol.PlayerUpdateData),
+		Others:   make(map[int]protocol.Player),
 		Removing: make(map[int]bool),
 	}
-	block.Me = buildPlayerUpdateData(player)
+	block.Me = player
 
 	visibleEntities := player.VisibleEntities()
 
@@ -19,7 +19,7 @@ func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 			continue
 		}
 		block.Visible = append(block.Visible, e.Index())
-		block.Others[e.Index()] = buildPlayerUpdateData(e.(*Player))
+		block.Others[e.Index()] = e.(protocol.Player)
 	}
 
 	updatingPlayers := visibleEntities.Entities().Clone()
@@ -40,22 +40,4 @@ func buildPlayerUpdate(player *Player) protocol.PlayerUpdate {
 	}
 
 	return block
-}
-
-func buildPlayerUpdateData(player *Player) protocol.PlayerUpdateData {
-	return protocol.PlayerUpdateData{
-		Index:            player.Index(),
-		Username:         player.Profile().Username(),
-		Flags:            player.Flags(),
-		Position:         player.Position(),
-		LoadedRegion:     player.LoadedRegion(),
-		WaypointQueue:    player.WaypointQueue(),
-		ChatMessageQueue: player.ChatMessageQueue(),
-		Rights:           player.Profile().Rights(),
-		Appearance:       player.Profile().Appearance(),
-		Animations:       player.Animations(),
-		Skills:           player.Profile().Skills(),
-		Log:              player.Log(),
-		ProtoData:        player.protoData,
-	}
 }

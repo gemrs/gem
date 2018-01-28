@@ -35,13 +35,17 @@ type Profile interface {
 }
 
 type Player interface {
-	AppendChatMessage(m InboundChatMessage)
+	Index() int
+	Flags() entity.Flags
 	Profile() Profile
 	WorldInstance() World
 	Position() *position.Absolute
+	Animations() Animations
+
+	AppendChatMessage(m InboundChatMessage)
+	ChatMessageQueue() []InboundChatMessage
 	InteractionQueue() *entity.InteractionQueue
 	WaypointQueue() entity.WaypointQueue
-	Log() log.Log
 	CurrentFrame() FrameType
 	SetCurrentFrame(FrameType)
 	SetAppearanceChanged()
@@ -50,6 +54,7 @@ type Player interface {
 	Decode() error
 	Send(encoding.Encodable) error
 	Disconnect()
+	ProtoData() interface{}
 	SetProtoData(d interface{})
 	SetDecodeFunc(d server.DecodeFunc)
 	IsaacIn() *isaac.ISAAC
@@ -65,24 +70,8 @@ type Player interface {
 	UpdateVisibleEntities()
 	ProcessChatQueue()
 	ClearFlags()
-}
 
-type PlayerUpdateData struct {
-	Index            int
-	Username         string
-	Flags            entity.Flags
-	Position         *position.Absolute
-	LoadedRegion     *position.Region
-	WaypointQueue    entity.WaypointQueue
-	ChatMessageQueue []InboundChatMessage
-	Rights           Rights
-	Appearance       Appearance
-	Animations       Animations
-	Skills           Skills
-	Log              log.Log
-
-	// Some protocol specific data
-	ProtoData interface{}
+	Log() log.Log
 }
 
 type BodyPart int

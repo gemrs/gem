@@ -17,7 +17,7 @@ type OutboundChatMessage struct {
 type OutboundRegionUpdate struct {
 	ProtoData interface{}
 
-	Player PlayerUpdateData
+	Player Player
 }
 
 // +gen pack_outgoing

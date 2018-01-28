@@ -1,8 +1,6 @@
 package protocol_os_157
 
 import (
-	"fmt"
-
 	"github.com/gemrs/gem/gem/core/crypto"
 	"github.com/gemrs/gem/gem/core/encoding"
 	"github.com/gemrs/gem/gem/game/server"
@@ -74,7 +72,6 @@ func (handler *LoginHandler) Password() string {
 func (handler *LoginHandler) decodeLoginBlock(client server.GameClient) error {
 	loginBlock := InboundLoginBlock{}
 	loginBlock.Decode(client.Conn().ReadBuffer, nil)
-	fmt.Printf("login block is %#v\n", loginBlock)
 	/*
 		expectedSecureBlockSize := int(loginBlock.LoginLen) - ((9 * 4) + 1 + 1 + 1 + 2)
 		if expectedSecureBlockSize != int(loginBlock.SecureBlockSize) {

@@ -6,10 +6,8 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-const PlayerViewDistance = 1
-
 func (player *Player) SyncEntityList() {
-	sectorPositions := player.sector.Position().SurroundingSectors(PlayerViewDistance)
+	sectorPositions := player.sector.Position().SurroundingSectors(protocol.PlayerViewDistance)
 	sectors := player.world.Sectors(sectorPositions)
 	allAdded := entity.NewSet()
 	allRemoved := entity.NewSet()
@@ -36,13 +34,13 @@ func (player *Player) UpdateVisibleEntities() {
 
 // Called when the player's movement has caused them to enter a new sector
 func (player *Player) onSectorChange() {
-	oldList := player.sector.Position().SurroundingSectors(PlayerViewDistance)
+	oldList := player.sector.Position().SurroundingSectors(protocol.PlayerViewDistance)
 
 	player.sector.Remove(player)
 	player.sector = player.world.Sector(player.Position().Sector())
 	player.sector.Add(player)
 
-	newList := player.sector.Position().SurroundingSectors(PlayerViewDistance)
+	newList := player.sector.Position().SurroundingSectors(protocol.PlayerViewDistance)
 
 	removedPositions, addedPositions := position.SectorListDelta(oldList, newList)
 	removed, added := player.world.Sectors(removedPositions), player.world.Sectors(addedPositions)

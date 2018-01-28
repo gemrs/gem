@@ -87,6 +87,10 @@ func (player *Player) EntityType() entity.EntityType {
 	return entity.PlayerType
 }
 
+func (player *Player) ProtoData() interface{} {
+	return player.protoData
+}
+
 func (player *Player) SetProtoData(d interface{}) {
 	player.protoData = d
 }
@@ -116,7 +120,7 @@ func (player *Player) VisibleEntities() *entity.Collection {
 	return player.visibleEntities
 }
 
-func (player *Player) Animations() *Animations {
+func (player *Player) Animations() protocol.Animations {
 	return player.animations
 }
 

@@ -44,7 +44,7 @@ func (player *Player) RegionChange() {
 
 	player.Send(protocol.OutboundRegionUpdate{
 		ProtoData: player.protoData,
-		Player:    buildPlayerUpdateData(player),
+		Player:    player,
 	})
 
 	player.SetFlags(entity.MobFlagRegionUpdate)

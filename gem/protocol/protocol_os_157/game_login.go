@@ -1,7 +1,6 @@
 package protocol_os_157
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
@@ -51,7 +50,6 @@ func (struc *InboundXteaLoginBlock) Decode(buf io.Reader, flags interface{}) {
 type OutboundLoginResponse protocol.OutboundLoginResponse
 
 func (struc OutboundLoginResponse) Encode(buf io.Writer, flags interface{}) {
-	fmt.Printf("sending login response %#v\n", struc)
 	encoding.Uint8(struc.Response).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 
 	if struc.Response != protocol.AuthOkay {

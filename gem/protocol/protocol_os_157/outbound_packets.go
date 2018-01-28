@@ -76,8 +76,8 @@ type OutboundRegionUpdate protocol.OutboundRegionUpdate
 
 func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	data := getPlayerData(struc.ProtoData)
-	pos := struc.Player.Position
-	playerIndex := struc.Player.Index
+	pos := struc.Player.Position()
+	playerIndex := struc.Player.Index()
 
 	if !data.playerIndexInitialized {
 		data.playerIndexInitialized = true
@@ -106,8 +106,6 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	encoding.Uint16(sectorY).Encode(buf, encoding.IntLittleEndian)
 	encoding.Uint16(sectorX).Encode(buf, encoding.IntOffset128)
 
-	fmt.Printf("sector is %v %v\n", sectorX, sectorY)
-
 	regionX, regionY := sectorX/8, sectorY/8
 	tutorialIsland := false
 	if (regionX == 48 || regionX == 49) && regionY == 48 {
@@ -125,7 +123,6 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 			if !tutorialIsland || y != 49 && y != 149 && y != 147 && x != 50 && (x != 49 || y != 47) {
 				region := y + (x << 8)
 				keys, ok := mapKeys[region]
-				fmt.Printf("sending keys for region %v\n", region)
 				if !ok {
 					panic(fmt.Errorf("don't have map keys for region %v", region))
 				}
@@ -141,8 +138,6 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	for _, key := range allKeys {
 		encoding.Uint32(key).Encode(buf, encoding.IntNilFlag)
 	}
-
-	fmt.Printf("wrote %v keys\n", count)
 }
 
 // +gen define_outbound:"Unimplemented"

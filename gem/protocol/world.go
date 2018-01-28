@@ -5,6 +5,8 @@ import (
 	"github.com/gemrs/gem/gem/game/position"
 )
 
+const PlayerViewDistance = 1
+
 type World interface {
 	EntitiesOnTile(p *position.Absolute) []entity.Entity
 	Sector(s *position.Sector) Sector
