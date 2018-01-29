@@ -18,7 +18,7 @@ logger:info("Starting " .. version_string)
 
 -- Load data files
 local data_ctx = runite.Context()
-data_ctx:unpack(config.game_data_file, config.game_index_files)
+data_ctx:unpack(config.game_data_file, config.game_index_files, config.game_metadata_file)
 
 -- Create services
 local game_server = server.Server()

@@ -1,7 +1,6 @@
 package protocol_os_157
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
@@ -52,8 +51,6 @@ func (p protocolImpl) Handshake(conn *server.Connection) int {
 
 	service := int(serviceSelect.Service)
 
-	fmt.Printf("select service %#v\n", service)
-
 	response := 0
 	if service == UpdateServiceId {
 		var handshake InboundUpdateHandshake
@@ -61,12 +58,12 @@ func (p protocolImpl) Handshake(conn *server.Connection) int {
 		if handshake.Revision != Revision {
 			response = int(protocol.AuthUpdates)
 		}
-	}
 
-	var handshake OutboundUpdateHandshake
-	handshake.Response = response
-	handshake.Encode(conn.WriteBuffer, nil)
-	conn.FlushWriteBuffer()
+		var handshakeResponse OutboundUpdateHandshake
+		handshakeResponse.Response = response
+		handshakeResponse.Encode(conn.WriteBuffer, nil)
+		conn.FlushWriteBuffer()
+	}
 
 	return service
 }

@@ -14,6 +14,7 @@ import (
 type UpdateClient struct {
 	*server.Connection
 	service *UpdateService
+	xorKey  InboundXorKey
 }
 
 // NewUpdateClient constructs a new UpdateClient
@@ -46,7 +47,6 @@ func (client *UpdateClient) Decode() error {
 	case updateFileRequest:
 		var request InboundUpdateRequest
 		request.Decode(client.Conn().ReadBuffer, nil)
-		fmt.Printf("file request %#v\n", request)
 		return client.serveFileRequest(request, priority)
 
 	case updateClientLogIn:
@@ -63,7 +63,6 @@ func (client *UpdateClient) Decode() error {
 	case updateEncKeys:
 		var key InboundXorKey
 		key.Decode(client.Conn().ReadBuffer, nil)
-		fmt.Printf("update enc keys: %#v\n", key)
 		return client.handleKeyUpdate(key)
 
 	default:
@@ -79,6 +78,7 @@ func (client *UpdateClient) handleConnectionStatus(id int, status InboundConnect
 }
 
 func (client *UpdateClient) handleKeyUpdate(key InboundXorKey) error {
+	client.xorKey = key
 	return nil
 }
 
@@ -100,7 +100,7 @@ func (client *UpdateClient) serveFileRequest(request InboundUpdateRequest, prior
 // Send writes encoding.Encodables to the clients's buffer
 func (client *UpdateClient) Send(codable encoding.Encodable) error {
 	var buf bytes.Buffer
-	err := encoding.TryEncode(codable, &buf, nil)
+	err := encoding.TryEncode(&client.xorKey, &buf, codable)
 	if err != nil {
 		return err
 	}

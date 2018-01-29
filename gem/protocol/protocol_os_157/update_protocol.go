@@ -1,6 +1,7 @@
 package protocol_os_157
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
@@ -46,6 +47,23 @@ func (struc *InboundXorKey) Decode(buf io.Reader, flags interface{}) {
 	struc.Unk.Decode(buf, encoding.IntNilFlag)
 }
 
+func (struc *InboundXorKey) Encode(buf io.Writer, flags interface{}) {
+	body := flags.(encoding.Encodable)
+
+	if int(struc.Key) == 0 {
+		body.Encode(buf, nil)
+		return
+	}
+
+	var plaintext bytes.Buffer
+	body.Encode(&plaintext, nil)
+	ciphertext := make([]byte, plaintext.Len())
+	for i, b := range plaintext.Bytes() {
+		ciphertext[i] = b ^ byte(struc.Key)
+	}
+	buf.Write(ciphertext)
+}
+
 type InboundUpdateRequest struct {
 	Index encoding.Uint8
 	File  encoding.Uint16
@@ -69,12 +87,13 @@ var crcTable = []byte{0x00, 0x00, 0x00, 0x00, 0x88, 0x03, 0x7F, 0xC0, 0xD1, 0x00
 
 func (req *InboundUpdateRequest) Resolve(ctx *runite.Context) ([]byte, error) {
 	if int(req.Index) == 255 && int(req.File) == 255 {
+		// FIXME generate the CRC table
 		return crcTable, nil
 	}
 
 	fs := ctx.FS
-	indexID := int(req.Index) + 1
-	if indexID < 0 || indexID > fs.IndexCount() {
+	indexID := int(req.Index)
+	if indexID < 0 || (indexID > fs.IndexCount() && indexID != 255) {
 		return nil, fmt.Errorf("cache index out of bounds")
 	}
 
@@ -107,10 +126,13 @@ func (res *OutboundUpdateResponse) String() string {
 
 func (struc *OutboundUpdateResponse) Encode(buf io.Writer, flags interface{}) {
 	data := struc.Data
+	if struc.Index != 255 {
+		// Trim the version
+		data = data[:len(data)-2]
+	}
 	chunkMarker := encoding.Uint8(255)
 	chunkSize := 512
 	chunk := 0
-	fmt.Printf("sending response %#v\n", struc)
 	for len(data) > 0 {
 		headerSize := 0
 		if chunk == 0 {
@@ -123,22 +145,12 @@ func (struc *OutboundUpdateResponse) Encode(buf io.Writer, flags interface{}) {
 		}
 
 		thisChunkLen := chunkSize - headerSize
-		//		paddingSize := 0
 		if len(data) < thisChunkLen {
 			thisChunkLen = len(data)
-			//			paddingSize = thisChunkLen - len(data)
 		}
 
 		encoding.Bytes(data[:thisChunkLen]).Encode(buf, nil)
 		data = data[thisChunkLen:]
-		/*
-			if paddingSize > 0 {
-				padding := make([]byte, paddingSize)
-				encoding.Bytes(padding).Encode(buf, nil)
-			}*/
-
 		chunk++
 	}
-
-	fmt.Printf("encoded file in %v chunks\n", chunk)
 }

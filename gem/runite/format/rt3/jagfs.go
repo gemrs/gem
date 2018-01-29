@@ -3,6 +3,7 @@ package rt3
 import (
 	"bytes"
 	"errors"
+	"fmt"
 
 	"github.com/gemrs/gem/gem/core/encoding"
 )
@@ -23,13 +24,22 @@ type buffer []byte
 
 type JagFS struct {
 	data    buffer
+	meta    *JagFSIndex
 	indices []*JagFSIndex
 }
 
-func UnpackJagFS(data *bytes.Buffer, indices []*bytes.Buffer) (*JagFS, error) {
+func UnpackJagFS(data *bytes.Buffer, indices []*bytes.Buffer, meta *bytes.Buffer) (*JagFS, error) {
 	var err error
 	fs := &JagFS{}
 	fs.data = buffer(data.Bytes())
+
+	if meta != nil {
+		fs.meta, err = unpackFSIndex(fs.data, meta)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	fs.indices = make([]*JagFSIndex, len(indices))
 	for i, index := range indices {
 		fs.indices[i], err = unpackFSIndex(fs.data, index)
@@ -45,6 +55,10 @@ func (fs *JagFS) IndexCount() int {
 }
 
 func (fs *JagFS) Index(index int) (*JagFSIndex, error) {
+	if index == 255 {
+		return fs.meta, nil
+	}
+
 	if index > len(fs.indices) {
 		return nil, ErrIndexOutOfBounds
 	}
@@ -102,7 +116,7 @@ func (idx *JagFSIndex) File(index int) ([]byte, error) {
 
 	var err error
 	for block != 0 {
-		block, err = idx.constructFile(block, length)
+		block, err = idx.constructFile(index, block, length)
 		if err != nil {
 			return nil, err
 		}
@@ -120,7 +134,7 @@ func (idx *JagFSIndex) File(index int) ([]byte, error) {
 	return idx.fileCache[index], nil
 }
 
-func (idx *JagFSIndex) constructFile(blockId, length int) (nextBlockId int, err error) {
+func (idx *JagFSIndex) constructFile(index, blockId, length int) (nextBlockId int, err error) {
 	offset := blockId * blockSize
 	if offset > len(idx.data) || offset+blockSize > len(idx.data) {
 		return 0, ErrIndexOutOfBounds
@@ -129,11 +143,24 @@ func (idx *JagFSIndex) constructFile(blockId, length int) (nextBlockId int, err 
 	var block FSBlock
 	block.Data = make(encoding.Bytes, length)
 	buffer := bytes.NewBuffer(idx.data[offset : offset+blockSize])
-	if err := encoding.TryDecode(&block, buffer, 0); err != nil {
-		return 0, ErrInvalidData
+	if index > 0xFFFF {
+		extBlock := FSBlockExt{
+			FSBlock: &block,
+		}
+		if err := encoding.TryDecode(&extBlock, buffer, 0); err != nil {
+			return 0, ErrInvalidData
+		}
+	} else {
+		if err := encoding.TryDecode(&block, buffer, 0); err != nil {
+			return 0, ErrInvalidData
+		}
 	}
 
-	index := int(block.FileID)
+	blockIndex := int(block.FileID)
+	if blockIndex != index {
+		panic(fmt.Errorf("block has unexpected file id: expected %v got %v", index, blockIndex))
+	}
+
 	nextBlockId = int(block.NextBlock)
 	data := []byte(block.Data)
 	if length < 512 {

@@ -31,9 +31,9 @@ type FSBlock struct {
 }
 
 func (struc *FSBlock) Decode(buf io.Reader, flags interface{}) {
-	var tmp16 encoding.Int16
-	var tmp24 encoding.Int24
-	var tmp8 encoding.Int8
+	var tmp16 encoding.Uint16
+	var tmp24 encoding.Uint24
+	var tmp8 encoding.Uint8
 	var tmpBytes encoding.Bytes
 
 	tmp16.Decode(buf, encoding.IntNilFlag)
@@ -52,13 +52,15 @@ func (struc *FSBlock) Decode(buf io.Reader, flags interface{}) {
 	struc.Data = []byte(tmpBytes)
 }
 
-type FSBlockExt FSBlock
+type FSBlockExt struct {
+	*FSBlock
+}
 
 func (struc *FSBlockExt) Decode(buf io.Reader, flags interface{}) {
-	var tmp32 encoding.Int32
-	var tmp16 encoding.Int16
-	var tmp24 encoding.Int24
-	var tmp8 encoding.Int8
+	var tmp32 encoding.Uint32
+	var tmp16 encoding.Uint16
+	var tmp24 encoding.Uint24
+	var tmp8 encoding.Uint8
 	var tmpBytes encoding.Bytes
 
 	tmp32.Decode(buf, encoding.IntNilFlag)

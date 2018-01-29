@@ -9,28 +9,13 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-var OutboundSetRootInterfaceDefinition = OutboundPacketDefinition{
-	Number: 25,
-	Size:   SzFixed,
-}
-
-var InboundPlayerWalkDefinition = InboundPacketDefinition{
-	Number: 95,
-	Size:   SzVar8,
-}
-
-var OutboundResetCameraDefinition = OutboundPacketDefinition{
-	Number: 45,
-	Size:   SzFixed,
-}
-
-var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
-	Number: 0,
+var OutboundScriptEventDefinition = OutboundPacketDefinition{
+	Number: 26,
 	Size:   SzVar16,
 }
 
-var OutboundDnsLookupDefinition = OutboundPacketDefinition{
-	Number: 5,
+var OutboundSetRootInterfaceDefinition = OutboundPacketDefinition{
+	Number: 25,
 	Size:   SzFixed,
 }
 
@@ -44,25 +29,32 @@ var PlayerUpdateDefinition = OutboundPacketDefinition{
 	Size:   SzVar16,
 }
 
+var OutboundResetCameraDefinition = OutboundPacketDefinition{
+	Number: 45,
+	Size:   SzFixed,
+}
+
+var InboundPlayerWalkDefinition = InboundPacketDefinition{
+	Number: 95,
+	Size:   SzVar8,
+}
+
+var OutboundDnsLookupDefinition = OutboundPacketDefinition{
+	Number: 5,
+	Size:   SzFixed,
+}
+
+var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
+	Number: 0,
+	Size:   SzVar16,
+}
+
 var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
 	Number: 24,
 	Size:   SzFixed,
 }
 
-var OutboundScriptEventDefinition = OutboundPacketDefinition{
-	Number: 26,
-	Size:   SzVar16,
-}
-
 var inboundPacketBuilders = map[int]func() encoding.Decodable{
-
-	95: func() encoding.Decodable {
-		return &PacketHeader{
-			Number: InboundPlayerWalkDefinition.Number,
-			Size:   InboundPlayerWalkDefinition.Size,
-			Object: new(InboundPlayerWalk),
-		}
-	},
 
 	84: func() encoding.Decodable {
 		return &PacketHeader{
@@ -71,15 +63,23 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 			Object: new(InboundPlayerWalkMap),
 		}
 	},
+
+	95: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundPlayerWalkDefinition.Number,
+			Size:   InboundPlayerWalkDefinition.Size,
+			Object: new(InboundPlayerWalk),
+		}
+	},
 }
 
 func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 	switch message := message.(type) {
 
-	case *InboundPlayerWalk:
+	case *InboundPlayerWalkMap:
 		return (*protocol.InboundPlayerWalk)(message)
 
-	case *InboundPlayerWalkMap:
+	case *InboundPlayerWalk:
 		return (*protocol.InboundPlayerWalk)(message)
 
 	case *UnknownPacket:
@@ -94,38 +94,42 @@ func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 	switch message := message.(type) {
 
+	case protocol.OutboundScriptEvent:
+		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
+
 	case protocol.OutboundSetRootInterface:
 		return OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface(message))
-
-	case protocol.OutboundResetCamera:
-		return OutboundResetCameraDefinition.Pack(OutboundResetCamera(message))
-
-	case protocol.OutboundRegionUpdate:
-		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
-
-	case protocol.OutboundDnsLookup:
-		return OutboundDnsLookupDefinition.Pack(OutboundDnsLookup(message))
 
 	case protocol.PlayerUpdate:
 		return PlayerUpdateDefinition.Pack(PlayerUpdate(message))
 
+	case protocol.OutboundResetCamera:
+		return OutboundResetCameraDefinition.Pack(OutboundResetCamera(message))
+
+	case protocol.OutboundDnsLookup:
+		return OutboundDnsLookupDefinition.Pack(OutboundDnsLookup(message))
+
+	case protocol.OutboundRegionUpdate:
+		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
+
 	case protocol.OutboundSetInterface:
 		return OutboundSetInterfaceDefinition.Pack(OutboundSetInterface(message))
 
-	case protocol.OutboundScriptEvent:
-		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
+	case protocol.OutboundInitInterface:
+		return OutboundInitInterface(message)
 
 	case protocol.OutboundLoginResponse:
 		return OutboundLoginResponse(message)
-
-	case protocol.OutboundInitInterface:
-		return OutboundInitInterface(message)
 
 	case protocol.OutboundTabInterface:
 		return OutboundTabInterface(message)
 
 	case protocol.OutboundSkill:
 		fmt.Println("OutboundSkill not implemented")
+		return nil
+
+	case protocol.OutboundCreateGlobalGroundItem:
+		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
 		return nil
 
 	case protocol.OutboundRemoveGroundItem:
@@ -140,28 +144,24 @@ func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 		fmt.Println("OutboundPlayerInit not implemented")
 		return nil
 
-	case protocol.OutboundSectorUpdate:
-		fmt.Println("OutboundSectorUpdate not implemented")
-		return nil
-
-	case protocol.OutboundLogout:
-		fmt.Println("OutboundLogout not implemented")
-		return nil
-
 	case protocol.OutboundChatMessage:
 		fmt.Println("OutboundChatMessage not implemented")
 		return nil
 
-	case protocol.OutboundCreateGlobalGroundItem:
-		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
+	case protocol.OutboundCreateGroundItem:
+		fmt.Println("OutboundCreateGroundItem not implemented")
 		return nil
 
 	case protocol.OutboundUpdateInventoryItem:
 		fmt.Println("OutboundUpdateInventoryItem not implemented")
 		return nil
 
-	case protocol.OutboundCreateGroundItem:
-		fmt.Println("OutboundCreateGroundItem not implemented")
+	case protocol.OutboundLogout:
+		fmt.Println("OutboundLogout not implemented")
+		return nil
+
+	case protocol.OutboundSectorUpdate:
+		fmt.Println("OutboundSectorUpdate not implemented")
 		return nil
 
 	}

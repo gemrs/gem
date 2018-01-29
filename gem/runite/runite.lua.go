@@ -61,7 +61,10 @@ func lBindContextUnpack(L *lua.LState) int {
 		arg1[i] = glua.FromLua(val).(string)
 	})
 	L.Remove(1)
-	retVal := self.Unpack(arg0, arg1)
+	arg2Value := L.Get(1)
+	arg2 := glua.FromLua(arg2Value).(string)
+	L.Remove(1)
+	retVal := self.Unpack(arg0, arg1, arg2)
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 

@@ -12,6 +12,7 @@ cfg.rsa_key_path = "data/devel.key"
 -- Game data paths
 cfg.data_path = "./data"
 cfg.game_data_file = cfg.data_path .. "/cache/main_file_cache.dat2"
+cfg.game_metadata_file = cfg.data_path .. "/cache/main_file_cache.idx255"
 cfg.game_index_files = {}
 for i=0,16 do
    cfg.game_index_files[i+1] = cfg.data_path .. "/cache/main_file_cache.idx" .. tostring(i)
