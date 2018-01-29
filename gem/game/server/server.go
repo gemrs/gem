@@ -154,7 +154,7 @@ func (s *Server) handle(netConn net.Conn) {
 		<-conn.DisconnectChan
 
 		// ensure any pending data is flushed before disconnecting
-		conn.flushWriteBuffer()
+		conn.FlushWriteBuffer()
 	}
 
 	conn.conn.Close()

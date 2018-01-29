@@ -7,13 +7,6 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-func (p protocolImpl) Handshake(conn *server.Connection) int {
-	var serviceSelect InboundServiceSelect
-	serviceSelect.Decode(conn.NetConn(), nil)
-
-	return int(serviceSelect.Service)
-}
-
 func (p protocolImpl) NewLoginHandler() server.LoginHandler {
 	return &LoginHandler{}
 }

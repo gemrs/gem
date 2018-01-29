@@ -21,8 +21,6 @@ func (struc PlayerUpdate) Encode(w_ io.Writer, flags interface{}) {
 	w := &bytes.Buffer{}
 	data := struc.attachment()
 
-	struc.Me.Log().Debug("local player list is %v\n", data.localPlayers[0:5])
-
 	maskBuf := encoding.NewBuffer()
 	struc.processLocalPlayers(w, maskBuf, 0)
 	struc.processLocalPlayers(w, maskBuf, 1)
@@ -335,7 +333,6 @@ func (struc PlayerUpdate) buildMovementBlock(buf *encoding.BitBuffer, player pro
 		buf.Write(3, uint32(current))
 
 	case (flags & entity.MobFlagWalkUpdate) != 0:
-		struc.Me.Log().Debug("movement update for player %v", player.Index)
 		current, _ := player.WaypointQueue().WalkDirection()
 
 		buf.Write(2, 1) // update type 1 = walking

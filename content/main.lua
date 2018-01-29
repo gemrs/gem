@@ -21,16 +21,11 @@ local data_ctx = runite.Context()
 data_ctx:unpack(config.game_data_file, config.game_index_files)
 
 -- Create services
-local archive_server = archive.Server()
 local game_server = server.Server()
-local game_service = game.GameService(data_ctx, config.rsa_key_path, auth.authenticate)
---local update_service = game.UpdateService(data_ctx)
+game.register_services(game_server, data_ctx, config.rsa_key_path, auth.authenticate)
 
 -- Start services on engine start
 function startup_func()
-   game_server:set_service(14, game_service)
---   game_server:set_service(15, update_service)
-   archive_server:start(config.archive_server_listen, data_ctx)
    game_server:start(config.game_server_listen)
 end
 
@@ -39,7 +34,6 @@ engine_event.startup:register(event.Func(startup_func))
 -- Stop services on engine stop
 function shutdown_func()
    game_server:stop()
-   archive_server:stop()
 end
 
 engine_event.shutdown:register(event.Func(shutdown_func))

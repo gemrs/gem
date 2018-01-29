@@ -156,7 +156,7 @@ L:
 			writeBuffer := conn.WriteBuffer
 			_, err := io.Copy(writeBuffer, &buffer)
 			if err == nil {
-				err = conn.flushWriteBuffer()
+				err = conn.FlushWriteBuffer()
 			}
 
 			if err != nil {
@@ -170,7 +170,7 @@ L:
 
 // flushWriteBuffer drains the write buffer and ensures that all data is written to
 // the connection. If conn.Write returns an error (timeout), the client is disconnected.
-func (conn *Connection) flushWriteBuffer() error {
+func (conn *Connection) FlushWriteBuffer() error {
 	for conn.WriteBuffer.Len() > 0 {
 		_, err := conn.WriteBuffer.WriteTo(conn.conn)
 		if err != nil {

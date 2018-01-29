@@ -19,6 +19,16 @@ var InboundPlayerWalkDefinition = InboundPacketDefinition{
 	Size:   SzVar8,
 }
 
+var OutboundResetCameraDefinition = OutboundPacketDefinition{
+	Number: 45,
+	Size:   SzFixed,
+}
+
+var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
+	Number: 0,
+	Size:   SzVar16,
+}
+
 var OutboundDnsLookupDefinition = OutboundPacketDefinition{
 	Number: 5,
 	Size:   SzFixed,
@@ -29,18 +39,8 @@ var InboundPlayerWalkMapDefinition = InboundPacketDefinition{
 	Size:   SzVar8,
 }
 
-var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
-	Number: 0,
-	Size:   SzVar16,
-}
-
-var OutboundResetCameraDefinition = OutboundPacketDefinition{
-	Number: 45,
-	Size:   SzFixed,
-}
-
-var OutboundScriptEventDefinition = OutboundPacketDefinition{
-	Number: 26,
+var PlayerUpdateDefinition = OutboundPacketDefinition{
+	Number: 82,
 	Size:   SzVar16,
 }
 
@@ -49,8 +49,8 @@ var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
 	Size:   SzFixed,
 }
 
-var PlayerUpdateDefinition = OutboundPacketDefinition{
-	Number: 82,
+var OutboundScriptEventDefinition = OutboundPacketDefinition{
+	Number: 26,
 	Size:   SzVar16,
 }
 
@@ -97,71 +97,71 @@ func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 	case protocol.OutboundSetRootInterface:
 		return OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface(message))
 
-	case protocol.OutboundDnsLookup:
-		return OutboundDnsLookupDefinition.Pack(OutboundDnsLookup(message))
+	case protocol.OutboundResetCamera:
+		return OutboundResetCameraDefinition.Pack(OutboundResetCamera(message))
 
 	case protocol.OutboundRegionUpdate:
 		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
 
-	case protocol.OutboundResetCamera:
-		return OutboundResetCameraDefinition.Pack(OutboundResetCamera(message))
-
-	case protocol.OutboundScriptEvent:
-		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
-
-	case protocol.OutboundSetInterface:
-		return OutboundSetInterfaceDefinition.Pack(OutboundSetInterface(message))
+	case protocol.OutboundDnsLookup:
+		return OutboundDnsLookupDefinition.Pack(OutboundDnsLookup(message))
 
 	case protocol.PlayerUpdate:
 		return PlayerUpdateDefinition.Pack(PlayerUpdate(message))
 
+	case protocol.OutboundSetInterface:
+		return OutboundSetInterfaceDefinition.Pack(OutboundSetInterface(message))
+
+	case protocol.OutboundScriptEvent:
+		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
+
 	case protocol.OutboundLoginResponse:
 		return OutboundLoginResponse(message)
-
-	case protocol.OutboundTabInterface:
-		return OutboundTabInterface(message)
 
 	case protocol.OutboundInitInterface:
 		return OutboundInitInterface(message)
 
-	case protocol.OutboundLogout:
-		fmt.Println("OutboundLogout not implemented")
-		return nil
-
-	case protocol.OutboundSectorUpdate:
-		fmt.Println("OutboundSectorUpdate not implemented")
-		return nil
+	case protocol.OutboundTabInterface:
+		return OutboundTabInterface(message)
 
 	case protocol.OutboundSkill:
 		fmt.Println("OutboundSkill not implemented")
-		return nil
-
-	case protocol.OutboundCreateGlobalGroundItem:
-		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
-		return nil
-
-	case protocol.OutboundSetText:
-		fmt.Println("OutboundSetText not implemented")
 		return nil
 
 	case protocol.OutboundRemoveGroundItem:
 		fmt.Println("OutboundRemoveGroundItem not implemented")
 		return nil
 
+	case protocol.OutboundSetText:
+		fmt.Println("OutboundSetText not implemented")
+		return nil
+
+	case protocol.OutboundPlayerInit:
+		fmt.Println("OutboundPlayerInit not implemented")
+		return nil
+
+	case protocol.OutboundSectorUpdate:
+		fmt.Println("OutboundSectorUpdate not implemented")
+		return nil
+
+	case protocol.OutboundLogout:
+		fmt.Println("OutboundLogout not implemented")
+		return nil
+
 	case protocol.OutboundChatMessage:
 		fmt.Println("OutboundChatMessage not implemented")
 		return nil
 
-	case protocol.OutboundCreateGroundItem:
-		fmt.Println("OutboundCreateGroundItem not implemented")
+	case protocol.OutboundCreateGlobalGroundItem:
+		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
 		return nil
 
 	case protocol.OutboundUpdateInventoryItem:
 		fmt.Println("OutboundUpdateInventoryItem not implemented")
 		return nil
 
-	case protocol.OutboundPlayerInit:
-		fmt.Println("OutboundPlayerInit not implemented")
+	case protocol.OutboundCreateGroundItem:
+		fmt.Println("OutboundCreateGroundItem not implemented")
 		return nil
 
 	}

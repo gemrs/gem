@@ -2,11 +2,25 @@ package protocol_os_157
 
 import (
 	"github.com/gemrs/gem/gem/core/encoding"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/runite"
 )
 
 type protocolImpl struct{}
 
 var Protocol protocolImpl
+
+func (protocolImpl) NewUpdateService(runite *runite.Context) server.Service {
+	return NewUpdateService(runite)
+}
+
+func (protocolImpl) GameServiceId() int {
+	return GameServiceId
+}
+
+func (protocolImpl) UpdateServiceId() int {
+	return UpdateServiceId
+}
 
 type OutboundPacketDefinition struct {
 	Number int

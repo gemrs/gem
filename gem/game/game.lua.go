@@ -3,6 +3,7 @@ package game
 
 import (
 	"github.com/gemrs/gem/gem/auth"
+	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/gem/glua"
 	lua "github.com/yuin/gopher-lua"
@@ -19,8 +20,28 @@ func lBindgame(L *lua.LState) int {
 
 	lBindGameService(L, mod)
 
+	L.SetField(mod, "register_services", L.NewFunction(lBindRegisterServices))
+
 	L.Push(mod)
 	return 1
+}
+
+func lBindRegisterServices(L *lua.LState) int {
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(*server.Server)
+	L.Remove(1)
+	arg1Value := L.Get(1)
+	arg1 := glua.FromLua(arg1Value).(*runite.Context)
+	L.Remove(1)
+	arg2Value := L.Get(1)
+	arg2 := glua.FromLua(arg2Value).(string)
+	L.Remove(1)
+	arg3Value := L.Get(1)
+	arg3 := glua.FromLua(arg3Value).(auth.Provider)
+	L.Remove(1)
+	RegisterServices(arg0, arg1, arg2, arg3)
+	return 0
+
 }
 
 func lBindGameService(L *lua.LState, mod *lua.LTable) {

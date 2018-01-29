@@ -1,9 +1,12 @@
 package protocol_os_157
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
+	"github.com/gemrs/gem/gem/game/server"
+	"github.com/gemrs/gem/gem/protocol"
 )
 
 type OutboundGameHandshake struct {
@@ -19,16 +22,6 @@ func (struc *OutboundGameHandshake) Encode(buf io.Writer, flags interface{}) {
 	}
 }
 
-type OutboundUpdateHandshake struct {
-	ignored [8]encoding.Uint8
-}
-
-func (struc *OutboundUpdateHandshake) Encode(buf io.Writer, flags interface{}) {
-	for i := 0; i < 8; i++ {
-		struc.ignored[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	}
-}
-
 type InboundServiceSelect struct {
 	Service encoding.Uint8
 }
@@ -37,10 +30,43 @@ func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) {
 	struc.Service.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
 }
 
-type InboundGameHandshake struct {
-	NameHash encoding.Uint8
+type InboundUpdateHandshake struct {
+	Revision encoding.Uint32
 }
 
-func (struc *InboundGameHandshake) Decode(buf io.Reader, flags interface{}) {
-	struc.NameHash.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+func (struc *InboundUpdateHandshake) Decode(buf io.Reader, flags interface{}) {
+	struc.Revision.Decode(buf, encoding.IntNilFlag)
+}
+
+type OutboundUpdateHandshake struct {
+	Response int
+}
+
+func (struc *OutboundUpdateHandshake) Encode(buf io.Writer, flags interface{}) {
+	encoding.Uint8(struc.Response).Encode(buf, encoding.IntNilFlag)
+}
+
+func (p protocolImpl) Handshake(conn *server.Connection) int {
+	var serviceSelect InboundServiceSelect
+	serviceSelect.Decode(conn.NetConn(), nil)
+
+	service := int(serviceSelect.Service)
+
+	fmt.Printf("select service %#v\n", service)
+
+	response := 0
+	if service == UpdateServiceId {
+		var handshake InboundUpdateHandshake
+		handshake.Decode(conn.NetConn(), nil)
+		if handshake.Revision != Revision {
+			response = int(protocol.AuthUpdates)
+		}
+	}
+
+	var handshake OutboundUpdateHandshake
+	handshake.Response = response
+	handshake.Encode(conn.WriteBuffer, nil)
+	conn.FlushWriteBuffer()
+
+	return service
 }

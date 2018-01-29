@@ -29,11 +29,6 @@ func (r *Context) Unpack(dataFile string, indexFiles []string) error {
 		return err
 	}
 
-	r.ItemDefinitions, err = rt3.LoadItemDefinitions(r.FS)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 

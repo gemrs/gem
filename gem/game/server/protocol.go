@@ -4,6 +4,7 @@ import (
 	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
 	"github.com/gemrs/gem/gem/core/crypto"
 	"github.com/gemrs/gem/gem/core/encoding"
+	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/willow/log"
 )
 
@@ -19,6 +20,9 @@ type Protocol interface {
 	NewLoginHandler() LoginHandler
 	Handshake(conn *Connection) int
 	NewInboundPacket(id int) (encoding.Decodable, error)
+	NewUpdateService(runite *runite.Context) Service
+	GameServiceId() int
+	UpdateServiceId() int
 }
 
 type Message interface{}
