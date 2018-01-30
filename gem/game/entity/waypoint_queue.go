@@ -9,5 +9,6 @@ type WaypointQueue interface {
 	Empty() bool
 	Clear()
 	Push(point *position.Absolute)
+	SetRunning(running bool)
 	WalkDirection() (current int, last int)
 }

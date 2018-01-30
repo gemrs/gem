@@ -1,4 +1,4 @@
-package protocol_os_157
+package protocol_os_161
 
 import (
 	"fmt"
@@ -71,7 +71,7 @@ type OutboundPlayerInit protocol.OutboundPlayerInit
 func (struc OutboundPlayerInit) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Pkt0,SzVar16"
+// +gen define_outbound:"Pkt78,SzVar16"
 type OutboundRegionUpdate protocol.OutboundRegionUpdate
 
 func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
@@ -103,8 +103,8 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	sector := pos.Sector()
 	sectorX := sector.X()
 	sectorY := sector.Y()
-	encoding.Uint16(sectorY).Encode(buf, encoding.IntLittleEndian)
-	encoding.Uint16(sectorX).Encode(buf, encoding.IntOffset128)
+	encoding.Uint16(sectorY).Encode(buf, encoding.IntNilFlag)
+	encoding.Uint16(sectorX).Encode(buf, encoding.IntLittleEndian)
 
 	regionX, regionY := sectorX/8, sectorY/8
 	tutorialIsland := false
@@ -152,13 +152,13 @@ type OutboundSkill protocol.OutboundSkill
 func (struc OutboundSkill) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Pkt45,SzFixed"
+// +gen define_outbound:"Pkt49,SzFixed"
 type OutboundResetCamera protocol.OutboundResetCamera
 
 func (struc OutboundResetCamera) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Pkt5,SzFixed"
+// +gen define_outbound:"Unimplemented"
 type OutboundDnsLookup protocol.OutboundDnsLookup
 
 func (struc OutboundDnsLookup) Encode(buf io.Writer, flags interface{}) {
@@ -166,7 +166,7 @@ func (struc OutboundDnsLookup) Encode(buf io.Writer, flags interface{}) {
 	encoding.Uint32(0).Encode(buf, encoding.IntNilFlag)
 }
 
-// +gen define_outbound:"Pkt25,SzFixed"
+// +gen define_outbound:"Pkt2,SzFixed"
 type OutboundSetRootInterface protocol.OutboundSetRootInterface
 
 func (struc OutboundSetRootInterface) Encode(buf io.Writer, flags interface{}) {
@@ -174,7 +174,7 @@ func (struc OutboundSetRootInterface) Encode(buf io.Writer, flags interface{}) {
 	encoding.Uint16(frame.Root).Encode(buf, encoding.IntOffset128)
 }
 
-// +gen define_outbound:"Pkt24,SzFixed"
+// +gen define_outbound:"Pkt34,SzFixed"
 type OutboundSetInterface protocol.OutboundSetInterface
 
 func (struc OutboundSetInterface) Encode(buf io.Writer, flags interface{}) {
@@ -183,12 +183,12 @@ func (struc OutboundSetInterface) Encode(buf io.Writer, flags interface{}) {
 		clickable = 1
 	}
 
+	encoding.Uint32((struc.RootID<<16)|struc.ChildID).Encode(buf, encoding.IntLittleEndian)
 	encoding.Uint8(clickable).Encode(buf, encoding.IntOffset128)
 	encoding.Uint16(struc.InterfaceID).Encode(buf, encoding.IntLittleEndian)
-	encoding.Uint32((struc.RootID<<16)|struc.ChildID).Encode(buf, encoding.IntPDPEndian)
 }
 
-// +gen define_outbound:"Pkt26,SzVar16"
+// +gen define_outbound:"Pkt76,SzVar16"
 type OutboundScriptEvent protocol.OutboundScriptEvent
 
 func (struc OutboundScriptEvent) Encode(buf io.Writer, flags interface{}) {

@@ -147,7 +147,6 @@ func (svc *GameService) decodePacket(client server.GameClient) error {
 
 	rand := client.IsaacIn().Rand()
 	realId := uint8(uint32(idByte) - rand)
-	realId = uint8(idByte)
 	packet, err := server.Proto.NewInboundPacket(int(realId))
 	if err != nil {
 		return fmt.Errorf("%v: packet %v", err, realId)

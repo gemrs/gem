@@ -19,6 +19,7 @@ func player_walk(player protocol.Player, message server.Message) {
 	wpq := player.WaypointQueue()
 	wpq.Clear()
 	wpq.Push(origin)
+	wpq.SetRunning(walkPacket.Running)
 	/*	waypoints := make([]*position.Absolute, 1)
 		for i, wp := range walkPacket.Waypoints {
 			x1, y1 := wp.X, wp.Y

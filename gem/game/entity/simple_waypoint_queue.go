@@ -31,6 +31,7 @@ type SimpleWaypointQueue struct {
 	points        []*position.Absolute
 	lastDirection int
 	direction     int
+	running       bool
 }
 
 func NewSimpleWaypointQueue() *SimpleWaypointQueue {
@@ -58,6 +59,10 @@ func (q *SimpleWaypointQueue) Push(point *position.Absolute) {
 	q.points = append(q.points, point)
 }
 
+func (q *SimpleWaypointQueue) SetRunning(running bool) {
+	q.running = running
+}
+
 // Tick advances the waypoint queue, and returns the next position of the mob
 func (q *SimpleWaypointQueue) Tick(entity Entity) bool {
 	mob := entity.(Movable)
@@ -83,6 +88,9 @@ func (q *SimpleWaypointQueue) Tick(entity Entity) bool {
 	q.direction = directionMap[dx+1][dy+1]
 
 	mob.SetNextStep(next)
+	if q.running {
+		mob.SetNextStep(next)
+	}
 
 	current = mob.Position()
 	return current.Compare(nextWaypoint) && len(q.points) == 0

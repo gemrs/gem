@@ -1,4 +1,4 @@
-package protocol_os_157
+package protocol_os_161
 
 import (
 	"bytes"
@@ -29,7 +29,7 @@ func (p PacketHeader) Encode(buf io.Writer, flags interface{}) {
 	rand := flags.(*isaac.ISAAC)
 	num := encoding.Int8(uint32(p.Number) + rand.Rand())
 	// FIXME: my 157 client has ISAAC disabled for some reason
-	num = encoding.Int8(p.Number)
+	//num = encoding.Int8(p.Number)
 
 	/* buffer the payload so that we can encode it's size */
 	var tmpBuffer bytes.Buffer
@@ -75,7 +75,9 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) {
 
 	number := uint8(uint32(shiftedNumber) - rand)
 	// FIXME: my 157 client has ISAAC disabled for some reason
-	number = uint8(shiftedNumber)
+	//number = uint8(shiftedNumber)
+
+	fmt.Printf("invound packet is %v\n", number)
 
 	if int(number) != p.Number {
 		panic(fmt.Errorf("packet number mismatch. Got %v, expected %v", int(number), p.Number))

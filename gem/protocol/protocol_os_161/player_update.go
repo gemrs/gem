@@ -1,4 +1,4 @@
-package protocol_os_157
+package protocol_os_161
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-// +gen define_outbound:"Pkt82,SzVar16"
+// +gen define_outbound:"Pkt48,SzVar16"
 type PlayerUpdate protocol.PlayerUpdate
 
 func (struc PlayerUpdate) attachment() *playerData {
@@ -240,7 +240,9 @@ func (struc PlayerUpdate) updateLocalPlayers(buf *encoding.BitBuffer, maskBuf *e
 	struc.buildBlockUpdates(maskBuf, thisPlayer, flags)
 }
 
-func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer protocol.Player, flags entity.Flags) {
+func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer protocol.Player, entityFlags entity.Flags) {
+	flags := translatePlayerFlags(entityFlags)
+
 	if flags > 0 {
 		if flags >= 0x100 {
 			flags |= 0x4
@@ -252,7 +254,7 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 	}
 
 	/* Update appearance */
-	if (flags & entity.MobFlagIdentityUpdate) != 0 {
+	if (flags & playerFlagIdentityUpdate) != 0 {
 		appearanceBuf := encoding.NewBuffer()
 		appearance := thisPlayer.Profile().Appearance()
 		anims := thisPlayer.Animations()
@@ -294,15 +296,12 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 		appearanceBlock.Encode(appearanceBuf, nil)
 
 		block := appearanceBuf.Bytes()
+		for i, b := range block {
+			block[i] = b + 128
+		}
 		blockSize := encoding.Uint8(len(block))
 		blockSize.Encode(maskBuf, encoding.IntOffset128)
-
-		for i := len(block) - 1; i >= 0; i-- {
-			err := maskBuf.WriteByte(block[i])
-			if err != nil {
-				panic(err)
-			}
-		}
+		maskBuf.Write(block)
 	}
 
 	return
@@ -326,17 +325,17 @@ func (struc PlayerUpdate) buildMovementBlock(buf *encoding.BitBuffer, player pro
 
 	switch {
 	case (flags & entity.MobFlagRunUpdate) != 0:
-		current, last := player.WaypointQueue().WalkDirection()
+		current, _ := player.WaypointQueue().WalkDirection()
 
 		buf.Write(2, 2) // update type 2 = running
-		buf.Write(3, uint32(last))
-		buf.Write(3, uint32(current))
+		buf.Write(4, uint32(current))
 
 	case (flags & entity.MobFlagWalkUpdate) != 0:
 		current, _ := player.WaypointQueue().WalkDirection()
 
 		buf.Write(2, 1) // update type 1 = walking
 		buf.Write(3, uint32(current))
+		fmt.Printf("walk direction is %#v\n", current)
 	default:
 		buf.Write(2, 0) // update type 0 = no movement updates
 	}
