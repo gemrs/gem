@@ -2,6 +2,16 @@ package protocol
 
 type InboundPing struct{}
 
+type InboundMouseMovement struct{}
+
+type InboundMouseClick struct{}
+
+type InboundWindowFocus struct{}
+
+type InboundKeyPress struct{}
+
+type InboundCameraMovement struct{}
+
 type InboundCommand struct {
 	Command string
 }

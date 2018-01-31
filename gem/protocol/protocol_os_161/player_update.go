@@ -336,7 +336,7 @@ func (struc PlayerUpdate) buildMovementBlock(buf *encoding.BitBuffer, player pro
 
 		buf.Write(2, 1) // update type 1 = walking
 		buf.Write(3, uint32(current))
-		fmt.Printf("walk direction is %#v\n", current)
+
 	default:
 		buf.Write(2, 0) // update type 0 = no movement updates
 	}

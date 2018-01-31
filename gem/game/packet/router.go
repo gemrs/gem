@@ -19,6 +19,6 @@ func Dispatch(player protocol.Player, message server.Message) {
 	if handler, ok := routingTable[typeString]; ok {
 		handler(player, message)
 	} else {
-		player.Log().Info("Unhandled message of type %v: %v", typeString, message)
+		player.Log().Debug("Unhandled message of type %v: %v", typeString, message)
 	}
 }

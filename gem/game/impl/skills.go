@@ -12,19 +12,20 @@ func init() {
 	accum := 0
 	for level := 0; level < 99; level++ {
 		realLevel := level + 1
-		exp := int(float64(realLevel+300) * math.Pow(2.0, float64(realLevel)/7.0))
+		exp := int(float64(realLevel) + 300.0*math.Pow(2.0, float64(realLevel)/7.0))
 		accum += exp
 		experienceTable[level] = accum / 4
 	}
 }
 
 func skillExpToLevel(exp int) int {
+	level := 1
 	for i := 0; i < 98; i++ {
-		if exp < experienceTable[i] {
-			return i + 1
+		if exp >= experienceTable[i] {
+			level = i + 2
 		}
 	}
-	return 99
+	return level
 }
 
 //glua:bind

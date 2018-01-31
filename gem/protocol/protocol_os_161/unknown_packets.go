@@ -39,7 +39,7 @@ func (p *UnknownPacket) Decode(buf io.Reader, flags interface{}) {
 	//p.Number = int(shiftedNumber)
 
 	/* decode the packet size */
-	sz, ok := unknownPacketLengths[p.Number]
+	sz, ok := inboundPacketLengths[p.Number]
 	if !ok {
 		panic(fmt.Errorf("unknown length for packet %v", p.Number))
 	}
@@ -74,7 +74,7 @@ func (p *UnknownPacket) Decode(buf io.Reader, flags interface{}) {
 }
 
 /* This horrible table is the list of fixed length packets we don't know about and their lengths */
-var unknownPacketLengths = map[int]int{
+var inboundPacketLengths = map[int]int{
 	0:  3,
 	1:  4,
 	2:  9,

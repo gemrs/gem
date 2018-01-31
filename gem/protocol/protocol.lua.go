@@ -99,6 +99,8 @@ func lBindprotocol(L *lua.LState) int {
 
 	L.SetField(mod, "skill_magic", glua.ToLua(L, SkillMagic))
 
+	L.SetField(mod, "skill_max", glua.ToLua(L, SkillMax))
+
 	L.SetField(mod, "skill_mining", glua.ToLua(L, SkillMining))
 
 	L.SetField(mod, "skill_prayer", glua.ToLua(L, SkillPrayer))

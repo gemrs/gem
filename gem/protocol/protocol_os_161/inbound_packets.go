@@ -26,10 +26,35 @@ func (struc *InboundCommand) Decode(buf io.Reader, flags interface{}) {
 	(*encoding.JString)(&struc.Command).Decode(buf, 0)
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt88,SzVar8"
+type InboundMouseMovement protocol.InboundMouseMovement
+
+func (struc *InboundMouseMovement) Decode(buf io.Reader, flags interface{}) {}
+
+// +gen define_inbound:"Pkt3,SzFixed"
+type InboundMouseClick protocol.InboundMouseClick
+
+func (struc *InboundMouseClick) Decode(buf io.Reader, flags interface{}) {}
+
+// +gen define_inbound:"Pkt63,SzFixed"
 type InboundPing protocol.InboundPing
 
 func (struc *InboundPing) Decode(buf io.Reader, flags interface{}) {}
+
+// +gen define_inbound:"Pkt41,SzFixed"
+type InboundWindowFocus protocol.InboundWindowFocus
+
+func (struc *InboundWindowFocus) Decode(buf io.Reader, flags interface{}) {}
+
+// +gen define_inbound:"Pkt71,SzVar16"
+type InboundKeyPress protocol.InboundKeyPress
+
+func (struc *InboundKeyPress) Decode(buf io.Reader, flags interface{}) {}
+
+// +gen define_inbound:"Pkt84,SzFixed"
+type InboundCameraMovement protocol.InboundCameraMovement
+
+func (struc *InboundCameraMovement) Decode(buf io.Reader, flags interface{}) {}
 
 // +gen define_inbound:"Unimplemented"
 type InboundInventoryAction1 protocol.InboundInventoryAction

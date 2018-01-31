@@ -9,43 +9,23 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
-	Number: 34,
-	Size:   SzFixed,
-}
-
-var OutboundResetCameraDefinition = OutboundPacketDefinition{
-	Number: 49,
-	Size:   SzFixed,
-}
-
-var OutboundSkillDefinition = OutboundPacketDefinition{
-	Number: 0,
-	Size:   SzFixed,
-}
-
-var OutboundSetRootInterfaceDefinition = OutboundPacketDefinition{
-	Number: 2,
-	Size:   SzFixed,
-}
-
-var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
-	Number: 78,
-	Size:   SzVar16,
-}
-
-var InboundPlayerWalkMapDefinition = InboundPacketDefinition{
-	Number: 6,
+var InboundMouseMovementDefinition = InboundPacketDefinition{
+	Number: 88,
 	Size:   SzVar8,
+}
+
+var InboundWindowFocusDefinition = InboundPacketDefinition{
+	Number: 41,
+	Size:   SzFixed,
+}
+
+var InboundMouseClickDefinition = InboundPacketDefinition{
+	Number: 3,
+	Size:   SzFixed,
 }
 
 var PlayerUpdateDefinition = OutboundPacketDefinition{
 	Number: 48,
-	Size:   SzVar16,
-}
-
-var OutboundScriptEventDefinition = OutboundPacketDefinition{
-	Number: 76,
 	Size:   SzVar16,
 }
 
@@ -54,13 +34,79 @@ var InboundPlayerWalkDefinition = InboundPacketDefinition{
 	Size:   SzVar8,
 }
 
+var OutboundSkillDefinition = OutboundPacketDefinition{
+	Number: 0,
+	Size:   SzFixed,
+}
+
+var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
+	Number: 34,
+	Size:   SzFixed,
+}
+
+var InboundPingDefinition = InboundPacketDefinition{
+	Number: 63,
+	Size:   SzFixed,
+}
+
+var OutboundResetCameraDefinition = OutboundPacketDefinition{
+	Number: 49,
+	Size:   SzFixed,
+}
+
+var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
+	Number: 78,
+	Size:   SzVar16,
+}
+
+var OutboundSetRootInterfaceDefinition = OutboundPacketDefinition{
+	Number: 2,
+	Size:   SzFixed,
+}
+
+var OutboundScriptEventDefinition = OutboundPacketDefinition{
+	Number: 76,
+	Size:   SzVar16,
+}
+
+var InboundKeyPressDefinition = InboundPacketDefinition{
+	Number: 71,
+	Size:   SzVar16,
+}
+
+var InboundCameraMovementDefinition = InboundPacketDefinition{
+	Number: 84,
+	Size:   SzFixed,
+}
+
+var InboundPlayerWalkMapDefinition = InboundPacketDefinition{
+	Number: 6,
+	Size:   SzVar8,
+}
+
 var inboundPacketBuilders = map[int]func() encoding.Decodable{
 
-	6: func() encoding.Decodable {
+	88: func() encoding.Decodable {
 		return &PacketHeader{
-			Number: InboundPlayerWalkMapDefinition.Number,
-			Size:   InboundPlayerWalkMapDefinition.Size,
-			Object: new(InboundPlayerWalkMap),
+			Number: InboundMouseMovementDefinition.Number,
+			Size:   InboundMouseMovementDefinition.Size,
+			Object: new(InboundMouseMovement),
+		}
+	},
+
+	41: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundWindowFocusDefinition.Number,
+			Size:   InboundWindowFocusDefinition.Size,
+			Object: new(InboundWindowFocus),
+		}
+	},
+
+	3: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundMouseClickDefinition.Number,
+			Size:   InboundMouseClickDefinition.Size,
+			Object: new(InboundMouseClick),
 		}
 	},
 
@@ -71,15 +117,65 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 			Object: new(InboundPlayerWalk),
 		}
 	},
+
+	63: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundPingDefinition.Number,
+			Size:   InboundPingDefinition.Size,
+			Object: new(InboundPing),
+		}
+	},
+
+	71: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundKeyPressDefinition.Number,
+			Size:   InboundKeyPressDefinition.Size,
+			Object: new(InboundKeyPress),
+		}
+	},
+
+	84: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundCameraMovementDefinition.Number,
+			Size:   InboundCameraMovementDefinition.Size,
+			Object: new(InboundCameraMovement),
+		}
+	},
+
+	6: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundPlayerWalkMapDefinition.Number,
+			Size:   InboundPlayerWalkMapDefinition.Size,
+			Object: new(InboundPlayerWalkMap),
+		}
+	},
 }
 
 func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 	switch message := message.(type) {
 
-	case *InboundPlayerWalkMap:
-		return (*protocol.InboundPlayerWalk)(message)
+	case *InboundMouseMovement:
+		return (*protocol.InboundMouseMovement)(message)
+
+	case *InboundWindowFocus:
+		return (*protocol.InboundWindowFocus)(message)
+
+	case *InboundMouseClick:
+		return (*protocol.InboundMouseClick)(message)
 
 	case *InboundPlayerWalk:
+		return (*protocol.InboundPlayerWalk)(message)
+
+	case *InboundPing:
+		return (*protocol.InboundPing)(message)
+
+	case *InboundKeyPress:
+		return (*protocol.InboundKeyPress)(message)
+
+	case *InboundCameraMovement:
+		return (*protocol.InboundCameraMovement)(message)
+
+	case *InboundPlayerWalkMap:
 		return (*protocol.InboundPlayerWalk)(message)
 
 	case *UnknownPacket:
@@ -94,66 +190,54 @@ func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 	switch message := message.(type) {
 
+	case protocol.PlayerUpdate:
+		return PlayerUpdateDefinition.Pack(PlayerUpdate(message))
+
+	case protocol.OutboundSkill:
+		return OutboundSkillDefinition.Pack(OutboundSkill(message))
+
 	case protocol.OutboundSetInterface:
 		return OutboundSetInterfaceDefinition.Pack(OutboundSetInterface(message))
 
 	case protocol.OutboundResetCamera:
 		return OutboundResetCameraDefinition.Pack(OutboundResetCamera(message))
 
-	case protocol.OutboundSkill:
-		return OutboundSkillDefinition.Pack(OutboundSkill(message))
+	case protocol.OutboundRegionUpdate:
+		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
 
 	case protocol.OutboundSetRootInterface:
 		return OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface(message))
 
-	case protocol.OutboundRegionUpdate:
-		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
-
-	case protocol.PlayerUpdate:
-		return PlayerUpdateDefinition.Pack(PlayerUpdate(message))
-
 	case protocol.OutboundScriptEvent:
 		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
-
-	case protocol.OutboundInitInterface:
-		return OutboundInitInterface(message)
-
-	case protocol.OutboundTabInterface:
-		return OutboundTabInterface(message)
 
 	case protocol.OutboundLoginResponse:
 		return OutboundLoginResponse(message)
 
-	case protocol.OutboundUpdateInventoryItem:
-		fmt.Println("OutboundUpdateInventoryItem not implemented")
+	case protocol.OutboundTabInterface:
+		return OutboundTabInterface(message)
+
+	case protocol.OutboundInitInterface:
+		return OutboundInitInterface(message)
+
+	case protocol.OutboundCreateGroundItem:
+		fmt.Println("OutboundCreateGroundItem not implemented")
 		return nil
 
 	case protocol.OutboundSectorUpdate:
 		fmt.Println("OutboundSectorUpdate not implemented")
 		return nil
 
-	case protocol.OutboundCreateGroundItem:
-		fmt.Println("OutboundCreateGroundItem not implemented")
-		return nil
-
-	case protocol.OutboundRemoveGroundItem:
-		fmt.Println("OutboundRemoveGroundItem not implemented")
-		return nil
-
 	case protocol.OutboundCreateGlobalGroundItem:
 		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
 		return nil
 
-	case protocol.OutboundLogout:
-		fmt.Println("OutboundLogout not implemented")
+	case protocol.OutboundUpdateInventoryItem:
+		fmt.Println("OutboundUpdateInventoryItem not implemented")
 		return nil
 
 	case protocol.OutboundPlayerInit:
 		fmt.Println("OutboundPlayerInit not implemented")
-		return nil
-
-	case protocol.OutboundSetText:
-		fmt.Println("OutboundSetText not implemented")
 		return nil
 
 	case protocol.OutboundDnsLookup:
@@ -162,6 +246,18 @@ func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 
 	case protocol.OutboundChatMessage:
 		fmt.Println("OutboundChatMessage not implemented")
+		return nil
+
+	case protocol.OutboundLogout:
+		fmt.Println("OutboundLogout not implemented")
+		return nil
+
+	case protocol.OutboundRemoveGroundItem:
+		fmt.Println("OutboundRemoveGroundItem not implemented")
+		return nil
+
+	case protocol.OutboundSetText:
+		fmt.Println("OutboundSetText not implemented")
 		return nil
 
 	}

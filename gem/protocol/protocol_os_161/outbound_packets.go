@@ -8,7 +8,7 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-// +gen define_outbound:"Unimplemented"
+// +gen define_outbound:"Pkt"
 type OutboundChatMessage protocol.OutboundChatMessage
 
 func (o OutboundChatMessage) Encode(buf io.Writer, flags interface{}) {

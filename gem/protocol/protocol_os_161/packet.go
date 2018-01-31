@@ -77,8 +77,6 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) {
 	// FIXME: my 157 client has ISAAC disabled for some reason
 	//number = uint8(shiftedNumber)
 
-	fmt.Printf("invound packet is %v\n", number)
-
 	if int(number) != p.Number {
 		panic(fmt.Errorf("packet number mismatch. Got %v, expected %v", int(number), p.Number))
 	}
@@ -87,6 +85,7 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) {
 	//TODO: verify size matches expected
 	switch p.Size {
 	case SzFixed:
+		p.Size = FrameSize(inboundPacketLengths[p.Number])
 
 	case SzVar8:
 		var size8 encoding.Int8
@@ -100,9 +99,17 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) {
 
 	}
 
+	/* buffer the payload */
+	// This means that the packet decode functions cannot under/overflow and fuck up the
+	// rest of the packet stream
+	var payloadBuf bytes.Buffer
+	var payload encoding.Bytes
+	payload.Decode(buf, int(p.Size))
+	payloadBuf.Write([]byte(payload))
+
 	/* decode the payload */
 	if d, ok := p.Object.(encoding.Decodable); ok {
-		d.Decode(buf, &PacketHeader{
+		d.Decode(&payloadBuf, &PacketHeader{
 			Number: p.Number,
 			Size:   p.Size,
 		})
