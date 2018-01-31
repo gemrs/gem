@@ -9,13 +9,18 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-var PlayerUpdateDefinition = OutboundPacketDefinition{
-	Number: 48,
-	Size:   SzVar16,
+var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
+	Number: 34,
+	Size:   SzFixed,
 }
 
 var OutboundResetCameraDefinition = OutboundPacketDefinition{
 	Number: 49,
+	Size:   SzFixed,
+}
+
+var OutboundSkillDefinition = OutboundPacketDefinition{
+	Number: 0,
 	Size:   SzFixed,
 }
 
@@ -24,8 +29,8 @@ var OutboundSetRootInterfaceDefinition = OutboundPacketDefinition{
 	Size:   SzFixed,
 }
 
-var OutboundScriptEventDefinition = OutboundPacketDefinition{
-	Number: 76,
+var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
+	Number: 78,
 	Size:   SzVar16,
 }
 
@@ -34,19 +39,19 @@ var InboundPlayerWalkMapDefinition = InboundPacketDefinition{
 	Size:   SzVar8,
 }
 
-var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
-	Number: 34,
-	Size:   SzFixed,
+var PlayerUpdateDefinition = OutboundPacketDefinition{
+	Number: 48,
+	Size:   SzVar16,
+}
+
+var OutboundScriptEventDefinition = OutboundPacketDefinition{
+	Number: 76,
+	Size:   SzVar16,
 }
 
 var InboundPlayerWalkDefinition = InboundPacketDefinition{
 	Number: 65,
 	Size:   SzVar8,
-}
-
-var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
-	Number: 78,
-	Size:   SzVar16,
 }
 
 var inboundPacketBuilders = map[int]func() encoding.Decodable{
@@ -89,43 +94,38 @@ func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 	switch message := message.(type) {
 
-	case protocol.PlayerUpdate:
-		return PlayerUpdateDefinition.Pack(PlayerUpdate(message))
+	case protocol.OutboundSetInterface:
+		return OutboundSetInterfaceDefinition.Pack(OutboundSetInterface(message))
 
 	case protocol.OutboundResetCamera:
 		return OutboundResetCameraDefinition.Pack(OutboundResetCamera(message))
 
+	case protocol.OutboundSkill:
+		return OutboundSkillDefinition.Pack(OutboundSkill(message))
+
 	case protocol.OutboundSetRootInterface:
 		return OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface(message))
-
-	case protocol.OutboundScriptEvent:
-		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
-
-	case protocol.OutboundSetInterface:
-		return OutboundSetInterfaceDefinition.Pack(OutboundSetInterface(message))
 
 	case protocol.OutboundRegionUpdate:
 		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
 
-	case protocol.OutboundTabInterface:
-		return OutboundTabInterface(message)
+	case protocol.PlayerUpdate:
+		return PlayerUpdateDefinition.Pack(PlayerUpdate(message))
+
+	case protocol.OutboundScriptEvent:
+		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
 
 	case protocol.OutboundInitInterface:
 		return OutboundInitInterface(message)
 
+	case protocol.OutboundTabInterface:
+		return OutboundTabInterface(message)
+
 	case protocol.OutboundLoginResponse:
 		return OutboundLoginResponse(message)
 
-	case protocol.OutboundCreateGlobalGroundItem:
-		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
-		return nil
-
-	case protocol.OutboundSetText:
-		fmt.Println("OutboundSetText not implemented")
-		return nil
-
-	case protocol.OutboundPlayerInit:
-		fmt.Println("OutboundPlayerInit not implemented")
+	case protocol.OutboundUpdateInventoryItem:
+		fmt.Println("OutboundUpdateInventoryItem not implemented")
 		return nil
 
 	case protocol.OutboundSectorUpdate:
@@ -136,28 +136,32 @@ func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 		fmt.Println("OutboundCreateGroundItem not implemented")
 		return nil
 
+	case protocol.OutboundRemoveGroundItem:
+		fmt.Println("OutboundRemoveGroundItem not implemented")
+		return nil
+
+	case protocol.OutboundCreateGlobalGroundItem:
+		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
+		return nil
+
+	case protocol.OutboundLogout:
+		fmt.Println("OutboundLogout not implemented")
+		return nil
+
+	case protocol.OutboundPlayerInit:
+		fmt.Println("OutboundPlayerInit not implemented")
+		return nil
+
+	case protocol.OutboundSetText:
+		fmt.Println("OutboundSetText not implemented")
+		return nil
+
 	case protocol.OutboundDnsLookup:
 		fmt.Println("OutboundDnsLookup not implemented")
 		return nil
 
 	case protocol.OutboundChatMessage:
 		fmt.Println("OutboundChatMessage not implemented")
-		return nil
-
-	case protocol.OutboundUpdateInventoryItem:
-		fmt.Println("OutboundUpdateInventoryItem not implemented")
-		return nil
-
-	case protocol.OutboundSkill:
-		fmt.Println("OutboundSkill not implemented")
-		return nil
-
-	case protocol.OutboundRemoveGroundItem:
-		fmt.Println("OutboundRemoveGroundItem not implemented")
-		return nil
-
-	case protocol.OutboundLogout:
-		fmt.Println("OutboundLogout not implemented")
 		return nil
 
 	}

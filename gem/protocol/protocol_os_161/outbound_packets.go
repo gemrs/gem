@@ -146,10 +146,13 @@ type OutboundSectorUpdate protocol.OutboundSectorUpdate
 func (struc OutboundSectorUpdate) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Unimplemented"
+// +gen define_outbound:"Pkt0,SzFixed"
 type OutboundSkill protocol.OutboundSkill
 
 func (struc OutboundSkill) Encode(buf io.Writer, flags interface{}) {
+	encoding.Uint8(struc.Skill).Encode(buf, encoding.IntInverse128)
+	encoding.Uint32(struc.Experience).Encode(buf, encoding.IntRPDPEndian)
+	encoding.Uint8(struc.Level).Encode(buf, encoding.IntInverse128)
 }
 
 // +gen define_outbound:"Pkt49,SzFixed"

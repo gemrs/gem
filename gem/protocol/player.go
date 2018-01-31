@@ -92,6 +92,7 @@ const (
 type Appearance interface {
 	Gender() int
 	HeadIcon() int
+	SkullIcon() int
 	Model(b BodyPart) int
 	SetModel(b BodyPart, model int)
 	Color(b BodyPart) int
@@ -140,6 +141,10 @@ const (
 	SkillSlayer
 	SkillFarming
 	SkillRunecrafting
+	SkillHunter
+	SkillConstruction
+
+	SkillMax
 )
 
 type Skills interface {

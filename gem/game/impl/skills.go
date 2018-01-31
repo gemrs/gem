@@ -32,7 +32,7 @@ type Skills struct {
 	player protocol.Player
 
 	combatLevel int
-	skills      [21]*Skill
+	skills      [protocol.SkillMax]*Skill
 }
 
 //glua:bind constructor Skills

@@ -1,8 +1,6 @@
 package protocol_os_161
 
 import (
-	"fmt"
-
 	"github.com/gemrs/gem/gem/core/crypto"
 	"github.com/gemrs/gem/gem/core/encoding"
 	"github.com/gemrs/gem/gem/game/server"
@@ -94,7 +92,7 @@ func (handler *LoginHandler) decodeSecureBlock(client server.GameClient) error {
 	rsaBlock.Decode(client.Conn().ReadBuffer, rsaArgs)
 
 	secureBlock1 := rsaBlock.Codable.(*InboundRsaLoginBlock)
-	fmt.Printf("secureblock1 is %#v\n", secureBlock1)
+
 	// Seed the RNGs
 	inSeed := make([]uint32, 4)
 	outSeed := make([]uint32, 4)

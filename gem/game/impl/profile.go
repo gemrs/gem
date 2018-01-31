@@ -4,19 +4,10 @@ package impl
 import (
 	"fmt"
 
-	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/protocol"
 )
-
-func (player *Player) LoadProfile() {
-	profile := player.profile
-	profile.SetPlayer(player)
-	player.SetPosition(profile.Position())
-
-	game_event.PlayerLoadProfile.NotifyObservers(player, player.Profile())
-}
 
 //go:generate glua .
 

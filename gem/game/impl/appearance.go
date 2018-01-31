@@ -5,8 +5,9 @@ import "github.com/gemrs/gem/gem/protocol"
 type Appearance struct {
 	player protocol.Player
 
-	gender   int
-	headIcon int
+	gender    int
+	headIcon  int
+	skullIcon int
 
 	torsoModel int
 	armsModel  int
@@ -26,7 +27,8 @@ type Appearance struct {
 func NewAppearance() *Appearance {
 	a := &Appearance{}
 	a.gender = 0
-	a.headIcon = 0
+	a.headIcon = -1
+	a.skullIcon = -1
 
 	a.torsoModel = 19
 	a.armsModel = 29
@@ -61,6 +63,15 @@ func (a *Appearance) Gender() int {
 
 func (a *Appearance) SetGender(gender int) {
 	a.gender = gender
+	a.signalUpdate()
+}
+
+func (a *Appearance) SkullIcon() int {
+	return a.skullIcon
+}
+
+func (a *Appearance) SetSkullIcon(skullIcon int) {
+	a.skullIcon = skullIcon
 	a.signalUpdate()
 }
 

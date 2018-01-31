@@ -9,6 +9,7 @@ import (
 
 	"github.com/gemrs/gem/gem/game/entity"
 	entityimpl "github.com/gemrs/gem/gem/game/entity"
+	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
@@ -147,7 +148,21 @@ func (player *Player) FinishInit() {
 		Index:      player.Index(),
 	})
 
+	profile := player.profile
+	player.SetPosition(profile.Position())
+
+	player.Send(protocol.OutboundRegionUpdate{
+		ProtoData: player.protoData,
+		Player:    player,
+	})
+
 	player.Send(protocol.OutboundInitInterface{
 		ProtoData: player.protoData,
 	})
+
+	// This triggers sync of inventory, skills etc, so it needs to happen
+	// after the first region update (init gpi)
+	profile.SetPlayer(player)
+
+	game_event.PlayerLoadProfile.NotifyObservers(player, player.Profile())
 }

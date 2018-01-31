@@ -60,7 +60,6 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 	conn.Log().Info("new game client")
 	slot := svc.world.FindPlayerSlot()
 	client := impl.NewPlayer(slot, conn, svc.world)
-	svc.world.SetPlayerSlot(slot, client)
 
 	loginHandler := server.Proto.NewLoginHandler()
 	loginHandler.SetServerIsaacSeed(client.ServerIsaacSeed())
@@ -90,8 +89,8 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 		client.SetDecodeFunc(svc.decodePacket)
 		go svc.packetConsumer(client)
 
-		client.LoadProfile()
 		client.FinishInit()
+		svc.world.SetPlayerSlot(slot, client)
 		game_event.PlayerLogin.NotifyObservers(client)
 
 		go func() {

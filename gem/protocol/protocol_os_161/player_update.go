@@ -259,8 +259,9 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 		appearance := thisPlayer.Profile().Appearance()
 		anims := thisPlayer.Animations()
 		appearanceBlock := OutboundPlayerAppearance{
-			Gender:   encoding.Uint8(appearance.Gender()),
-			HeadIcon: encoding.Uint8(appearance.HeadIcon()),
+			Gender:    encoding.Uint8(appearance.Gender()),
+			HeadIcon:  encoding.Uint8(appearance.HeadIcon()),
+			SkullIcon: encoding.Uint8(appearance.SkullIcon()),
 
 			HelmModel:       encoding.Uint8(0),
 			CapeModel:       encoding.Uint8(0),

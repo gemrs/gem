@@ -75,6 +75,8 @@ func lBindprotocol(L *lua.LState) int {
 
 	L.SetField(mod, "skill_attack", glua.ToLua(L, SkillAttack))
 
+	L.SetField(mod, "skill_construction", glua.ToLua(L, SkillConstruction))
+
 	L.SetField(mod, "skill_cooking", glua.ToLua(L, SkillCooking))
 
 	L.SetField(mod, "skill_crafting", glua.ToLua(L, SkillCrafting))
@@ -92,6 +94,8 @@ func lBindprotocol(L *lua.LState) int {
 	L.SetField(mod, "skill_herblore", glua.ToLua(L, SkillHerblore))
 
 	L.SetField(mod, "skill_hitpoints", glua.ToLua(L, SkillHitpoints))
+
+	L.SetField(mod, "skill_hunter", glua.ToLua(L, SkillHunter))
 
 	L.SetField(mod, "skill_magic", glua.ToLua(L, SkillMagic))
 
