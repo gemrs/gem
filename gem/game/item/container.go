@@ -9,9 +9,11 @@ var ErrNoFreeSlots = errors.New("No free slots in inventory")
 
 //glua:bind
 type Container struct {
-	capacity     int
-	slots        []*Stack
-	slotsUpdated map[int]interface{}
+	capacity        int
+	slots           []*Stack
+	slotsUpdated    map[int]interface{}
+	rootId, childId int
+	interfaceId     int
 }
 
 //glua:bind constructor Container
@@ -28,6 +30,16 @@ func NewContainer(capacity int) *Container {
 	}
 
 	return container
+}
+
+func (c *Container) SetInterfaceLocation(root, child, iface int) {
+	c.rootId = root
+	c.childId = child
+	c.interfaceId = iface
+}
+
+func (c *Container) InterfaceLocation() (root, child, iface int) {
+	return c.rootId, c.childId, c.interfaceId
 }
 
 func (c *Container) setSlotUpdated(slot int) {

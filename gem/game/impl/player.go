@@ -158,11 +158,16 @@ func (player *Player) FinishInit() {
 
 	player.Send(protocol.OutboundInitInterface{
 		ProtoData: player.protoData,
+		Inventory: player.Profile().Inventory(),
 	})
 
 	// This triggers sync of inventory, skills etc, so it needs to happen
 	// after the first region update (init gpi)
 	profile.SetPlayer(player)
+
+	player.Send(protocol.OutboundUpdateAllInventoryItems{
+		Container: player.Profile().Inventory(),
+	})
 
 	game_event.PlayerLoadProfile.NotifyObservers(player, player.Profile())
 }

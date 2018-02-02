@@ -157,6 +157,10 @@ func (function *lFunction) Generate() string {
 		argNames[i] = fmt.Sprintf("arg%v", i)
 	}
 
+	if function.PassState {
+		argNames = append([]string{"L"}, argNames...)
+	}
+
 	args := strings.Join(argNames, ", ")
 	if function.Ret != nil {
 		if isMethod {

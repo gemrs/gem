@@ -37,6 +37,14 @@ func (i Uint16) Encode(buf io.Writer, flags_ interface{}) {
 	value := flags.apply(uint64(i))
 	endian := flags.endian()
 
+	if flags&IntPacked != 0 {
+		if value < 0x80 {
+			Uint8(value).Encode(buf, IntNilFlag)
+			return
+		}
+		value += 0x8000
+	}
+
 	data := make([]byte, 2)
 	endian.PutUint16(data, uint16(value))
 	_, err := buf.Write(data)
@@ -50,9 +58,23 @@ func (i *Uint16) Decode(buf io.Reader, flags_ interface{}) {
 	endian := flags.endian()
 
 	data := make([]byte, 2)
-	_, err := buf.Read(data)
-	if err != nil {
-		panic(err)
+
+	if flags&IntPacked != 0 {
+		var tmp8 Uint8
+		tmp8.Decode(buf, IntNilFlag)
+		if byte(tmp8) < 0x80 {
+			*i = Uint16(tmp8)
+			return
+		}
+		data[0] = byte(tmp8)
+
+		tmp8.Decode(buf, IntNilFlag)
+		data[1] = byte(tmp8)
+	} else {
+		_, err := buf.Read(data)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	value64 := uint64(endian.Uint16(data))

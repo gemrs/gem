@@ -1,5 +1,7 @@
 package protocol
 
+import "github.com/gemrs/gem/gem/game/item"
+
 // +gen pack_outgoing
 type OutboundLoginResponse struct {
 	Index    int
@@ -61,10 +63,13 @@ type OutboundPlayerInit struct {
 
 // +gen pack_outgoing
 type OutboundUpdateInventoryItem struct {
-	InventoryID int
-	Slot        int
-	ItemID      int
-	Count       int
+	Container *item.Container
+	Slot      int
+}
+
+// +gen pack_outgoing
+type OutboundUpdateAllInventoryItems struct {
+	Container *item.Container
 }
 
 // +gen pack_outgoing
@@ -125,4 +130,5 @@ type OutboundScriptEvent struct {
 // +gen pack_outgoing
 type OutboundInitInterface struct {
 	ProtoData interface{}
+	Inventory *item.Container
 }

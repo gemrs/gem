@@ -13,6 +13,7 @@ import (
 	"github.com/gemrs/gem/gem/engine"
 	engine_event "github.com/gemrs/gem/gem/engine/event"
 	"github.com/gemrs/gem/gem/game"
+	"github.com/gemrs/gem/gem/game/data"
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/impl"
 	"github.com/gemrs/gem/gem/game/item"
@@ -65,8 +66,8 @@ func main() {
 	game_event.Bindgame_event(L)
 	protocol.Bindprotocol(L)
 	item.Binditem(L)
+	data.Binddata(L)
 
-	protocol_os_161.LoadMapKeys("data/map_crypt.json")
 	server.SetProtocolImpl(protocol_os_161.Protocol)
 
 	if *unsafeLua {

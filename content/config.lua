@@ -19,6 +19,11 @@ for i=0,16 do
 end
 cfg.item_definition_file = cfg.data_path .. "/item_definitions.json"
 cfg.interface_id_file = cfg.data_path .. "/interface_ids.os157.properties"
+cfg.id_files = {
+   cfg.data_path .. "/widgets.toml",
+   cfg.data_path .. "/inventories.toml",
+}
+cfg.map_key_file = cfg.data_path .. "/map_keys.json"
 
 -- Plugins to load
 cfg.plugins = {

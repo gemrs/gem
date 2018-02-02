@@ -8,6 +8,7 @@ local server = require("gem.game.server")
 local engine_event = require("gem.engine.event")
 local game_event = require("gem.game.event")
 local item = require("gem.game.item")
+local data = require("gem.game.data")
 
 local version_string = require("version")
 local config = require("config")
@@ -19,6 +20,8 @@ logger:info("Starting " .. version_string)
 -- Load data files
 local data_ctx = runite.Context()
 data_ctx:unpack(config.game_data_file, config.game_index_files, config.game_metadata_file)
+data.load(config.id_files)
+data.load_map_keys(config.map_key_file)
 
 -- Create services
 local game_server = server.Server()

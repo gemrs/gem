@@ -17,6 +17,7 @@ const (
 	IntPDPEndian
 	IntRPDPEndian
 	IntReverse
+	IntPacked
 )
 
 func (f IntegerFlag) reverse() IntegerFlag {
@@ -89,7 +90,7 @@ func (i *Int16) Value() interface{} {
 	return *i
 }
 
-type Int24 uint32
+type Int24 int32
 
 func (i Int24) Encode(buf io.Writer, flags_ interface{}) {
 	unsigned := Uint24(uint32(i))
@@ -106,7 +107,7 @@ func (i *Int24) Value() interface{} {
 	return *i
 }
 
-type Int32 uint32
+type Int32 int32
 
 func (i Int32) Encode(buf io.Writer, flags_ interface{}) {
 	unsigned := Uint32(uint32(i))
@@ -123,7 +124,7 @@ func (i *Int32) Value() interface{} {
 	return *i
 }
 
-type Int64 uint64
+type Int64 int64
 
 func (i Int64) Encode(buf io.Writer, flags_ interface{}) {
 	unsigned := Uint64(uint64(i))

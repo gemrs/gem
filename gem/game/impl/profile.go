@@ -4,6 +4,7 @@ package impl
 import (
 	"fmt"
 
+	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/protocol"
@@ -26,13 +27,17 @@ type Profile struct {
 
 //glua:bind constructor Profile
 func NewProfile(username, password string) *Profile {
-	return &Profile{
+	profile := &Profile{
 		username:   username,
 		password:   password,
 		skills:     NewSkills(),
 		appearance: NewAppearance(),
 		inventory:  item.NewContainer(28),
 	}
+	profile.inventory.SetInterfaceLocation(
+		data.Int("widget.inventory_group_id"), 0,
+		data.Int("inventory.inventory"))
+	return profile
 }
 
 func (p *Profile) SetPlayer(player protocol.Player) {

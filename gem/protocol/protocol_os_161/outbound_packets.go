@@ -5,13 +5,17 @@ import (
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
+	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-// +gen define_outbound:"Pkt"
+// +gen define_outbound:"Pkt44,SzVar8"
 type OutboundChatMessage protocol.OutboundChatMessage
 
 func (o OutboundChatMessage) Encode(buf io.Writer, flags interface{}) {
+	encoding.Uint16(0).Encode(buf, encoding.IntPacked)
+	encoding.Uint8(0).Encode(buf, encoding.IntNilFlag)
+	encoding.String(o.Message).Encode(buf, 0)
 }
 
 // +gen define_outbound:"Unimplemented"
@@ -52,10 +56,63 @@ type OutboundSetText protocol.OutboundSetText
 func (struc OutboundSetText) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Unimplemented"
+// +gen define_outbound:"Pkt24,SzVar16"
 type OutboundUpdateInventoryItem protocol.OutboundUpdateInventoryItem
 
 func (struc OutboundUpdateInventoryItem) Encode(buf io.Writer, flags interface{}) {
+	inventory := struc.Container
+	root, child, iface := inventory.InterfaceLocation()
+
+	encoding.Uint32(root<<16|child).Encode(buf, encoding.IntNilFlag)
+	encoding.Uint16(iface).Encode(buf, encoding.IntNilFlag)
+
+	encoding.Uint16(struc.Slot).Encode(buf, encoding.IntPacked)
+	if !inventory.SlotPopulated(struc.Slot) {
+		encoding.Uint16(0).Encode(buf, encoding.IntNilFlag)
+	} else {
+		stack := inventory.Slot(struc.Slot)
+		encoding.Uint16(stack.Definition().Id()+1).Encode(buf, encoding.IntNilFlag)
+
+		count := stack.Count()
+		if count > 255 {
+			encoding.Uint8(255).Encode(buf, encoding.IntNilFlag)
+			encoding.Uint32(count).Encode(buf, encoding.IntNilFlag)
+		} else if count > 0 {
+			encoding.Uint8(count).Encode(buf, encoding.IntNilFlag)
+		}
+	}
+}
+
+// +gen define_outbound:"Pkt52,SzVar16"
+type OutboundUpdateAllInventoryItems protocol.OutboundUpdateAllInventoryItems
+
+func (struc OutboundUpdateAllInventoryItems) Encode(buf io.Writer, flags interface{}) {
+	inventory := struc.Container
+	root, child, iface := inventory.InterfaceLocation()
+
+	encoding.Uint32(root<<16|child).Encode(buf, encoding.IntNilFlag)
+	encoding.Uint16(iface).Encode(buf, encoding.IntNilFlag)
+
+	cap := inventory.Capacity()
+	encoding.Uint16(cap).Encode(buf, encoding.IntNilFlag)
+
+	for i := 0; i < cap; i++ {
+		if !inventory.SlotPopulated(i) {
+			encoding.Uint8(0).Encode(buf, encoding.IntNegate)
+			encoding.Uint16(0).Encode(buf, encoding.IntLittleEndian)
+		} else {
+			stack := inventory.Slot(i)
+			count := stack.Count()
+			if count > 255 {
+				encoding.Uint8(255).Encode(buf, encoding.IntNegate)
+				encoding.Uint32(count).Encode(buf, encoding.IntNilFlag)
+			} else if count > 0 {
+				encoding.Uint8(count).Encode(buf, encoding.IntNegate)
+			}
+
+			encoding.Uint16(stack.Definition().Id()+1).Encode(buf, encoding.IntLittleEndian)
+		}
+	}
 }
 
 // +gen define_outbound:"Unimplemented"
@@ -75,25 +132,25 @@ func (struc OutboundPlayerInit) Encode(buf io.Writer, flags interface{}) {
 type OutboundRegionUpdate protocol.OutboundRegionUpdate
 
 func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
-	data := getPlayerData(struc.ProtoData)
+	pdata := getPlayerData(struc.ProtoData)
 	pos := struc.Player.Position()
 	playerIndex := struc.Player.Index()
 
-	if !data.playerIndexInitialized {
-		data.playerIndexInitialized = true
+	if !pdata.playerIndexInitialized {
+		pdata.playerIndexInitialized = true
 
 		compressedPos := pos.Y() + (pos.X() << 14) + (pos.Z() << 28)
 		bitBuf := encoding.NewBitBuffer(buf)
 		bitBuf.Write(30, uint32(compressedPos))
 
-		data.localPlayers[data.localPlayerCount] = playerIndex
-		data.localPlayerCount++
+		pdata.localPlayers[pdata.localPlayerCount] = playerIndex
+		pdata.localPlayerCount++
 
 		for i := 1; i < protocol.MaxPlayers; i++ {
 			if i != playerIndex {
 				bitBuf.Write(18, 0)
-				data.externalPlayers[data.externalPlayerCount] = i
-				data.externalPlayerCount++
+				pdata.externalPlayers[pdata.externalPlayerCount] = i
+				pdata.externalPlayerCount++
 			}
 		}
 
@@ -122,7 +179,7 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 		for y := (sectorY - 6) / 8; y <= (sectorY+6)/8; y++ {
 			if !tutorialIsland || y != 49 && y != 149 && y != 147 && x != 50 && (x != 49 || y != 47) {
 				region := y + (x << 8)
-				keys, ok := mapKeys[region]
+				keys, ok := data.GetMapKeys(region)
 				if !ok {
 					panic(fmt.Errorf("don't have map keys for region %v", region))
 				}
@@ -260,4 +317,6 @@ func (struc OutboundInitInterface) Encode(buf io.Writer, flags interface{}) {
 		InterfaceID: 122,
 		Clickable:   true,
 	}).Encode(buf, flags)
+
+	//	struc.Inventory.SetInterfaceContainer()
 }

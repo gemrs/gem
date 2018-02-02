@@ -1,8 +1,7 @@
-package protocol_os_161
+package data
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -14,6 +13,7 @@ type mapKeyEntry struct {
 	Keys   []int `json:"keys"`
 }
 
+//glua:bind
 func LoadMapKeys(path string) {
 	fd, err := os.Open(path)
 	defer fd.Close()
@@ -35,5 +35,9 @@ func LoadMapKeys(path string) {
 	for _, k := range keysList {
 		mapKeys[k.Region] = k.Keys
 	}
-	fmt.Printf("loaded %v map keys\n", len(mapKeys))
+}
+
+func GetMapKeys(region int) ([]int, bool) {
+	k, ok := mapKeys[region]
+	return k, ok
 }

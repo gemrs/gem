@@ -14,7 +14,16 @@ type Definition struct {
 
 //glua:bind constructor Definition
 func NewDefinition(id int) *Definition {
-	return &definitions[id]
+	if id < len(definitions) {
+		return &definitions[id]
+	}
+
+	return &Definition{
+		data: rt3.ItemDefinition{
+			Id:        id,
+			Stackable: false,
+		},
+	}
 }
 
 func LoadDefinitions(ctx *runite.Context) {

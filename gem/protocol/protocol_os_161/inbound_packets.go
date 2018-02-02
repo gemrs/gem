@@ -19,11 +19,11 @@ func (protocolImpl) NewInboundPacket(id int) (encoding.Decodable, error) {
 	return definition(), nil
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt93,SzVar8"
 type InboundCommand protocol.InboundCommand
 
 func (struc *InboundCommand) Decode(buf io.Reader, flags interface{}) {
-	(*encoding.JString)(&struc.Command).Decode(buf, 0)
+	(*encoding.String)(&struc.Command).Decode(buf, 0)
 }
 
 // +gen define_inbound:"Pkt88,SzVar8"

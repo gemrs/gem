@@ -9,14 +9,9 @@ func (p *Player) SyncInventories() {
 	updatedSlots := inventory.GetUpdatedSlots()
 	// FIXME needs optimizing: there are batch inventory update packets
 	for _, slot := range updatedSlots {
-		item := inventory.Slot(slot)
 		updatePacket := protocol.OutboundUpdateInventoryItem{
-			InventoryID: p.CurrentFrame().InventoryInterface(),
-			Slot:        slot,
-		}
-		if item != nil {
-			updatePacket.ItemID = item.Definition().Id() + 1
-			updatePacket.Count = item.Count()
+			Container: inventory,
+			Slot:      slot,
 		}
 
 		p.Send(updatePacket)

@@ -39,6 +39,8 @@ func FromLua(lv lua.LValue) interface{} {
 
 func ToLua(L *lua.LState, v interface{}) lua.LValue {
 	switch v := v.(type) {
+	case *lua.LTable:
+		return v
 	case string:
 		return lua.LString(v)
 	case bool:
