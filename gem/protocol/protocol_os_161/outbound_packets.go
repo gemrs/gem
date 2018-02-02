@@ -24,10 +24,13 @@ type OutboundCreateGlobalGroundItem protocol.OutboundCreateGlobalGroundItem
 func (struc OutboundCreateGlobalGroundItem) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Unimplemented"
+// +gen define_outbound:"Pkt26,SzFixed"
 type OutboundCreateGroundItem protocol.OutboundCreateGroundItem
 
 func (struc OutboundCreateGroundItem) Encode(buf io.Writer, flags interface{}) {
+	encoding.Uint16(struc.Count).Encode(buf, encoding.IntOffset128|encoding.IntLittleEndian)
+	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntOffset128)
+	encoding.Uint8(struc.PositionOffset).Encode(buf, encoding.IntNilFlag)
 }
 
 // +gen define_outbound:"Unimplemented"
@@ -197,10 +200,12 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	}
 }
 
-// +gen define_outbound:"Unimplemented"
+// +gen define_outbound:"Pkt53,SzFixed"
 type OutboundSectorUpdate protocol.OutboundSectorUpdate
 
 func (struc OutboundSectorUpdate) Encode(buf io.Writer, flags interface{}) {
+	encoding.Uint8(struc.PositionY).Encode(buf, encoding.IntNegate)
+	encoding.Uint8(struc.PositionX).Encode(buf, encoding.IntNegate)
 }
 
 // +gen define_outbound:"Pkt0,SzFixed"

@@ -10,7 +10,7 @@ import (
 var nextId <-chan int
 
 func init() {
-	nextId = id.Generator()
+	nextId = id.Generator(0)
 }
 
 type Callback func(*Event, ...interface{})

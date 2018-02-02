@@ -7,7 +7,7 @@ import (
 var indexChan <-chan int
 
 func init() {
-	indexChan = id.Generator()
+	indexChan = id.Generator(3000)
 	<-indexChan
 }
 

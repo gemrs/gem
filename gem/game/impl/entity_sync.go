@@ -13,6 +13,7 @@ func (player *Player) SyncEntityList() {
 	allRemoved := entity.NewSet()
 
 	for _, s := range sectors {
+		//		fmt.Printf("sector %v has %#v\n", s.Position(), s.Collection().Entities().Slice())
 		player.visibleEntities.AddAll(s.Collection())
 		allAdded.AddAll(s.Collection().Adding())
 		allRemoved.AddAll(s.Collection().Removing())
@@ -56,6 +57,7 @@ func (player *Player) onSectorChange() {
 
 func (player *Player) SendGroundItemSync() {
 	newItems := player.visibleEntities.Adding().Filter(entity.GroundItemType)
+
 	for _, entity := range newItems.Slice() {
 		player.setUpdatingSector(entity.Position().Sector())
 		itemPos := entity.Position()

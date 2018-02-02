@@ -3,6 +3,7 @@ package packet
 import (
 	"fmt"
 
+	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/position"
@@ -19,7 +20,7 @@ func init() {
 func player_inv_swap(p protocol.Player, message server.Message) {
 	swapItemPacket := message.(*protocol.InboundInventorySwapItem)
 	switch int(swapItemPacket.InterfaceID) {
-	case p.CurrentFrame().InventoryInterface():
+	case data.Int("widget.inventory_group_id"):
 		p.Profile().Inventory().SwapSlots(swapItemPacket.From, swapItemPacket.To)
 
 	default:
@@ -32,7 +33,7 @@ func player_inv_action(p protocol.Player, message server.Message) {
 	action := message.(*protocol.InboundInventoryAction)
 
 	switch action.InterfaceID {
-	case p.CurrentFrame().InventoryInterface():
+	case data.Int("widget.inventory_group_id"):
 		stack := p.Profile().Inventory().Slot(action.Slot)
 
 		if stack.Definition().Id() != action.ItemID {
@@ -41,9 +42,6 @@ func player_inv_action(p protocol.Player, message server.Message) {
 
 		actions := stack.Definition().Actions()
 		actionString := actions[action.Action]
-		if action.Action == 4 {
-			actionString = "Drop"
-		}
 
 		game_event.PlayerInventoryAction.NotifyObservers(p, stack, action.Slot, actionString)
 

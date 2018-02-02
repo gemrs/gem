@@ -64,7 +64,7 @@ func (s *Server) Start(laddr string) (err error) {
 		return fmt.Errorf("couldn't start game server: %v", err)
 	}
 
-	s.nextIndex = id.Generator()
+	s.nextIndex = id.Generator(0)
 
 	s.t.Go(s.run)
 	return nil

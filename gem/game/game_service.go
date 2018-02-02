@@ -11,7 +11,6 @@ import (
 	"github.com/gemrs/gem/gem/game/entity"
 	game_event "github.com/gemrs/gem/gem/game/event"
 	"github.com/gemrs/gem/gem/game/impl"
-	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/packet"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/game/world"
@@ -49,8 +48,6 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 		NonExpirable: expire.NewNonExpirable(),
 		world:        world.NewInstance(),
 	}
-
-	item.LoadDefinitions(runite)
 
 	engine_event.Tick.Register(event.NewObserver(svc, svc.PlayerTick))
 	return svc

@@ -56,109 +56,115 @@ type InboundCameraMovement protocol.InboundCameraMovement
 
 func (struc *InboundCameraMovement) Decode(buf io.Reader, flags interface{}) {}
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt43,SzFixed,InboundInventoryAction"
 type InboundInventoryAction1 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction1) Decode(buf io.Reader, flags interface{}) {
 	struc.Action = 0
 	var tmp16 encoding.Uint16
+	var tmp32 encoding.Uint32
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	struc.InterfaceID = int(tmp16)
-
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	struc.Slot = int(tmp16)
-
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	tmp16.Decode(buf, encoding.IntLittleEndian)
 	struc.ItemID = int(tmp16)
+
+	tmp32.Decode(buf, encoding.IntLittleEndian)
+	struc.InterfaceID = int(tmp32) >> 16
+
+	tmp16.Decode(buf, encoding.IntOffset128)
+	struc.Slot = int(tmp16)
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt95,SzFixed,InboundInventoryAction"
 type InboundInventoryAction2 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction2) Decode(buf io.Reader, flags interface{}) {
 	struc.Action = 1
 	var tmp16 encoding.Uint16
+	var tmp32 encoding.Uint32
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	tmp16.Decode(buf, encoding.IntOffset128)
 	struc.ItemID = int(tmp16)
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	struc.Slot = int(tmp16)
+	tmp32.Decode(buf, encoding.IntRPDPEndian)
+	struc.InterfaceID = int(tmp32) >> 16
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	struc.InterfaceID = int(tmp16)
+	tmp16.Decode(buf, encoding.IntOffset128)
+	struc.Slot = int(tmp16)
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt57,SzFixed,InboundInventoryAction"
 type InboundInventoryAction3 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction3) Decode(buf io.Reader, flags interface{}) {
 	struc.Action = 2
 	var tmp16 encoding.Uint16
+	var tmp32 encoding.Uint32
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	struc.ItemID = int(tmp16)
+	tmp32.Decode(buf, encoding.IntPDPEndian)
+	struc.InterfaceID = int(tmp32) >> 16
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
+	tmp16.Decode(buf, encoding.IntOffset128)
 	struc.Slot = int(tmp16)
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	struc.InterfaceID = int(tmp16)
+	tmp16.Decode(buf, encoding.IntNilFlag)
+	struc.ItemID = int(tmp16)
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt76,SzFixed,InboundInventoryAction"
 type InboundInventoryAction4 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction4) Decode(buf io.Reader, flags interface{}) {
 	struc.Action = 3
 	var tmp16 encoding.Uint16
+	var tmp32 encoding.Uint32
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	struc.InterfaceID = int(tmp16)
-
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	tmp16.Decode(buf, encoding.IntNilFlag)
 	struc.Slot = int(tmp16)
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	tmp16.Decode(buf, encoding.IntLittleEndian)
 	struc.ItemID = int(tmp16)
+
+	tmp32.Decode(buf, encoding.IntPDPEndian)
+	struc.InterfaceID = int(tmp32) >> 16
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt14,SzFixed,InboundInventoryAction"
 type InboundInventoryAction5 protocol.InboundInventoryAction
 
 func (struc *InboundInventoryAction5) Decode(buf io.Reader, flags interface{}) {
 	struc.Action = 4
 	var tmp16 encoding.Uint16
+	var tmp32 encoding.Uint32
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
+	tmp16.Decode(buf, encoding.IntLittleEndian)
+	struc.Slot = int(tmp16)
+
+	tmp16.Decode(buf, encoding.IntNilFlag)
 	struc.ItemID = int(tmp16)
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	struc.InterfaceID = int(tmp16)
-
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128))
-	struc.Slot = int(tmp16)
+	tmp32.Decode(buf, encoding.IntNilFlag)
+	struc.InterfaceID = int(tmp32) >> 16
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt2,SzFixed"
 type InboundInventorySwapItem protocol.InboundInventorySwapItem
 
 func (struc *InboundInventorySwapItem) Decode(buf io.Reader, flags interface{}) {
+	var tmp32 encoding.Uint32
 	var tmp16 encoding.Uint16
 	var tmp8 encoding.Uint8
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	struc.InterfaceID = int(tmp16)
+	tmp16.Decode(buf, encoding.IntNilFlag)
+	struc.To = int(tmp16)
 
-	tmp8.Decode(buf, encoding.IntegerFlag(encoding.IntNegate))
+	tmp8.Decode(buf, encoding.IntNegate)
 	struc.Inserting = int(tmp8) == 1
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian|encoding.IntOffset128))
-	struc.From = int(tmp16)
+	tmp32.Decode(buf, encoding.IntRPDPEndian)
+	struc.InterfaceID = int(tmp32) >> 16
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
-	struc.To = int(tmp16)
+	tmp16.Decode(buf, encoding.IntNilFlag)
+	struc.From = int(tmp16)
 }
 
 // +gen define_inbound:"Unimplemented"

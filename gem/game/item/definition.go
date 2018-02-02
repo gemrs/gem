@@ -1,35 +1,18 @@
 package item
 
 import (
-	"github.com/gemrs/gem/gem/runite"
-	"github.com/gemrs/gem/gem/runite/format/rt3"
+	"github.com/gemrs/gem/gem/game/data"
 )
-
-var definitions []Definition
 
 //glua:bind
 type Definition struct {
-	data rt3.ItemDefinition
+	data data.ItemDefinition
 }
 
 //glua:bind constructor Definition
 func NewDefinition(id int) *Definition {
-	if id < len(definitions) {
-		return &definitions[id]
-	}
-
 	return &Definition{
-		data: rt3.ItemDefinition{
-			Id:        id,
-			Stackable: false,
-		},
-	}
-}
-
-func LoadDefinitions(ctx *runite.Context) {
-	definitions = make([]Definition, len(ctx.ItemDefinitions))
-	for i, def := range ctx.ItemDefinitions {
-		definitions[i].data = *def
+		data: data.Item(id),
 	}
 }
 
@@ -45,7 +28,7 @@ func (d *Definition) Name() string {
 
 //glua:bind
 func (d *Definition) Description() string {
-	return d.data.Description
+	return "no description!"
 }
 
 func (d *Definition) Actions() []string {
@@ -57,33 +40,13 @@ func (d *Definition) GroundActions() []string {
 }
 
 //glua:bind
-func (d *Definition) Noted() bool {
-	return d.data.Noted
-}
-
-//glua:bind
-func (d *Definition) Notable() bool {
-	return d.data.Notable
-}
-
-//glua:bind
 func (d *Definition) Stackable() bool {
-	return d.data.Stackable
-}
-
-//glua:bind
-func (d *Definition) ParentId() int {
-	return d.data.ParentId
+	return d.data.Stackable == 1 || d.data.NotedTemplate >= 0
 }
 
 //glua:bind
 func (d *Definition) NotedId() int {
 	return d.data.NotedId
-}
-
-//glua:bind
-func (d *Definition) Members() bool {
-	return d.data.Members
 }
 
 //glua:bind

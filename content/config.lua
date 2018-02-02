@@ -17,13 +17,13 @@ cfg.game_index_files = {}
 for i=0,16 do
    cfg.game_index_files[i+1] = cfg.data_path .. "/cache/main_file_cache.idx" .. tostring(i)
 end
-cfg.item_definition_file = cfg.data_path .. "/item_definitions.json"
-cfg.interface_id_file = cfg.data_path .. "/interface_ids.os157.properties"
+
 cfg.id_files = {
    cfg.data_path .. "/widgets.toml",
    cfg.data_path .. "/inventories.toml",
 }
 cfg.map_key_file = cfg.data_path .. "/map_keys.json"
+cfg.item_definitions_dir = cfg.data_path .. "/items"
 
 -- Plugins to load
 cfg.plugins = {

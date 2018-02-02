@@ -198,17 +198,9 @@ var DefinitionMethods = map[string]lua.LGFunction{
 
 	"id": lBindDefinitionId,
 
-	"members": lBindDefinitionMembers,
-
 	"name": lBindDefinitionName,
 
-	"notable": lBindDefinitionNotable,
-
-	"noted": lBindDefinitionNoted,
-
 	"noted_id": lBindDefinitionNotedId,
-
-	"parent_id": lBindDefinitionParentId,
 
 	"shop_value": lBindDefinitionShopValue,
 
@@ -233,15 +225,6 @@ func lBindDefinitionId(L *lua.LState) int {
 
 }
 
-func lBindDefinitionMembers(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*Definition)
-	L.Remove(1)
-	retVal := self.Members()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
 func lBindDefinitionName(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Definition)
 	L.Remove(1)
@@ -251,37 +234,10 @@ func lBindDefinitionName(L *lua.LState) int {
 
 }
 
-func lBindDefinitionNotable(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*Definition)
-	L.Remove(1)
-	retVal := self.Notable()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-func lBindDefinitionNoted(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*Definition)
-	L.Remove(1)
-	retVal := self.Noted()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
 func lBindDefinitionNotedId(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Definition)
 	L.Remove(1)
 	retVal := self.NotedId()
-	L.Push(glua.ToLua(L, retVal))
-	return 1
-
-}
-
-func lBindDefinitionParentId(L *lua.LState) int {
-	self := glua.FromLua(L.Get(1)).(*Definition)
-	L.Remove(1)
-	retVal := self.ParentId()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 
