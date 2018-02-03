@@ -8,14 +8,14 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-// +gen define_inbound:"Pkt65,SzVar8"
+// +gen define_inbound:"Pkt45,SzVar8"
 type InboundPlayerWalk protocol.InboundPlayerWalk
 
 func (struc *InboundPlayerWalk) Decode(buf io.Reader, flags interface{}) {
 	decodeWalk(buf, flags, (*protocol.InboundPlayerWalk)(struc), false)
 }
 
-// +gen define_inbound:"Pkt6,SzVar8,InboundPlayerWalk"
+// +gen define_inbound:"Pkt84,SzVar8,InboundPlayerWalk"
 type InboundPlayerWalkMap protocol.InboundPlayerWalk
 
 func (struc *InboundPlayerWalkMap) Decode(buf io.Reader, flags interface{}) {
@@ -27,16 +27,16 @@ func decodeWalk(buf io.Reader, flags interface{}, struc *protocol.InboundPlayerW
 	var tmp16 encoding.Int16
 	var tmp8 encoding.Int8
 
-	tmp16.Decode(buf, encoding.IntLittleEndian|encoding.IntOffset128)
+	tmp16.Decode(buf, encoding.IntLittleEndian)
+	struc.Y = int(tmp16)
+
+	tmp16.Decode(buf, encoding.IntOffset128)
 	struc.X = int(tmp16)
 
 	tmp8.Decode(buf, encoding.IntNegate)
 	runMode := int(tmp8)
 	// FIXME runMode can also be 2 sometimes?
 	struc.Running = runMode == 1
-
-	tmp16.Decode(buf, encoding.IntLittleEndian)
-	struc.Y = int(tmp16)
 
 	if mapClick {
 		// ignore the extra 13 bytes for now
