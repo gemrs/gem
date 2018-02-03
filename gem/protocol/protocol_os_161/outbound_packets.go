@@ -33,10 +33,12 @@ func (struc OutboundCreateGroundItem) Encode(buf io.Writer, flags interface{}) {
 	encoding.Uint8(struc.PositionOffset).Encode(buf, encoding.IntNilFlag)
 }
 
-// +gen define_outbound:"Unimplemented"
+// +gen define_outbound:"Pkt47,SzFixed"
 type OutboundRemoveGroundItem protocol.OutboundRemoveGroundItem
 
 func (struc OutboundRemoveGroundItem) Encode(buf io.Writer, flags interface{}) {
+	encoding.Uint8(struc.PositionOffset).Encode(buf, encoding.IntInverse128)
+	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntLittleEndian)
 }
 
 // +gen define_outbound

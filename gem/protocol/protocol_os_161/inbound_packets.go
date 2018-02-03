@@ -167,19 +167,23 @@ func (struc *InboundInventorySwapItem) Decode(buf io.Reader, flags interface{}) 
 	struc.From = int(tmp16)
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt24,SzFixed"
 type InboundTakeGroundItem protocol.InboundTakeGroundItem
 
 func (struc *InboundTakeGroundItem) Decode(buf io.Reader, flags interface{}) {
 	var tmp16 encoding.Uint16
+	var tmp8 encoding.Uint8
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
-	struc.Y = int(tmp16)
+	// shift pressed?
+	tmp8.Decode(buf, encoding.IntNilFlag)
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	tmp16.Decode(buf, encoding.IntOffset128)
 	struc.ItemID = int(tmp16)
 
-	tmp16.Decode(buf, encoding.IntegerFlag(encoding.IntLittleEndian))
+	tmp16.Decode(buf, encoding.IntNilFlag)
+	struc.Y = int(tmp16)
+
+	tmp16.Decode(buf, encoding.IntOffset128)
 	struc.X = int(tmp16)
 }
 
