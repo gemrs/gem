@@ -23,11 +23,35 @@ type Container struct {
 	UncompressedSize int
 	Version          int
 	Data             []byte
+	dataBuffer       *bytes.Buffer
+}
+
+func NewContainer(compression CompressionType, data []byte) *Container {
+	switch compression {
+	case CompressionNone:
+		return &Container{
+			CompressionType: compression,
+			Size:            len(data),
+			Data:            data,
+			Version:         -1,
+		}
+	default:
+		panic(fmt.Errorf("compressed container encode not implemented"))
+	}
+}
+
+func (struc *Container) Read(p []byte) (n int, err error) {
+	if struc.dataBuffer == nil {
+		struc.dataBuffer = new(bytes.Buffer)
+		struc.dataBuffer.Write(struc.Data)
+	}
+
+	return struc.dataBuffer.Read(p)
 }
 
 func (struc *Container) Encode(buf io.Writer, flags interface{}) {
 	encoding.Uint8(struc.CompressionType).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint16(struc.Size).Encode(buf, encoding.IntNilFlag)
+	encoding.Uint32(struc.Size).Encode(buf, encoding.IntNilFlag)
 
 	if struc.CompressionType != CompressionNone {
 		panic(fmt.Errorf("compressed container encode not implemented"))
@@ -51,14 +75,15 @@ func (struc *Container) Decode(buf io.Reader, flags interface{}) {
 	tmp32.Decode(buf, encoding.IntNilFlag)
 	struc.Size = int(tmp32)
 
-	tmpBytes.Decode(buf, struc.Size)
-
 	if struc.CompressionType == CompressionNone {
+		tmpBytes.Decode(buf, struc.Size)
 		struc.Data = []byte(tmpBytes)
 	} else {
 		tmp32.Decode(buf, encoding.IntNilFlag)
 		struc.UncompressedSize = int(tmp32)
 		var err error
+
+		tmpBytes.Decode(buf, struc.Size)
 
 		switch struc.CompressionType {
 		case CompressionBzip2:
@@ -83,7 +108,7 @@ func (struc *Container) Decode(buf io.Reader, flags interface{}) {
 		}
 
 		if err != nil {
-			panic(fmt.Errorf("Container decompression failed"))
+			panic(fmt.Errorf("Container decompression failed: %v", err))
 		}
 
 		if len(struc.Data) != struc.UncompressedSize {

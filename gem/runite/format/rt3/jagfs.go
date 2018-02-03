@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"hash/crc32"
+	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
+	"github.com/jzelinskie/whirlpool"
 )
 
 var (
@@ -23,9 +26,12 @@ const (
 type buffer []byte
 
 type JagFS struct {
-	data    buffer
-	meta    *JagFSIndex
-	indices []*JagFSIndex
+	data               buffer
+	meta               *JagFSIndex
+	indices            []*JagFSIndex
+	references         []*ReferenceTable
+	checksumTable      ChecksumTable
+	checksumTableBytes []byte
 }
 
 func UnpackJagFS(data *bytes.Buffer, indices []*bytes.Buffer, meta *bytes.Buffer) (*JagFS, error) {
@@ -47,7 +53,65 @@ func UnpackJagFS(data *bytes.Buffer, indices []*bytes.Buffer, meta *bytes.Buffer
 			return nil, err
 		}
 	}
+
+	fs.references = make([]*ReferenceTable, len(indices))
+	for i := range fs.references {
+		metaIndex, err := fs.Index(255)
+		if err != nil {
+			return nil, err
+		}
+
+		refTableContainer, err := metaIndex.Container(i)
+		if err != nil {
+			continue
+		}
+
+		fs.references[i] = new(ReferenceTable)
+		fs.references[i].Decode(refTableContainer, nil)
+	}
+
+	fs.buildChecksumTable()
+
 	return fs, nil
+}
+
+func (fs *JagFS) buildChecksumTable() error {
+	metaIndex, err := fs.Index(255)
+	if err != nil {
+		return err
+	}
+
+	for i, table := range fs.references {
+		rawTable, err := metaIndex.File(i)
+		var entry ChecksumEntry
+		if err == nil {
+			entry.Crc = crc32.ChecksumIEEE(rawTable)
+
+			wp := whirlpool.New()
+			wp.Write(rawTable)
+			entry.Whirlpool = wp.Sum(nil)
+
+			entry.Version = table.Version
+			entry.FileCount = table.Capacity
+			entry.Size = table.UncompressedSize()
+		}
+		fs.checksumTable.AddEntry(entry)
+	}
+
+	buf := new(bytes.Buffer)
+	fs.checksumTable.Encode(buf, false)
+
+	container := NewContainer(CompressionNone, buf.Bytes())
+	buf = new(bytes.Buffer)
+	container.Encode(buf, nil)
+
+	fs.checksumTableBytes = buf.Bytes()
+
+	return nil
+}
+
+func (fs *JagFS) ChecksumTableBytes() []byte {
+	return fs.checksumTableBytes
 }
 
 func (fs *JagFS) IndexCount() int {
@@ -95,6 +159,28 @@ func unpackFSIndex(data buffer, indexBuffer *bytes.Buffer) (*JagFSIndex, error) 
 
 func (idx *JagFSIndex) FileCount() int {
 	return len(idx.fileIndices)
+}
+
+func (idx *JagFSIndex) FileReader(index int) (io.Reader, error) {
+	data, err := idx.File(index)
+	if err != nil {
+		return nil, err
+	}
+
+	var buf bytes.Buffer
+	buf.Write(data)
+	return &buf, nil
+}
+
+func (idx *JagFSIndex) Container(index int) (*Container, error) {
+	var container Container
+	buf, err := idx.FileReader(index)
+	if err != nil {
+		return &container, err
+	}
+
+	err = encoding.TryDecode(&container, buf, nil)
+	return &container, err
 }
 
 func (idx *JagFSIndex) File(index int) ([]byte, error) {

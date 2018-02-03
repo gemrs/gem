@@ -109,7 +109,8 @@ func (struc *arcHeader) Decode(buf io.Reader, flags interface{}) (err error) {
 }
 
 func headerlessBzip2Decompress(compressed []byte) ([]byte, error) {
-	bzipData := append([]byte{'B', 'Z', 'h', '1'}, compressed...)
+	header := []byte{'B', 'Z', 'h', '1'}
+	bzipData := append(header, compressed...)
 	reader := bytes.NewReader(bzipData)
 	bzip2Reader := bzip2.NewReader(reader)
 	uncompressed, err := ioutil.ReadAll(bzip2Reader)
