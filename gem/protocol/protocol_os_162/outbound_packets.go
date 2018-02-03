@@ -1,4 +1,4 @@
-package protocol_os_161
+package protocol_os_162
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-// +gen define_outbound:"Pkt44,SzVar8"
+// +gen define_outbound:"Pkt52,SzVar8"
 type OutboundChatMessage protocol.OutboundChatMessage
 
 func (o OutboundChatMessage) Encode(buf io.Writer, flags interface{}) {
@@ -24,21 +24,21 @@ type OutboundCreateGlobalGroundItem protocol.OutboundCreateGlobalGroundItem
 func (struc OutboundCreateGlobalGroundItem) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Pkt26,SzFixed"
+// +gen define_outbound:"Pkt46,SzFixed"
 type OutboundCreateGroundItem protocol.OutboundCreateGroundItem
 
 func (struc OutboundCreateGroundItem) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint16(struc.Count).Encode(buf, encoding.IntOffset128|encoding.IntLittleEndian)
-	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntOffset128)
+	encoding.Uint16(struc.Count).Encode(buf, encoding.IntLittleEndian)
 	encoding.Uint8(struc.PositionOffset).Encode(buf, encoding.IntNilFlag)
+	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntLittleEndian)
 }
 
-// +gen define_outbound:"Pkt47,SzFixed"
+// +gen define_outbound:"Pkt35,SzFixed"
 type OutboundRemoveGroundItem protocol.OutboundRemoveGroundItem
 
 func (struc OutboundRemoveGroundItem) Encode(buf io.Writer, flags interface{}) {
 	encoding.Uint8(struc.PositionOffset).Encode(buf, encoding.IntInverse128)
-	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntLittleEndian)
+	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntLittleEndian|encoding.IntOffset128)
 }
 
 // +gen define_outbound
@@ -61,7 +61,7 @@ type OutboundSetText protocol.OutboundSetText
 func (struc OutboundSetText) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Pkt24,SzVar16"
+// +gen define_outbound:"Pkt13,SzVar16"
 type OutboundUpdateInventoryItem protocol.OutboundUpdateInventoryItem
 
 func (struc OutboundUpdateInventoryItem) Encode(buf io.Writer, flags interface{}) {
@@ -88,7 +88,7 @@ func (struc OutboundUpdateInventoryItem) Encode(buf io.Writer, flags interface{}
 	}
 }
 
-// +gen define_outbound:"Pkt52,SzVar16"
+// +gen define_outbound:"Pkt62,SzVar16"
 type OutboundUpdateAllInventoryItems protocol.OutboundUpdateAllInventoryItems
 
 func (struc OutboundUpdateAllInventoryItems) Encode(buf io.Writer, flags interface{}) {
@@ -103,19 +103,19 @@ func (struc OutboundUpdateAllInventoryItems) Encode(buf io.Writer, flags interfa
 
 	for i := 0; i < cap; i++ {
 		if !inventory.SlotPopulated(i) {
-			encoding.Uint8(0).Encode(buf, encoding.IntNegate)
+			encoding.Uint8(0).Encode(buf, encoding.IntNilFlag)
 			encoding.Uint16(0).Encode(buf, encoding.IntLittleEndian)
 		} else {
 			stack := inventory.Slot(i)
 			count := stack.Count()
 			if count > 255 {
-				encoding.Uint8(255).Encode(buf, encoding.IntNegate)
-				encoding.Uint32(count).Encode(buf, encoding.IntNilFlag)
+				encoding.Uint8(255).Encode(buf, encoding.IntNilFlag)
+				encoding.Uint32(count).Encode(buf, encoding.IntPDPEndian)
 			} else if count > 0 {
-				encoding.Uint8(count).Encode(buf, encoding.IntNegate)
+				encoding.Uint8(count).Encode(buf, encoding.IntNilFlag)
 			}
 
-			encoding.Uint16(stack.Definition().Id()+1).Encode(buf, encoding.IntLittleEndian)
+			encoding.Uint16(stack.Definition().Id()+1).Encode(buf, encoding.IntOffset128)
 		}
 	}
 }
@@ -133,7 +133,7 @@ type OutboundPlayerInit protocol.OutboundPlayerInit
 func (struc OutboundPlayerInit) Encode(buf io.Writer, flags interface{}) {
 }
 
-// +gen define_outbound:"Pkt78,SzVar16"
+// +gen define_outbound:"Pkt39,SzVar16"
 type OutboundRegionUpdate protocol.OutboundRegionUpdate
 
 func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
@@ -165,8 +165,8 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	sector := pos.Sector()
 	sectorX := sector.X()
 	sectorY := sector.Y()
-	encoding.Uint16(sectorY).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint16(sectorX).Encode(buf, encoding.IntLittleEndian)
+	encoding.Uint16(sectorY).Encode(buf, encoding.IntLittleEndian)
+	encoding.Uint16(sectorX).Encode(buf, encoding.IntOffset128|encoding.IntLittleEndian)
 
 	regionX, regionY := sectorX/8, sectorY/8
 	tutorialIsland := false
@@ -202,24 +202,24 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	}
 }
 
-// +gen define_outbound:"Pkt53,SzFixed"
-type OutboundSectorUpdate protocol.OutboundSectorUpdate
+// +gen define_outbound:"Pkt0,SzFixed"
+type OutboundSetUpdatingTile protocol.OutboundSetUpdatingTile
 
-func (struc OutboundSectorUpdate) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.PositionY).Encode(buf, encoding.IntNegate)
+func (struc OutboundSetUpdatingTile) Encode(buf io.Writer, flags interface{}) {
+	encoding.Uint8(struc.PositionY).Encode(buf, encoding.IntInverse128)
 	encoding.Uint8(struc.PositionX).Encode(buf, encoding.IntNegate)
 }
 
-// +gen define_outbound:"Pkt0,SzFixed"
+// +gen define_outbound:"Pkt37,SzFixed"
 type OutboundSkill protocol.OutboundSkill
 
 func (struc OutboundSkill) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.Skill).Encode(buf, encoding.IntInverse128)
+	encoding.Uint8(struc.Skill).Encode(buf, encoding.IntNegate)
+	encoding.Uint8(struc.Level).Encode(buf, encoding.IntNilFlag)
 	encoding.Uint32(struc.Experience).Encode(buf, encoding.IntRPDPEndian)
-	encoding.Uint8(struc.Level).Encode(buf, encoding.IntInverse128)
 }
 
-// +gen define_outbound:"Pkt49,SzFixed"
+// +gen define_outbound:"Unimplemented"
 type OutboundResetCamera protocol.OutboundResetCamera
 
 func (struc OutboundResetCamera) Encode(buf io.Writer, flags interface{}) {
@@ -238,10 +238,10 @@ type OutboundSetRootInterface protocol.OutboundSetRootInterface
 
 func (struc OutboundSetRootInterface) Encode(buf io.Writer, flags interface{}) {
 	frame := struc.Frame.(FrameType)
-	encoding.Uint16(frame.Root).Encode(buf, encoding.IntOffset128)
+	encoding.Uint16(frame.Root).Encode(buf, encoding.IntNilFlag)
 }
 
-// +gen define_outbound:"Pkt34,SzFixed"
+// +gen define_outbound:"Pkt29,SzFixed"
 type OutboundSetInterface protocol.OutboundSetInterface
 
 func (struc OutboundSetInterface) Encode(buf io.Writer, flags interface{}) {
@@ -250,12 +250,12 @@ func (struc OutboundSetInterface) Encode(buf io.Writer, flags interface{}) {
 		clickable = 1
 	}
 
-	encoding.Uint32((struc.RootID<<16)|struc.ChildID).Encode(buf, encoding.IntLittleEndian)
 	encoding.Uint8(clickable).Encode(buf, encoding.IntOffset128)
-	encoding.Uint16(struc.InterfaceID).Encode(buf, encoding.IntLittleEndian)
+	encoding.Uint32((struc.RootID<<16)|struc.ChildID).Encode(buf, encoding.IntRPDPEndian)
+	encoding.Uint16(struc.InterfaceID).Encode(buf, encoding.IntNilFlag)
 }
 
-// +gen define_outbound:"Pkt76,SzVar16"
+// +gen define_outbound:"Pkt18,SzVar16"
 type OutboundScriptEvent protocol.OutboundScriptEvent
 
 func (struc OutboundScriptEvent) Encode(buf io.Writer, flags interface{}) {

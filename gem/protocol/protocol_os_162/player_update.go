@@ -1,4 +1,4 @@
-package protocol_os_161
+package protocol_os_162
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-// +gen define_outbound:"Pkt48,SzVar16"
+// +gen define_outbound:"Pkt40,SzVar16"
 type PlayerUpdate protocol.PlayerUpdate
 
 func (struc PlayerUpdate) attachment() *playerData {
@@ -296,12 +296,13 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 
 		appearanceBlock.Encode(appearanceBuf, nil)
 
-		block := appearanceBuf.Bytes()
-		for i, b := range block {
-			block[i] = b + 128
+		srcBlock := appearanceBuf.Bytes()
+		block := make([]byte, len(srcBlock))
+		for i := range srcBlock {
+			block[i] = srcBlock[len(block)-i-1]
 		}
 		blockSize := encoding.Uint8(len(block))
-		blockSize.Encode(maskBuf, encoding.IntOffset128)
+		blockSize.Encode(maskBuf, encoding.IntNegate)
 		maskBuf.Write(block)
 	}
 

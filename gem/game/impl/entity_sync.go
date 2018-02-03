@@ -95,7 +95,7 @@ func (player *Player) setUpdatingSector(s *position.Sector) {
 	region := player.loadedRegion
 	regionOrigin := region.Origin()
 	dx, dy, _ := s.Min().Delta(regionOrigin.Min())
-	player.Send(protocol.OutboundSectorUpdate{
+	player.Send(protocol.OutboundSetUpdatingTile{
 		PositionX: dx,
 		PositionY: dy,
 	})

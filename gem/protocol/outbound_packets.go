@@ -94,7 +94,7 @@ type OutboundRemoveGroundItem struct {
 }
 
 // +gen pack_outgoing
-type OutboundSectorUpdate struct {
+type OutboundSetUpdatingTile struct {
 	PositionX int
 	PositionY int
 }
