@@ -222,7 +222,7 @@ func NewIdentifierMap(src []int) *IdentifierMap {
 
 	for id, identifier := range src {
 		i := 0
-		for i := identifier & (mask - 1); idents.table[i+i+1] != -1; i = (i + 1) & (mask - 1) {
+		for i = identifier & (mask - 1); idents.table[i+i+1] != -1; i = (i + 1) & (mask - 1) {
 		}
 
 		idents.table[i+i] = identifier
@@ -232,9 +232,9 @@ func NewIdentifierMap(src []int) *IdentifierMap {
 	return &idents
 }
 
-func (m *IdentifierMap) Get(ident int) int {
+func (m *IdentifierMap) Get(hash int) int {
 	mask := (len(m.table) >> 1) - 1
-	i := ident & mask
+	i := hash & mask
 
 	for {
 		id := m.table[i+i+1]
@@ -242,7 +242,7 @@ func (m *IdentifierMap) Get(ident int) int {
 			return -1
 		}
 
-		if m.table[i+i] == ident {
+		if m.table[i+i] == hash {
 			return id
 		}
 

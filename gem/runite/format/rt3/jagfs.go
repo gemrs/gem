@@ -68,6 +68,7 @@ func UnpackJagFS(data *bytes.Buffer, indices []*bytes.Buffer, meta *bytes.Buffer
 
 		fs.references[i] = new(ReferenceTable)
 		fs.references[i].Decode(refTableContainer, nil)
+		fs.indices[i].refTable = fs.references[i]
 	}
 
 	fs.buildChecksumTable()
@@ -134,6 +135,8 @@ type JagFSIndex struct {
 	fileIndices []FSIndex
 	fileCache   map[int]buffer
 	data        buffer
+	refTable    *ReferenceTable
+	identifiers map[string]int
 }
 
 func unpackFSIndex(data buffer, indexBuffer *bytes.Buffer) (*JagFSIndex, error) {
@@ -145,6 +148,7 @@ func unpackFSIndex(data buffer, indexBuffer *bytes.Buffer) (*JagFSIndex, error) 
 		fileIndices: make([]FSIndex, indexBuffer.Len()/idxSize),
 		fileCache:   make(map[int]buffer),
 		data:        data,
+		identifiers: make(map[string]int),
 	}
 
 	for i := range index.fileIndices {
@@ -155,6 +159,15 @@ func unpackFSIndex(data buffer, indexBuffer *bytes.Buffer) (*JagFSIndex, error) 
 	}
 
 	return index, nil
+}
+
+func (idx *JagFSIndex) FileIndexByName(name string) int {
+	if _, ok := idx.identifiers[name]; !ok {
+		hash := Djb2Hash(name)
+		idx.identifiers[name] = idx.refTable.Identifiers.Get(int(hash))
+	}
+
+	return idx.identifiers[name]
 }
 
 func (idx *JagFSIndex) FileCount() int {

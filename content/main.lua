@@ -23,6 +23,7 @@ data_ctx:unpack(config.game_data_file, config.game_index_files, config.game_meta
 data.load(config.id_files)
 data.load_map_keys(config.map_key_file)
 data.load_items(config.item_definitions_dir)
+data.load_huffman_table(data_ctx)
 
 -- Create services
 local game_server = server.Server()

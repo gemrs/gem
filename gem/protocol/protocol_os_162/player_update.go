@@ -253,70 +253,88 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 		}
 	}
 
-	/* Update appearance */
+	if (flags & playerFlagChatUpdate) != 0 {
+		struc.buildChatUpdateBlock(maskBuf, thisPlayer)
+	}
+
 	if (flags & playerFlagIdentityUpdate) != 0 {
-		appearanceBuf := encoding.NewBuffer()
-		appearance := thisPlayer.Profile().Appearance()
-		anims := thisPlayer.Animations()
-		appearanceBlock := OutboundPlayerAppearance{
-			Gender:    encoding.Uint8(appearance.Gender()),
-			HeadIcon:  encoding.Uint8(appearance.HeadIcon()),
-			SkullIcon: encoding.Uint8(appearance.SkullIcon()),
-
-			HelmModel:       encoding.Uint8(0),
-			CapeModel:       encoding.Uint8(0),
-			AmuletModel:     encoding.Uint8(0),
-			RightWieldModel: encoding.Uint8(0),
-			TorsoModel:      encoding.Uint16(256 + appearance.Model(protocol.BodyPartTorso)),
-			LeftWieldModel:  encoding.Uint8(0),
-			ArmsModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartArms)),
-			LegsModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartLegs)),
-			HeadModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartHead)),
-			HandsModel:      encoding.Uint16(256 + appearance.Model(protocol.BodyPartHands)),
-			FeetModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartFeet)),
-			BeardModel:      encoding.Uint16(256 + appearance.Model(protocol.BodyPartBeard)),
-
-			HairColor:  encoding.Uint8(appearance.Color(protocol.BodyPartHair)),
-			TorsoColor: encoding.Uint8(appearance.Color(protocol.BodyPartTorso)),
-			LegColor:   encoding.Uint8(appearance.Color(protocol.BodyPartLegs)),
-			FeetColor:  encoding.Uint8(appearance.Color(protocol.BodyPartFeet)),
-			SkinColor:  encoding.Uint8(appearance.Color(protocol.BodyPartSkin)),
-
-			AnimIdle:       encoding.Uint16(anims.Animation(protocol.AnimIdle)),
-			AnimSpotRotate: encoding.Uint16(anims.Animation(protocol.AnimSpotRotate)),
-			AnimWalk:       encoding.Uint16(anims.Animation(protocol.AnimWalk)),
-			AnimRotate180:  encoding.Uint16(anims.Animation(protocol.AnimRotate180)),
-			AnimRotateCCW:  encoding.Uint16(anims.Animation(protocol.AnimRotateCCW)),
-			AnimRotateCW:   encoding.Uint16(anims.Animation(protocol.AnimRotateCW)),
-			AnimRun:        encoding.Uint16(anims.Animation(protocol.AnimRun)),
-
-			Name:        encoding.String(thisPlayer.Profile().Username()),
-			CombatLevel: encoding.Uint8(thisPlayer.Profile().Skills().CombatLevel()),
-		}
-
-		appearanceBlock.Encode(appearanceBuf, nil)
-
-		srcBlock := appearanceBuf.Bytes()
-		block := make([]byte, len(srcBlock))
-		for i := range srcBlock {
-			block[i] = srcBlock[len(block)-i-1]
-		}
-		blockSize := encoding.Uint8(len(block))
-		blockSize.Encode(maskBuf, encoding.IntNegate)
-		maskBuf.Write(block)
+		struc.buildAppearanceUpdateBlock(maskBuf, thisPlayer)
 	}
 
 	return
 }
 
-func (struc PlayerUpdate) getModifiedUpdateFlags(updatingPlayer protocol.Player) entity.Flags {
-	// Clear some flags that don't apply to self updates
-	updatingThisPlayer := struc.Me.Index() == updatingPlayer.Index()
-	flags := updatingPlayer.Flags()
-	if updatingThisPlayer {
-		flags = flags & ^entity.MobFlagChatUpdate
+func (struc PlayerUpdate) buildChatUpdateBlock(maskBuf *encoding.Buffer, thisPlayer protocol.Player) {
+	message := thisPlayer.ChatMessageQueue()[0]
+	encoding.Uint16(message.Effects<<8|message.Colour).Encode(maskBuf, encoding.IntNilFlag)
+	encoding.Uint8(thisPlayer.Profile().Rights()).Encode(maskBuf, encoding.IntegerFlag(encoding.IntNilFlag))
+
+	// If 1, doesn't display overhead
+	encoding.Uint8(0).Encode(maskBuf, encoding.IntOffset128)
+
+	var huffmanBlock bytes.Buffer
+	encoding.Uint8(len(message.Message)).Encode(&huffmanBlock, encoding.IntPacked)
+	encoding.Bytes(message.PackedMessage).Encode(&huffmanBlock, nil)
+
+	encoding.Uint8(huffmanBlock.Len()).Encode(maskBuf, encoding.IntNilFlag)
+	huffmanBlock.WriteTo(maskBuf)
+}
+
+func (struc PlayerUpdate) buildAppearanceUpdateBlock(maskBuf *encoding.Buffer, thisPlayer protocol.Player) {
+	appearanceBuf := encoding.NewBuffer()
+	appearance := thisPlayer.Profile().Appearance()
+	anims := thisPlayer.Animations()
+	appearanceBlock := OutboundPlayerAppearance{
+		Gender:    encoding.Uint8(appearance.Gender()),
+		HeadIcon:  encoding.Uint8(appearance.HeadIcon()),
+		SkullIcon: encoding.Uint8(appearance.SkullIcon()),
+
+		HelmModel:       encoding.Uint8(0),
+		CapeModel:       encoding.Uint8(0),
+		AmuletModel:     encoding.Uint8(0),
+		RightWieldModel: encoding.Uint8(0),
+		TorsoModel:      encoding.Uint16(256 + appearance.Model(protocol.BodyPartTorso)),
+		LeftWieldModel:  encoding.Uint8(0),
+		ArmsModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartArms)),
+		LegsModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartLegs)),
+		HeadModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartHead)),
+		HandsModel:      encoding.Uint16(256 + appearance.Model(protocol.BodyPartHands)),
+		FeetModel:       encoding.Uint16(256 + appearance.Model(protocol.BodyPartFeet)),
+		BeardModel:      encoding.Uint16(256 + appearance.Model(protocol.BodyPartBeard)),
+
+		HairColor:  encoding.Uint8(appearance.Color(protocol.BodyPartHair)),
+		TorsoColor: encoding.Uint8(appearance.Color(protocol.BodyPartTorso)),
+		LegColor:   encoding.Uint8(appearance.Color(protocol.BodyPartLegs)),
+		FeetColor:  encoding.Uint8(appearance.Color(protocol.BodyPartFeet)),
+		SkinColor:  encoding.Uint8(appearance.Color(protocol.BodyPartSkin)),
+
+		AnimIdle:       encoding.Uint16(anims.Animation(protocol.AnimIdle)),
+		AnimSpotRotate: encoding.Uint16(anims.Animation(protocol.AnimSpotRotate)),
+		AnimWalk:       encoding.Uint16(anims.Animation(protocol.AnimWalk)),
+		AnimRotate180:  encoding.Uint16(anims.Animation(protocol.AnimRotate180)),
+		AnimRotateCCW:  encoding.Uint16(anims.Animation(protocol.AnimRotateCCW)),
+		AnimRotateCW:   encoding.Uint16(anims.Animation(protocol.AnimRotateCW)),
+		AnimRun:        encoding.Uint16(anims.Animation(protocol.AnimRun)),
+
+		Name:        encoding.String(thisPlayer.Profile().Username()),
+		CombatLevel: encoding.Uint8(thisPlayer.Profile().Skills().CombatLevel()),
 	}
 
+	appearanceBlock.Encode(appearanceBuf, nil)
+
+	srcBlock := appearanceBuf.Bytes()
+	block := make([]byte, len(srcBlock))
+	for i := range srcBlock {
+		block[i] = srcBlock[len(block)-i-1]
+	}
+	blockSize := encoding.Uint8(len(block))
+	blockSize.Encode(maskBuf, encoding.IntNegate)
+	maskBuf.Write(block)
+}
+
+func (struc PlayerUpdate) getModifiedUpdateFlags(updatingPlayer protocol.Player) entity.Flags {
+	// Clear some flags that don't apply to self updates
+	flags := updatingPlayer.Flags()
 	flags &= ^entity.MobFlagRegionUpdate
 
 	return flags
@@ -341,13 +359,4 @@ func (struc PlayerUpdate) buildMovementBlock(buf *encoding.BitBuffer, player pro
 	default:
 		buf.Write(2, 0) // update type 0 = no movement updates
 	}
-}
-
-func (struc PlayerUpdate) buildChatUpdateBlock(w io.Writer, other protocol.Player) {
-	message := other.ChatMessageQueue()[0]
-	encoding.Uint8(message.Effects).Encode(w, encoding.IntegerFlag(encoding.IntNilFlag))
-	encoding.Uint8(message.Colour).Encode(w, encoding.IntegerFlag(encoding.IntNilFlag))
-	encoding.Uint8(other.Profile().Rights()).Encode(w, encoding.IntegerFlag(encoding.IntNilFlag))
-	encoding.Uint8(len(message.PackedMessage)).Encode(w, encoding.IntegerFlag(encoding.IntNegate))
-	encoding.Bytes(message.PackedMessage).Encode(w, 0)
 }

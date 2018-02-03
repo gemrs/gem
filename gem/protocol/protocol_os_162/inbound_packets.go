@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/gemrs/gem/gem/core/encoding"
+	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/protocol"
 )
 
@@ -187,26 +188,28 @@ func (struc *InboundTakeGroundItem) Decode(buf io.Reader, flags interface{}) {
 	struc.Y = int(tmp16)
 }
 
-// +gen define_inbound:"Unimplemented"
+// +gen define_inbound:"Pkt17,SzVar8"
 type InboundChatMessage protocol.InboundChatMessage
 
 func (struc *InboundChatMessage) Decode(buf io.Reader, flags interface{}) {
 	var tmp8 encoding.Uint8
+	var tmp16 encoding.Uint8
 	var message encoding.Bytes
 
-	tmp8.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntReverse))
-	struc.Effects = int(tmp8)
+	tmp8.Decode(buf, encoding.IntNilFlag)
 
-	tmp8.Decode(buf, encoding.IntegerFlag(encoding.IntOffset128|encoding.IntReverse))
+	tmp8.Decode(buf, encoding.IntNilFlag)
 	struc.Colour = int(tmp8)
 
+	tmp8.Decode(buf, encoding.IntNilFlag)
+	struc.Effects = int(tmp8)
+
+	tmp16.Decode(buf, encoding.IntPacked)
+	decompressedSize := int(tmp16)
+
 	message.Decode(buf, nil)
-	data := []byte(message)
-	size := len(data)
-	decoded := make([]byte, size)
-	for i, _ := range data {
-		decoded[i] = byte(data[size-i-1] - 128)
-	}
-	struc.Message = encoding.ChatTextSanitize(encoding.ChatTextUnpack(decoded))
-	struc.PackedMessage = encoding.ChatTextPack(struc.Message)
+	compressed := []byte(message)
+	decompressed := data.Huffman.Decompress(compressed, decompressedSize)
+	struc.Message = string(decompressed) //encoding.ChatTextSanitize(string(decompressed))
+	struc.PackedMessage = data.Huffman.Compress([]byte(struc.Message))
 }

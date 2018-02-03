@@ -2,6 +2,7 @@
 package data
 
 import (
+	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/gem/glua"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -22,6 +23,8 @@ func lBinddata(L *lua.LState) int {
 	L.SetField(mod, "int", L.NewFunction(lBindInt))
 
 	L.SetField(mod, "load", L.NewFunction(lBindLoad))
+
+	L.SetField(mod, "load_huffman_table", L.NewFunction(lBindLoadHuffmanTable))
 
 	L.SetField(mod, "load_items", L.NewFunction(lBindLoadItems))
 
@@ -69,6 +72,16 @@ func lBindLoad(L *lua.LState) int {
 	L.Remove(1)
 	Load(arg0)
 	return 0
+
+}
+
+func lBindLoadHuffmanTable(L *lua.LState) int {
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(*runite.Context)
+	L.Remove(1)
+	retVal := LoadHuffmanTable(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
 
 }
 
