@@ -16,6 +16,9 @@ type Buffer struct {
 	m sync.Mutex
 
 	readFromBuffer []byte
+
+	srcReader  io.Reader
+	destWriter io.Writer
 }
 
 type ReadFunc func(b *Buffer) error
@@ -26,6 +29,18 @@ func NewBuffer() *Buffer {
 		i:              0,
 		readFromBuffer: make([]byte, 512),
 	}
+}
+
+func WrapReader(r io.Reader) *Buffer {
+	buf := NewBuffer()
+	buf.srcReader = r
+	return buf
+}
+
+func WrapWriter(w io.Writer) *Buffer {
+	buf := NewBuffer()
+	buf.destWriter = w
+	return buf
 }
 
 func NewBufferBytes(s []byte) *Buffer {
@@ -54,6 +69,13 @@ func (b *Buffer) Trim() {
 	b.i = 0
 }
 
+func (b *Buffer) Pos() int {
+	b.m.Lock()
+	defer b.m.Unlock()
+
+	return b.i
+}
+
 // Try saves the current position, calls cb, and if cb returns an error, restores the previous position
 // locks the buffer to trimming, to ensure we can always pop back to the original position
 // since the trim mutex is locked until cb returns, deadlock can occur with incorrect usage
@@ -75,7 +97,18 @@ func (b *Buffer) Read(p []byte) (n int, err error) {
 		if len(p) == 0 {
 			return
 		}
-		return 0, io.EOF
+
+		// If we're wrapping a reader, buffer from it
+		if b.srcReader != nil {
+			buf := make([]byte, len(p))
+			_, err := b.srcReader.Read(buf)
+			if err != nil {
+				return 0, err
+			}
+			b.s = append(b.s, buf...)
+		} else {
+			return 0, io.EOF
+		}
 	}
 	n = copy(p, b.s[b.i:])
 	b.i += n
@@ -111,6 +144,13 @@ func (b *Buffer) ReadFrom(r io.Reader) (int64, error) {
 func (b *Buffer) Write(p []byte) (n int, err error) {
 	b.m.Lock()
 	defer b.m.Unlock()
+
+	if b.destWriter != nil {
+		// If we're piping to a Writer...
+		i, err := b.destWriter.Write(p)
+		b.s = append(b.s, p[:i]...)
+		return i, err
+	}
 
 	b.s = append(b.s, p...)
 	return len(p), nil

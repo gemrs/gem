@@ -14,13 +14,17 @@ func min(a, b int) int {
 }
 
 func (i Bytes) Encode(buf io.Writer, flags interface{}) {
-	if flags == nil {
+	length, ok := flags.(int)
+	if !ok {
+		length = -1
+	}
+
+	if length == -1 {
 		_, err := buf.Write(i)
 		if err != nil {
 			panic(err)
 		}
 	} else {
-		length := flags.(int)
 		length = min(length, len(i))
 		_, err := buf.Write(i[:length])
 		if err != nil {
@@ -30,7 +34,12 @@ func (i Bytes) Encode(buf io.Writer, flags interface{}) {
 }
 
 func (i *Bytes) Decode(buf io.Reader, flags interface{}) {
-	if flags == nil {
+	length, ok := flags.(int)
+	if !ok {
+		length = -1
+	}
+
+	if length == -1 {
 		// All remaining data
 		result := make(Bytes, 0)
 		buffer := make(Bytes, 128)
@@ -47,7 +56,6 @@ func (i *Bytes) Decode(buf io.Reader, flags interface{}) {
 			panic(err)
 		}
 	} else {
-		length := flags.(int)
 		*i = make(Bytes, length)
 		_, err := buf.Read((*i)[:length])
 		if err != nil {

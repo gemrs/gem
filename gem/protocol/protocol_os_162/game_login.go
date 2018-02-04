@@ -8,76 +8,80 @@ import (
 )
 
 type InboundRsaLoginBlock struct {
-	Magic     encoding.Uint8
-	AuthType  encoding.Uint8
-	ISAACSeed [4]encoding.Uint32
-	AuthData  [8]encoding.Uint8
-	Password  encoding.String
+	Magic     int
+	AuthType  int
+	ISAACSeed [4]uint32
+	AuthData  [8]int
+	Password  string
 }
 
 func (struc InboundRsaLoginBlock) Encode(buf io.Writer, flags interface{}) {
 	panic("not implemented")
 }
 
-func (struc *InboundRsaLoginBlock) Decode(buf io.Reader, flags interface{}) {
-	struc.Magic.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	struc.AuthType.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+func (struc *InboundRsaLoginBlock) Decode(r io.Reader, flags interface{}) {
+	buf := encoding.WrapReader(r)
+
+	struc.Magic = buf.GetU8(nil)
+	struc.AuthType = buf.GetU8(nil)
 
 	for i := 0; i < 4; i++ {
-		struc.ISAACSeed[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		struc.ISAACSeed[i] = uint32(buf.GetU32(nil))
 	}
 
 	for i := 0; i < 8; i++ {
-		struc.AuthData[i].Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		struc.AuthData[i] = buf.GetU8(nil)
 	}
 
-	struc.Password.Decode(buf, 0)
+	struc.Password = buf.GetStringZ()
 }
 
 type InboundXteaLoginBlock struct {
-	Username encoding.String
+	Username string
 }
 
 func (struc InboundXteaLoginBlock) Encode(buf io.Writer, flags interface{}) {
 	panic("not implemented")
 }
 
-func (struc *InboundXteaLoginBlock) Decode(buf io.Reader, flags interface{}) {
-	struc.Username.Decode(buf, 0)
+func (struc *InboundXteaLoginBlock) Decode(r io.Reader, flags interface{}) {
+	buf := encoding.WrapReader(r)
+
+	struc.Username = buf.GetStringZ()
 }
 
 // +gen define_outbound
 type OutboundLoginResponse protocol.OutboundLoginResponse
 
-func (struc OutboundLoginResponse) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.Response).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+func (struc OutboundLoginResponse) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+
+	buf.PutU8(int(struc.Response), nil)
 
 	if struc.Response != protocol.AuthOkay {
 		return
 	}
 
-	encoding.Uint8(0).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	encoding.Uint32(0).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	encoding.Uint8(struc.Rights).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	encoding.Uint8(1).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	encoding.Uint16(struc.Index).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-
-	encoding.Uint8(1).Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	buf.PutU8(0, nil)
+	buf.PutU32(0, nil)
+	buf.PutU8(struc.Rights, nil)
+	buf.PutU8(1, nil)
+	buf.PutU16(struc.Index, nil)
+	buf.PutU8(1, nil)
 }
 
 type InboundLoginBlock struct {
-	LoginType       encoding.Uint8
-	LoginLen        encoding.Uint16
-	Revision        encoding.Uint32
-	SecureBlockSize encoding.Uint16
+	LoginType       int
+	LoginLen        int
+	Revision        int
+	SecureBlockSize int
 }
 
-func (struc *InboundLoginBlock) Decode(buf io.Reader, flags interface{}) {
-	struc.LoginType.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	struc.LoginLen.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	struc.Revision.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
-	struc.SecureBlockSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+func (struc *InboundLoginBlock) Decode(r io.Reader, flags interface{}) {
+	buf := encoding.WrapReader(r)
+
+	struc.LoginType = buf.GetU8(nil)
+	struc.LoginLen = buf.GetU16(nil)
+	struc.Revision = buf.GetU32(nil)
+	struc.SecureBlockSize = buf.GetU16(nil)
 }
