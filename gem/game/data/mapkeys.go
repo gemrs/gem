@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var mapKeys = map[int][]int{}
+var mapKeys = map[int][]uint32{}
 
 type mapKeyEntry struct {
 	Region int   `json:"region"`
@@ -33,13 +33,16 @@ func LoadMapKeys(path string) {
 	}
 
 	for _, k := range keysList {
-		mapKeys[k.Region] = k.Keys
+		mapKeys[k.Region] = make([]uint32, len(k.Keys))
+		for i, _ := range k.Keys {
+			mapKeys[k.Region][i] = uint32(k.Keys[i])
+		}
 	}
 
 	logger.Notice("Loaded [%v] map keys", len(mapKeys))
 }
 
-func GetMapKeys(region int) ([]int, bool) {
+func GetMapKeys(region int) ([]uint32, bool) {
 	k, ok := mapKeys[region]
 	return k, ok
 }

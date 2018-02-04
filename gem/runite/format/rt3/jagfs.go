@@ -185,8 +185,9 @@ func (idx *JagFSIndex) FileReader(index int) (io.Reader, error) {
 	return &buf, nil
 }
 
-func (idx *JagFSIndex) Container(index int) (*Container, error) {
+func (idx *JagFSIndex) EncryptedContainer(index int, keys []uint32) (*Container, error) {
 	var container Container
+	container.XTeaKeys = keys
 	buf, err := idx.FileReader(index)
 	if err != nil {
 		return &container, err
@@ -194,6 +195,10 @@ func (idx *JagFSIndex) Container(index int) (*Container, error) {
 
 	err = encoding.TryDecode(&container, buf, nil)
 	return &container, err
+}
+
+func (idx *JagFSIndex) Container(index int) (*Container, error) {
+	return idx.EncryptedContainer(index, nil)
 }
 
 func (idx *JagFSIndex) Archive(file int) (*Archive, error) {

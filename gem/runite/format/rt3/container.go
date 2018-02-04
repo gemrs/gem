@@ -26,6 +26,7 @@ type Container struct {
 	Version          int
 	Data             []byte
 	dataBuffer       *bytes.Buffer
+	XTeaKeys         []uint32
 }
 
 func NewContainer(compression CompressionType, data []byte) *Container {
@@ -71,6 +72,19 @@ func (struc *Container) Decode(r io.Reader, flags interface{}) {
 	struc.CompressionType = CompressionType(buf.GetU8())
 
 	struc.Size = buf.GetU32()
+
+	if struc.XTeaKeys != nil {
+		expectedSize := struc.Size
+		if struc.CompressionType == CompressionNone {
+			expectedSize += 5
+		} else {
+			expectedSize += 9
+		}
+
+		encrypted := buf.GetBytes(expectedSize)
+		decrypted := encoding.DecryptXteaBlock(encrypted, struc.XTeaKeys)
+		buf = encoding.NewBufferBytes(decrypted)
+	}
 
 	if struc.CompressionType == CompressionNone {
 		struc.Data = buf.GetBytes(struc.Size)

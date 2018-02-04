@@ -189,7 +189,7 @@ func (struc OutboundRegionUpdate) Encode(w io.Writer, flags interface{}) {
 	}
 
 	count := 0
-	allKeys := make([]int, 0)
+	allKeys := make([]uint32, 0)
 	for x := (sectorX - 6) / 8; x <= (sectorX+6)/8; x++ {
 		for y := (sectorY - 6) / 8; y <= (sectorY+6)/8; y++ {
 			if !tutorialIsland || y != 49 && y != 149 && y != 147 && x != 50 && (x != 49 || y != 47) {
@@ -208,7 +208,7 @@ func (struc OutboundRegionUpdate) Encode(w io.Writer, flags interface{}) {
 
 	buf.PutU16(count)
 	for _, key := range allKeys {
-		buf.PutU32(key)
+		buf.PutU32(int(key))
 	}
 }
 

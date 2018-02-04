@@ -30,10 +30,6 @@ type Config struct {
 	Objects []*ObjectDefinition
 }
 
-func NewConfig() *Config {
-	return &Config{}
-}
-
 func (c *Config) Load(fs *JagFS) error {
 	index, err := fs.Index(IdxConfigs)
 	if err != nil {

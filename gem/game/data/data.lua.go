@@ -30,6 +30,8 @@ func lBinddata(L *lua.LState) int {
 
 	L.SetField(mod, "load_items", L.NewFunction(lBindLoadItems))
 
+	L.SetField(mod, "load_map", L.NewFunction(lBindLoadMap))
+
 	L.SetField(mod, "load_map_keys", L.NewFunction(lBindLoadMapKeys))
 
 	L.Push(mod)
@@ -103,6 +105,16 @@ func lBindLoadItems(L *lua.LState) int {
 	L.Remove(1)
 	LoadItems(arg0)
 	return 0
+
+}
+
+func lBindLoadMap(L *lua.LState) int {
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(*runite.Context)
+	L.Remove(1)
+	retVal := LoadMap(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
 
 }
 
