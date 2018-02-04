@@ -2,9 +2,11 @@ package rt3
 
 import (
 	"bytes"
+	"compress/bzip2"
 	"compress/gzip"
 	"fmt"
 	"io"
+	"io/ioutil"
 
 	"github.com/gemrs/gem/gem/core/encoding"
 )
@@ -49,49 +51,42 @@ func (struc *Container) Read(p []byte) (n int, err error) {
 	return struc.dataBuffer.Read(p)
 }
 
-func (struc *Container) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.CompressionType).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint32(struc.Size).Encode(buf, encoding.IntNilFlag)
+func (struc *Container) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU8(int(struc.CompressionType))
+	buf.PutU32(struc.Size)
 
 	if struc.CompressionType != CompressionNone {
 		panic(fmt.Errorf("compressed container encode not implemented"))
 	}
 
-	encoding.Bytes(struc.Data).Encode(buf, nil)
+	buf.PutBytes(struc.Data)
 	if struc.Version != -1 {
-		encoding.Uint16(struc.Version).Encode(buf, encoding.IntNilFlag)
+		buf.Put16(struc.Version)
 	}
 }
 
-func (struc *Container) Decode(buf io.Reader, flags interface{}) {
-	var tmp8 encoding.Uint8
-	var tmp16 encoding.Uint16
-	var tmp32 encoding.Uint32
-	var tmpBytes encoding.Bytes
+func (struc *Container) Decode(r io.Reader, flags interface{}) {
+	buf := encoding.WrapReader(r)
+	struc.CompressionType = CompressionType(buf.GetU8())
 
-	tmp8.Decode(buf, encoding.IntNilFlag)
-	struc.CompressionType = CompressionType(tmp8)
-
-	tmp32.Decode(buf, encoding.IntNilFlag)
-	struc.Size = int(tmp32)
+	struc.Size = buf.GetU32()
 
 	if struc.CompressionType == CompressionNone {
-		tmpBytes.Decode(buf, struc.Size)
-		struc.Data = []byte(tmpBytes)
+		struc.Data = buf.GetBytes(struc.Size)
 	} else {
-		tmp32.Decode(buf, encoding.IntNilFlag)
-		struc.UncompressedSize = int(tmp32)
+		struc.UncompressedSize = buf.GetU32()
 		var err error
 
-		tmpBytes.Decode(buf, struc.Size)
+		data := buf.GetBytes(struc.Size)
 
 		switch struc.CompressionType {
 		case CompressionBzip2:
-			struc.Data, err = headerlessBzip2Decompress([]byte(tmpBytes))
+			struc.Data, err = headerlessBzip2Decompress(data)
 
 		case CompressionGzip:
 			var inBuf, outBuf bytes.Buffer
-			inBuf.Write([]byte(tmpBytes))
+			inBuf.Write(data)
 
 			reader, err := gzip.NewReader(&inBuf)
 			if err != nil {
@@ -117,10 +112,24 @@ func (struc *Container) Decode(buf io.Reader, flags interface{}) {
 
 	}
 
+	var tmp16 encoding.Uint16
 	err := encoding.TryDecode(&tmp16, buf, encoding.IntNilFlag)
 	if err != nil {
 		struc.Version = int(tmp16)
 	} else {
 		struc.Version = -1
 	}
+}
+
+func headerlessBzip2Decompress(compressed []byte) ([]byte, error) {
+	header := []byte{'B', 'Z', 'h', '1'}
+	bzipData := append(header, compressed...)
+	reader := bytes.NewReader(bzipData)
+	bzip2Reader := bzip2.NewReader(reader)
+	uncompressed, err := ioutil.ReadAll(bzip2Reader)
+	if err != nil {
+		return nil, err
+	}
+
+	return uncompressed, nil
 }

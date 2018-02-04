@@ -22,15 +22,15 @@ func (struc InboundRsaLoginBlock) Encode(buf io.Writer, flags interface{}) {
 func (struc *InboundRsaLoginBlock) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 
-	struc.Magic = buf.GetU8(nil)
-	struc.AuthType = buf.GetU8(nil)
+	struc.Magic = buf.GetU8()
+	struc.AuthType = buf.GetU8()
 
 	for i := 0; i < 4; i++ {
-		struc.ISAACSeed[i] = uint32(buf.GetU32(nil))
+		struc.ISAACSeed[i] = uint32(buf.GetU32())
 	}
 
 	for i := 0; i < 8; i++ {
-		struc.AuthData[i] = buf.GetU8(nil)
+		struc.AuthData[i] = buf.GetU8()
 	}
 
 	struc.Password = buf.GetStringZ()
@@ -56,18 +56,18 @@ type OutboundLoginResponse protocol.OutboundLoginResponse
 func (struc OutboundLoginResponse) Encode(w io.Writer, flags interface{}) {
 	buf := encoding.WrapWriter(w)
 
-	buf.PutU8(int(struc.Response), nil)
+	buf.PutU8(int(struc.Response))
 
 	if struc.Response != protocol.AuthOkay {
 		return
 	}
 
-	buf.PutU8(0, nil)
-	buf.PutU32(0, nil)
-	buf.PutU8(struc.Rights, nil)
-	buf.PutU8(1, nil)
-	buf.PutU16(struc.Index, nil)
-	buf.PutU8(1, nil)
+	buf.PutU8(0)
+	buf.PutU32(0)
+	buf.PutU8(struc.Rights)
+	buf.PutU8(1)
+	buf.PutU16(struc.Index)
+	buf.PutU8(1)
 }
 
 type InboundLoginBlock struct {
@@ -80,8 +80,8 @@ type InboundLoginBlock struct {
 func (struc *InboundLoginBlock) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 
-	struc.LoginType = buf.GetU8(nil)
-	struc.LoginLen = buf.GetU16(nil)
-	struc.Revision = buf.GetU32(nil)
-	struc.SecureBlockSize = buf.GetU16(nil)
+	struc.LoginType = buf.GetU8()
+	struc.LoginLen = buf.GetU16()
+	struc.Revision = buf.GetU32()
+	struc.SecureBlockSize = buf.GetU16()
 }

@@ -1,6 +1,5 @@
 local log = require("gem.log")
 local runite = require("gem.runite")
-local archive = require("gem.archive")
 local engine = require("gem.engine")
 local event = require("gem.event")
 local game = require("gem.game")

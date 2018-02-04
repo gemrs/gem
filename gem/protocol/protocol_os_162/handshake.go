@@ -15,10 +15,10 @@ type OutboundGameHandshake struct {
 
 func (struc *OutboundGameHandshake) Encode(w io.Writer, flags interface{}) {
 	buf := encoding.WrapWriter(w)
-	buf.PutU8(struc.UID, nil)
+	buf.PutU8(struc.UID)
 
 	for i := 0; i < 2; i++ {
-		buf.PutU32(struc.ServerISAACSeed[i], nil)
+		buf.PutU32(struc.ServerISAACSeed[i])
 	}
 }
 
@@ -28,7 +28,7 @@ type InboundServiceSelect struct {
 
 func (struc *InboundServiceSelect) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
-	struc.Service = buf.GetU8(nil)
+	struc.Service = buf.GetU8()
 }
 
 type InboundUpdateHandshake struct {
@@ -37,7 +37,7 @@ type InboundUpdateHandshake struct {
 
 func (struc *InboundUpdateHandshake) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
-	struc.Revision = buf.GetU32(nil)
+	struc.Revision = buf.GetU32()
 }
 
 type OutboundUpdateHandshake struct {
@@ -46,7 +46,7 @@ type OutboundUpdateHandshake struct {
 
 func (struc *OutboundUpdateHandshake) Encode(w io.Writer, flags interface{}) {
 	buf := encoding.WrapWriter(w)
-	buf.PutU8(struc.Response, nil)
+	buf.PutU8(struc.Response)
 }
 
 func (p protocolImpl) Handshake(conn *server.Connection) int {

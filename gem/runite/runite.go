@@ -12,8 +12,7 @@ import (
 
 //glua:bind
 type Context struct {
-	FS              *rt3.JagFS
-	ItemDefinitions []*rt3.ItemDefinition
+	FS *rt3.JagFS
 }
 
 //glua:bind constructor Context

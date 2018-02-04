@@ -27,37 +27,35 @@ type ReferenceTable struct {
 	Capacity    int
 }
 
-func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
-	var tmp8 encoding.Uint8
-	var tmp32 encoding.Uint32
-	var tmpBytes encoding.Bytes
+func (struc *ReferenceTable) getPacked16(buf encoding.Reader) int {
+	tmpPacked16 := &refTable16{
+		Format: struc.Format,
+	}
+	tmpPacked16.Decode(buf, nil)
+	return int(tmpPacked16.Value)
+}
 
-	tmp8.Decode(buf, encoding.IntNilFlag)
-	struc.Format = int(tmp8)
+func (struc *ReferenceTable) Decode(r io.Reader, flags interface{}) {
+	buf := encoding.WrapReader(r)
+
+	struc.Format = buf.GetU8()
 	if struc.Format < 5 || struc.Format > 7 {
 		panic(fmt.Errorf("unsupported format %v", struc.Format))
 	}
 
-	tmpPacked16 := &refTable16{
-		Format: struc.Format,
-	}
-
 	if struc.Format >= 6 {
-		tmp32.Decode(buf, encoding.IntNilFlag)
-		struc.Version = int(tmp32)
+		struc.Version = buf.GetU32()
 	}
 
-	tmp8.Decode(buf, encoding.IntNilFlag)
-	struc.Flags = ReferenceTableFlags(tmp8)
+	struc.Flags = ReferenceTableFlags(buf.GetU8())
 
-	tmpPacked16.Decode(buf, nil)
-	numFiles := tmpPacked16.Value
+	numFiles := struc.getPacked16(buf)
+
 	ids := make([]int, numFiles)
 	accum := 0
 	maxId := -1
 	for i, _ := range ids {
-		tmpPacked16.Decode(buf, nil)
-		delta := tmpPacked16.Value
+		delta := struc.getPacked16(buf)
 		accum += delta
 		ids[i] = accum
 		if ids[i] > maxId {
@@ -78,8 +76,7 @@ func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
 	identifiers := make([]int, maxId)
 	if struc.Flags&RefFlagIdents != 0 {
 		for _, id := range ids {
-			tmp32.Decode(buf, encoding.IntNilFlag)
-			identifier := int(tmp32)
+			identifier := buf.GetU32()
 			identifiers[id] = identifier
 			struc.Entries[id].Identifier = identifier
 		}
@@ -88,43 +85,35 @@ func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
 	struc.Identifiers = NewIdentifierMap(identifiers)
 
 	for _, id := range ids {
-		tmp32.Decode(buf, encoding.IntNilFlag)
-		struc.Entries[id].Crc = int(tmp32)
+		struc.Entries[id].Crc = buf.GetU32()
 	}
 
 	if struc.Flags&RefFlagHash != 0 {
 		for _, id := range ids {
-			tmp32.Decode(buf, encoding.IntNilFlag)
-			struc.Entries[id].Hash = int(tmp32)
+			struc.Entries[id].Hash = buf.GetU32()
 		}
 	}
 
 	if struc.Flags&RefFlagWhirlpool != 0 {
 		for _, id := range ids {
-			tmpBytes.Decode(buf, whirlpoolLen)
-			struc.Entries[id].Whirlpool = make([]byte, whirlpoolLen)
-			copy(struc.Entries[id].Whirlpool, []byte(tmpBytes))
+			struc.Entries[id].Whirlpool = buf.GetBytes(whirlpoolLen)
 		}
 	}
 
 	if struc.Flags&RefFlagSizes != 0 {
 		for _, id := range ids {
-			tmp32.Decode(buf, encoding.IntNilFlag)
-			struc.Entries[id].Compressed = int(tmp32)
-			tmp32.Decode(buf, encoding.IntNilFlag)
-			struc.Entries[id].Uncompressed = int(tmp32)
+			struc.Entries[id].Compressed = buf.GetU32()
+			struc.Entries[id].Uncompressed = buf.GetU32()
 		}
 	}
 
 	for _, id := range ids {
-		tmp32.Decode(buf, encoding.IntNilFlag)
-		struc.Entries[id].Version = int(tmp32)
+		struc.Entries[id].Version = buf.GetU32()
 	}
 
 	members := make([][]int, maxId)
 	for _, id := range ids {
-		tmpPacked16.Decode(buf, nil)
-		numSubEntries := tmpPacked16.Value
+		numSubEntries := struc.getPacked16(buf)
 		members[id] = make([]int, numSubEntries)
 	}
 
@@ -133,8 +122,7 @@ func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
 		maxId := -1
 
 		for i, _ := range members[id] {
-			tmpPacked16.Decode(buf, nil)
-			delta := tmpPacked16.Value
+			delta := struc.getPacked16(buf)
 			accum += delta
 			members[id][i] = accum
 			if members[id][i] > maxId {
@@ -156,8 +144,7 @@ func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
 		for _, id := range ids {
 			identifiers := make([]int, len(members[id]))
 			for _, child := range members[id] {
-				tmp32.Decode(buf, encoding.IntNilFlag)
-				identifier := int(tmp32)
+				identifier := buf.GetU32()
 				identifiers[child] = identifier
 				struc.Entries[id].Children[child].Identifier = identifier
 			}

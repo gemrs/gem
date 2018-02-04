@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gemrs/gem/gem/archive"
 	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/core/event"
 	"github.com/gemrs/gem/gem/core/log"
@@ -54,7 +53,6 @@ func main() {
 
 	runite.Bindrunite(L)
 	log.Bindlog(L)
-	archive.Bindarchive(L)
 	engine.Bindengine(L)
 	event.Bindevent(L)
 	server.Bindserver(L)

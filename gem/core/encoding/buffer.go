@@ -6,6 +6,12 @@ import (
 	"sync"
 )
 
+type ReadWriter interface {
+	Reader
+	Writer
+	io.Seeker
+}
+
 // Buffer is similar to bytes.Buffer, but allows us to save and recall the read pointer,
 // through the use of Try. Suitable for a long-living socket read buffer, as Trim allows
 // us to discard and garbage collect data we've already dealt with.
@@ -31,13 +37,13 @@ func NewBuffer() *Buffer {
 	}
 }
 
-func WrapReader(r io.Reader) *Buffer {
+func WrapReader(r io.Reader) Reader {
 	buf := NewBuffer()
 	buf.srcReader = r
 	return buf
 }
 
-func WrapWriter(w io.Writer) *Buffer {
+func WrapWriter(w io.Writer) Writer {
 	buf := NewBuffer()
 	buf.destWriter = w
 	return buf

@@ -64,8 +64,8 @@ type InboundInventoryAction1 protocol.InboundInventoryAction
 func (struc *InboundInventoryAction1) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 	struc.Action = 0
-	struc.InterfaceID = buf.GetU32(nil) >> 16
-	struc.Slot = buf.GetU16(encoding.IntOffset128 | encoding.IntLittleEndian)
+	struc.InterfaceID = buf.GetU32() >> 16
+	struc.Slot = buf.GetU16(encoding.IntOffset128, encoding.IntLittleEndian)
 	struc.ItemID = buf.GetU16(encoding.IntLittleEndian)
 }
 
@@ -75,9 +75,9 @@ type InboundInventoryAction2 protocol.InboundInventoryAction
 func (struc *InboundInventoryAction2) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 	struc.Action = 1
-	struc.ItemID = buf.GetU16(encoding.IntOffset128 | encoding.IntLittleEndian)
+	struc.ItemID = buf.GetU16(encoding.IntOffset128, encoding.IntLittleEndian)
 	struc.Slot = buf.GetU16(encoding.IntLittleEndian)
-	struc.InterfaceID = buf.GetU32(nil) >> 16
+	struc.InterfaceID = buf.GetU32() >> 16
 }
 
 // +gen define_inbound:"Pkt5,SzFixed,InboundInventoryAction"
@@ -86,8 +86,8 @@ type InboundInventoryAction3 protocol.InboundInventoryAction
 func (struc *InboundInventoryAction3) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 	struc.Action = 2
-	struc.ItemID = buf.GetU16(encoding.IntOffset128 | encoding.IntLittleEndian)
-	struc.InterfaceID = buf.GetU32(nil) >> 16
+	struc.ItemID = buf.GetU16(encoding.IntOffset128, encoding.IntLittleEndian)
+	struc.InterfaceID = buf.GetU32() >> 16
 	struc.Slot = buf.GetU16(encoding.IntLittleEndian)
 }
 
@@ -98,7 +98,7 @@ func (struc *InboundInventoryAction4) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 	struc.Action = 3
 	struc.Slot = buf.GetU16(encoding.IntLittleEndian)
-	struc.InterfaceID = buf.GetU32(nil) >> 16
+	struc.InterfaceID = buf.GetU32() >> 16
 	struc.ItemID = buf.GetU16(encoding.IntOffset128)
 }
 
@@ -108,7 +108,7 @@ type InboundInventoryAction5 protocol.InboundInventoryAction
 func (struc *InboundInventoryAction5) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 	struc.Action = 4
-	struc.Slot = buf.GetU16(encoding.IntLittleEndian | encoding.IntOffset128)
+	struc.Slot = buf.GetU16(encoding.IntLittleEndian, encoding.IntOffset128)
 	struc.ItemID = buf.GetU16(encoding.IntLittleEndian)
 	struc.InterfaceID = buf.GetU32(encoding.IntLittleEndian) >> 16
 }
@@ -120,7 +120,7 @@ func (struc *InboundInventorySwapItem) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
 	struc.InterfaceID = buf.GetU32(encoding.IntRPDPEndian)
 	struc.Inserting = buf.GetU8(encoding.IntOffset128) == 1
-	struc.To = buf.GetU16(encoding.IntLittleEndian | encoding.IntOffset128)
+	struc.To = buf.GetU16(encoding.IntLittleEndian, encoding.IntOffset128)
 	struc.From = buf.GetU16(encoding.IntOffset128)
 }
 
@@ -141,9 +141,9 @@ type InboundChatMessage protocol.InboundChatMessage
 
 func (struc *InboundChatMessage) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)
-	buf.GetU8(nil)
-	struc.Colour = buf.GetU8(nil)
-	struc.Effects = buf.GetU8(nil)
+	buf.GetU8()
+	struc.Colour = buf.GetU8()
+	struc.Effects = buf.GetU8()
 	decompressedSize := buf.GetU16(encoding.IntPacked)
 
 	message := buf.GetBytes(-1)

@@ -246,10 +246,10 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 	if flags > 0 {
 		if flags >= 0x100 {
 			flags |= 0x4
-			maskBuf.PutU8(int(flags&0xFF), nil)
-			maskBuf.PutU8(int(flags>>8), nil)
+			maskBuf.PutU8(int(flags & 0xFF))
+			maskBuf.PutU8(int(flags >> 8))
 		} else {
-			maskBuf.PutU8(int(flags&0xFF), nil)
+			maskBuf.PutU8(int(flags & 0xFF))
 		}
 	}
 
@@ -266,8 +266,8 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 
 func (struc PlayerUpdate) buildChatUpdateBlock(maskBuf *encoding.Buffer, thisPlayer protocol.Player) {
 	message := thisPlayer.ChatMessageQueue()[0]
-	maskBuf.PutU16(message.Effects<<8|message.Colour, nil)
-	maskBuf.Put8(int(thisPlayer.Profile().Rights()), nil)
+	maskBuf.PutU16(message.Effects<<8 | message.Colour)
+	maskBuf.Put8(int(thisPlayer.Profile().Rights()))
 
 	// If 1, doesn't display overhead
 	maskBuf.Put8(0, encoding.IntOffset128)
@@ -276,7 +276,7 @@ func (struc PlayerUpdate) buildChatUpdateBlock(maskBuf *encoding.Buffer, thisPla
 	huffmanBlock.PutU8(len(message.Message), encoding.IntPacked)
 	huffmanBlock.PutBytes(message.PackedMessage)
 
-	maskBuf.PutU8(huffmanBlock.Len(), nil)
+	maskBuf.PutU8(huffmanBlock.Len())
 	huffmanBlock.WriteTo(maskBuf)
 }
 
@@ -285,66 +285,66 @@ func (struc PlayerUpdate) buildAppearanceUpdateBlock(maskBuf *encoding.Buffer, t
 	anims := thisPlayer.Animations()
 	appearanceBuf := encoding.NewBuffer()
 
-	appearanceBuf.PutU8(appearance.Gender(), nil)
-	appearanceBuf.PutU8(appearance.SkullIcon(), nil)
-	appearanceBuf.PutU8(appearance.HeadIcon(), nil)
+	appearanceBuf.PutU8(appearance.Gender())
+	appearanceBuf.PutU8(appearance.SkullIcon())
+	appearanceBuf.PutU8(appearance.HeadIcon())
 
 	// Helm
-	appearanceBuf.PutU8(0, nil)
+	appearanceBuf.PutU8(0)
 	// Cape
-	appearanceBuf.PutU8(0, nil)
+	appearanceBuf.PutU8(0)
 	// Amulet
-	appearanceBuf.PutU8(0, nil)
+	appearanceBuf.PutU8(0)
 	// Right wield
-	appearanceBuf.PutU8(0, nil)
+	appearanceBuf.PutU8(0)
 	// Torso
-	appearanceBuf.PutU16(256+appearance.Model(protocol.BodyPartTorso), nil)
+	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartTorso))
 	// Left wield
-	appearanceBuf.PutU8(0, nil)
+	appearanceBuf.PutU8(0)
 	// Arms Model
-	appearanceBuf.PutU16(256+appearance.Model(protocol.BodyPartArms), nil)
+	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartArms))
 	// Legs Model
-	appearanceBuf.PutU16(256+appearance.Model(protocol.BodyPartLegs), nil)
+	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartLegs))
 	// Head Model
-	appearanceBuf.PutU16(256+appearance.Model(protocol.BodyPartHead), nil)
+	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartHead))
 	// Hands Model
-	appearanceBuf.PutU16(256+appearance.Model(protocol.BodyPartHands), nil)
+	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartHands))
 	// Feet Model
-	appearanceBuf.PutU16(256+appearance.Model(protocol.BodyPartFeet), nil)
+	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartFeet))
 	// Beard Model
-	appearanceBuf.PutU16(256+appearance.Model(protocol.BodyPartBeard), nil)
+	appearanceBuf.PutU16(256 + appearance.Model(protocol.BodyPartBeard))
 	// Hair Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartHair), nil)
+	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartHair))
 	// Torso Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartTorso), nil)
+	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartTorso))
 	// Leg Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartLegs), nil)
+	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartLegs))
 	// Feet Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartFeet), nil)
+	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartFeet))
 	// Skin Color
-	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartSkin), nil)
+	appearanceBuf.PutU8(appearance.Color(protocol.BodyPartSkin))
 	// Anim Idle
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimIdle), nil)
+	appearanceBuf.PutU16(anims.Animation(protocol.AnimIdle))
 	// Anim Spot
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimSpotRotate), nil)
+	appearanceBuf.PutU16(anims.Animation(protocol.AnimSpotRotate))
 	// Anim Walk
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimWalk), nil)
+	appearanceBuf.PutU16(anims.Animation(protocol.AnimWalk))
 	// Anim Rot180
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotate180), nil)
+	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotate180))
 	// Anim RotCCW
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotateCCW), nil)
+	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotateCCW))
 	// Anim RotCW
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotateCW), nil)
+	appearanceBuf.PutU16(anims.Animation(protocol.AnimRotateCW))
 	// Anim Run
-	appearanceBuf.PutU16(anims.Animation(protocol.AnimRun), nil)
+	appearanceBuf.PutU16(anims.Animation(protocol.AnimRun))
 	// Name
 	appearanceBuf.PutStringZ(thisPlayer.Profile().Username())
 	// Combat level
-	appearanceBuf.PutU8(thisPlayer.Profile().Skills().CombatLevel(), nil)
+	appearanceBuf.PutU8(thisPlayer.Profile().Skills().CombatLevel())
 	// Skill level
-	appearanceBuf.PutU16(0, nil)
+	appearanceBuf.PutU16(0)
 	// Hidden
-	appearanceBuf.PutU8(0, nil)
+	appearanceBuf.PutU8(0)
 
 	srcBlock := appearanceBuf.Bytes()
 	block := make([]byte, len(srcBlock))

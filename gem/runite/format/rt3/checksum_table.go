@@ -34,7 +34,8 @@ type ChecksumEntry struct {
 	Whirlpool []byte
 }
 
-func (entry *ChecksumEntry) Encode(buf io.Writer, flags_ interface{}) {
-	encoding.Uint32(entry.Crc).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint32(entry.Version).Encode(buf, encoding.IntNilFlag)
+func (entry *ChecksumEntry) Encode(w io.Writer, flags_ interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU32(int(entry.Crc))
+	buf.PutU32(entry.Version)
 }
