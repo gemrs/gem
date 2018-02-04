@@ -23,5 +23,6 @@ func LoadHuffmanTable(runite *runite.Context) error {
 
 	Huffman = encoding.NewHuffman(data)
 
+	logger.Notice("Loaded huffman table")
 	return nil
 }

@@ -13,7 +13,6 @@ func (player *Player) SyncEntityList() {
 	allRemoved := entity.NewSet()
 
 	for _, s := range sectors {
-		//		fmt.Printf("sector %v has %#v\n", s.Position(), s.Collection().Entities().Slice())
 		player.visibleEntities.AddAll(s.Collection())
 		allAdded.AddAll(s.Collection().Adding())
 		allRemoved.AddAll(s.Collection().Removing())

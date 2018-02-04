@@ -196,6 +196,20 @@ func (idx *JagFSIndex) Container(index int) (*Container, error) {
 	return &container, err
 }
 
+func (idx *JagFSIndex) Archive(file int) (*Archive, error) {
+	archiveEntry := idx.refTable.Entries[file]
+
+	archive := NewArchive(len(archiveEntry.Children))
+
+	buf, err := idx.Container(file)
+	if err != nil {
+		return archive, err
+	}
+
+	err = encoding.TryDecode(archive, buf, nil)
+	return archive, err
+}
+
 func (idx *JagFSIndex) File(index int) ([]byte, error) {
 	// we have a cached copy
 	if buffer, ok := idx.fileCache[index]; ok {

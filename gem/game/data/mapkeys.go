@@ -35,6 +35,8 @@ func LoadMapKeys(path string) {
 	for _, k := range keysList {
 		mapKeys[k.Region] = k.Keys
 	}
+
+	logger.Notice("Loaded [%v] map keys", len(mapKeys))
 }
 
 func GetMapKeys(region int) ([]int, bool) {

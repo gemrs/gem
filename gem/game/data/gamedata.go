@@ -5,8 +5,11 @@ import (
 	"fmt"
 
 	"github.com/BurntSushi/toml"
+	"github.com/gemrs/willow/log"
 	lua "github.com/yuin/gopher-lua"
 )
+
+var logger = log.New("data", nil)
 
 //go:generate glua .
 

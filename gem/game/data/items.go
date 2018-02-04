@@ -45,6 +45,8 @@ func LoadItems(dir string) {
 			panic(err)
 		}
 	}
+
+	logger.Notice("Loaded [%v] item definitions", len(items))
 }
 
 func Item(id int) ItemDefinition {

@@ -130,6 +130,7 @@ func (struc *ReferenceTable) Decode(r io.Reader, flags interface{}) {
 			}
 		}
 		maxId++
+		struc.Entries[id].Capacity = maxId
 
 		struc.Entries[id].Children = make(map[int]*ReferenceChildEntry)
 		for index, child := range members[id] {
@@ -173,6 +174,7 @@ type ReferenceEntry struct {
 	Version      int
 	Children     map[int]*ReferenceChildEntry
 	Identifiers  *IdentifierMap
+	Capacity     int
 }
 
 type ReferenceChildEntry struct {
