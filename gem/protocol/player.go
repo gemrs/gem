@@ -41,6 +41,7 @@ type Player interface {
 	WorldInstance() World
 	Position() *position.Absolute
 	Animations() Animations
+	LoadedRegion() *position.Region
 
 	AppendChatMessage(m InboundChatMessage)
 	ChatMessageQueue() []InboundChatMessage

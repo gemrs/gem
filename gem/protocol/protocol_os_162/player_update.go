@@ -245,7 +245,7 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 
 	if flags > 0 {
 		if flags >= 0x100 {
-			flags |= 0x4
+			flags |= 0x10
 			maskBuf.PutU8(int(flags & 0xFF))
 			maskBuf.PutU8(int(flags >> 8))
 		} else {
