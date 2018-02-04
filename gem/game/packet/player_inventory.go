@@ -19,7 +19,7 @@ func init() {
 
 func player_inv_swap(p protocol.Player, message server.Message) {
 	swapItemPacket := message.(*protocol.InboundInventorySwapItem)
-	switch int(swapItemPacket.InterfaceID) {
+	switch swapItemPacket.InterfaceID {
 	case data.Int("widget.inventory_group_id"):
 		p.Profile().Inventory().SwapSlots(swapItemPacket.From, swapItemPacket.To)
 
@@ -79,13 +79,13 @@ func (i *TakeGroundItemInteraction) Interruptible() bool {
 
 func player_take_ground_item(p protocol.Player, message server.Message) {
 	takeItemPacket := message.(*protocol.InboundTakeGroundItem)
-	itemPos := position.NewAbsolute(int(takeItemPacket.X), int(takeItemPacket.Y), p.Position().Z())
+	itemPos := position.NewAbsolute(takeItemPacket.X, takeItemPacket.Y, p.Position().Z())
 	entities := p.WorldInstance().EntitiesOnTile(itemPos)
 
 	var groundItem entity.GroundItem
 	for _, e := range entities {
 		if item, ok := e.(entity.GroundItem); ok {
-			if item.Definition().Id() == int(takeItemPacket.ItemID) {
+			if item.Definition().Id() == takeItemPacket.ItemID {
 				groundItem = item
 				break
 			}

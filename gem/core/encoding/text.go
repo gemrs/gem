@@ -26,7 +26,7 @@ func ChatTextUnpack(packed []byte) string {
 				buf[idx] = XlateTable[val]
 				idx++
 			} else {
-				highNibble = int(val)
+				highNibble = val
 			}
 		} else {
 			x := ((highNibble << 4) + val) - 195

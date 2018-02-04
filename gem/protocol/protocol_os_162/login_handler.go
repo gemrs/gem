@@ -73,7 +73,7 @@ func (handler *LoginHandler) decodeLoginBlock(client server.GameClient) error {
 			client.Conn().Disconnect()
 		}
 	*/
-	handler.secureBlockSize = int(loginBlock.SecureBlockSize)
+	handler.secureBlockSize = loginBlock.SecureBlockSize
 
 	client.SetDecodeFunc(handler.decodeSecureBlock)
 	return nil
@@ -97,8 +97,8 @@ func (handler *LoginHandler) decodeSecureBlock(client server.GameClient) error {
 	inSeed := make([]uint32, 4)
 	outSeed := make([]uint32, 4)
 	for i := range inSeed {
-		inSeed[i] = uint32(secureBlock1.ISAACSeed[i])
-		outSeed[i] = uint32(secureBlock1.ISAACSeed[i]) + 50
+		inSeed[i] = secureBlock1.ISAACSeed[i]
+		outSeed[i] = secureBlock1.ISAACSeed[i] + 50
 	}
 
 	// Decode XTEA block
@@ -112,8 +112,8 @@ func (handler *LoginHandler) decodeSecureBlock(client server.GameClient) error {
 	handler.inSeed = inSeed
 	handler.outSeed = outSeed
 
-	handler.username = string(secureBlock2.Username)
-	handler.password = string(secureBlock1.Password)
+	handler.username = secureBlock2.Username
+	handler.password = secureBlock1.Password
 
 	return handler.callback(handler)
 }

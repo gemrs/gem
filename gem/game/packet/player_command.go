@@ -13,5 +13,5 @@ func init() {
 func player_command(p protocol.Player, message server.Message) {
 	commandPacket := message.(*protocol.InboundCommand)
 	command := commandPacket.Command
-	game_event.PlayerCommand.NotifyObservers(p, string(command))
+	game_event.PlayerCommand.NotifyObservers(p, command)
 }

@@ -209,8 +209,8 @@ func (idx *JagFSIndex) File(index int) ([]byte, error) {
 	}
 	fileIndex := idx.fileIndices[index]
 
-	length := int(fileIndex.Length)
-	block := int(fileIndex.StartBlock)
+	length := fileIndex.Length
+	block := fileIndex.StartBlock
 	idx.fileCache[index] = make(buffer, 0)
 
 	var err error
@@ -226,7 +226,7 @@ func (idx *JagFSIndex) File(index int) ([]byte, error) {
 		return nil, ErrInvalidData
 	}
 
-	if len(idx.fileCache[index]) != int(fileIndex.Length) {
+	if len(idx.fileCache[index]) != fileIndex.Length {
 		return nil, ErrInvalidData
 	}
 
@@ -255,13 +255,13 @@ func (idx *JagFSIndex) constructFile(index, blockId, length int) (nextBlockId in
 		}
 	}
 
-	blockIndex := int(block.FileID)
+	blockIndex := block.FileID
 	if blockIndex != index {
 		panic(fmt.Errorf("block has unexpected file id: expected %v got %v", index, blockIndex))
 	}
 
-	nextBlockId = int(block.NextBlock)
-	data := []byte(block.Data)
+	nextBlockId = block.NextBlock
+	data := block.Data
 	if length < 512 {
 		data = data[:length]
 	}

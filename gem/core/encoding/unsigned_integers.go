@@ -191,7 +191,7 @@ func (i Uint64) Encode(buf io.Writer, flags_ interface{}) {
 	endian := flags.endian()
 
 	data := make([]byte, 8)
-	endian.PutUint64(data, uint64(value))
+	endian.PutUint64(data, value)
 	_, err := buf.Write(data)
 	if err != nil {
 		panic(err)
@@ -212,7 +212,7 @@ func (i *Uint64) Decode(buf io.Reader, flags_ interface{}) {
 		panic(err)
 	}
 
-	value64 := uint64(endian.Uint64(data))
+	value64 := endian.Uint64(data)
 	*i = Uint64(flags.reverse().apply(value64))
 }
 

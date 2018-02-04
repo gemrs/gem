@@ -40,7 +40,7 @@ func main() {
 		panic(fmt.Sprintf("generated invalid go: %v", err))
 	}
 
-	err = ioutil.WriteFile(os.Args[2], []byte(output), 0644)
+	err = ioutil.WriteFile(os.Args[2], output, 0644)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		os.Exit(1)

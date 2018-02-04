@@ -33,7 +33,7 @@ func jagHash(name string) int32 {
 	name = strings.ToUpper(name)
 	hash := int32(0)
 	for _, c := range name {
-		hash = (hash*61 + int32(c)) - 32
+		hash = (hash*61 + c) - 32
 	}
 	return hash
 }
@@ -54,7 +54,7 @@ func (struc *JagArchive) Decode(buf io.Reader, flags interface{}) (err error) {
 	buf = bytes.NewReader(struc.header.Body)
 
 	var fileCount encoding.Uint16
-	fileCount.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	fileCount.Decode(buf, encoding.IntNilFlag)
 
 	dataOffset := 2 + int(fileCount*10)
 	struc.index = make([]ArchiveFileIndex, fileCount)
@@ -89,9 +89,9 @@ type arcHeader struct {
 }
 
 func (struc *arcHeader) Decode(buf io.Reader, flags interface{}) (err error) {
-	struc.UncompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.UncompressedSize.Decode(buf, encoding.IntNilFlag)
 
-	struc.CompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.CompressedSize.Decode(buf, encoding.IntNilFlag)
 
 	struc.Body.Decode(buf, nil)
 

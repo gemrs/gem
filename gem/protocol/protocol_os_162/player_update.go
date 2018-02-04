@@ -274,7 +274,7 @@ func (struc PlayerUpdate) buildChatUpdateBlock(maskBuf *encoding.Buffer, thisPla
 
 	huffmanBlock := encoding.NewBuffer()
 	huffmanBlock.PutU8(len(message.Message), encoding.IntPacked)
-	huffmanBlock.PutBytes([]byte(message.PackedMessage))
+	huffmanBlock.PutBytes(message.PackedMessage)
 
 	maskBuf.PutU8(huffmanBlock.Len(), nil)
 	huffmanBlock.WriteTo(maskBuf)

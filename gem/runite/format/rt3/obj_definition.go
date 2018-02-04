@@ -59,13 +59,13 @@ func LoadItemDefinitions(fs *JagFS) ([]*ItemDefinition, error) {
 	idxBuf := bytes.NewReader(objIdx)
 
 	var itemCount encoding.Uint16
-	itemCount.Decode(idxBuf, encoding.IntegerFlag(encoding.IntNilFlag))
+	itemCount.Decode(idxBuf, encoding.IntNilFlag)
 
 	items := make([]*ItemDefinition, int(itemCount))
 	offset := 2
 	var tmp encoding.Uint16
 	for i := range items {
-		tmp.Decode(idxBuf, encoding.IntegerFlag(encoding.IntNilFlag))
+		tmp.Decode(idxBuf, encoding.IntNilFlag)
 
 		dataBuf := bytes.NewReader(objData[offset:])
 		items[i] = readItemDef(dataBuf)
@@ -88,7 +88,7 @@ func newItemDefinition() *ItemDefinition {
 }
 
 func readItemDef(buf io.Reader) *ItemDefinition {
-	nilFlags := encoding.IntegerFlag(encoding.IntNilFlag)
+	nilFlags := encoding.IntNilFlag
 
 	definition := newItemDefinition()
 

@@ -51,13 +51,13 @@ func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
 	struc.Flags = ReferenceTableFlags(tmp8)
 
 	tmpPacked16.Decode(buf, nil)
-	numFiles := int(tmpPacked16.Value)
+	numFiles := tmpPacked16.Value
 	ids := make([]int, numFiles)
 	accum := 0
 	maxId := -1
 	for i, _ := range ids {
 		tmpPacked16.Decode(buf, nil)
-		delta := int(tmpPacked16.Value)
+		delta := tmpPacked16.Value
 		accum += delta
 		ids[i] = accum
 		if ids[i] > maxId {
@@ -124,7 +124,7 @@ func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
 	members := make([][]int, maxId)
 	for _, id := range ids {
 		tmpPacked16.Decode(buf, nil)
-		numSubEntries := int(tmpPacked16.Value)
+		numSubEntries := tmpPacked16.Value
 		members[id] = make([]int, numSubEntries)
 	}
 
@@ -134,7 +134,7 @@ func (struc *ReferenceTable) Decode(buf io.Reader, flags interface{}) {
 
 		for i, _ := range members[id] {
 			tmpPacked16.Decode(buf, nil)
-			delta := int(tmpPacked16.Value)
+			delta := tmpPacked16.Value
 			accum += delta
 			members[id][i] = accum
 			if members[id][i] > maxId {

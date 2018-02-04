@@ -14,19 +14,19 @@ type ArchiveFileIndex struct {
 }
 
 func (struc *ArchiveFileIndex) Encode(buf io.Writer, flags interface{}) {
-	struc.Identifier.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.Identifier.Encode(buf, encoding.IntNilFlag)
 
-	struc.UncompressedSize.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.UncompressedSize.Encode(buf, encoding.IntNilFlag)
 
-	struc.CompressedSize.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.CompressedSize.Encode(buf, encoding.IntNilFlag)
 
 }
 
 func (struc *ArchiveFileIndex) Decode(buf io.Reader, flags interface{}) {
-	struc.Identifier.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.Identifier.Decode(buf, encoding.IntNilFlag)
 
-	struc.UncompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.UncompressedSize.Decode(buf, encoding.IntNilFlag)
 
-	struc.CompressedSize.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.CompressedSize.Decode(buf, encoding.IntNilFlag)
 
 }

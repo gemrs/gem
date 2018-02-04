@@ -14,10 +14,10 @@ type OutboundGameHandshake struct {
 }
 
 func (struc *OutboundGameHandshake) Encode(buf io.Writer, flags interface{}) {
-	struc.UID.Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.UID.Encode(buf, encoding.IntNilFlag)
 
 	for i := 0; i < 2; i++ {
-		struc.ServerISAACSeed[i].Encode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+		struc.ServerISAACSeed[i].Encode(buf, encoding.IntNilFlag)
 	}
 }
 
@@ -26,7 +26,7 @@ type InboundServiceSelect struct {
 }
 
 func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) {
-	struc.Service.Decode(buf, encoding.IntegerFlag(encoding.IntNilFlag))
+	struc.Service.Decode(buf, encoding.IntNilFlag)
 }
 
 type InboundUpdateHandshake struct {

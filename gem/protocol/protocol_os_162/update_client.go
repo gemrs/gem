@@ -58,7 +58,7 @@ func (client *UpdateClient) Decode() error {
 	case updateClientDisconnected:
 		var status InboundConnectionStatus
 		status.Decode(client.Conn().ReadBuffer, nil)
-		return client.handleConnectionStatus(int(header.Id), status)
+		return client.handleConnectionStatus(header.Id, status)
 
 	case updateEncKeys:
 		var key InboundXorKey
