@@ -22,19 +22,12 @@ func (struc *InboundPlayerWalkMap) Decode(buf io.Reader, flags interface{}) {
 	decodeWalk(buf, flags, (*protocol.InboundPlayerWalk)(struc), true)
 }
 
-func decodeWalk(buf io.Reader, flags interface{}, struc *protocol.InboundPlayerWalk, mapClick bool) {
-	//header := flags.(*PacketHeader)
-	var tmp16 encoding.Int16
-	var tmp8 encoding.Int8
+func decodeWalk(r io.Reader, flags interface{}, struc *protocol.InboundPlayerWalk, mapClick bool) {
+	buf := encoding.WrapReader(r)
 
-	tmp16.Decode(buf, encoding.IntLittleEndian)
-	struc.Y = int(tmp16)
-
-	tmp16.Decode(buf, encoding.IntOffset128)
-	struc.X = int(tmp16)
-
-	tmp8.Decode(buf, encoding.IntNegate)
-	runMode := int(tmp8)
+	struc.Y = buf.GetU16(encoding.IntLittleEndian)
+	struc.X = buf.GetU16(encoding.IntOffset128)
+	runMode := buf.GetU8(encoding.IntNegate)
 	// FIXME runMode can also be 2 sometimes?
 	struc.Running = runMode == 1
 

@@ -28,8 +28,6 @@ func (p PacketHeader) Encode(buf io.Writer, flags interface{}) {
 	var err error
 	rand := flags.(*isaac.ISAAC)
 	num := encoding.Int8(uint32(p.Number) + rand.Rand())
-	// FIXME: my 157 client has ISAAC disabled for some reason
-	//num = encoding.Int8(p.Number)
 
 	/* buffer the payload so that we can encode it's size */
 	var tmpBuffer bytes.Buffer

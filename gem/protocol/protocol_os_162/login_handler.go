@@ -25,8 +25,8 @@ func (handler *LoginHandler) Perform(client server.GameClient) {
 	serverSeed := handler.serverIsaacSeed
 
 	client.Send(&OutboundGameHandshake{
-		ServerISAACSeed: [2]encoding.Uint32{
-			encoding.Uint32(serverSeed[0]), encoding.Uint32(serverSeed[1]),
+		ServerISAACSeed: [2]int{
+			int(serverSeed[0]), int(serverSeed[1]),
 		},
 	})
 

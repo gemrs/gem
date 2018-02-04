@@ -12,39 +12,42 @@ import (
 // +gen define_outbound:"Pkt52,SzVar8"
 type OutboundChatMessage protocol.OutboundChatMessage
 
-func (o OutboundChatMessage) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint16(0).Encode(buf, encoding.IntPacked)
-	encoding.Uint8(0).Encode(buf, encoding.IntNilFlag)
-	encoding.String(o.Message).Encode(buf, 0)
+func (o OutboundChatMessage) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU16(0, encoding.IntPacked)
+	buf.PutU8(0, encoding.IntNilFlag)
+	buf.PutStringZ(o.Message)
 }
 
 // +gen define_outbound:"Unimplemented"
 type OutboundCreateGlobalGroundItem protocol.OutboundCreateGlobalGroundItem
 
-func (struc OutboundCreateGlobalGroundItem) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundCreateGlobalGroundItem) Encode(w io.Writer, flags interface{}) {
 }
 
 // +gen define_outbound:"Pkt46,SzFixed"
 type OutboundCreateGroundItem protocol.OutboundCreateGroundItem
 
-func (struc OutboundCreateGroundItem) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint16(struc.Count).Encode(buf, encoding.IntLittleEndian)
-	encoding.Uint8(struc.PositionOffset).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntLittleEndian)
+func (struc OutboundCreateGroundItem) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU16(struc.Count, encoding.IntLittleEndian)
+	buf.PutU8(struc.PositionOffset, nil)
+	buf.PutU16(struc.ItemID, encoding.IntLittleEndian)
 }
 
 // +gen define_outbound:"Pkt35,SzFixed"
 type OutboundRemoveGroundItem protocol.OutboundRemoveGroundItem
 
-func (struc OutboundRemoveGroundItem) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.PositionOffset).Encode(buf, encoding.IntInverse128)
-	encoding.Uint16(struc.ItemID).Encode(buf, encoding.IntLittleEndian|encoding.IntOffset128)
+func (struc OutboundRemoveGroundItem) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU8(struc.PositionOffset, encoding.IntInverse128)
+	buf.PutU16(struc.ItemID, encoding.IntLittleEndian|encoding.IntOffset128)
 }
 
 // +gen define_outbound
 type OutboundTabInterface protocol.OutboundTabInterface
 
-func (struc OutboundTabInterface) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundTabInterface) Encode(w io.Writer, flags interface{}) {
 	frame := getPlayerData(struc.ProtoData).frame
 	packet := OutboundSetInterfaceDefinition.Pack(OutboundSetInterface{
 		RootID:      frame.Root,
@@ -52,38 +55,41 @@ func (struc OutboundTabInterface) Encode(buf io.Writer, flags interface{}) {
 		InterfaceID: struc.InterfaceID,
 		Clickable:   true,
 	})
-	packet.Encode(buf, flags)
+	packet.Encode(w, flags)
 }
 
 // +gen define_outbound:"Unimplemented"
 type OutboundSetText protocol.OutboundSetText
 
-func (struc OutboundSetText) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundSetText) Encode(w io.Writer, flags interface{}) {
 }
 
 // +gen define_outbound:"Pkt13,SzVar16"
 type OutboundUpdateInventoryItem protocol.OutboundUpdateInventoryItem
 
-func (struc OutboundUpdateInventoryItem) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundUpdateInventoryItem) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+
 	inventory := struc.Container
 	root, child, iface := inventory.InterfaceLocation()
 
-	encoding.Uint32(root<<16|child).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint16(iface).Encode(buf, encoding.IntNilFlag)
+	buf.PutU32(root<<16|child, nil)
+	buf.PutU16(iface, nil)
 
-	encoding.Uint16(struc.Slot).Encode(buf, encoding.IntPacked)
+	buf.PutU16(struc.Slot, encoding.IntPacked)
+
 	if !inventory.SlotPopulated(struc.Slot) {
-		encoding.Uint16(0).Encode(buf, encoding.IntNilFlag)
+		buf.PutU16(0, nil)
 	} else {
 		stack := inventory.Slot(struc.Slot)
-		encoding.Uint16(stack.Definition().Id()+1).Encode(buf, encoding.IntNilFlag)
+		buf.PutU16(stack.Definition().Id()+1, nil)
 
 		count := stack.Count()
 		if count > 255 {
-			encoding.Uint8(255).Encode(buf, encoding.IntNilFlag)
-			encoding.Uint32(count).Encode(buf, encoding.IntNilFlag)
+			buf.PutU8(255, nil)
+			buf.PutU32(count, nil)
 		} else if count > 0 {
-			encoding.Uint8(count).Encode(buf, encoding.IntNilFlag)
+			buf.PutU8(count, nil)
 		}
 	}
 }
@@ -91,31 +97,33 @@ func (struc OutboundUpdateInventoryItem) Encode(buf io.Writer, flags interface{}
 // +gen define_outbound:"Pkt62,SzVar16"
 type OutboundUpdateAllInventoryItems protocol.OutboundUpdateAllInventoryItems
 
-func (struc OutboundUpdateAllInventoryItems) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundUpdateAllInventoryItems) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+
 	inventory := struc.Container
 	root, child, iface := inventory.InterfaceLocation()
 
-	encoding.Uint32(root<<16|child).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint16(iface).Encode(buf, encoding.IntNilFlag)
+	buf.PutU32(root<<16|child, nil)
+	buf.PutU16(iface, nil)
 
 	cap := inventory.Capacity()
-	encoding.Uint16(cap).Encode(buf, encoding.IntNilFlag)
+	buf.PutU16(cap, encoding.IntPacked)
 
 	for i := 0; i < cap; i++ {
 		if !inventory.SlotPopulated(i) {
-			encoding.Uint8(0).Encode(buf, encoding.IntNilFlag)
-			encoding.Uint16(0).Encode(buf, encoding.IntLittleEndian)
+			buf.PutU8(0, nil)
+			buf.PutU16(0, encoding.IntLittleEndian)
 		} else {
 			stack := inventory.Slot(i)
 			count := stack.Count()
 			if count > 255 {
-				encoding.Uint8(255).Encode(buf, encoding.IntNilFlag)
-				encoding.Uint32(count).Encode(buf, encoding.IntPDPEndian)
+				buf.PutU8(255, nil)
+				buf.PutU32(count, encoding.IntPDPEndian)
 			} else if count > 0 {
-				encoding.Uint8(count).Encode(buf, encoding.IntNilFlag)
+				buf.PutU8(count, nil)
 			}
 
-			encoding.Uint16(stack.Definition().Id()+1).Encode(buf, encoding.IntOffset128)
+			buf.PutU16(stack.Definition().Id()+1, encoding.IntOffset128)
 		}
 	}
 }
@@ -123,20 +131,22 @@ func (struc OutboundUpdateAllInventoryItems) Encode(buf io.Writer, flags interfa
 // +gen define_outbound:"Unimplemented"
 type OutboundLogout protocol.OutboundLogout
 
-func (struc OutboundLogout) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundLogout) Encode(w io.Writer, flags interface{}) {
 
 }
 
 // +gen define_outbound:"Unimplemented"
 type OutboundPlayerInit protocol.OutboundPlayerInit
 
-func (struc OutboundPlayerInit) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundPlayerInit) Encode(w io.Writer, flags interface{}) {
 }
 
 // +gen define_outbound:"Pkt39,SzVar16"
 type OutboundRegionUpdate protocol.OutboundRegionUpdate
 
-func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundRegionUpdate) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+
 	pdata := getPlayerData(struc.ProtoData)
 	pos := struc.Player.Position()
 	playerIndex := struc.Player.Index()
@@ -165,8 +175,8 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 	sector := pos.Sector()
 	sectorX := sector.X()
 	sectorY := sector.Y()
-	encoding.Uint16(sectorY).Encode(buf, encoding.IntLittleEndian)
-	encoding.Uint16(sectorX).Encode(buf, encoding.IntOffset128|encoding.IntLittleEndian)
+	buf.PutU16(sectorY, encoding.IntLittleEndian)
+	buf.PutU16(sectorX, encoding.IntOffset128|encoding.IntLittleEndian)
 
 	regionX, regionY := sectorX/8, sectorY/8
 	tutorialIsland := false
@@ -196,69 +206,75 @@ func (struc OutboundRegionUpdate) Encode(buf io.Writer, flags interface{}) {
 		}
 	}
 
-	encoding.Uint16(count).Encode(buf, encoding.IntNilFlag)
+	buf.PutU16(count, encoding.IntNilFlag)
 	for _, key := range allKeys {
-		encoding.Uint32(key).Encode(buf, encoding.IntNilFlag)
+		buf.PutU32(key, encoding.IntNilFlag)
 	}
 }
 
 // +gen define_outbound:"Pkt0,SzFixed"
 type OutboundSetUpdatingTile protocol.OutboundSetUpdatingTile
 
-func (struc OutboundSetUpdatingTile) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.PositionY).Encode(buf, encoding.IntInverse128)
-	encoding.Uint8(struc.PositionX).Encode(buf, encoding.IntNegate)
+func (struc OutboundSetUpdatingTile) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU8(struc.PositionY, encoding.IntInverse128)
+	buf.PutU8(struc.PositionX, encoding.IntNegate)
 }
 
 // +gen define_outbound:"Pkt37,SzFixed"
 type OutboundSkill protocol.OutboundSkill
 
-func (struc OutboundSkill) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.Skill).Encode(buf, encoding.IntNegate)
-	encoding.Uint8(struc.Level).Encode(buf, encoding.IntNilFlag)
-	encoding.Uint32(struc.Experience).Encode(buf, encoding.IntRPDPEndian)
+func (struc OutboundSkill) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU8(struc.Skill, encoding.IntNegate)
+	buf.PutU8(struc.Level, encoding.IntNilFlag)
+	buf.PutU32(struc.Experience, encoding.IntRPDPEndian)
 }
 
 // +gen define_outbound:"Unimplemented"
 type OutboundResetCamera protocol.OutboundResetCamera
 
-func (struc OutboundResetCamera) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundResetCamera) Encode(w io.Writer, flags interface{}) {
 }
 
 // +gen define_outbound:"Unimplemented"
 type OutboundDnsLookup protocol.OutboundDnsLookup
 
-func (struc OutboundDnsLookup) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundDnsLookup) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
 	// FIXME: encode address properly
-	encoding.Uint32(0).Encode(buf, encoding.IntNilFlag)
+	buf.PutU32(0, encoding.IntNilFlag)
 }
 
 // +gen define_outbound:"Pkt2,SzFixed"
 type OutboundSetRootInterface protocol.OutboundSetRootInterface
 
-func (struc OutboundSetRootInterface) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundSetRootInterface) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
 	frame := struc.Frame.(FrameType)
-	encoding.Uint16(frame.Root).Encode(buf, encoding.IntNilFlag)
+	buf.PutU16(frame.Root, encoding.IntNilFlag)
 }
 
 // +gen define_outbound:"Pkt29,SzFixed"
 type OutboundSetInterface protocol.OutboundSetInterface
 
-func (struc OutboundSetInterface) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundSetInterface) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
 	clickable := 0
 	if struc.Clickable {
 		clickable = 1
 	}
 
-	encoding.Uint8(clickable).Encode(buf, encoding.IntOffset128)
-	encoding.Uint32((struc.RootID<<16)|struc.ChildID).Encode(buf, encoding.IntRPDPEndian)
-	encoding.Uint16(struc.InterfaceID).Encode(buf, encoding.IntNilFlag)
+	buf.PutU8(clickable, encoding.IntOffset128)
+	buf.PutU32((struc.RootID<<16)|struc.ChildID, encoding.IntRPDPEndian)
+	buf.PutU16(struc.InterfaceID, encoding.IntNilFlag)
 }
 
 // +gen define_outbound:"Pkt18,SzVar16"
 type OutboundScriptEvent protocol.OutboundScriptEvent
 
-func (struc OutboundScriptEvent) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundScriptEvent) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
 	formatString := ""
 	for _, p := range struc.Params {
 		switch p.(type) {
@@ -271,59 +287,59 @@ func (struc OutboundScriptEvent) Encode(buf io.Writer, flags interface{}) {
 		}
 	}
 
-	encoding.String(formatString).Encode(buf, 0)
+	buf.PutStringZ(formatString)
 	for i := len(struc.Params) - 1; i >= 0; i-- {
 		p := struc.Params[i]
 		switch p := p.(type) {
 		case int:
-			encoding.Uint32(p).Encode(buf, encoding.IntNilFlag)
+			buf.PutU32(p, encoding.IntNilFlag)
 
 		case string:
-			encoding.String(p).Encode(buf, 0)
+			buf.PutStringZ(p)
 
 		}
 	}
 
-	encoding.Uint32(struc.ScriptID).Encode(buf, encoding.IntNilFlag)
+	buf.PutU32(struc.ScriptID, encoding.IntNilFlag)
 }
 
 // +gen define_outbound
 type OutboundInitInterface protocol.OutboundInitInterface
 
-func (struc OutboundInitInterface) Encode(buf io.Writer, flags interface{}) {
+func (struc OutboundInitInterface) Encode(w io.Writer, flags interface{}) {
 	frame := getPlayerData(struc.ProtoData).frame
 
 	OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface{
 		Frame: frame,
-	}).Encode(buf, flags)
+	}).Encode(w, flags)
 
 	OutboundSetInterfaceDefinition.Pack(OutboundSetInterface{
 		RootID:      frame.Root,
 		ChildID:     frame.ChatBox,
 		InterfaceID: 162,
 		Clickable:   true,
-	}).Encode(buf, flags)
+	}).Encode(w, flags)
 
 	OutboundSetInterfaceDefinition.Pack(OutboundSetInterface{
 		RootID:      frame.Root,
 		ChildID:     frame.ExpDisplay,
 		InterfaceID: 163,
 		Clickable:   true,
-	}).Encode(buf, flags)
+	}).Encode(w, flags)
 
 	OutboundSetInterfaceDefinition.Pack(OutboundSetInterface{
 		RootID:      frame.Root,
 		ChildID:     frame.DataOrbs,
 		InterfaceID: 160,
 		Clickable:   true,
-	}).Encode(buf, flags)
+	}).Encode(w, flags)
 
 	OutboundSetInterfaceDefinition.Pack(OutboundSetInterface{
 		RootID:      frame.Root,
 		ChildID:     frame.PrivateChat,
 		InterfaceID: 122,
 		Clickable:   true,
-	}).Encode(buf, flags)
+	}).Encode(w, flags)
 
 	//	struc.Inventory.SetInterfaceContainer()
 }

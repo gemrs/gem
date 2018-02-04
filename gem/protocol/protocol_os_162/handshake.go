@@ -9,47 +9,51 @@ import (
 )
 
 type OutboundGameHandshake struct {
-	UID             encoding.Uint8
-	ServerISAACSeed [2]encoding.Uint32
+	UID             int
+	ServerISAACSeed [2]int
 }
 
-func (struc *OutboundGameHandshake) Encode(buf io.Writer, flags interface{}) {
-	struc.UID.Encode(buf, encoding.IntNilFlag)
+func (struc *OutboundGameHandshake) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU8(struc.UID, nil)
 
 	for i := 0; i < 2; i++ {
-		struc.ServerISAACSeed[i].Encode(buf, encoding.IntNilFlag)
+		buf.PutU32(struc.ServerISAACSeed[i], nil)
 	}
 }
 
 type InboundServiceSelect struct {
-	Service encoding.Uint8
+	Service int
 }
 
-func (struc *InboundServiceSelect) Decode(buf io.Reader, flags interface{}) {
-	struc.Service.Decode(buf, encoding.IntNilFlag)
+func (struc *InboundServiceSelect) Decode(r io.Reader, flags interface{}) {
+	buf := encoding.WrapReader(r)
+	struc.Service = buf.GetU8(nil)
 }
 
 type InboundUpdateHandshake struct {
-	Revision encoding.Uint32
+	Revision int
 }
 
-func (struc *InboundUpdateHandshake) Decode(buf io.Reader, flags interface{}) {
-	struc.Revision.Decode(buf, encoding.IntNilFlag)
+func (struc *InboundUpdateHandshake) Decode(r io.Reader, flags interface{}) {
+	buf := encoding.WrapReader(r)
+	struc.Revision = buf.GetU32(nil)
 }
 
 type OutboundUpdateHandshake struct {
 	Response int
 }
 
-func (struc *OutboundUpdateHandshake) Encode(buf io.Writer, flags interface{}) {
-	encoding.Uint8(struc.Response).Encode(buf, encoding.IntNilFlag)
+func (struc *OutboundUpdateHandshake) Encode(w io.Writer, flags interface{}) {
+	buf := encoding.WrapWriter(w)
+	buf.PutU8(struc.Response, nil)
 }
 
 func (p protocolImpl) Handshake(conn *server.Connection) int {
 	var serviceSelect InboundServiceSelect
 	serviceSelect.Decode(conn.NetConn(), nil)
 
-	service := int(serviceSelect.Service)
+	service := serviceSelect.Service
 
 	response := 0
 	if service == UpdateServiceId {
