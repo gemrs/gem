@@ -42,6 +42,8 @@ type Player interface {
 	Position() *position.Absolute
 	Animations() Animations
 	LoadedRegion() *position.Region
+	SetWalkDestination(pos *position.Absolute) bool
+	SetRunning(bool)
 
 	AppendChatMessage(m InboundChatMessage)
 	ChatMessageQueue() []InboundChatMessage

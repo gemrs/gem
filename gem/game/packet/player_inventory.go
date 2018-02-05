@@ -96,6 +96,7 @@ func player_take_ground_item(p protocol.Player, message server.Message) {
 		return
 	}
 
+	p.SetWalkDestination(itemPos)
 	p.InteractionQueue().Append(&TakeGroundItemInteraction{
 		item: groundItem,
 	})

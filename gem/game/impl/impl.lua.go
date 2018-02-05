@@ -215,6 +215,8 @@ var PlayerMethods = map[string]lua.LGFunction{
 	"send_message": lBindPlayerSendMessage,
 
 	"send_skill": lBindPlayerSendSkill,
+
+	"set_walk_destination": lBindPlayerSetWalkDestination,
 }
 
 func lBindPlayerClientConfig(L *lua.LState) int {
@@ -286,6 +288,18 @@ func lBindPlayerSendSkill(L *lua.LState) int {
 	L.Remove(1)
 	self.SendSkill(arg0, arg1, arg2)
 	return 0
+
+}
+
+func lBindPlayerSetWalkDestination(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Player)
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(*position.Absolute)
+	L.Remove(1)
+	retVal := self.SetWalkDestination(arg0)
+	L.Push(glua.ToLua(L, retVal))
+	return 1
 
 }
 

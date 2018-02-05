@@ -1,6 +1,8 @@
 package impl
 
 import (
+	astar "github.com/beefsack/go-astar"
+	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/game/entity"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/protocol"
@@ -48,4 +50,47 @@ func (player *Player) RegionChange() {
 	})
 
 	player.SetFlags(entity.MobFlagRegionUpdate)
+}
+
+func (player *Player) SetRunning(bool) {
+	wpq := player.WaypointQueue()
+	wpq.SetRunning(true)
+}
+
+//glua:bind
+func (player *Player) SetWalkDestination(destination *position.Absolute) bool {
+	origin := player.Position()
+
+	wpq := player.WaypointQueue()
+	wpq.Clear()
+	wpq.Push(origin)
+
+	startTile := data.GetCollisionTile(origin.X(), origin.Y(), origin.Z())
+	endTile := data.GetCollisionTile(destination.X(), destination.Y(), destination.Z())
+
+	if startTile == nil || endTile == nil {
+		return false
+	}
+
+	if endTile.Blocked() {
+		return false
+	}
+
+	path, _, found := astar.Path(startTile, endTile)
+	if !found {
+		return false
+	}
+
+	for i := len(path) - 1; i >= 0; i-- {
+		wp := path[i].(*data.CollisionTile)
+
+		pos := position.NewAbsolute(wp.AbsX, wp.AbsY, wp.Z)
+		wpq.Push(pos)
+	}
+
+	if !wpq.Empty() {
+		player.InteractionQueue().InterruptAndAppend(wpq)
+	}
+
+	return true
 }

@@ -1,6 +1,7 @@
 local event = require("gem.event")
 local game_event = require("gem.game.event")
 local item = require("gem.game.item")
+local position = require("gem.game.position")
 local debug_command = require("debug_command")
 
 local function add_item(player, args)
@@ -21,4 +22,22 @@ local function add_item(player, args)
    end
 end
 
+local function walk_to(player, args)
+   local current = player:profile():position()
+   local destination = position.Absolute(tonumber(args[1]), tonumber(args[2]), current:z())
+   local success = player:set_walk_destination(destination)
+   if success == true then
+      player:send_message("Path created")
+   else
+      player:send_message("No path")
+   end
+end
+
+local function get_pos(player, args)
+   local pos = player:profile():position()
+   player:send_message("You're at "..pos:x()..","..pos:y()..","..pos:z())
+end
+
 debug_command.register_command("item", add_item)
+debug_command.register_command("walk", walk_to)
+debug_command.register_command("pos", get_pos)
