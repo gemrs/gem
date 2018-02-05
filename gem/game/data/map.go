@@ -1,38 +1,57 @@
 package data
 
 import (
-	"fmt"
-
 	"github.com/gemrs/gem/gem/runite"
 	"github.com/gemrs/gem/gem/runite/format/rt3"
 )
 
+var Map rt3.Map
+
 //glua:bind
 func LoadMap(runite *runite.Context) error {
-	var worldMap rt3.Map
-	err := worldMap.Load(runite.FS, GetMapKeys)
+	err := Map.Load(runite.FS, GetMapKeys)
 	if err != nil {
 		return err
 	}
 
-	logger.Notice("Loaded [%v] map regions", len(worldMap.Regions))
-	buildCollisionMap(worldMap)
-	logger.Notice("Constructed collision data")
+	logger.Notice("Loaded [%v] map regions", len(Map.Regions))
 
 	return nil
 }
 
-func buildCollisionMap(m rt3.Map) {
-	for _, region := range m.Regions {
-		initRegion(region)
+func GetRegion(x, y int) *CollisionRegion {
+	id := x<<8 | y
+	r, ok := CollisionMap[id]
+	if ok && r.Loaded {
+		return r
 	}
 
-	for _, region := range m.Regions {
-		loadCollisionFromRegion(region)
+	mapRegion, ok := Map.Regions[id]
+	if !ok {
+		return nil
 	}
+
+	// Ensure that we've got the all regions surrounding this initialized
+	// Then load the target region with collision data
+
+	for i := x - 1; i <= x+1; i++ {
+		for j := y - 1; j <= y+1; j++ {
+			initRegion(Map.Regions[((i << 8) + j)])
+		}
+	}
+
+	// We have to set the Loaded flag first, to avoid recursion
+	CollisionMap[id].Loaded = true
+
+	loadCollisionFromRegion(mapRegion)
+	return CollisionMap[id]
 }
 
 func initRegion(region *rt3.Region) {
+	if _, ok := CollisionMap[region.Region]; ok {
+		return
+	}
+
 	colRegion := &CollisionRegion{
 		RegionX: region.X,
 		RegionY: region.Y,
@@ -55,9 +74,6 @@ func initRegion(region *rt3.Region) {
 		}
 	}
 
-	if _, ok := CollisionMap[region.Region]; ok {
-		panic(fmt.Errorf("overwriting collision region %v", region.Region))
-	}
 	CollisionMap[region.Region] = colRegion
 }
 

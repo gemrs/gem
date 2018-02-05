@@ -47,37 +47,32 @@ var CollisionMap = map[int]*CollisionRegion{}
 type CollisionRegion struct {
 	RegionX, RegionY int
 	Tiles            [4][rt3.RegionSize][rt3.RegionSize]*CollisionTile
+	Loaded           bool
 }
 
 func GetCollisionTile(absX, absY, absZ int) *CollisionTile {
-	regionPos := ((absX / 64) << 8) + (absY / 64)
-	if region, ok := CollisionMap[regionPos]; ok {
-		return region.Tiles[absZ][absX%64][absY%64]
+	region := GetRegion(absX/64, absY/64)
+	if region == nil {
+		return nil
 	}
-	return nil
-}
 
-func tryGetRegion(x, y int) *CollisionRegion {
-	if r, ok := CollisionMap[x<<8|y]; ok {
-		return r
-	}
-	return nil
+	return region.Tiles[absZ][absX%64][absY%64]
 }
 
 func (r *CollisionRegion) RegionNorth() *CollisionRegion {
-	return tryGetRegion(r.RegionX, r.RegionY+1)
+	return GetRegion(r.RegionX, r.RegionY+1)
 }
 
 func (r *CollisionRegion) RegionSouth() *CollisionRegion {
-	return tryGetRegion(r.RegionX, r.RegionY-1)
+	return GetRegion(r.RegionX, r.RegionY-1)
 }
 
 func (r *CollisionRegion) RegionEast() *CollisionRegion {
-	return tryGetRegion(r.RegionX+1, r.RegionY)
+	return GetRegion(r.RegionX+1, r.RegionY)
 }
 
 func (r *CollisionRegion) RegionWest() *CollisionRegion {
-	return tryGetRegion(r.RegionX-1, r.RegionY)
+	return GetRegion(r.RegionX-1, r.RegionY)
 }
 
 func (r *CollisionRegion) NorthOf(t *CollisionTile) *CollisionTile {
