@@ -1,6 +1,8 @@
 package packet
 
 import (
+	"fmt"
+
 	astar "github.com/beefsack/go-astar"
 	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/game/position"
@@ -33,25 +35,25 @@ func player_walk(player protocol.Player, message server.Message) {
 
 	destination := position.NewAbsolute(walkPacket.X, walkPacket.Y, height)
 
-	region := player.LoadedRegion()
-	regionAbs := region.Origin().Min()
-	originLocal := player.Position().LocalTo(region)
-	destinationLocal := destination.LocalTo(region)
+	startTile := data.GetCollisionTile(origin.X(), origin.Y(), height)
+	endTile := data.GetCollisionTile(destination.X(), destination.Y(), height)
 
-	startTile := data.TestCollision[originLocal.X()][originLocal.Y()]
-	endTile := data.TestCollision[destinationLocal.X()][destinationLocal.Y()]
+	fmt.Printf("startTile is %#v %p, endTile is %#v %p\n", startTile, startTile, endTile, endTile)
+
+	if endTile.Blocked() {
+		return
+	}
 
 	path, _, found := astar.Path(startTile, endTile)
+	fmt.Printf("found path? %v %v\n", found, path)
 	if !found {
 		return
 	}
 
 	for i := len(path) - 1; i >= 0; i-- {
-		wp := path[i].(data.CollisionTile)
-		x1, y1 := wp.X, wp.Y
-		x2, y2 := regionAbs.X(), regionAbs.Y()
+		wp := path[i].(*data.CollisionTile)
 
-		pos := position.NewAbsolute(x1+x2, y1+y2, height)
+		pos := position.NewAbsolute(wp.AbsX, wp.AbsY, height)
 		wpq.Push(pos)
 	}
 

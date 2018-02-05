@@ -1,13 +1,18 @@
 package rt3
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/gemrs/gem/gem/core/encoding"
+)
 
 const maxRegion = 32768
 
 type MapKeyLookupFunc func(region int) ([]uint32, bool)
 
 type Map struct {
-	Regions map[int]*Region
+	Regions    map[int]*Region
+	MaxX, MaxY int
 }
 
 type Region struct {
@@ -15,6 +20,7 @@ type Region struct {
 	X, Y       int
 	AbsX, AbsY int
 	Locations  MapLocations
+	Landscape  MapLandscape
 }
 
 func NewRegion(id int) *Region {
@@ -35,14 +41,25 @@ func (m *Map) Load(fs *JagFS, lookupKeys MapKeyLookupFunc) error {
 
 	m.Regions = make(map[int]*Region)
 
-	count := 0
+	var maxX, maxY int
 
 	for i := 0; i < maxRegion; i++ {
 		region := NewRegion(i)
 
+		mapFile := index.FileIndexByName(fmt.Sprintf("m%v_%v", region.X, region.Y))
 		locationFile := index.FileIndexByName(fmt.Sprintf("l%v_%v", region.X, region.Y))
-		if locationFile == -1 {
+		if mapFile == -1 && locationFile == -1 {
 			continue
+		}
+
+		m.Regions[i] = region
+
+		if region.AbsX+64 > maxX {
+			maxX = region.AbsX + 64
+		}
+
+		if region.AbsY+64 > maxY {
+			maxY = region.AbsY + 64
 		}
 
 		mapKeys, ok := lookupKeys(i)
@@ -50,16 +67,30 @@ func (m *Map) Load(fs *JagFS, lookupKeys MapKeyLookupFunc) error {
 			mapKeys = nil
 		}
 
-		locContainer, err := index.EncryptedContainer(locationFile, mapKeys)
-		if err != nil {
-			// Failed to load: keys are incorrect, or missing, or ..
-			continue
+		if locationFile != -1 {
+			locContainer, err := index.EncryptedContainer(locationFile, mapKeys)
+			if err != nil {
+				// Failed to load: keys are incorrect, or missing, or ..
+				continue
+			}
+
+			encoding.TryDecode(&region.Locations, locContainer, nil)
 		}
 
-		region.Locations.Decode(locContainer, nil)
-		count += len(region.Locations.Locations)
-		m.Regions[i] = region
+		if mapFile != -1 {
+			mapContainer, err := index.Container(mapFile)
+			if err != nil {
+				// Failed to load: keys are incorrect, or missing, or ..
+				continue
+			}
+
+			encoding.TryDecode(&region.Landscape, mapContainer, nil)
+		}
+
 	}
+
+	m.MaxX = maxX
+	m.MaxY = maxY
 
 	return nil
 }

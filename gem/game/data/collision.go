@@ -1,13 +1,11 @@
 package data
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"math"
-	"os"
 
 	astar "github.com/beefsack/go-astar"
-	"github.com/gemrs/gem/gem/game/position"
+	"github.com/gemrs/gem/gem/runite/format/rt3"
 )
 
 type CollisionFlag int
@@ -44,49 +42,139 @@ const (
 	ColCornerSouthwestBlockswalkAlternative               = 0x10000000
 )
 
-const regionSize = position.RegionSize * position.SectorSize
+var CollisionMap = map[int]*CollisionRegion{}
 
-type CollisionData [regionSize][regionSize]CollisionTile
+type CollisionRegion struct {
+	RegionX, RegionY int
+	Tiles            [4][rt3.RegionSize][rt3.RegionSize]*CollisionTile
+}
+
+func GetCollisionTile(absX, absY, absZ int) *CollisionTile {
+	regionPos := ((absX / 64) << 8) + (absY / 64)
+	if region, ok := CollisionMap[regionPos]; ok {
+		return region.Tiles[absZ][absX%64][absY%64]
+	}
+	return nil
+}
+
+func tryGetRegion(x, y int) *CollisionRegion {
+	if r, ok := CollisionMap[x<<8|y]; ok {
+		return r
+	}
+	return nil
+}
+
+func (r *CollisionRegion) RegionNorth() *CollisionRegion {
+	return tryGetRegion(r.RegionX, r.RegionY+1)
+}
+
+func (r *CollisionRegion) RegionSouth() *CollisionRegion {
+	return tryGetRegion(r.RegionX, r.RegionY-1)
+}
+
+func (r *CollisionRegion) RegionEast() *CollisionRegion {
+	return tryGetRegion(r.RegionX+1, r.RegionY)
+}
+
+func (r *CollisionRegion) RegionWest() *CollisionRegion {
+	return tryGetRegion(r.RegionX-1, r.RegionY)
+}
+
+func (r *CollisionRegion) NorthOf(t *CollisionTile) *CollisionTile {
+	x, y, z := t.X, t.Y, t.Z
+
+	y++
+
+	if y >= rt3.RegionSize {
+		y = 0
+		r = r.RegionNorth()
+	}
+
+	if r == nil {
+		return nil
+	}
+
+	return r.Tiles[z][x][y]
+}
+
+func (r *CollisionRegion) SouthOf(t *CollisionTile) *CollisionTile {
+	x, y, z := t.X, t.Y, t.Z
+
+	y--
+
+	if y < 0 {
+		y = rt3.RegionSize - 1
+		r = r.RegionSouth()
+	}
+
+	if r == nil {
+		return nil
+	}
+
+	return r.Tiles[z][x][y]
+}
+
+func (r *CollisionRegion) WestOf(t *CollisionTile) *CollisionTile {
+	x, y, z := t.X, t.Y, t.Z
+
+	x--
+
+	if x < 0 {
+		x = rt3.RegionSize - 1
+		r = r.RegionWest()
+	}
+
+	if r == nil {
+		return nil
+	}
+
+	return r.Tiles[z][x][y]
+}
+
+func (r *CollisionRegion) EastOf(t *CollisionTile) *CollisionTile {
+	x, y, z := t.X, t.Y, t.Z
+
+	x++
+	if x >= rt3.RegionSize {
+		x = 0
+		r = r.RegionEast()
+	}
+
+	if r == nil {
+		return nil
+	}
+
+	return r.Tiles[z][x][y]
+}
 
 type CollisionTile struct {
-	X, Y   int
-	Flag   CollisionFlag
-	Region *CollisionData
+	X, Y, Z    int
+	AbsX, AbsY int
+	Flag       CollisionFlag
+	Region     *CollisionRegion
 }
 
-func (t CollisionTile) North() *CollisionTile {
-	if t.Y+1 >= regionSize {
-		return nil
-	}
-
-	return &t.Region[t.X][t.Y+1]
+func (t *CollisionTile) String() string {
+	return fmt.Sprintf("CollisionTile(%v, %v, %v, %v)", t.AbsX, t.AbsY, t.Z, t.Flag)
 }
 
-func (t CollisionTile) South() *CollisionTile {
-	if t.Y-1 < 0 {
-		return nil
-	}
-
-	return &t.Region[t.X][t.Y-1]
+func (t *CollisionTile) North() *CollisionTile {
+	return t.Region.NorthOf(t)
 }
 
-func (t CollisionTile) East() *CollisionTile {
-	if t.X+1 >= regionSize {
-		return nil
-	}
-
-	return &t.Region[t.X+1][t.Y]
+func (t *CollisionTile) South() *CollisionTile {
+	return t.Region.SouthOf(t)
 }
 
-func (t CollisionTile) West() *CollisionTile {
-	if t.X-1 < 0 {
-		return nil
-	}
-
-	return &t.Region[t.X-1][t.Y]
+func (t *CollisionTile) East() *CollisionTile {
+	return t.Region.EastOf(t)
 }
 
-func (t CollisionTile) NorthEast() *CollisionTile {
+func (t *CollisionTile) West() *CollisionTile {
+	return t.Region.WestOf(t)
+}
+
+func (t *CollisionTile) NorthEast() *CollisionTile {
 	north := t.North()
 	if north == nil {
 		return nil
@@ -94,7 +182,7 @@ func (t CollisionTile) NorthEast() *CollisionTile {
 	return north.East()
 }
 
-func (t CollisionTile) NorthWest() *CollisionTile {
+func (t *CollisionTile) NorthWest() *CollisionTile {
 	north := t.North()
 	if north == nil {
 		return nil
@@ -102,7 +190,7 @@ func (t CollisionTile) NorthWest() *CollisionTile {
 	return north.West()
 }
 
-func (t CollisionTile) SouthEast() *CollisionTile {
+func (t *CollisionTile) SouthEast() *CollisionTile {
 	south := t.South()
 	if south == nil {
 		return nil
@@ -110,7 +198,7 @@ func (t CollisionTile) SouthEast() *CollisionTile {
 	return south.East()
 }
 
-func (t CollisionTile) SouthWest() *CollisionTile {
+func (t *CollisionTile) SouthWest() *CollisionTile {
 	south := t.South()
 	if south == nil {
 		return nil
@@ -118,7 +206,11 @@ func (t CollisionTile) SouthWest() *CollisionTile {
 	return south.West()
 }
 
-func (t CollisionTile) PathNeighbors() []astar.Pather {
+func (t *CollisionTile) Blocked() bool {
+	return false //t.Flag&(ColObj|ColFloorBlockswalk) != 0
+}
+
+func (t *CollisionTile) PathNeighbors() []astar.Pather {
 	validTiles := []astar.Pather{}
 
 	// I'm sure there's an easier way to do this than a huge chain of logic, but
@@ -133,138 +225,112 @@ func (t CollisionTile) PathNeighbors() []astar.Pather {
 	west := t.West()
 	northWest := t.NorthWest()
 
-	if north != nil && t.Flag&ColWallNorth == 0 && north.Flag&ColObj == 0 {
-		validTiles = append(validTiles, *north)
+	if north != nil && t.Flag&ColWallNorth == 0 && !north.Blocked() {
+		validTiles = append(validTiles, north)
 	}
 
 	if northEast != nil &&
-		t.Flag&ColCornerNortheast == 0 && northEast.Flag&ColObj == 0 &&
+		t.Flag&ColCornerNortheast == 0 && !northEast.Blocked() &&
 		t.Flag&ColWallNorth == 0 && northEast.Flag&ColWallSouth == 0 &&
 		t.Flag&ColWallEast == 0 && northEast.Flag&ColWallWest == 0 {
 		valid := true
 
-		if north != nil && north.Flag&ColObj != 0 {
+		if north == nil || north.Blocked() {
 			valid = false
 		}
 
-		if east != nil && east.Flag&ColObj != 0 {
+		if east == nil || east.Blocked() {
 			valid = false
 		}
 
 		if valid {
-			validTiles = append(validTiles, *northEast)
+			validTiles = append(validTiles, northEast)
 		}
 	}
 
 	if east != nil &&
-		t.Flag&ColWallEast == 0 && east.Flag&ColObj == 0 {
-		validTiles = append(validTiles, *east)
+		t.Flag&ColWallEast == 0 && !east.Blocked() {
+		validTiles = append(validTiles, east)
 	}
 
 	if southEast != nil &&
-		t.Flag&ColCornerSoutheast == 0 && southEast.Flag&ColObj == 0 &&
+		t.Flag&ColCornerSoutheast == 0 && !southEast.Blocked() &&
 		t.Flag&ColWallSouth == 0 && southEast.Flag&ColWallNorth == 0 &&
 		t.Flag&ColWallEast == 0 && southEast.Flag&ColWallWest == 0 {
 		valid := true
 
-		if south != nil && south.Flag&ColObj != 0 {
+		if south == nil || south.Blocked() {
 			valid = false
 		}
 
-		if east != nil && east.Flag&ColObj != 0 {
+		if east == nil || east.Blocked() {
 			valid = false
 		}
 
 		if valid {
-			validTiles = append(validTiles, *southEast)
+			validTiles = append(validTiles, southEast)
 		}
 	}
 
 	if south != nil &&
-		t.Flag&ColWallSouth == 0 && south.Flag&ColObj == 0 {
-		validTiles = append(validTiles, *south)
+		t.Flag&ColWallSouth == 0 && !south.Blocked() {
+		validTiles = append(validTiles, south)
 	}
 
 	if southWest != nil &&
-		t.Flag&ColCornerSouthwest == 0 && southWest.Flag&ColObj == 0 &&
+		t.Flag&ColCornerSouthwest == 0 && !southWest.Blocked() &&
 		t.Flag&ColWallSouth == 0 && southWest.Flag&ColWallNorth == 0 &&
 		t.Flag&ColWallWest == 0 && southWest.Flag&ColWallEast == 0 {
 		valid := true
 
-		if south != nil && south.Flag&ColObj != 0 {
+		if south == nil || south.Blocked() {
 			valid = false
 		}
 
-		if west != nil && west.Flag&ColObj != 0 {
+		if west == nil || west.Blocked() {
 			valid = false
 		}
 
 		if valid {
-			validTiles = append(validTiles, *southWest)
+			validTiles = append(validTiles, southWest)
 		}
 	}
 
 	if west != nil &&
-		t.Flag&ColWallWest == 0 && west.Flag&ColObj == 0 {
-		validTiles = append(validTiles, *west)
+		t.Flag&ColWallWest == 0 && !west.Blocked() {
+		validTiles = append(validTiles, west)
 	}
 
 	if northWest != nil &&
-		t.Flag&ColCornerNorthwest == 0 && northWest.Flag&ColObj == 0 &&
+		t.Flag&ColCornerNorthwest == 0 && !northWest.Blocked() &&
 		t.Flag&ColWallNorth == 0 && northWest.Flag&ColWallSouth == 0 &&
 		t.Flag&ColWallWest == 0 && northWest.Flag&ColWallEast == 0 {
 		valid := true
 
-		if north != nil && north.Flag&ColObj != 0 {
+		if north == nil || north.Blocked() {
 			valid = false
 		}
 
-		if west != nil && west.Flag&ColObj != 0 {
+		if west == nil || west.Blocked() {
 			valid = false
 		}
 
 		if valid {
-			validTiles = append(validTiles, *northWest)
+			validTiles = append(validTiles, northWest)
 		}
 	}
 
 	return validTiles
 }
 
-func (t CollisionTile) PathNeighborCost(to astar.Pather) float64 {
-	toT := to.(CollisionTile)
-	dx := float64(t.X - toT.X)
-	dy := float64(t.Y - toT.Y)
-	return math.Ceil(math.Sqrt(dx*dx + dy*dy))
+func (t *CollisionTile) PathNeighborCost(to astar.Pather) float64 {
+	toT := to.(*CollisionTile)
+	dx := float64(t.AbsX - toT.AbsX)
+	dy := float64(t.AbsY - toT.AbsY)
+	cost := math.Ceil(math.Sqrt(dx*dx + dy*dy))
+	return cost
 }
 
-func (t CollisionTile) PathEstimatedCost(to astar.Pather) float64 {
+func (t *CollisionTile) PathEstimatedCost(to astar.Pather) float64 {
 	return t.PathNeighborCost(to)
-}
-
-var TestCollision CollisionData
-
-func init() {
-	var data [regionSize][regionSize]int
-	fd, err := os.Open("data/collision.json")
-	if err != nil {
-		panic(err)
-	}
-	defer fd.Close()
-
-	jsonData, err := ioutil.ReadAll(fd)
-	if err != nil {
-		panic(err)
-	}
-
-	json.Unmarshal(jsonData, &data)
-
-	for x, s := range data {
-		for y, flag := range s {
-			TestCollision[x][y].X = x
-			TestCollision[x][y].Y = y
-			TestCollision[x][y].Flag = CollisionFlag(flag)
-			TestCollision[x][y].Region = &TestCollision
-		}
-	}
 }
