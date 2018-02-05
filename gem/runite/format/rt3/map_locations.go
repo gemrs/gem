@@ -19,13 +19,24 @@ type MapLocation struct {
 	LocalZ      int
 }
 
+func getSignedPackedInt(buf *encoding.Buffer) int {
+	highByte := buf.GetU8()
+	if highByte < 0x80 {
+		return highByte
+	}
+
+	lowByte := buf.GetU8()
+	return ((highByte << 8) + lowByte) - 0x8000
+
+}
+
 func (loc *MapLocations) Decode(r io.Reader, flags_ interface{}) {
 	buf := encoding.WrapReader(r)
 
 	id := -1
 	delta := 0
 	for {
-		delta = buf.GetU16(encoding.IntPacked)
+		delta = getSignedPackedInt(buf.(*encoding.Buffer))
 		if delta == 0 {
 			break
 		}
@@ -36,15 +47,15 @@ func (loc *MapLocations) Decode(r io.Reader, flags_ interface{}) {
 		positionDelta := 0
 
 		for {
-			positionDelta = buf.GetU16(encoding.IntPacked)
+			positionDelta = getSignedPackedInt(buf.(*encoding.Buffer))
 			if positionDelta == 0 {
 				break
 			}
 
-			position += positionDelta
+			position += positionDelta - 1
 
-			localX := position >> 6 & 0x3F
 			localY := position & 0x3F
+			localX := position >> 6 & 0x3F
 			height := position >> 12 & 0x3
 
 			attributes := buf.GetU8()

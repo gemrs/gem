@@ -12,34 +12,34 @@ type CollisionFlag int
 
 const (
 	ColFloorBlockswalk                      CollisionFlag = 0x200000
-	ColFloordecoBlockswalk                                = 0x40000
-	ColObj                                                = 0x100
-	ColObjBlocksfly                                       = 0x20000
-	ColObjBlockswalkAlternative                           = 0x40000000
-	ColWallNorth                                          = 0x2
-	ColWallEast                                           = 0x8
-	ColWallSouth                                          = 0x20
-	ColWallWest                                           = 0x80
-	ColWallNorthBlocksfly                                 = 0x400
-	ColWallEastBlocksfly                                  = 0x1000
-	ColWallSouthBlocksfly                                 = 0x4000
-	ColWallWestBlocksfly                                  = 0x10000
-	ColWallNorthBlockswalkAlternative                     = 0x800000
-	ColWallEastBlockswalkAlternative                      = 0x2000000
-	ColWallSouthBlockswalkAlternative                     = 0x8000000
-	ColWallWestBlockswalkAlternative                      = 0x20000000
-	ColCornerNorthwest                                    = 0x1
-	ColCornerNortheast                                    = 0x4
-	ColCornerSoutheast                                    = 0x10
-	ColCornerSouthwest                                    = 0x40
-	ColCornerNorthwestBlocksfly                           = 0x200
-	ColCornerNortheastBlocksfly                           = 0x800
-	ColCornerSoutheastBlocksfly                           = 0x2000
-	ColCornerSouthwestBlocksfly                           = 0x8000
-	ColCornerNorthwestBlockswalkAlternative               = 0x400000
-	ColCornerNortheastBlockswalkAlternative               = 0x1000000
-	ColCornerSoutheastBlockswalkAlternative               = 0x4000000
-	ColCornerSouthwestBlockswalkAlternative               = 0x10000000
+	ColFloordecoBlockswalk                  CollisionFlag = 0x40000
+	ColObj                                  CollisionFlag = 0x100
+	ColObjBlocksfly                         CollisionFlag = 0x20000
+	ColObjBlockswalkAlternative             CollisionFlag = 0x40000000
+	ColWallNorth                            CollisionFlag = 0x2
+	ColWallEast                             CollisionFlag = 0x8
+	ColWallSouth                            CollisionFlag = 0x20
+	ColWallWest                             CollisionFlag = 0x80
+	ColWallNorthBlocksfly                   CollisionFlag = 0x400
+	ColWallEastBlocksfly                    CollisionFlag = 0x1000
+	ColWallSouthBlocksfly                   CollisionFlag = 0x4000
+	ColWallWestBlocksfly                    CollisionFlag = 0x10000
+	ColWallNorthBlockswalkAlternative       CollisionFlag = 0x800000
+	ColWallEastBlockswalkAlternative        CollisionFlag = 0x2000000
+	ColWallSouthBlockswalkAlternative       CollisionFlag = 0x8000000
+	ColWallWestBlockswalkAlternative        CollisionFlag = 0x20000000
+	ColCornerNorthwest                      CollisionFlag = 0x1
+	ColCornerNortheast                      CollisionFlag = 0x4
+	ColCornerSoutheast                      CollisionFlag = 0x10
+	ColCornerSouthwest                      CollisionFlag = 0x40
+	ColCornerNorthwestBlocksfly             CollisionFlag = 0x200
+	ColCornerNortheastBlocksfly             CollisionFlag = 0x800
+	ColCornerSoutheastBlocksfly             CollisionFlag = 0x2000
+	ColCornerSouthwestBlocksfly             CollisionFlag = 0x8000
+	ColCornerNorthwestBlockswalkAlternative CollisionFlag = 0x400000
+	ColCornerNortheastBlockswalkAlternative CollisionFlag = 0x1000000
+	ColCornerSoutheastBlockswalkAlternative CollisionFlag = 0x4000000
+	ColCornerSouthwestBlockswalkAlternative CollisionFlag = 0x10000000
 )
 
 var CollisionMap = map[int]*CollisionRegion{}
@@ -207,7 +207,7 @@ func (t *CollisionTile) SouthWest() *CollisionTile {
 }
 
 func (t *CollisionTile) Blocked() bool {
-	return false //t.Flag&(ColObj|ColFloorBlockswalk) != 0
+	return t.Flag&(ColObj|ColFloorBlockswalk) != 0
 }
 
 func (t *CollisionTile) PathNeighbors() []astar.Pather {

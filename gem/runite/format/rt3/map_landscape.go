@@ -27,7 +27,7 @@ func (m *MapLandscape) Decode(r io.Reader, flags_ interface{}) {
 				for {
 					opcode := buf.GetU8()
 					if opcode == 0 {
-
+						break
 					} else if opcode == 1 {
 						buf.GetU8()
 						break L

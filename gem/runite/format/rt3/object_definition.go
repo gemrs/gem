@@ -16,19 +16,23 @@ type ObjectDefinition struct {
 	OffsetY          int
 	OffsetZ          int
 	Actions          [5]string
-	Solid            bool
+	Hollow           bool
 	BlocksProjectile bool
-	InteractType     int
 	ModelSizeX       int
 	ModelSizeY       int
 	ModelSizeZ       int
 	MapSceneId       int
 	MapAreaId        int
+	ClipType         int
 }
 
 func NewObjectDefinition(id int) *ObjectDefinition {
 	return &ObjectDefinition{
-		Id: id,
+		Id:               id,
+		BlocksProjectile: true,
+		ClipType:         2,
+		SizeX:            1,
+		SizeY:            1,
 	}
 }
 
@@ -65,7 +69,7 @@ L:
 			d.SizeY = buf.GetU8()
 
 		case 17:
-			d.InteractType = 0
+			d.ClipType = 0
 			d.BlocksProjectile = false
 
 		case 18:
@@ -81,6 +85,7 @@ L:
 			buf.GetU16()
 
 		case 27:
+			d.ClipType = 1
 		case 28:
 			buf.GetU8()
 
@@ -147,6 +152,8 @@ L:
 
 		case 73:
 		case 74:
+			d.Hollow = true
+
 		case 75:
 			buf.GetU8()
 
