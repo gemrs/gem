@@ -5,7 +5,7 @@ import (
 )
 
 func TestGenerator(t *testing.T) {
-	generator := Generator()
+	generator := Generator(0)
 	for i := 0; i < 10; i++ {
 		x := <-generator
 		if x != i {
