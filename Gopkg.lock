@@ -2,6 +2,24 @@
 
 
 [[projects]]
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
+  version = "v0.3.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/beefsack/go-astar"
+  packages = ["."]
+  revision = "f324bbb0d6f79849d76a6d94329152c6adfccee2"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/clipperhouse/typewriter"
+  packages = ["."]
+  revision = "c1a48da378ebb7db1db9f35981b5cc24bf2e5b85"
+
+[[projects]]
   branch = "master"
   name = "github.com/fatih/camelcase"
   packages = ["."]
@@ -18,6 +36,12 @@
   name = "github.com/gemrs/willow"
   packages = ["log"]
   revision = "0445c10b36ced5c8c87d32124ca1b9c62e79064b"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jzelinskie/whirlpool"
+  packages = ["."]
+  revision = "c19460b8caa623b49cd9060e866f812c4b10c4ce"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -70,6 +94,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "abaef3aa5878bd159543c5dbd99daa8cd6dbef24f45a91c4b5fc0e548fabc213"
+  inputs-digest = "b8e6757303c8ab3ebc22fdb1924a12828fa8f10b8d93ac3bb00486cde16618f3"
   solver-name = "gps-cdcl"
   solver-version = 1

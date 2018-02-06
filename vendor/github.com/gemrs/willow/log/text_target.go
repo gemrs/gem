@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"sync"
 	"text/template"
 
 	"github.com/fatih/color"
 )
 
-var standardFormat = "{{ print (fill 8 (print \"[\" .Level \"]\")) \" \" (print .Tag \":\" | fill 12) | color .Level}} {{.Context}} {{highlight .Message}}\n"
+var standardFormat = "{{ print (fill 8 (print \"[\" .Level \"]\")) \" \" (print .Tag \":\" | fill 12) | color .Level}} {{highlight .Message}}\n"
 
 // TextTarget formats Records using a template, and writes to an io.Writer
 type TextTarget struct {
@@ -87,13 +86,8 @@ func (t *TextTarget) SetFormat(fmt string) {
 	t.fmt = template.Must(template.New("record").Funcs(funcMap).Parse(fmt))
 }
 
-var logLock sync.Mutex
-
 // Handle formats a record and writes to the io.Writer
 func (t *TextTarget) Handle(r Record) {
-	logLock.Lock()
-	defer logLock.Unlock()
-
 	err := t.fmt.ExecuteTemplate(t.w, "record", r)
 	if err != nil {
 		panic(err)
