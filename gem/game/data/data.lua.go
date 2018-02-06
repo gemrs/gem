@@ -28,8 +28,6 @@ func lBinddata(L *lua.LState) int {
 
 	L.SetField(mod, "load_huffman_table", L.NewFunction(lBindLoadHuffmanTable))
 
-	L.SetField(mod, "load_items", L.NewFunction(lBindLoadItems))
-
 	L.SetField(mod, "load_map", L.NewFunction(lBindLoadMap))
 
 	L.SetField(mod, "load_map_keys", L.NewFunction(lBindLoadMapKeys))
@@ -96,15 +94,6 @@ func lBindLoadHuffmanTable(L *lua.LState) int {
 	retVal := LoadHuffmanTable(arg0)
 	L.Push(glua.ToLua(L, retVal))
 	return 1
-
-}
-
-func lBindLoadItems(L *lua.LState) int {
-	arg0Value := L.Get(1)
-	arg0 := glua.FromLua(arg0Value).(string)
-	L.Remove(1)
-	LoadItems(arg0)
-	return 0
 
 }
 

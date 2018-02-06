@@ -14,7 +14,7 @@ func LoadMap(runite *runite.Context) error {
 		return err
 	}
 
-	logger.Notice("Loaded [%v] map regions", len(Map.Regions))
+	logger.Notice("Loaded [%v] map regions", Map.NumRegions())
 
 	return nil
 }
@@ -26,8 +26,8 @@ func GetRegion(x, y int) *CollisionRegion {
 		return r
 	}
 
-	mapRegion, ok := Map.Regions[id]
-	if !ok {
+	mapRegion, err := Map.RegionById(id)
+	if err != nil {
 		return nil
 	}
 
@@ -36,7 +36,10 @@ func GetRegion(x, y int) *CollisionRegion {
 
 	for i := x - 1; i <= x+1; i++ {
 		for j := y - 1; j <= y+1; j++ {
-			initRegion(Map.Regions[((i << 8) + j)])
+			region, err := Map.Region(i, j)
+			if err == nil {
+				initRegion(region)
+			}
 		}
 	}
 
@@ -130,10 +133,11 @@ func addCollisionObject(region *rt3.Region, obj *rt3.MapLocation, height int) {
 		return
 	}
 
-	if id > len(Config.Objects) {
+	definition, err := Config.Object(id)
+	if err != nil {
+		// Some maps just use objects that aren't in the cache.. shrug
 		return
 	}
-	definition := Config.Objects[id]
 
 	xLength := 0
 	yLength := 0

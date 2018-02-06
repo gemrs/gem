@@ -1,7 +1,14 @@
 package rt3
 
 import (
+	"errors"
+
 	"github.com/gemrs/gem/gem/core/encoding"
+)
+
+var (
+	ErrNoObject = errors.New("no object with given id")
+	ErrNoItem   = errors.New("no item with given id")
 )
 
 const (
@@ -27,7 +34,10 @@ const (
 )
 
 type Config struct {
-	Objects []*ObjectDefinition
+	objects        []*ObjectDefinition
+	objectsArchive *Archive
+	items          []*ItemDefinition
+	itemsArchive   *Archive
 }
 
 func (c *Config) Load(fs *JagFS) error {
@@ -36,17 +46,57 @@ func (c *Config) Load(fs *JagFS) error {
 		return err
 	}
 
-	objectsArchive, err := index.Archive(CfgObject)
+	c.objectsArchive, err = index.Archive(CfgObject)
 	if err != nil {
 		return err
 	}
 
-	c.Objects = make([]*ObjectDefinition, len(objectsArchive.Entries))
-	for id, data := range objectsArchive.Entries {
-		c.Objects[id] = NewObjectDefinition(id)
-		buf := encoding.NewBufferBytes(data)
-		c.Objects[id].Decode(buf, nil)
+	c.objects = make([]*ObjectDefinition, len(c.objectsArchive.Entries))
+
+	c.itemsArchive, err = index.Archive(CfgItem)
+	if err != nil {
+		return err
 	}
 
+	c.items = make([]*ItemDefinition, len(c.itemsArchive.Entries))
+
 	return nil
+}
+
+func (c *Config) ObjectsCount() int {
+	return len(c.objects)
+}
+
+func (c *Config) Object(id int) (*ObjectDefinition, error) {
+	if id >= len(c.objects) {
+		return nil, ErrNoObject
+	}
+
+	if obj := c.objects[id]; obj != nil {
+		return obj, nil
+	}
+
+	c.objects[id] = NewObjectDefinition(id)
+	buf := encoding.NewBufferBytes(c.objectsArchive.Entries[id])
+	c.objects[id].Decode(buf, nil)
+	return c.objects[id], nil
+}
+
+func (c *Config) ItemsCount() int {
+	return len(c.items)
+}
+
+func (c *Config) Item(id int) (*ItemDefinition, error) {
+	if id >= len(c.items) {
+		return nil, ErrNoItem
+	}
+
+	if obj := c.items[id]; obj != nil {
+		return obj, nil
+	}
+
+	c.items[id] = NewItemDefinition(id)
+	buf := encoding.NewBufferBytes(c.itemsArchive.Entries[id])
+	c.items[id].Decode(buf, nil)
+	return c.items[id], nil
 }

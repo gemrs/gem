@@ -1,11 +1,6 @@
 package data
 
-import (
-	"encoding/json"
-	"io/ioutil"
-	"strconv"
-)
-
+/*
 var items []ItemDefinition
 
 type ItemDefinition struct {
@@ -48,7 +43,4 @@ func LoadItems(dir string) {
 
 	logger.Notice("Loaded [%v] item definitions", len(items))
 }
-
-func Item(id int) ItemDefinition {
-	return items[id]
-}
+*/

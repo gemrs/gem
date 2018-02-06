@@ -14,6 +14,7 @@ func LoadConfig(runite *runite.Context) error {
 		return err
 	}
 
-	logger.Notice("Loaded [%v] object definitions", len(Config.Objects))
+	logger.Notice("Loaded [%v] object definitions", Config.ObjectsCount())
+	logger.Notice("Loaded [%v] item definitions", Config.ItemsCount())
 	return nil
 }

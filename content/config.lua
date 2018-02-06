@@ -23,7 +23,6 @@ cfg.id_files = {
    cfg.data_path .. "/inventories.toml",
 }
 cfg.map_key_file = cfg.data_path .. "/map_keys.json"
-cfg.item_definitions_dir = cfg.data_path .. "/items"
 
 -- Plugins to load
 cfg.plugins = {

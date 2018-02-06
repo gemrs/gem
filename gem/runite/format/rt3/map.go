@@ -1,9 +1,14 @@
 package rt3
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gemrs/gem/gem/core/encoding"
+)
+
+var (
+	ErrNoMap = errors.New("unable to load requested map")
 )
 
 const maxRegion = 32768
@@ -11,8 +16,9 @@ const maxRegion = 32768
 type MapKeyLookupFunc func(region int) ([]uint32, bool)
 
 type Map struct {
-	Regions    map[int]*Region
-	MaxX, MaxY int
+	regions    map[int]*Region
+	index      *JagFSIndex
+	lookupKeys MapKeyLookupFunc
 }
 
 type Region struct {
@@ -33,64 +39,74 @@ func NewRegion(id int) *Region {
 	}
 }
 
+func (m *Map) Region(x, y int) (*Region, error) {
+	return m.RegionById((x << 8) + y)
+}
+
+func (m *Map) RegionById(id int) (*Region, error) {
+	if region, ok := m.regions[id]; ok {
+		return region, nil
+	}
+
+	err := m.loadRegion(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return m.regions[id], nil
+}
+
+func (m *Map) NumRegions() int {
+	return m.index.FileCount()
+}
+
 func (m *Map) Load(fs *JagFS, lookupKeys MapKeyLookupFunc) error {
-	index, err := fs.Index(IdxLandscapes)
+	var err error
+	m.index, err = fs.Index(IdxLandscapes)
 	if err != nil {
 		return err
 	}
 
-	m.Regions = make(map[int]*Region)
+	m.lookupKeys = lookupKeys
+	m.regions = make(map[int]*Region)
 
-	var maxX, maxY int
+	return nil
+}
 
-	for i := 0; i < maxRegion; i++ {
-		region := NewRegion(i)
+func (m *Map) loadRegion(id int) error {
+	region := NewRegion(id)
 
-		mapFile := index.FileIndexByName(fmt.Sprintf("m%v_%v", region.X, region.Y))
-		locationFile := index.FileIndexByName(fmt.Sprintf("l%v_%v", region.X, region.Y))
-		if mapFile == -1 && locationFile == -1 {
-			continue
-		}
-
-		m.Regions[i] = region
-
-		if region.AbsX+64 > maxX {
-			maxX = region.AbsX + 64
-		}
-
-		if region.AbsY+64 > maxY {
-			maxY = region.AbsY + 64
-		}
-
-		mapKeys, ok := lookupKeys(i)
-		if !ok {
-			mapKeys = nil
-		}
-
-		if locationFile != -1 {
-			locContainer, err := index.EncryptedContainer(locationFile, mapKeys)
-			if err != nil {
-				// Failed to load: keys are incorrect, or missing, or ..
-				continue
-			}
-
-			encoding.TryDecode(&region.Locations, locContainer, nil)
-		}
-
-		if mapFile != -1 {
-			mapContainer, err := index.Container(mapFile)
-			if err != nil {
-				// Failed to load: keys are incorrect, or missing, or ..
-				continue
-			}
-
-			encoding.TryDecode(&region.Landscape, mapContainer, nil)
-		}
-
+	mapFile := m.index.FileIndexByName(fmt.Sprintf("m%v_%v", region.X, region.Y))
+	locationFile := m.index.FileIndexByName(fmt.Sprintf("l%v_%v", region.X, region.Y))
+	if mapFile == -1 && locationFile == -1 {
+		return ErrNoMap
 	}
 
-	m.MaxX = maxX
-	m.MaxY = maxY
+	mapKeys, ok := m.lookupKeys(id)
+	if !ok {
+		mapKeys = nil
+	}
 
+	if locationFile != -1 {
+		locContainer, err := m.index.EncryptedContainer(locationFile, mapKeys)
+		if err != nil {
+			// Failed to load: keys are incorrect, or missing, or ..
+			return ErrNoMap
+		}
+
+		encoding.TryDecode(&region.Locations, locContainer, nil)
+	}
+
+	if mapFile != -1 {
+		mapContainer, err := m.index.Container(mapFile)
+		if err != nil {
+			// Failed to load: keys are incorrect, or missing, or ..
+			return ErrNoMap
+		}
+
+		encoding.TryDecode(&region.Landscape, mapContainer, nil)
+	}
+
+	m.regions[id] = region
 	return nil
 }

@@ -23,7 +23,6 @@ data.load(config.id_files)
 data.load_config(data_ctx)
 data.load_map_keys(config.map_key_file)
 data.load_map(data_ctx)
-data.load_items(config.item_definitions_dir)
 data.load_huffman_table(data_ctx)
 
 -- Create services
