@@ -17,8 +17,5 @@ test_package() {
     rm -f $all_profiles # Remove the old profiles to avoid confusion
 }
 
-test_package ./gem gem.profile
-test_package ./bbc bbc.profile
-gocovmerge gem.profile bbc.profile > coverage.profile
-rm gem.profile bbc.profile # Remove the old profiles to avoid confusion
+test_package ./gem coverage.profile
 exit $RETURN_CODE
