@@ -19,7 +19,7 @@ import (
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
 	"github.com/gemrs/gem/gem/protocol"
-	"github.com/gemrs/gem/gem/protocol/protocol_os_162"
+	"github.com/gemrs/gem/gem/protocol/protocol_os_163"
 	"github.com/gemrs/gem/gem/runite"
 	willow "github.com/gemrs/willow/log"
 	lua "github.com/yuin/gopher-lua"
@@ -66,7 +66,7 @@ func main() {
 	item.Binditem(L)
 	data.Binddata(L)
 
-	server.SetProtocolImpl(protocol_os_162.Protocol)
+	server.SetProtocolImpl(protocol_os_163.Protocol)
 
 	if *unsafeLua {
 		if fn, err := L.LoadFile(mainFile); err != nil {

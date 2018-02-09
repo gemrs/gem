@@ -1,12 +1,12 @@
-package protocol_os_162
+package protocol_os_163
 
 import "github.com/gemrs/gem/gem/game/entity"
 
 type playerFlags int
 
 const (
-	playerFlagIdentityUpdate = (1 << 1)
-	playerFlagChatUpdate     = (1 << 7)
+	playerFlagIdentityUpdate = (1 << 7)
+	playerFlagChatUpdate     = (1 << 1)
 )
 
 func translatePlayerFlags(flags entity.Flags) playerFlags {

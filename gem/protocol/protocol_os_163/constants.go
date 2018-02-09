@@ -1,7 +1,7 @@
-package protocol_os_162
+package protocol_os_163
 
 const (
-	Revision        = 162
+	Revision        = 163
 	GameServiceId   = 14
 	UpdateServiceId = 15
 )
