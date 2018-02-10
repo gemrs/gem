@@ -1,16 +1,17 @@
 package protocol_os_163
 
-import "github.com/gemrs/gem/gem/game/entity"
-
-type playerFlags int
-
-const (
-	playerFlagIdentityUpdate = (1 << 7)
-	playerFlagChatUpdate     = (1 << 1)
+import (
+	"github.com/gemrs/gem/gem/game/entity"
+	"github.com/gemrs/gem/gem/protocol/protocol_os"
 )
 
-func translatePlayerFlags(flags entity.Flags) playerFlags {
-	var newFlags playerFlags
+const (
+	playerFlagIdentityUpdate protocol_os.UpdateFlags = (1 << 7)
+	playerFlagChatUpdate     protocol_os.UpdateFlags = (1 << 1)
+)
+
+func translatePlayerFlags(flags entity.Flags) protocol_os.UpdateFlags {
+	var newFlags protocol_os.UpdateFlags
 
 	if flags&entity.MobFlagIdentityUpdate != 0 {
 		newFlags |= playerFlagIdentityUpdate

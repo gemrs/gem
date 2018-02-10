@@ -7,7 +7,14 @@ import (
 	"github.com/gemrs/gem/gem/game/server"
 )
 
-func (o OutboundLoginResponse) Encode(w io.Writer, flags interface{}) {
+func (o OutboundRemoveGroundItem) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundSetInterface) Encode(w io.Writer, flags interface{}) {
 	packet := server.Proto.Encode(o)
 	if packet != nil {
 		packet.Encode(w, flags)
@@ -15,6 +22,69 @@ func (o OutboundLoginResponse) Encode(w io.Writer, flags interface{}) {
 }
 
 func (o OutboundChatMessage) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundRegionUpdate) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundSetText) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundPlayerInit) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundCreateGlobalGroundItem) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundSetUpdatingTile) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundResetCamera) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundSetRootInterface) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o PlayerUpdate) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundSkill) Encode(w io.Writer, flags interface{}) {
 	packet := server.Proto.Encode(o)
 	if packet != nil {
 		packet.Encode(w, flags)
@@ -35,13 +105,6 @@ func (o OutboundCreateGroundItem) Encode(w io.Writer, flags interface{}) {
 	}
 }
 
-func (o OutboundResetCamera) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
 func (o OutboundDnsLookup) Encode(w io.Writer, flags interface{}) {
 	packet := server.Proto.Encode(o)
 	if packet != nil {
@@ -49,7 +112,21 @@ func (o OutboundDnsLookup) Encode(w io.Writer, flags interface{}) {
 	}
 }
 
-func (o OutboundSkill) Encode(w io.Writer, flags interface{}) {
+func (o OutboundScriptEvent) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundInitInterface) Encode(w io.Writer, flags interface{}) {
+	packet := server.Proto.Encode(o)
+	if packet != nil {
+		packet.Encode(w, flags)
+	}
+}
+
+func (o OutboundLoginResponse) Encode(w io.Writer, flags interface{}) {
 	packet := server.Proto.Encode(o)
 	if packet != nil {
 		packet.Encode(w, flags)
@@ -57,20 +134,6 @@ func (o OutboundSkill) Encode(w io.Writer, flags interface{}) {
 }
 
 func (o OutboundTabInterface) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundSetText) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundPlayerInit) Encode(w io.Writer, flags interface{}) {
 	packet := server.Proto.Encode(o)
 	if packet != nil {
 		packet.Encode(w, flags)
@@ -92,69 +155,6 @@ func (o OutboundPlayerChatMessage) Encode(w io.Writer, flags interface{}) {
 }
 
 func (o OutboundUpdateInventoryItem) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundSetInterface) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundInitInterface) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o PlayerUpdate) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundRegionUpdate) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundCreateGlobalGroundItem) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundRemoveGroundItem) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundSetUpdatingTile) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundSetRootInterface) Encode(w io.Writer, flags interface{}) {
-	packet := server.Proto.Encode(o)
-	if packet != nil {
-		packet.Encode(w, flags)
-	}
-}
-
-func (o OutboundScriptEvent) Encode(w io.Writer, flags interface{}) {
 	packet := server.Proto.Encode(o)
 	if packet != nil {
 		packet.Encode(w, flags)

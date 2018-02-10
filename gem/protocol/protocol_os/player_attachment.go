@@ -1,26 +1,26 @@
-package protocol_os_163
+package protocol_os
 
 import "github.com/gemrs/gem/gem/protocol"
 
-type playerData struct {
+type PlayerData struct {
 	skipCount              int
 	skipFlags              [protocol.MaxPlayers]skipBits
-	localPlayers           [protocol.MaxPlayers]int
-	externalPlayers        [protocol.MaxPlayers]int
-	localPlayerCount       int
-	externalPlayerCount    int
-	frame                  FrameType
-	playerIndexInitialized bool
+	LocalPlayers           [protocol.MaxPlayers]int
+	ExternalPlayers        [protocol.MaxPlayers]int
+	LocalPlayerCount       int
+	ExternalPlayerCount    int
+	Frame                  FrameType
+	PlayerIndexInitialized bool
 }
 
-func newPlayerData() *playerData {
-	return &playerData{
-		frame: FixedFrame,
+func NewPlayerData() *PlayerData {
+	return &PlayerData{
+		Frame: FixedFrame,
 	}
 }
 
-func getPlayerData(d interface{}) *playerData {
-	return d.(*playerData)
+func GetPlayerData(d interface{}) *PlayerData {
+	return d.(*PlayerData)
 }
 
 type skipBits int

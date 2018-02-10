@@ -1,4 +1,4 @@
-package protocol_os_163
+package protocol_os
 
 import (
 	"github.com/gemrs/gem/gem/core/crypto"
@@ -7,7 +7,7 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-func (p protocolImpl) NewLoginHandler() server.LoginHandler {
+func (p ProtocolBase) NewLoginHandler() server.LoginHandler {
 	return &LoginHandler{}
 }
 
@@ -31,9 +31,9 @@ func (handler *LoginHandler) Perform(client server.GameClient) {
 	})
 
 	player := client.(protocol.Player)
-	playerData := newPlayerData()
+	playerData := NewPlayerData()
 	player.SetProtoData(playerData)
-	player.SetCurrentFrame(playerData.frame)
+	player.SetCurrentFrame(playerData.Frame)
 	player.SetDecodeFunc(handler.decodeLoginBlock)
 }
 
@@ -66,13 +66,6 @@ func (handler *LoginHandler) decodeLoginBlock(client server.GameClient) error {
 	loginBlock := InboundLoginBlock{}
 	loginBlock.Decode(client.Conn().ReadBuffer, nil)
 
-	/*
-		expectedSecureBlockSize := int(loginBlock.LoginLen) - ((9 * 4) + 1 + 1 + 1 + 2)
-		if expectedSecureBlockSize != int(loginBlock.SecureBlockSize) {
-			client.Log().Error("Secure block size mismatch: got %v expected %v", loginBlock.SecureBlockSize, expectedSecureBlockSize)
-			client.Conn().Disconnect()
-		}
-	*/
 	handler.secureBlockSize = loginBlock.SecureBlockSize
 
 	client.SetDecodeFunc(handler.decodeSecureBlock)

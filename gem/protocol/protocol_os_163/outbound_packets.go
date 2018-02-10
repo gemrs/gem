@@ -7,6 +7,7 @@ import (
 	"github.com/gemrs/gem/gem/core/encoding"
 	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/protocol"
+	"github.com/gemrs/gem/gem/protocol/protocol_os"
 )
 
 // +gen define_outbound:"Pkt39,SzVar8"
@@ -48,7 +49,7 @@ func (struc OutboundRemoveGroundItem) Encode(w io.Writer, flags interface{}) {
 type OutboundTabInterface protocol.OutboundTabInterface
 
 func (struc OutboundTabInterface) Encode(w io.Writer, flags interface{}) {
-	frame := getPlayerData(struc.ProtoData).frame
+	frame := protocol_os.GetPlayerData(struc.ProtoData).Frame
 	packet := OutboundSetInterfaceDefinition.Pack(OutboundSetInterface{
 		RootID:      frame.Root,
 		ChildID:     frame.Tabs[struc.Tab],
@@ -147,25 +148,25 @@ type OutboundRegionUpdate protocol.OutboundRegionUpdate
 func (struc OutboundRegionUpdate) Encode(w io.Writer, flags interface{}) {
 	buf := encoding.WrapWriter(w)
 
-	pdata := getPlayerData(struc.ProtoData)
+	pdata := protocol_os.GetPlayerData(struc.ProtoData)
 	pos := struc.Player.Position()
 	playerIndex := struc.Player.Index()
 
-	if !pdata.playerIndexInitialized {
-		pdata.playerIndexInitialized = true
+	if !pdata.PlayerIndexInitialized {
+		pdata.PlayerIndexInitialized = true
 
 		compressedPos := pos.Y() + (pos.X() << 14) + (pos.Z() << 28)
 		bitBuf := encoding.NewBitBuffer(buf)
 		bitBuf.Write(30, uint32(compressedPos))
 
-		pdata.localPlayers[pdata.localPlayerCount] = playerIndex
-		pdata.localPlayerCount++
+		pdata.LocalPlayers[pdata.LocalPlayerCount] = playerIndex
+		pdata.LocalPlayerCount++
 
 		for i := 1; i < protocol.MaxPlayers; i++ {
 			if i != playerIndex {
 				bitBuf.Write(18, 0)
-				pdata.externalPlayers[pdata.externalPlayerCount] = i
-				pdata.externalPlayerCount++
+				pdata.ExternalPlayers[pdata.ExternalPlayerCount] = i
+				pdata.ExternalPlayerCount++
 			}
 		}
 
@@ -251,7 +252,7 @@ type OutboundSetRootInterface protocol.OutboundSetRootInterface
 
 func (struc OutboundSetRootInterface) Encode(w io.Writer, flags interface{}) {
 	buf := encoding.WrapWriter(w)
-	frame := struc.Frame.(FrameType)
+	frame := struc.Frame.(protocol_os.FrameType)
 	buf.PutU16(frame.Root)
 }
 
@@ -307,7 +308,7 @@ func (struc OutboundScriptEvent) Encode(w io.Writer, flags interface{}) {
 type OutboundInitInterface protocol.OutboundInitInterface
 
 func (struc OutboundInitInterface) Encode(w io.Writer, flags interface{}) {
-	frame := getPlayerData(struc.ProtoData).frame
+	frame := protocol_os.GetPlayerData(struc.ProtoData).Frame
 
 	OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface{
 		Frame: frame,
