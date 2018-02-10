@@ -25,6 +25,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+var logger = willow.New("main", nil)
 var contentDir = flag.String("content", "content", "the content directory")
 var unsafeLua = flag.Bool("lua-unsafe", false, "invoke lua main without pcall")
 
@@ -66,7 +67,9 @@ func main() {
 	item.Binditem(L)
 	data.Binddata(L)
 
+	//server.SetProtocolImpl(protocol_os_162.Protocol)
 	server.SetProtocolImpl(protocol_os_163.Protocol)
+	logger.Notice("Protocol revision %v", server.Proto.ProtocolRevision())
 
 	if *unsafeLua {
 		if fn, err := L.LoadFile(mainFile); err != nil {

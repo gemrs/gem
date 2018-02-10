@@ -12,6 +12,11 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
+type PlayerUpdateConfig struct {
+	TranslatePlayerFlags  func(entity.Flags) UpdateFlags
+	EncodeAppearanceBlock func(w encoding.Writer, block []byte)
+}
+
 type PlayerUpdate protocol.PlayerUpdate
 
 func (struc PlayerUpdate) attachment() *PlayerData {
@@ -22,13 +27,13 @@ func (struc PlayerUpdate) Encode(w_ io.Writer, flags interface{}) {
 	w := &bytes.Buffer{}
 	data := struc.attachment()
 
-	translatePlayerFlags := flags.(func(entity.Flags) UpdateFlags)
+	config := flags.(PlayerUpdateConfig)
 
 	maskBuf := encoding.NewBuffer()
-	struc.processLocalPlayers(w, maskBuf, 0, translatePlayerFlags)
-	struc.processLocalPlayers(w, maskBuf, 1, translatePlayerFlags)
-	struc.processExternalPlayers(w, maskBuf, 2, translatePlayerFlags)
-	struc.processExternalPlayers(w, maskBuf, 3, translatePlayerFlags)
+	struc.processLocalPlayers(w, maskBuf, 0, config)
+	struc.processLocalPlayers(w, maskBuf, 1, config)
+	struc.processExternalPlayers(w, maskBuf, 2, config)
+	struc.processExternalPlayers(w, maskBuf, 3, config)
 
 	maskBytes := maskBuf.Bytes()
 	if len(maskBytes) > 0 {
@@ -75,7 +80,7 @@ func playerVisible(me, them protocol.Player) bool {
 	return dx <= protocol.PlayerViewDistance && dy <= protocol.PlayerViewDistance && dz == 0
 }
 
-func (struc PlayerUpdate) processLocalPlayers(w io.Writer, maskBuf *encoding.Buffer, iter int, translatePlayerFlags func(entity.Flags) UpdateFlags) {
+func (struc PlayerUpdate) processLocalPlayers(w io.Writer, maskBuf *encoding.Buffer, iter int, config PlayerUpdateConfig) {
 	buf := encoding.NewBitBuffer(w)
 	defer buf.Close()
 	data := struc.attachment()
@@ -103,7 +108,7 @@ func (struc PlayerUpdate) processLocalPlayers(w io.Writer, maskBuf *encoding.Buf
 				struc.removePlayer(buf, player)
 			} else if updateRequired {
 				buf.Write(1, 1)
-				struc.updateLocalPlayers(buf, maskBuf, player, translatePlayerFlags)
+				struc.updateLocalPlayers(buf, maskBuf, player, config)
 			} else {
 				buf.Write(1, 0)
 				struc.skipLocalPlayers(buf, i, iter)
@@ -113,7 +118,7 @@ func (struc PlayerUpdate) processLocalPlayers(w io.Writer, maskBuf *encoding.Buf
 	}
 }
 
-func (struc PlayerUpdate) processExternalPlayers(w io.Writer, maskBuf *encoding.Buffer, iter int, translatePlayerFlags func(entity.Flags) UpdateFlags) {
+func (struc PlayerUpdate) processExternalPlayers(w io.Writer, maskBuf *encoding.Buffer, iter int, config PlayerUpdateConfig) {
 	buf := encoding.NewBitBuffer(w)
 	defer buf.Close()
 	data := struc.attachment()
@@ -136,7 +141,7 @@ func (struc PlayerUpdate) processExternalPlayers(w io.Writer, maskBuf *encoding.
 					panic(fmt.Errorf("don't have player data for index %v\n", index))
 				}
 
-				struc.addPlayer(buf, maskBuf, player, translatePlayerFlags)
+				struc.addPlayer(buf, maskBuf, player, config)
 				data.skipFlags[index].updateNextIter()
 			} else {
 				buf.Write(1, 0)
@@ -204,7 +209,7 @@ func (struc PlayerUpdate) writeSkip(buf *encoding.BitBuffer, skip int) {
 	}
 }
 
-func (struc PlayerUpdate) addPlayer(buf *encoding.BitBuffer, maskBuf *encoding.Buffer, player protocol.Player, translatePlayerFlags func(entity.Flags) UpdateFlags) {
+func (struc PlayerUpdate) addPlayer(buf *encoding.BitBuffer, maskBuf *encoding.Buffer, player protocol.Player, config PlayerUpdateConfig) {
 	// Add player
 	buf.Write(2, 0)
 
@@ -221,7 +226,7 @@ func (struc PlayerUpdate) addPlayer(buf *encoding.BitBuffer, maskBuf *encoding.B
 	// Force identity update
 	flags := struc.getModifiedUpdateFlags(player) & ^entity.MobFlagMovementUpdate
 	flags |= entity.MobFlagIdentityUpdate
-	struc.buildBlockUpdates(maskBuf, player, flags, translatePlayerFlags)
+	struc.buildBlockUpdates(maskBuf, player, flags, config)
 }
 
 func (struc PlayerUpdate) removePlayer(buf *encoding.BitBuffer, player protocol.Player) {
@@ -231,7 +236,7 @@ func (struc PlayerUpdate) removePlayer(buf *encoding.BitBuffer, player protocol.
 	buf.Write(1, 0)
 }
 
-func (struc PlayerUpdate) updateLocalPlayers(buf *encoding.BitBuffer, maskBuf *encoding.Buffer, thisPlayer protocol.Player, translatePlayerFlags func(entity.Flags) UpdateFlags) {
+func (struc PlayerUpdate) updateLocalPlayers(buf *encoding.BitBuffer, maskBuf *encoding.Buffer, thisPlayer protocol.Player, config PlayerUpdateConfig) {
 	flags := struc.getModifiedUpdateFlags(thisPlayer) & ^entity.MobFlagMovementUpdate
 	if flags != 0 {
 		buf.Write(1, 1)
@@ -240,11 +245,11 @@ func (struc PlayerUpdate) updateLocalPlayers(buf *encoding.BitBuffer, maskBuf *e
 	}
 
 	struc.buildMovementBlock(buf, thisPlayer)
-	struc.buildBlockUpdates(maskBuf, thisPlayer, flags, translatePlayerFlags)
+	struc.buildBlockUpdates(maskBuf, thisPlayer, flags, config)
 }
 
-func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer protocol.Player, entityFlags entity.Flags, translatePlayerFlags func(entity.Flags) UpdateFlags) {
-	flags := translatePlayerFlags(entityFlags)
+func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer protocol.Player, entityFlags entity.Flags, config PlayerUpdateConfig) {
+	flags := config.TranslatePlayerFlags(entityFlags)
 
 	if flags > 0 {
 		if flags >= 0x100 {
@@ -261,7 +266,7 @@ func (struc PlayerUpdate) buildBlockUpdates(maskBuf *encoding.Buffer, thisPlayer
 	}
 
 	if (entityFlags & entity.MobFlagIdentityUpdate) != 0 {
-		struc.buildAppearanceUpdateBlock(maskBuf, thisPlayer)
+		struc.buildAppearanceUpdateBlock(maskBuf, thisPlayer, config)
 	}
 
 	return
@@ -283,7 +288,7 @@ func (struc PlayerUpdate) buildChatUpdateBlock(maskBuf *encoding.Buffer, thisPla
 	huffmanBlock.WriteTo(maskBuf)
 }
 
-func (struc PlayerUpdate) buildAppearanceUpdateBlock(maskBuf *encoding.Buffer, thisPlayer protocol.Player) {
+func (struc PlayerUpdate) buildAppearanceUpdateBlock(maskBuf *encoding.Buffer, thisPlayer protocol.Player, config PlayerUpdateConfig) {
 	appearance := thisPlayer.Profile().Appearance()
 	appearanceBuf := encoding.NewBuffer()
 
@@ -398,13 +403,9 @@ func (struc PlayerUpdate) buildAppearanceUpdateBlock(maskBuf *encoding.Buffer, t
 	// Hidden
 	appearanceBuf.PutU8(0)
 
+	// This tends to change between protocol versions
 	srcBlock := appearanceBuf.Bytes()
-	block := make([]byte, len(srcBlock))
-	for i := range srcBlock {
-		block[i] = srcBlock[i] + 128
-	}
-	maskBuf.PutU8(len(block), encoding.IntOffset128)
-	maskBuf.Write(block)
+	config.EncodeAppearanceBlock(maskBuf, srcBlock)
 }
 
 func (struc PlayerUpdate) getModifiedUpdateFlags(updatingPlayer protocol.Player) entity.Flags {

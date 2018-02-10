@@ -1,4 +1,4 @@
-package protocol_os_163
+package protocol_os_162
 
 import (
 	"io"
@@ -7,7 +7,7 @@ import (
 	"github.com/gemrs/gem/gem/protocol/protocol_os"
 )
 
-// +gen define_outbound:"Pkt3,SzVar16"
+// +gen define_outbound:"Pkt40,SzVar16"
 type PlayerUpdate protocol_os.PlayerUpdate
 
 func (struc PlayerUpdate) Encode(w io.Writer, flags interface{}) {
@@ -16,9 +16,9 @@ func (struc PlayerUpdate) Encode(w io.Writer, flags interface{}) {
 		EncodeAppearanceBlock: func(w encoding.Writer, srcBlock []byte) {
 			block := make([]byte, len(srcBlock))
 			for i := range srcBlock {
-				block[i] = srcBlock[i] + 128
+				block[i] = srcBlock[len(block)-i-1]
 			}
-			w.PutU8(len(block), encoding.IntOffset128)
+			w.PutU8(len(block), encoding.IntNegate)
 			w.Write(block)
 		},
 	}

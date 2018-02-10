@@ -23,6 +23,7 @@ type Protocol interface {
 	NewUpdateService(runite *runite.Context) Service
 	GameServiceId() int
 	UpdateServiceId() int
+	ProtocolRevision() int
 }
 
 type Message interface{}

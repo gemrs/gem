@@ -8,6 +8,8 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
+var Revision int
+
 type OutboundGameHandshake struct {
 	UID             int
 	ServerISAACSeed [2]int
@@ -59,7 +61,7 @@ func (p ProtocolBase) Handshake(conn *server.Connection) int {
 	if service == UpdateServiceId {
 		var handshake InboundUpdateHandshake
 		handshake.Decode(conn.NetConn(), nil)
-		if handshake.Revision != p.Revision {
+		if handshake.Revision != Revision {
 			response = int(protocol.AuthUpdates)
 		}
 

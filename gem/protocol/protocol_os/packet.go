@@ -18,6 +18,8 @@ const (
 	SzVar16
 )
 
+var InboundSizes map[int]int
+
 type PacketHeader struct {
 	Number int
 	Size   FrameSize
@@ -83,7 +85,7 @@ func (p *PacketHeader) Decode(buf io.Reader, flags interface{}) {
 	//TODO: verify size matches expected
 	switch p.Size {
 	case SzFixed:
-		p.Size = FrameSize(inboundPacketLengths[p.Number])
+		p.Size = FrameSize(InboundSizes[p.Number])
 
 	case SzVar8:
 		var size8 encoding.Int8
