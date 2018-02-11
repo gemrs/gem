@@ -17,6 +17,8 @@ func lBindgame_event(L *lua.LState) int {
 
 	L.SetField(mod, "player_command", glua.ToLua(L, PlayerCommand))
 
+	L.SetField(mod, "player_ground_item_action", glua.ToLua(L, PlayerGroundItemAction))
+
 	L.SetField(mod, "player_inventory_action", glua.ToLua(L, PlayerInventoryAction))
 
 	L.SetField(mod, "player_load_profile", glua.ToLua(L, PlayerLoadProfile))
@@ -24,6 +26,8 @@ func lBindgame_event(L *lua.LState) int {
 	L.SetField(mod, "player_login", glua.ToLua(L, PlayerLogin))
 
 	L.SetField(mod, "player_logout", glua.ToLua(L, PlayerLogout))
+
+	L.SetField(mod, "player_widget_action", glua.ToLua(L, PlayerWidgetAction))
 
 	L.Push(mod)
 	return 1

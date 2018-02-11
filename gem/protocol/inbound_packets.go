@@ -30,7 +30,16 @@ type InboundChatMessage struct {
 	PackedMessage []byte
 }
 
-type InboundTakeGroundItem struct {
+type InboundWidgetAction struct {
+	Action      int
+	InterfaceID int
+	WidgetID    int
+	Param       int
+	ItemID      int
+}
+
+type InboundGroundItemAction struct {
+	Action int
 	X, Y   int
 	ItemID int
 }

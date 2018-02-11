@@ -95,7 +95,7 @@ func (struc *InboundInventorySwapItem) Decode(r io.Reader, flags interface{}) {
 }
 
 // +gen define_inbound:"Pkt42,SzFixed"
-type InboundTakeGroundItem protocol.InboundTakeGroundItem
+type InboundTakeGroundItem protocol.InboundGroundItemAction
 
 func (struc *InboundTakeGroundItem) Decode(r io.Reader, flags interface{}) {
 	buf := encoding.WrapReader(r)

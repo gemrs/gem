@@ -28,12 +28,19 @@ func NewEquipment() *Equipment {
 func (e *Equipment) Equip(slot int, stack *item.Stack) (oldEquipment *item.Stack) {
 	if e.container.SlotPopulated(slot) {
 		oldEquipment = e.container.RemoveAllFromSlot(slot)
-		e.container.Add(oldEquipment)
 	}
 
 	e.container.SetSlot(slot, stack)
 	e.signalUpdate()
 	return
+}
+
+func (e *Equipment) Unequip(slot int) *item.Stack {
+	if !e.container.SlotPopulated(slot) {
+		panic("unequip on empty slot")
+	}
+	defer e.signalUpdate()
+	return e.container.RemoveAllFromSlot(slot)
 }
 
 func (e *Equipment) Slot(i int) *item.Stack {

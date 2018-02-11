@@ -142,4 +142,5 @@ type Equipment interface {
 	Equip(slot int, item *item.Stack) (oldEquipment *item.Stack)
 	Container() *item.Container
 	Slot(i int) *item.Stack
+	Unequip(slot int) *item.Stack
 }
