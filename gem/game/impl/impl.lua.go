@@ -2,6 +2,7 @@
 package impl
 
 import (
+	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/game/position"
 	"github.com/gemrs/gem/gem/game/server"
@@ -194,7 +195,10 @@ func lNewPlayer(L *lua.LState) int {
 	arg2Value := L.Get(1)
 	arg2 := glua.FromLua(arg2Value).(*world.Instance)
 	L.Remove(1)
-	retVal := NewPlayer(arg0, arg1, arg2)
+	arg3Value := L.Get(1)
+	arg3 := glua.FromLua(arg3Value).(auth.Provider)
+	L.Remove(1)
+	retVal := NewPlayer(arg0, arg1, arg2, arg3)
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 
@@ -336,9 +340,13 @@ var ProfileMethods = map[string]lua.LGFunction{
 
 	"inventory": lBindProfileInventory,
 
+	"load": lBindProfileLoad,
+
 	"password": lBindProfilePassword,
 
 	"rights": lBindProfileRights,
+
+	"save": lBindProfileSave,
 
 	"skills": lBindProfileSkills,
 
@@ -365,6 +373,17 @@ func lBindProfileInventory(L *lua.LState) int {
 
 }
 
+func lBindProfileLoad(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Profile)
+	L.Remove(1)
+	arg0Value := L.Get(1)
+	arg0 := glua.FromLua(arg0Value).(string)
+	L.Remove(1)
+	self.Load(arg0)
+	return 0
+
+}
+
 func lBindProfilePassword(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Profile)
 	L.Remove(1)
@@ -378,6 +397,15 @@ func lBindProfileRights(L *lua.LState) int {
 	self := glua.FromLua(L.Get(1)).(*Profile)
 	L.Remove(1)
 	retVal := self.Rights()
+	L.Push(glua.ToLua(L, retVal))
+	return 1
+
+}
+
+func lBindProfileSave(L *lua.LState) int {
+	self := glua.FromLua(L.Get(1)).(*Profile)
+	L.Remove(1)
+	retVal := self.Save()
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 

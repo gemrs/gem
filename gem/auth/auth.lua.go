@@ -39,7 +39,10 @@ func lNewFunc(L *lua.LState) int {
 	arg0Value := L.Get(1)
 	arg0 := glua.FromLua(arg0Value).(lua.LValue)
 	L.Remove(1)
-	retVal := NewFunc(L, arg0)
+	arg1Value := L.Get(1)
+	arg1 := glua.FromLua(arg1Value).(lua.LValue)
+	L.Remove(1)
+	retVal := NewFunc(L, arg0, arg1)
 	L.Push(glua.ToLua(L, retVal))
 	return 1
 

@@ -2,6 +2,7 @@
 package position
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -10,18 +11,30 @@ import (
 // Absolute is a coordinate mapping to a single tile within the world
 //glua:bind
 type Absolute struct {
-	x, y, z int
+	jsonAbsolute
+}
+
+type jsonAbsolute struct {
+	X, Y, Z int
 }
 
 //glua:bind constructor Absolute
 func NewAbsolute(x, y, z int) *Absolute {
-	return &Absolute{x, y, z}
+	return &Absolute{jsonAbsolute{x, y, z}}
+}
+
+func (pos *Absolute) MarshalJSON() ([]byte, error) {
+	return json.Marshal(pos.jsonAbsolute)
+}
+
+func (pos *Absolute) UnmarshalJSON(d []byte) error {
+	return json.Unmarshal(d, &pos.jsonAbsolute)
 }
 
 func (pos *Absolute) Compare(other *Absolute) bool {
-	return pos.x == other.x &&
-		pos.y == other.y &&
-		pos.z == other.z
+	return pos.jsonAbsolute.X == other.jsonAbsolute.X &&
+		pos.jsonAbsolute.Y == other.jsonAbsolute.Y &&
+		pos.jsonAbsolute.Z == other.jsonAbsolute.Z
 }
 
 func (pos *Absolute) Delta(target *Absolute) (x, y, z int) {
@@ -55,29 +68,29 @@ func (pos *Absolute) NextInterpolatedPoint(target *Absolute) *Absolute {
 
 //glua:bind
 func (pos *Absolute) X() int {
-	return pos.x
+	return pos.jsonAbsolute.X
 }
 
 //glua:bind
 func (pos *Absolute) Y() int {
-	return pos.y
+	return pos.jsonAbsolute.Y
 }
 
 //glua:bind
 func (pos *Absolute) Z() int {
-	return pos.z
+	return pos.jsonAbsolute.Z
 }
 
 func (pos *Absolute) String() string {
-	return fmt.Sprintf("Absolute<%v, %v, %v>", pos.x, pos.y, pos.z)
+	return fmt.Sprintf("Absolute<%v, %v, %v>", pos.X(), pos.Y(), pos.Z())
 }
 
 // Sector calculates the sector which contains an Absolute
 func (pos *Absolute) Sector() *Sector {
 	sector := NewSector(
-		pos.x/SectorSize,
-		pos.y/SectorSize,
-		pos.z,
+		pos.X()/SectorSize,
+		pos.Y()/SectorSize,
+		pos.Z(),
 	)
 	return sector
 }
@@ -92,9 +105,9 @@ func (pos *Absolute) RegionOf() *Region {
 // LocalTo calculates the local coordinates of an Absolute relative to a region
 func (pos *Absolute) LocalTo(region *Region) *Local {
 	local := NewLocal(
-		pos.x-(SectorSize*region.origin.x),
-		pos.y-(SectorSize*region.origin.y),
-		pos.z,
+		pos.X()-(SectorSize*region.origin.x),
+		pos.Y()-(SectorSize*region.origin.y),
+		pos.Z(),
 		region,
 	)
 	return local

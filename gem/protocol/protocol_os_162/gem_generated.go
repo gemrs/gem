@@ -9,84 +9,9 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
-var InboundMouseClickDefinition = InboundPacketDefinition{
-	Number: 61,
-	Size:   SzFixed,
-}
-
-var InboundWindowFocusDefinition = InboundPacketDefinition{
-	Number: 33,
-	Size:   SzFixed,
-}
-
-var InboundMouseMovementDefinition = InboundPacketDefinition{
-	Number: 58,
-	Size:   SzVar8,
-}
-
-var OutboundChatMessageDefinition = OutboundPacketDefinition{
-	Number: 52,
-	Size:   SzVar8,
-}
-
-var OutboundRemoveGroundItemDefinition = OutboundPacketDefinition{
-	Number: 35,
-	Size:   SzFixed,
-}
-
 var InboundInventoryAction5Definition = InboundPacketDefinition{
 	Number: 14,
 	Size:   SzFixed,
-}
-
-var InboundInventorySwapItemDefinition = InboundPacketDefinition{
-	Number: 57,
-	Size:   SzFixed,
-}
-
-var InboundChatMessageDefinition = InboundPacketDefinition{
-	Number: 17,
-	Size:   SzVar8,
-}
-
-var OutboundCreateGroundItemDefinition = OutboundPacketDefinition{
-	Number: 46,
-	Size:   SzFixed,
-}
-
-var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
-	Number: 39,
-	Size:   SzVar16,
-}
-
-var InboundCommandDefinition = InboundPacketDefinition{
-	Number: 93,
-	Size:   SzVar8,
-}
-
-var InboundInventoryAction3Definition = InboundPacketDefinition{
-	Number: 5,
-	Size:   SzFixed,
-}
-
-var OutboundScriptEventDefinition = OutboundPacketDefinition{
-	Number: 18,
-	Size:   SzVar16,
-}
-
-var InboundKeyPressDefinition = InboundPacketDefinition{
-	Number: 80,
-	Size:   SzVar16,
-}
-
-var OutboundSetRootInterfaceDefinition = OutboundPacketDefinition{
-	Number: 2,
-	Size:   SzFixed,
-}
-
-var InboundPlayerWalkDefinition = InboundPacketDefinition{
-	Number: 45,
-	Size:   SzVar8,
 }
 
 var PlayerUpdateDefinition = OutboundPacketDefinition{
@@ -94,13 +19,13 @@ var PlayerUpdateDefinition = OutboundPacketDefinition{
 	Size:   SzVar16,
 }
 
-var InboundInventoryAction1Definition = InboundPacketDefinition{
-	Number: 86,
-	Size:   SzFixed,
+var InboundPlayerWalkMapDefinition = InboundPacketDefinition{
+	Number: 84,
+	Size:   SzVar8,
 }
 
-var OutboundSkillDefinition = OutboundPacketDefinition{
-	Number: 37,
+var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
+	Number: 29,
 	Size:   SzFixed,
 }
 
@@ -109,9 +34,69 @@ var InboundInventoryAction2Definition = InboundPacketDefinition{
 	Size:   SzFixed,
 }
 
-var OutboundSetInterfaceDefinition = OutboundPacketDefinition{
-	Number: 29,
+var InboundChatMessageDefinition = InboundPacketDefinition{
+	Number: 17,
+	Size:   SzVar8,
+}
+
+var OutboundUpdateAllInventoryItemsDefinition = OutboundPacketDefinition{
+	Number: 62,
+	Size:   SzVar16,
+}
+
+var OutboundSetRootInterfaceDefinition = OutboundPacketDefinition{
+	Number: 2,
 	Size:   SzFixed,
+}
+
+var InboundKeyPressDefinition = InboundPacketDefinition{
+	Number: 80,
+	Size:   SzVar16,
+}
+
+var OutboundChatMessageDefinition = OutboundPacketDefinition{
+	Number: 52,
+	Size:   SzVar8,
+}
+
+var OutboundCreateGroundItemDefinition = OutboundPacketDefinition{
+	Number: 46,
+	Size:   SzFixed,
+}
+
+var OutboundRemoveGroundItemDefinition = OutboundPacketDefinition{
+	Number: 35,
+	Size:   SzFixed,
+}
+
+var OutboundScriptEventDefinition = OutboundPacketDefinition{
+	Number: 18,
+	Size:   SzVar16,
+}
+
+var InboundMouseClickDefinition = InboundPacketDefinition{
+	Number: 61,
+	Size:   SzFixed,
+}
+
+var InboundPlayerWalkDefinition = InboundPacketDefinition{
+	Number: 45,
+	Size:   SzVar8,
+}
+
+var OutboundUpdateInventoryItemDefinition = OutboundPacketDefinition{
+	Number: 13,
+	Size:   SzVar16,
+}
+
+var OutboundSkillDefinition = OutboundPacketDefinition{
+	Number: 37,
+	Size:   SzFixed,
+}
+
+var OutboundRegionUpdateDefinition = OutboundPacketDefinition{
+	Number: 39,
+	Size:   SzVar16,
 }
 
 var OutboundSetUpdatingTileDefinition = OutboundPacketDefinition{
@@ -119,13 +104,18 @@ var OutboundSetUpdatingTileDefinition = OutboundPacketDefinition{
 	Size:   SzFixed,
 }
 
-var InboundCameraMovementDefinition = InboundPacketDefinition{
-	Number: 48,
+var InboundInventoryAction1Definition = InboundPacketDefinition{
+	Number: 86,
 	Size:   SzFixed,
 }
 
-var InboundInventoryAction4Definition = InboundPacketDefinition{
-	Number: 85,
+var InboundInventoryAction3Definition = InboundPacketDefinition{
+	Number: 5,
+	Size:   SzFixed,
+}
+
+var InboundInventorySwapItemDefinition = InboundPacketDefinition{
+	Number: 57,
 	Size:   SzFixed,
 }
 
@@ -134,14 +124,24 @@ var InboundTakeGroundItemDefinition = InboundPacketDefinition{
 	Size:   SzFixed,
 }
 
-var OutboundUpdateInventoryItemDefinition = OutboundPacketDefinition{
-	Number: 13,
-	Size:   SzVar16,
+var InboundWindowFocusDefinition = InboundPacketDefinition{
+	Number: 33,
+	Size:   SzFixed,
 }
 
-var OutboundUpdateAllInventoryItemsDefinition = OutboundPacketDefinition{
-	Number: 62,
-	Size:   SzVar16,
+var InboundCommandDefinition = InboundPacketDefinition{
+	Number: 93,
+	Size:   SzVar8,
+}
+
+var InboundInventoryAction4Definition = InboundPacketDefinition{
+	Number: 85,
+	Size:   SzFixed,
+}
+
+var InboundMouseMovementDefinition = InboundPacketDefinition{
+	Number: 58,
+	Size:   SzVar8,
 }
 
 var InboundPingDefinition = InboundPacketDefinition{
@@ -149,36 +149,12 @@ var InboundPingDefinition = InboundPacketDefinition{
 	Size:   SzFixed,
 }
 
-var InboundPlayerWalkMapDefinition = InboundPacketDefinition{
-	Number: 84,
-	Size:   SzVar8,
+var InboundCameraMovementDefinition = InboundPacketDefinition{
+	Number: 48,
+	Size:   SzFixed,
 }
 
 var inboundPacketBuilders = map[int]func() encoding.Decodable{
-
-	61: func() encoding.Decodable {
-		return &PacketHeader{
-			Number: InboundMouseClickDefinition.Number,
-			Size:   InboundMouseClickDefinition.Size,
-			Object: new(InboundMouseClick),
-		}
-	},
-
-	33: func() encoding.Decodable {
-		return &PacketHeader{
-			Number: InboundWindowFocusDefinition.Number,
-			Size:   InboundWindowFocusDefinition.Size,
-			Object: new(InboundWindowFocus),
-		}
-	},
-
-	58: func() encoding.Decodable {
-		return &PacketHeader{
-			Number: InboundMouseMovementDefinition.Number,
-			Size:   InboundMouseMovementDefinition.Size,
-			Object: new(InboundMouseMovement),
-		}
-	},
 
 	14: func() encoding.Decodable {
 		return &PacketHeader{
@@ -188,11 +164,19 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 		}
 	},
 
-	57: func() encoding.Decodable {
+	84: func() encoding.Decodable {
 		return &PacketHeader{
-			Number: InboundInventorySwapItemDefinition.Number,
-			Size:   InboundInventorySwapItemDefinition.Size,
-			Object: new(InboundInventorySwapItem),
+			Number: InboundPlayerWalkMapDefinition.Number,
+			Size:   InboundPlayerWalkMapDefinition.Size,
+			Object: new(InboundPlayerWalkMap),
+		}
+	},
+
+	56: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundInventoryAction2Definition.Number,
+			Size:   InboundInventoryAction2Definition.Size,
+			Object: new(InboundInventoryAction2),
 		}
 	},
 
@@ -204,27 +188,19 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 		}
 	},
 
-	93: func() encoding.Decodable {
-		return &PacketHeader{
-			Number: InboundCommandDefinition.Number,
-			Size:   InboundCommandDefinition.Size,
-			Object: new(InboundCommand),
-		}
-	},
-
-	5: func() encoding.Decodable {
-		return &PacketHeader{
-			Number: InboundInventoryAction3Definition.Number,
-			Size:   InboundInventoryAction3Definition.Size,
-			Object: new(InboundInventoryAction3),
-		}
-	},
-
 	80: func() encoding.Decodable {
 		return &PacketHeader{
 			Number: InboundKeyPressDefinition.Number,
 			Size:   InboundKeyPressDefinition.Size,
 			Object: new(InboundKeyPress),
+		}
+	},
+
+	61: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundMouseClickDefinition.Number,
+			Size:   InboundMouseClickDefinition.Size,
+			Object: new(InboundMouseClick),
 		}
 	},
 
@@ -244,27 +220,19 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 		}
 	},
 
-	56: func() encoding.Decodable {
+	5: func() encoding.Decodable {
 		return &PacketHeader{
-			Number: InboundInventoryAction2Definition.Number,
-			Size:   InboundInventoryAction2Definition.Size,
-			Object: new(InboundInventoryAction2),
+			Number: InboundInventoryAction3Definition.Number,
+			Size:   InboundInventoryAction3Definition.Size,
+			Object: new(InboundInventoryAction3),
 		}
 	},
 
-	48: func() encoding.Decodable {
+	57: func() encoding.Decodable {
 		return &PacketHeader{
-			Number: InboundCameraMovementDefinition.Number,
-			Size:   InboundCameraMovementDefinition.Size,
-			Object: new(InboundCameraMovement),
-		}
-	},
-
-	85: func() encoding.Decodable {
-		return &PacketHeader{
-			Number: InboundInventoryAction4Definition.Number,
-			Size:   InboundInventoryAction4Definition.Size,
-			Object: new(InboundInventoryAction4),
+			Number: InboundInventorySwapItemDefinition.Number,
+			Size:   InboundInventorySwapItemDefinition.Size,
+			Object: new(InboundInventorySwapItem),
 		}
 	},
 
@@ -276,6 +244,38 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 		}
 	},
 
+	33: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundWindowFocusDefinition.Number,
+			Size:   InboundWindowFocusDefinition.Size,
+			Object: new(InboundWindowFocus),
+		}
+	},
+
+	93: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundCommandDefinition.Number,
+			Size:   InboundCommandDefinition.Size,
+			Object: new(InboundCommand),
+		}
+	},
+
+	85: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundInventoryAction4Definition.Number,
+			Size:   InboundInventoryAction4Definition.Size,
+			Object: new(InboundInventoryAction4),
+		}
+	},
+
+	58: func() encoding.Decodable {
+		return &PacketHeader{
+			Number: InboundMouseMovementDefinition.Number,
+			Size:   InboundMouseMovementDefinition.Size,
+			Object: new(InboundMouseMovement),
+		}
+	},
+
 	43: func() encoding.Decodable {
 		return &PacketHeader{
 			Number: InboundPingDefinition.Number,
@@ -284,11 +284,11 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 		}
 	},
 
-	84: func() encoding.Decodable {
+	48: func() encoding.Decodable {
 		return &PacketHeader{
-			Number: InboundPlayerWalkMapDefinition.Number,
-			Size:   InboundPlayerWalkMapDefinition.Size,
-			Object: new(InboundPlayerWalkMap),
+			Number: InboundCameraMovementDefinition.Number,
+			Size:   InboundCameraMovementDefinition.Size,
+			Object: new(InboundCameraMovement),
 		}
 	},
 }
@@ -296,32 +296,23 @@ var inboundPacketBuilders = map[int]func() encoding.Decodable{
 func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 	switch message := message.(type) {
 
-	case *InboundMouseClick:
-		return (*protocol.InboundMouseClick)(message)
-
-	case *InboundWindowFocus:
-		return (*protocol.InboundWindowFocus)(message)
-
-	case *InboundMouseMovement:
-		return (*protocol.InboundMouseMovement)(message)
-
 	case *InboundInventoryAction5:
 		return (*protocol.InboundInventoryAction)(message)
 
-	case *InboundInventorySwapItem:
-		return (*protocol.InboundInventorySwapItem)(message)
+	case *InboundPlayerWalkMap:
+		return (*protocol.InboundPlayerWalk)(message)
+
+	case *InboundInventoryAction2:
+		return (*protocol.InboundInventoryAction)(message)
 
 	case *InboundChatMessage:
 		return (*protocol.InboundChatMessage)(message)
 
-	case *InboundCommand:
-		return (*protocol.InboundCommand)(message)
-
-	case *InboundInventoryAction3:
-		return (*protocol.InboundInventoryAction)(message)
-
 	case *InboundKeyPress:
 		return (*protocol.InboundKeyPress)(message)
+
+	case *InboundMouseClick:
+		return (*protocol.InboundMouseClick)(message)
 
 	case *InboundPlayerWalk:
 		return (*protocol.InboundPlayerWalk)(message)
@@ -329,23 +320,32 @@ func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 	case *InboundInventoryAction1:
 		return (*protocol.InboundInventoryAction)(message)
 
-	case *InboundInventoryAction2:
+	case *InboundInventoryAction3:
 		return (*protocol.InboundInventoryAction)(message)
 
-	case *InboundCameraMovement:
-		return (*protocol.InboundCameraMovement)(message)
-
-	case *InboundInventoryAction4:
-		return (*protocol.InboundInventoryAction)(message)
+	case *InboundInventorySwapItem:
+		return (*protocol.InboundInventorySwapItem)(message)
 
 	case *InboundTakeGroundItem:
 		return (*protocol.InboundTakeGroundItem)(message)
 
+	case *InboundWindowFocus:
+		return (*protocol.InboundWindowFocus)(message)
+
+	case *InboundCommand:
+		return (*protocol.InboundCommand)(message)
+
+	case *InboundInventoryAction4:
+		return (*protocol.InboundInventoryAction)(message)
+
+	case *InboundMouseMovement:
+		return (*protocol.InboundMouseMovement)(message)
+
 	case *InboundPing:
 		return (*protocol.InboundPing)(message)
 
-	case *InboundPlayerWalkMap:
-		return (*protocol.InboundPlayerWalk)(message)
+	case *InboundCameraMovement:
+		return (*protocol.InboundCameraMovement)(message)
 
 	case *UnknownPacket:
 		return (*protocol.UnknownPacket)(message)
@@ -359,44 +359,41 @@ func (p protocolImpl) Decode(message encoding.Decodable) server.Message {
 func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 	switch message := message.(type) {
 
-	case protocol.OutboundChatMessage:
-		return OutboundChatMessageDefinition.Pack(OutboundChatMessage(message))
-
-	case protocol.OutboundRemoveGroundItem:
-		return OutboundRemoveGroundItemDefinition.Pack(OutboundRemoveGroundItem(message))
-
-	case protocol.OutboundCreateGroundItem:
-		return OutboundCreateGroundItemDefinition.Pack(OutboundCreateGroundItem(message))
-
-	case protocol.OutboundRegionUpdate:
-		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
-
-	case protocol.OutboundScriptEvent:
-		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
-
-	case protocol.OutboundSetRootInterface:
-		return OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface(message))
-
 	case protocol.PlayerUpdate:
 		return PlayerUpdateDefinition.Pack(PlayerUpdate(message))
-
-	case protocol.OutboundSkill:
-		return OutboundSkillDefinition.Pack(OutboundSkill(message))
 
 	case protocol.OutboundSetInterface:
 		return OutboundSetInterfaceDefinition.Pack(OutboundSetInterface(message))
 
-	case protocol.OutboundSetUpdatingTile:
-		return OutboundSetUpdatingTileDefinition.Pack(OutboundSetUpdatingTile(message))
+	case protocol.OutboundUpdateAllInventoryItems:
+		return OutboundUpdateAllInventoryItemsDefinition.Pack(OutboundUpdateAllInventoryItems(message))
+
+	case protocol.OutboundSetRootInterface:
+		return OutboundSetRootInterfaceDefinition.Pack(OutboundSetRootInterface(message))
+
+	case protocol.OutboundChatMessage:
+		return OutboundChatMessageDefinition.Pack(OutboundChatMessage(message))
+
+	case protocol.OutboundCreateGroundItem:
+		return OutboundCreateGroundItemDefinition.Pack(OutboundCreateGroundItem(message))
+
+	case protocol.OutboundRemoveGroundItem:
+		return OutboundRemoveGroundItemDefinition.Pack(OutboundRemoveGroundItem(message))
+
+	case protocol.OutboundScriptEvent:
+		return OutboundScriptEventDefinition.Pack(OutboundScriptEvent(message))
 
 	case protocol.OutboundUpdateInventoryItem:
 		return OutboundUpdateInventoryItemDefinition.Pack(OutboundUpdateInventoryItem(message))
 
-	case protocol.OutboundUpdateAllInventoryItems:
-		return OutboundUpdateAllInventoryItemsDefinition.Pack(OutboundUpdateAllInventoryItems(message))
+	case protocol.OutboundSkill:
+		return OutboundSkillDefinition.Pack(OutboundSkill(message))
 
-	case protocol.OutboundInitInterface:
-		return OutboundInitInterface(message)
+	case protocol.OutboundRegionUpdate:
+		return OutboundRegionUpdateDefinition.Pack(OutboundRegionUpdate(message))
+
+	case protocol.OutboundSetUpdatingTile:
+		return OutboundSetUpdatingTileDefinition.Pack(OutboundSetUpdatingTile(message))
 
 	case protocol.OutboundLoginResponse:
 		return OutboundLoginResponse(message)
@@ -404,24 +401,27 @@ func (protocolImpl) Encode(message server.Message) encoding.Encodable {
 	case protocol.OutboundTabInterface:
 		return OutboundTabInterface(message)
 
+	case protocol.OutboundInitInterface:
+		return OutboundInitInterface(message)
+
+	case protocol.OutboundCreateGlobalGroundItem:
+		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
+		return nil
+
 	case protocol.OutboundResetCamera:
 		fmt.Println("OutboundResetCamera not implemented")
 		return nil
 
-	case protocol.OutboundDnsLookup:
-		fmt.Println("OutboundDnsLookup not implemented")
+	case protocol.OutboundSetText:
+		fmt.Println("OutboundSetText not implemented")
 		return nil
 
 	case protocol.OutboundPlayerInit:
 		fmt.Println("OutboundPlayerInit not implemented")
 		return nil
 
-	case protocol.OutboundCreateGlobalGroundItem:
-		fmt.Println("OutboundCreateGlobalGroundItem not implemented")
-		return nil
-
-	case protocol.OutboundSetText:
-		fmt.Println("OutboundSetText not implemented")
+	case protocol.OutboundDnsLookup:
+		fmt.Println("OutboundDnsLookup not implemented")
 		return nil
 
 	case protocol.OutboundLogout:

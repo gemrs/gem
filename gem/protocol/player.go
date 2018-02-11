@@ -33,6 +33,7 @@ type Profile interface {
 	Position() *position.Absolute
 	SetPosition(*position.Absolute)
 	SetPlayer(Player)
+	Save() string
 }
 
 type Player interface {

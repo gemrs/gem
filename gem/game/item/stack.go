@@ -1,6 +1,8 @@
 //glua:bind module gem.game.item
 package item
 
+import "encoding/json"
+
 //go:generate glua .
 
 //glua:bind
@@ -15,6 +17,28 @@ func NewStack(definition *Definition, count int) *Stack {
 		definition: definition,
 		count:      count,
 	}
+}
+
+type jsonStack struct {
+	Id    int
+	Count int
+}
+
+func (s *Stack) MarshalJSON() ([]byte, error) {
+	return json.Marshal(jsonStack{
+		Id:    s.definition.Id(),
+		Count: s.count,
+	})
+}
+
+func (s *Stack) UnmarshalJSON(d []byte) error {
+	var stack jsonStack
+	err := json.Unmarshal(d, &stack)
+	if err == nil {
+		s.definition = NewDefinition(stack.Id)
+		s.count = stack.Count
+	}
+	return err
 }
 
 //glua:bind

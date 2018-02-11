@@ -56,14 +56,14 @@ func NewGameService(runite *runite.Context, rsaKeyPath string, auth auth.Provide
 func (svc *GameService) NewClient(conn *server.Connection, service int) server.GameClient {
 	conn.Log().Info("new game client")
 	slot := svc.world.FindPlayerSlot()
-	client := impl.NewPlayer(slot, conn, svc.world)
+	client := impl.NewPlayer(slot, conn, svc.world, svc.auth)
 
 	loginHandler := server.Proto.NewLoginHandler()
 	loginHandler.SetServerIsaacSeed(client.ServerIsaacSeed())
 	loginHandler.SetRsaKeypair(svc.key)
 	loginHandler.SetCompleteCallback(func(loginHandler server.LoginHandler) error {
 		username, password := loginHandler.Username(), loginHandler.Password()
-		profile, responseCode := svc.auth.LookupProfile(username, password)
+		profile, responseCode := svc.auth.LoadProfile(username, password)
 
 		if responseCode != protocol.AuthOkay {
 			client.Send(protocol.OutboundLoginResponse{
@@ -90,13 +90,6 @@ func (svc *GameService) NewClient(conn *server.Connection, service int) server.G
 		svc.world.SetPlayerSlot(slot, client)
 		game_event.PlayerLogin.NotifyObservers(client)
 
-		go func() {
-			client.Conn().WaitForDisconnect()
-			worldSector := svc.world.Sector(client.Position().Sector())
-			worldSector.Remove(client)
-			svc.world.SetPlayerSlot(slot, nil)
-			game_event.PlayerLogout.NotifyObservers(client)
-		}()
 		return nil
 	})
 	loginHandler.Perform(client)
@@ -162,6 +155,7 @@ L:
 		select {
 		case <-client.Conn().DisconnectChan:
 			break L
+
 		case pkt := <-client.Conn().Read:
 			message := server.Proto.Decode(pkt)
 			switch message := message.(type) {

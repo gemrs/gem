@@ -24,9 +24,6 @@ function player_init(event, player)
    config:set_tab_interface(protocol.tab_item_bag, id.widget.item_bag_group_id)
    config:set_tab_interface(protocol.tab_clan_chat, id.widget.clan_chat_group_id)
    config:set_tab_interface(protocol.tab_emotes, id.widget.emotes_group_id)
-
-   local hitpoints = player:profile():skills():skill(protocol.skill_hitpoints)
-   hitpoints:experience(1154)
 end
 
 game_event.player_login:register(event.Func(player_init))

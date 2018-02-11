@@ -10,14 +10,15 @@ import (
 
 //glua:bind
 type Func struct {
-	fn func(name, password string) (protocol.Profile, protocol.AuthResponse)
+	load func(name, password string) (protocol.Profile, protocol.AuthResponse)
+	save func(profile protocol.Profile)
 }
 
 //glua:bind constructor Func
-func NewFunc(L *lua.LState, cb lua.LValue) *Func {
-	fn := func(name, password string) (protocol.Profile, protocol.AuthResponse) {
+func NewFunc(L *lua.LState, loadCallback, saveCallback lua.LValue) *Func {
+	loadFunc := func(name, password string) (protocol.Profile, protocol.AuthResponse) {
 		if err := L.CallByParam(lua.P{
-			Fn:      cb,
+			Fn:      loadCallback,
 			NRet:    2,
 			Protect: true,
 		}, glua.ToLua(L, name), glua.ToLua(L, password)); err != nil {
@@ -28,9 +29,24 @@ func NewFunc(L *lua.LState, cb lua.LValue) *Func {
 		L.Pop(2)
 		return profile, response
 	}
-	return &Func{fn}
+
+	saveFunc := func(profile protocol.Profile) {
+		if err := L.CallByParam(lua.P{
+			Fn:      saveCallback,
+			NRet:    0,
+			Protect: true,
+		}, glua.ToLua(L, profile)); err != nil {
+			panic(err)
+		}
+	}
+
+	return &Func{loadFunc, saveFunc}
 }
 
-func (f *Func) LookupProfile(name, password string) (protocol.Profile, protocol.AuthResponse) {
-	return f.fn(name, password)
+func (f *Func) LoadProfile(name, password string) (protocol.Profile, protocol.AuthResponse) {
+	return f.load(name, password)
+}
+
+func (f *Func) SaveProfile(profile protocol.Profile) {
+	f.save(profile)
 }

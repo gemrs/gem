@@ -1,6 +1,8 @@
 package impl
 
 import (
+	"encoding/json"
+
 	"github.com/gemrs/gem/gem/game/data"
 	"github.com/gemrs/gem/gem/game/item"
 	"github.com/gemrs/gem/gem/protocol"
@@ -23,6 +25,14 @@ func NewEquipment() *Equipment {
 		data.Int("inventory.equipment"))
 
 	return equipment
+}
+
+func (e *Equipment) MarshalJSON() ([]byte, error) {
+	return json.Marshal(e.container)
+}
+
+func (e *Equipment) UnmarshalJSON(d []byte) error {
+	return json.Unmarshal(d, &e.container)
 }
 
 func (e *Equipment) Equip(slot int, stack *item.Stack) (oldEquipment *item.Stack) {

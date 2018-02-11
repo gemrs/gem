@@ -4,6 +4,8 @@ package server
 import (
 	"fmt"
 	"net"
+	"os"
+	"os/signal"
 	"sync"
 
 	"github.com/gemrs/gem/gem/util/id"
@@ -65,6 +67,15 @@ func (s *Server) Start(laddr string) (err error) {
 	}
 
 	s.nextIndex = id.Generator(0)
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for _ = range c {
+			s.Stop()
+			os.Exit(0)
+		}
+	}()
 
 	s.t.Go(s.run)
 	return nil

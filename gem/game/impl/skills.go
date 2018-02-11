@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"encoding/json"
 	"math"
 
 	"github.com/gemrs/gem/gem/protocol"
@@ -43,6 +44,14 @@ func NewSkills() *Skills {
 		skills.skills[i] = NewSkill(protocol.SkillId(i), 0) // skill?
 	}
 	return skills
+}
+
+func (s *Skills) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.skills)
+}
+
+func (s *Skills) UnmarshalJSON(d []byte) error {
+	return json.Unmarshal(d, &s.skills)
 }
 
 func (s *Skills) setPlayer(p protocol.Player) {
@@ -93,6 +102,14 @@ func NewSkill(id protocol.SkillId, experience int) *Skill {
 		levelPercentage: 100,
 		levelOffset:     0,
 	}
+}
+
+func (skill *Skill) MarshalJSON() ([]byte, error) {
+	return json.Marshal(skill.experience)
+}
+
+func (skill *Skill) UnmarshalJSON(d []byte) error {
+	return json.Unmarshal(d, &skill.experience)
 }
 
 func (s *Skill) signalUpdate() {

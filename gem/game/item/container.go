@@ -1,6 +1,7 @@
 package item
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -30,6 +31,14 @@ func NewContainer(capacity int) *Container {
 	}
 
 	return container
+}
+
+func (c *Container) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.slots)
+}
+
+func (c *Container) UnmarshalJSON(d []byte) error {
+	return json.Unmarshal(d, &c.slots)
 }
 
 func (c *Container) SetInterfaceLocation(root, child, iface int) {

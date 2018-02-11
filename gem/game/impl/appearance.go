@@ -1,49 +1,65 @@
 package impl
 
-import "github.com/gemrs/gem/gem/protocol"
+import (
+	"encoding/json"
+
+	"github.com/gemrs/gem/gem/protocol"
+)
 
 type Appearance struct {
 	player protocol.Player
 
-	gender    int
+	jsonAppearance
+}
+
+type jsonAppearance struct {
+	Gender    int
 	headIcon  int
 	skullIcon int
 
-	torsoModel int
-	armsModel  int
-	legsModel  int
-	headModel  int
-	handsModel int
-	feetModel  int
-	beardModel int
+	TorsoModel int
+	ArmsModel  int
+	LegsModel  int
+	HeadModel  int
+	HandsModel int
+	FeetModel  int
+	BeardModel int
 
-	hairColor  int
-	torsoColor int
-	legsColor  int
-	feetColor  int
-	skinColor  int
+	HairColor  int
+	TorsoColor int
+	LegsColor  int
+	FeetColor  int
+	SkinColor  int
 }
 
 func NewAppearance() *Appearance {
 	a := &Appearance{}
-	a.gender = 0
-	a.headIcon = -1
-	a.skullIcon = -1
+	a.jsonAppearance.Gender = 0
+	a.jsonAppearance.headIcon = -1
+	a.jsonAppearance.skullIcon = -1
 
-	a.torsoModel = 19
-	a.armsModel = 29
-	a.legsModel = 39
-	a.headModel = 3
-	a.handsModel = 35
-	a.feetModel = 44
-	a.beardModel = 10
+	a.TorsoModel = 19
+	a.ArmsModel = 29
+	a.LegsModel = 39
+	a.HeadModel = 3
+	a.HandsModel = 35
+	a.FeetModel = 44
+	a.BeardModel = 10
 
-	a.hairColor = 7
-	a.torsoColor = 8
-	a.legsColor = 9
-	a.feetColor = 5
-	a.skinColor = 0
+	a.HairColor = 7
+	a.TorsoColor = 8
+	a.LegsColor = 9
+	a.FeetColor = 5
+	a.SkinColor = 0
 	return a
+}
+
+func (a *Appearance) MarshalJSON() ([]byte, error) {
+	return json.Marshal(a.jsonAppearance)
+}
+
+func (a *Appearance) UnmarshalJSON(d []byte) error {
+	return json.Unmarshal(d, &a.jsonAppearance)
 }
 
 func (a *Appearance) setPlayer(p protocol.Player) {
@@ -58,16 +74,16 @@ func (a *Appearance) signalUpdate() {
 }
 
 func (a *Appearance) Gender() int {
-	return a.gender
+	return a.jsonAppearance.Gender
 }
 
 func (a *Appearance) SetGender(gender int) {
-	a.gender = gender
+	a.jsonAppearance.Gender = gender
 	a.signalUpdate()
 }
 
 func (a *Appearance) SkullIcon() int {
-	return a.skullIcon
+	return a.jsonAppearance.skullIcon
 }
 
 func (a *Appearance) SetSkullIcon(skullIcon int) {
@@ -87,19 +103,19 @@ func (a *Appearance) SetHeadIcon(headIcon int) {
 func (a *Appearance) Model(b protocol.BodyPart) int {
 	switch b {
 	case protocol.BodyPartTorso:
-		return a.torsoModel
+		return a.TorsoModel
 	case protocol.BodyPartArms:
-		return a.armsModel
+		return a.ArmsModel
 	case protocol.BodyPartLegs:
-		return a.legsModel
+		return a.LegsModel
 	case protocol.BodyPartHead:
-		return a.headModel
+		return a.HeadModel
 	case protocol.BodyPartHands:
-		return a.handsModel
+		return a.HandsModel
 	case protocol.BodyPartFeet:
-		return a.feetModel
+		return a.FeetModel
 	case protocol.BodyPartBeard:
-		return a.beardModel
+		return a.BeardModel
 	}
 	return -1
 }
@@ -107,19 +123,19 @@ func (a *Appearance) Model(b protocol.BodyPart) int {
 func (a *Appearance) SetModel(b protocol.BodyPart, model int) {
 	switch b {
 	case protocol.BodyPartTorso:
-		a.torsoModel = model
+		a.TorsoModel = model
 	case protocol.BodyPartArms:
-		a.armsModel = model
+		a.ArmsModel = model
 	case protocol.BodyPartLegs:
-		a.legsModel = model
+		a.LegsModel = model
 	case protocol.BodyPartHead:
-		a.headModel = model
+		a.HeadModel = model
 	case protocol.BodyPartHands:
-		a.handsModel = model
+		a.HandsModel = model
 	case protocol.BodyPartFeet:
-		a.feetModel = model
+		a.FeetModel = model
 	case protocol.BodyPartBeard:
-		a.beardModel = model
+		a.BeardModel = model
 	}
 	a.signalUpdate()
 }
@@ -127,15 +143,15 @@ func (a *Appearance) SetModel(b protocol.BodyPart, model int) {
 func (a *Appearance) Color(b protocol.BodyPart) int {
 	switch b {
 	case protocol.BodyPartHair:
-		return a.hairColor
+		return a.HairColor
 	case protocol.BodyPartTorso:
-		return a.torsoColor
+		return a.TorsoColor
 	case protocol.BodyPartLegs:
-		return a.legsColor
+		return a.LegsColor
 	case protocol.BodyPartFeet:
-		return a.feetColor
+		return a.FeetColor
 	case protocol.BodyPartSkin:
-		return a.skinColor
+		return a.SkinColor
 	}
 	return -1
 }
@@ -143,15 +159,15 @@ func (a *Appearance) Color(b protocol.BodyPart) int {
 func (a *Appearance) SetColor(b protocol.BodyPart, color int) {
 	switch b {
 	case protocol.BodyPartHair:
-		a.hairColor = color
+		a.HairColor = color
 	case protocol.BodyPartTorso:
-		a.torsoColor = color
+		a.TorsoColor = color
 	case protocol.BodyPartLegs:
-		a.legsColor = color
+		a.LegsColor = color
 	case protocol.BodyPartFeet:
-		a.feetColor = color
+		a.FeetColor = color
 	case protocol.BodyPartSkin:
-		a.skinColor = color
+		a.SkinColor = color
 	}
 	a.signalUpdate()
 }

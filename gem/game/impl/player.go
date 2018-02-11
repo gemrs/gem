@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/gemrs/gem/fork/github.com/gtank/isaac"
+	"github.com/gemrs/gem/gem/auth"
 	"github.com/gemrs/gem/gem/core/log"
 	"github.com/gemrs/gem/gem/protocol"
 
@@ -20,6 +21,7 @@ import (
 type Player struct {
 	index        int
 	sector       protocol.Sector
+	auth         auth.Provider
 	world        protocol.World
 	loadedRegion *position.Region
 	protoData    interface{}
@@ -43,11 +45,12 @@ type Player struct {
 
 // NewGameClient constructs a new GameClient
 //glua:bind constructor Player
-func NewPlayer(index int, conn *server.Connection, worldInst *world.Instance) *Player {
+func NewPlayer(index int, conn *server.Connection, worldInst *world.Instance, auth auth.Provider) *Player {
 	player := &Player{}
 	player.index = index
 	player.Connection = conn
 	player.world = worldInst
+	player.auth = auth
 	player.serverRandKey = []uint32{
 		uint32(rand.Int31()), uint32(rand.Int31()),
 	}
@@ -62,6 +65,16 @@ func NewPlayer(index int, conn *server.Connection, worldInst *world.Instance) *P
 	player.visibleEntities = entity.NewCollection()
 	player.clientConfig = NewClientConfig(player)
 	return player
+}
+
+func (player *Player) Disconnect() {
+	player.auth.SaveProfile(player.Profile())
+	worldSector := player.world.Sector(player.Position().Sector())
+	worldSector.Remove(player)
+	player.world.SetPlayerSlot(player.Index(), nil)
+	game_event.PlayerLogout.NotifyObservers(player)
+
+	player.Conn().Disconnect()
 }
 
 func (player *Player) CurrentFrame() protocol.FrameType {
