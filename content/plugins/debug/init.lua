@@ -33,6 +33,12 @@ local function walk_to(player, args)
    end
 end
 
+local function warp_to(player, args)
+   local current = player:profile():position()
+   local destination = position.Absolute(tonumber(args[1]), tonumber(args[2]), current:z())
+   player:warp(destination)
+end
+
 local function get_pos(player, args)
    local pos = player:profile():position()
    player:send_message("You're at "..pos:x()..","..pos:y()..","..pos:z())
@@ -40,4 +46,5 @@ end
 
 debug_command.register_command("item", add_item)
 debug_command.register_command("walk", walk_to)
+debug_command.register_command("warp", warp_to)
 debug_command.register_command("pos", get_pos)

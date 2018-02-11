@@ -19,12 +19,13 @@ import (
 // GameClient is a client which serves players
 //glua:bind
 type Player struct {
-	index        int
-	sector       protocol.Sector
-	auth         auth.Provider
-	world        protocol.World
-	loadedRegion *position.Region
-	protoData    interface{}
+	index            int
+	sector           protocol.Sector
+	auth             auth.Provider
+	world            protocol.World
+	loadedRegion     *position.Region
+	previousPosition *position.Absolute
+	protoData        interface{}
 
 	visibleEntities *entity.Collection
 	chatQueue       []protocol.InboundChatMessage
@@ -67,6 +68,7 @@ func NewPlayer(index int, conn *server.Connection, worldInst *world.Instance, au
 	return player
 }
 
+//glua:bind
 func (player *Player) Disconnect() {
 	player.auth.SaveProfile(player.Profile())
 	worldSector := player.world.Sector(player.Position().Sector())

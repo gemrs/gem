@@ -8,6 +8,34 @@ import (
 	"github.com/gemrs/gem/gem/protocol"
 )
 
+type WarpInteraction struct {
+	Position *position.Absolute
+}
+
+func (i *WarpInteraction) Tick(e entity.Entity) bool {
+	mob := e.(entity.Movable)
+	mob.SetPosition(i.Position)
+	mob.SetFlags(entity.MobFlagWarpUpdate)
+
+	return true
+}
+
+func (i *WarpInteraction) Interruptible() bool {
+	return false
+}
+
+//glua:bind
+func (player *Player) Warp(pos *position.Absolute) {
+	player.previousPosition = player.Position()
+	player.InteractionQueue().Append(&WarpInteraction{
+		Position: pos,
+	})
+}
+
+func (player *Player) PreviousPosition() *position.Absolute {
+	return player.previousPosition
+}
+
 // SetPosition warps the mob to a given location
 func (player *Player) SetPosition(pos *position.Absolute) {
 	oldSector := player.sector.Position()

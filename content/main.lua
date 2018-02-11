@@ -55,6 +55,9 @@ for _, plugin in ipairs(config.plugins) do
    load_plugin(plugin)
 end
 
+-- Load some event handlers
+require("frame_buttons")
+
 -- Start and join the engine
 engine = engine.Engine()
 engine:start()

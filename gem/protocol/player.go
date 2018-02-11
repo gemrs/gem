@@ -42,6 +42,7 @@ type Player interface {
 	Profile() Profile
 	WorldInstance() World
 	Position() *position.Absolute
+	PreviousPosition() *position.Absolute
 	LoadedRegion() *position.Region
 	SetWalkDestination(pos *position.Absolute) bool
 	SetRunning(bool)

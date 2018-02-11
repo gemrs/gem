@@ -12,7 +12,8 @@ const (
 	MobFlagRunUpdate      Flags = (1 << 2)
 	MobFlagIdentityUpdate Flags = (1 << 4)
 	MobFlagChatUpdate     Flags = (1 << 7)
-	MobFlagMovementUpdate Flags = (MobFlagRegionUpdate | MobFlagWalkUpdate | MobFlagRunUpdate)
+	MobFlagWarpUpdate     Flags = (1 << 8)
+	MobFlagMovementUpdate Flags = (MobFlagRegionUpdate | MobFlagWalkUpdate | MobFlagRunUpdate | MobFlagWarpUpdate)
 )
 
 // An Entity is a 'thing' within the world, with a position, and an index.

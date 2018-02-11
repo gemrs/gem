@@ -432,6 +432,16 @@ func (struc PlayerUpdate) buildMovementBlock(buf *encoding.BitBuffer, player pro
 		buf.Write(2, 1) // update type 1 = walking
 		buf.Write(3, uint32(current))
 
+	case (flags & entity.MobFlagWarpUpdate) != 0:
+		buf.Write(2, 3) // update type 3 = warp
+		buf.Write(1, 1)
+		pos := player.Position()
+		lastPos := player.PreviousPosition()
+		x, y, z := lastPos.DeltaTo(pos)
+
+		compressedPos := y&0x3fff + ((x & 0x3fff) << 14) + (z << 28)
+		buf.Write(30, uint32(compressedPos))
+
 	default:
 		buf.Write(2, 0) // update type 0 = no movement updates
 	}

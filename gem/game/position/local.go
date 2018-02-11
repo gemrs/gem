@@ -23,6 +23,10 @@ func (local *Local) Z() int {
 	return local.z
 }
 
+func (local *Local) DeltaTo(target *Local) (x, y, z int) {
+	return target.X() - local.X(), target.Y() - local.Y(), target.Z() - local.Z()
+}
+
 func (local *Local) Compare(other *Local) bool {
 	return local.x == other.x &&
 		local.y == other.y &&
